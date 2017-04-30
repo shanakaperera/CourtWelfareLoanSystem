@@ -1,0 +1,250 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.String?>
+<?import java.net.URL?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.TitledPane?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+<?import org.controlsfx.control.CheckTreeView?>
+
+<VBox alignment="CENTER" prefHeight="473.0" prefWidth="582.0" VBox.vgrow="ALWAYS" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.court.controller.UserManageFxmlController">
+   <stylesheets>
+        <URL value="@/com/court/asserts/style.css" />
+    </stylesheets>
+    <children>
+      <HBox alignment="CENTER" prefHeight="50.0" prefWidth="200.0" styleClass="VBox" VBox.vgrow="NEVER">
+         <children>
+            <Label text="USER MANAGEMENT">
+               <font>
+                  <Font size="18.0" />
+               </font>
+            </Label>
+         </children>
+      </HBox>
+      <TabPane prefHeight="200.0" prefWidth="200.0" tabClosingPolicy="UNAVAILABLE" VBox.vgrow="ALWAYS">
+        <tabs>
+          <Tab text="System Users">
+            <content>
+              <AnchorPane minHeight="0.0" minWidth="0.0" nodeOrientation="LEFT_TO_RIGHT" prefHeight="180.0" prefWidth="200.0">
+                     <children>
+                        <HBox layoutX="10.0" layoutY="10.0" spacing="10.0" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0">
+                           <children>
+                              <GridPane fx:id="main_grid" HBox.hgrow="ALWAYS">
+                                <columnConstraints>
+                                  <ColumnConstraints hgrow="NEVER" minWidth="10.0" prefWidth="100.0" />
+                                  <ColumnConstraints halignment="LEFT" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                                    <ColumnConstraints />
+                                </columnConstraints>
+                                <rowConstraints>
+                                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                    <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                  <RowConstraints minHeight="10.0" prefHeight="60.0" vgrow="SOMETIMES" />
+                                    <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                    <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                    <RowConstraints minHeight="10.0" prefHeight="100.0" vgrow="SOMETIMES" />
+                                    <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                </rowConstraints>
+                                 <children>
+                                    <Label text="Full Name" />
+                                    <Label text="Email" GridPane.rowIndex="2" />
+                                    <TextField fx:id="full_name_txt" GridPane.columnIndex="1" />
+                                    <TextField fx:id="email_txt" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                                    <Label text="Address" GridPane.rowIndex="3" />
+                                    <TextArea fx:id="address_txt" prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+                                    <Label text="Telephone" GridPane.rowIndex="4" />
+                                    <TextField fx:id="tele_txt" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+                                    <Label text="User Role" GridPane.rowIndex="5" />
+                                    <ComboBox fx:id="usr_role_combo" prefWidth="150.0" promptText="-- SELECT --" GridPane.columnIndex="1" GridPane.rowIndex="5" />
+                                    <Label text="User Picture" GridPane.rowIndex="6" />
+                                    <ImageView fx:id="usr_img_view" fitHeight="100.0" fitWidth="100.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="1" GridPane.rowIndex="6">
+                                       <image>
+                                          <Image url="@../asserts/default.jpg" />
+                                       </image>
+                                    </ImageView>
+                                    <Button mnemonicParsing="false" onAction="#onBrowseImgBtnAction" text="Browse" GridPane.columnIndex="1" GridPane.rowIndex="6" GridPane.valignment="BOTTOM" />
+                                    <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" spacing="10.0" GridPane.columnSpan="2" GridPane.rowIndex="7">
+                                       <children>
+                                          <Button mnemonicParsing="false" onAction="#newBtnAction" style="-fx-text-fill: #ffff; -fx-font-size: 15;" text="NEW">
+                                             <styleClass>
+                                                <String fx:value="btn" />
+                                                <String fx:value="btn-primary" />
+                                             </styleClass>
+                                          </Button>
+                                          <Button fx:id="ud_save_btn" layoutX="10.0" layoutY="13.0" mnemonicParsing="false" onAction="#saveBtnAction" style="-fx-text-fill: #ffff; -fx-font-size: 15;" text="SAVE">
+                                             <styleClass>
+                                                <String fx:value="btn" />
+                                                <String fx:value="btn-success" />
+                                             </styleClass>
+                                          </Button>
+                                          <Button fx:id="ud_deact_btn" layoutX="73.0" layoutY="13.0" mnemonicParsing="false" onAction="#deactiveBtnAction" style="-fx-text-fill: #ffff; -fx-font-size: 15;" text="DEACTIVATE">
+                                             <styleClass>
+                                                <String fx:value="btn" />
+                                                <String fx:value="btn-warning" />
+                                             </styleClass>
+                                          </Button>
+                                          <Button fx:id="ud_delete_btn" layoutX="138.0" layoutY="13.0" mnemonicParsing="false" onAction="#deleteBtnAction" style="-fx-text-fill: #ffff; -fx-font-size: 15;" text="DELETE">
+                                             <styleClass>
+                                                <String fx:value="btn" />
+                                                <String fx:value="btn-danger" />
+                                             </styleClass>
+                                          </Button>
+                                          <Button fx:id="reset_btn" disable="true" mnemonicParsing="false" onAction="#resetPassAction" style="-fx-text-fill: #ffff; -fx-font-size: 15;" text="SET/RESET PASSWORD">
+                                             <styleClass>
+                                                <String fx:value="btn" />
+                                                <String fx:value="btn-danger" />
+                                             </styleClass>
+                                          </Button>
+                                       </children>
+                                    </HBox>
+                                    <Label text="User Name" GridPane.rowIndex="1" />
+                                    <TextField fx:id="user_name_txt" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                                 </children>
+                              </GridPane>
+                              <VBox spacing="10.0" HBox.hgrow="ALWAYS">
+                                 <children>
+                                    <TitledPane prefHeight="150.0" prefWidth="200.0" text="Search User" VBox.vgrow="ALWAYS">
+                                       <content>
+                                          <GridPane fx:id="search_grid">
+                                            <columnConstraints>
+                                              <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="30.0" />
+                                              <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                                            </columnConstraints>
+                                            <rowConstraints>
+                                              <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                              <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                              <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                            </rowConstraints>
+                                             <children>
+                                                <Label text="User Role" />
+                                                <TextField fx:id="usr_role_sr_txt" GridPane.columnIndex="1" />
+                                                <Label text="Full Name" GridPane.rowIndex="1" />
+                                                <TextField fx:id="full_name_src_txt" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                                                <HBox alignment="BOTTOM_LEFT" spacing="10.0" GridPane.columnIndex="1" GridPane.rowIndex="2">
+                                                   <children>
+                                                      <Button fx:id="ud_srch_usr_btn" mnemonicParsing="false" onAction="#searchBtnAction" style="-fx-text-fill: #ffff;" text="Search">
+                                                         <styleClass>
+                                                            <String fx:value="btn" />
+                                                            <String fx:value="btn-success" />
+                                                         </styleClass>
+                                                      </Button>
+                                                      <Button layoutX="10.0" layoutY="10.0" mnemonicParsing="false" onAction="#clearBtnAction" style="-fx-text-fill: #ffff;" text="Clear All">
+                                                         <styleClass>
+                                                            <String fx:value="btn" />
+                                                            <String fx:value="btn-primary" />
+                                                         </styleClass>
+                                                      </Button>
+                                                   </children>
+                                                </HBox>
+                                             </children>
+                                          </GridPane>
+                                       </content>
+                                    </TitledPane>
+                                    <TableView fx:id="user_tbl" prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS">
+                                      <columns>
+                                        <TableColumn fx:id="usr_name_col" prefWidth="100.0" text="User Name" />
+                                        <TableColumn fx:id="full_name_col" prefWidth="150.0" text="Full Name" />
+                                          <TableColumn fx:id="email_col" prefWidth="150.0" text="Email" />
+                                          <TableColumn fx:id="usr_role_col" prefWidth="75.0" text="User Role" />
+                                          <TableColumn fx:id="status_col" prefWidth="50.0" text="Status" />
+                                      </columns>
+                                    </TableView>
+                                 </children>
+                              </VBox>
+                           </children>
+                        </HBox>
+                     </children>
+                  </AnchorPane>
+            </content>
+          </Tab>
+          <Tab text="User Roles">
+            <content>
+              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                     <children>
+                        <HBox layoutX="97.0" layoutY="101.0" prefHeight="100.0" prefWidth="200.0" spacing="10.0" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0">
+                           <children>
+                              <VBox spacing="10.0" HBox.hgrow="ALWAYS">
+                                 <children>
+                                    <TitledPane prefHeight="200.0" prefWidth="200.0" text="View / Save User Roles">
+                                       <content>
+                                          <GridPane>
+                                            <columnConstraints>
+                                              <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="30.0" />
+                                              <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                                            </columnConstraints>
+                                            <rowConstraints>
+                                              <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                              <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                              <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                            </rowConstraints>
+                                             <children>
+                                                <Label text="Role Name" />
+                                                <TextField fx:id="usr_role_name_txt" GridPane.columnIndex="1" />
+                                                <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" spacing="5.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                                                   <children>
+                                                      <Button mnemonicParsing="false" onAction="#onNewRoleBtnAction" style="-fx-text-fill: #ffff;" text="New">
+                                                         <styleClass>
+                                                            <String fx:value="btn" />
+                                                            <String fx:value="btn-primary" />
+                                                         </styleClass>
+                                                      </Button>
+                                                      <Button fx:id="ur_save_btn" mnemonicParsing="false" onAction="#onSaveRoleBtnAction" style="-fx-text-fill: #ffff;" text="Save">
+                                                         <styleClass>
+                                                            <String fx:value="btn" />
+                                                            <String fx:value="btn-success" />
+                                                         </styleClass>
+                                                      </Button>
+                                                      <Button fx:id="ur_deact_btn" mnemonicParsing="false" onAction="#onDeaciveRoleBtnAction" style="-fx-text-fill: #ffff;" text="Deactivate">
+                                                         <styleClass>
+                                                            <String fx:value="btn" />
+                                                            <String fx:value="btn-warning" />
+                                                         </styleClass>
+                                                      </Button>
+                                                   </children>
+                                                </HBox>
+                                             </children>
+                                          </GridPane>
+                                       </content></TitledPane>
+                                    <TableView fx:id="role_tbl" prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS">
+                                      <columns>
+                                        <TableColumn fx:id="name_col" prefWidth="200.0" text="User Role" />
+                                        <TableColumn fx:id="stt_col" prefWidth="200.0" text="Status" />
+                                          <TableColumn fx:id="action_col" prefWidth="75.0" text="Action" />
+                                      </columns>
+                                    </TableView>
+                                 </children>
+                              </VBox>
+                              <VBox HBox.hgrow="ALWAYS">
+                                 <children>
+                                    <CheckTreeView fx:id="check_tree_view" VBox.vgrow="ALWAYS" />
+                                 </children>
+                              </VBox>
+                           </children>
+                        </HBox>
+                     </children></AnchorPane>
+            </content>
+          </Tab>
+        </tabs>
+         <VBox.margin>
+            <Insets top="10.0" />
+         </VBox.margin>
+      </TabPane>
+   </children>
+</VBox>

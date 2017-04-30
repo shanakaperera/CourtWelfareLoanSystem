@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<root text="Allow All Privileges" id="1">
+    <user-manage text="User Management" id="101">
+        <view-u text="View User" id="10101"/>
+        <save-u text="Save User" id="10102"/>
+        <deactive-u text="Deactivate User" id="10103"/>
+        <delete-u text="Delete User" id="10104"/>
+        <change-pw text="Change Password" id="10105"/>
+        <view-r text="View UserRoles" id="10106"/>
+        <save-r text="Save UserRoles" id="10107"/>
+        <deactive-r text="Deactivate UserRoles" id="10108"/>
+    </user-manage>
+    <member-details text="Member Management" id="102">
+        <view-m text="Search Member" id="10201"/>
+        <save-m text="Save Member" id="10202"/>
+        <delete-m text="Delete Member" id="10203"/>
+        <deactive-m text="Deactivate Member" id="10204"/>
+        <view-loans text="View Loans" id="10205"/>
+        <remove-loans text="Remove Loans" id="10206"/>
+        <view-docs text="View Documents" id="10207"/>
+        <save-docs text="Save Documents" id="10208"/>
+        <remove-docs text="Remove Documents" id="10209"/>
+    </member-details>
+    <loan-manage text="Loan Management" id="103">
+        <view text="View" id="10301"/>
+        <save text="Save" id="10302"/>
+        <deactive text="Deactivate" id="10303"/>
+        <delete text="Delete" id="10304"/>
+    </loan-manage>
+    <branch-manage text="Branch Management" id="104">
+        <view text="View" id="10401"></view>
+        <save text="Save" id="10402"/>
+        <deactive text="Deactivate" id="10403"/>
+        <delete text="Delete" id="10404"/>
+    </branch-manage>
+    <collection_sheet text="Collection Sheet" id="105">
+        <view text="View Collections" id="10501"/>
+        <proceed text="Proceed Collection" id="10502"/>
+    </collection_sheet>
+    <loan-cal text="Loan Calculator" id="106">
+        <view text="View" id="10601"/>
+    </loan-cal>
+    <payments text="Payments" id="107">
+        <view text="View" id="10701"/>
+    </payments>
+    <reports text="Reports" id="108">
+        <a-report text="A Report" id="10801"/>
+        <b-report text="B Report" id="10802"/>
+        <c-report text="C Report" id="10803"/>
+        <d-report text="D Report" id="10804"/>
+    </reports>
+</root>

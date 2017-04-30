@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.String?>
+<?import java.net.URL?>
+<?import javafx.collections.FXCollections?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.DatePicker?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.TitledPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<VBox alignment="TOP_CENTER" prefHeight="445.0" prefWidth="546.0" spacing="10.0" VBox.vgrow="ALWAYS" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.court.controller.CollectionSheetFxmlController">
+    <stylesheets>
+        <URL value="@/com/court/asserts/style.css" />
+    </stylesheets>  
+    <children>
+        <HBox alignment="CENTER" prefHeight="50.0" prefWidth="200.0" styleClass="VBox" VBox.vgrow="NEVER">
+            <children>
+                <Label text="COLLECTION SHEET">
+                    <font>
+                        <Font size="18.0" />
+                    </font>
+                </Label>
+            </children>
+        </HBox>
+        <VBox prefHeight="200.0" prefWidth="100.0" VBox.vgrow="ALWAYS">
+            <children>
+                <TitledPane prefHeight="200.0" prefWidth="200.0" text="SEARCH CRITERIA">
+                    <font>
+                        <Font size="14.0" />
+                    </font>
+                    <content>
+                        <GridPane fx:id="collection_grid" hgap="5.0" vgap="5.0">
+                            <columnConstraints>
+                                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="20.0" />
+                                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="30.0" />
+                                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="20.0" />
+                                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="30.0" />
+                            </columnConstraints>
+                            <rowConstraints>
+                                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                            </rowConstraints>
+                            <children>
+                                <Label text="Search By" GridPane.rowIndex="1" />
+                                <ComboBox fx:id="search_typ_combo" onAction="#onSearchComboItemSelAction" prefWidth="150.0" promptText="-- SELECT --" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                                    <items>
+                                        <FXCollections fx:factory="observableArrayList">
+                                            <String fx:value="By Branch Name" />
+                                            <String fx:value="By Member ID" />
+                                            <String fx:value="By Member Name" />
+                                        </FXCollections>
+                                    </items>
+                                </ComboBox>
+                                <Label text="Search Text" GridPane.rowIndex="2" />
+                                <TextField fx:id="search_txt" disable="true" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                                <Label text="Perform Search" underline="true" GridPane.columnSpan="2">
+                                    <font>
+                                        <Font size="17.0" />
+                                    </font>
+                                </Label>
+                                <Label text="Proceed Collection" underline="true" GridPane.columnIndex="2" GridPane.columnSpan="2">
+                                    <font>
+                                        <Font size="17.0" />
+                                    </font>
+                                </Label>
+                                <Label text="Cheque No" GridPane.columnIndex="2" GridPane.rowIndex="1" />
+                                <Label text="Cheque Date" GridPane.columnIndex="2" GridPane.rowIndex="2" />
+                                <HBox spacing="5.0" GridPane.columnIndex="1" GridPane.rowIndex="3">
+                                    <children>
+                                        <Button mnemonicParsing="false" onAction="#onSearchBtnAction" style="-fx-text-fill: #ffff; -fx-font-size: 14;" text="Search">
+                                            <styleClass>
+                                                <String fx:value="btn" />
+                                                <String fx:value="btn-success" />
+                                            </styleClass>
+                                        </Button>
+                                        <Button layoutX="10.0" layoutY="10.0" mnemonicParsing="false" onAction="#onClearBtnAction" style="-fx-text-fill: #ffff; -fx-font-size: 14;" text="Clear All">
+                                            <styleClass>
+                                                <String fx:value="btn" />
+                                                <String fx:value="btn-primary" />
+                                            </styleClass>
+                                        </Button>
+                                    </children>
+                                </HBox>
+                                <TextField fx:id="chk_no_txt" GridPane.columnIndex="3" GridPane.rowIndex="1" />
+                                <DatePicker fx:id="chk_date_chooser" GridPane.columnIndex="3" GridPane.rowIndex="2" />
+                                <Label text="Cheque Amount" GridPane.columnIndex="2" GridPane.rowIndex="3" />
+                                <TextField fx:id="chk_amt_txt" GridPane.columnIndex="3" GridPane.rowIndex="3" />
+                                <Button mnemonicParsing="false" onAction="#onProceedBtnAction" text="Proceed" GridPane.columnIndex="3" GridPane.rowIndex="4">
+                                    <styleClass>
+                                        <String fx:value="btn" />
+                                        <String fx:value="btn-success" />
+                                    </styleClass>
+                                </Button>
+                            </children>
+                        </GridPane>
+                    </content>
+                </TitledPane>
+                <TableView fx:id="collection_tbl" prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS">
+                    <columns>
+                        <TableColumn fx:id="m_id_col" prefWidth="75.0" text="Member ID" />
+                        <TableColumn fx:id="m_name_col" prefWidth="150.0" text="Name" />
+                        <TableColumn fx:id="loan_id_col" prefWidth="75.0" text="Loan ID" />
+                        <TableColumn fx:id="inst_no_col" prefWidth="50.0" text="Inst No" />
+                        <TableColumn fx:id="loan_type_col" prefWidth="240.0" text="Loan Type" />
+                        <TableColumn fx:id="l_amt_col" prefWidth="100.0" text="Amount" />
+                        <TableColumn fx:id="l_inst_amt_col" prefWidth="100.0" text="Inst Amount" />
+                        <TableColumn fx:id="colection_stat_col" prefWidth="75.0" text="Collected" />  
+                    </columns>
+                </TableView>
+            </children>
+        </VBox>
+    </children>
+</VBox>

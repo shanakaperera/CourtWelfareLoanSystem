@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<!-- Generated Apr 23, 2017 7:05:19 PM by Hibernate Tools 4.3.1 -->
+<hibernate-mapping>
+    <class name="com.court.model.PrivCat" table="priv_cat" catalog="court_loan" optimistic-lock="version">
+        <id name="id" type="java.lang.Integer">
+            <column name="id" />
+            <generator class="identity" />
+        </id>
+        <many-to-one name="userRole" class="com.court.model.UserRole" fetch="select">
+            <column name="user_role_id" not-null="true" />
+        </many-to-one>
+        <many-to-one name="usrRolePrivilage" class="com.court.model.UsrRolePrivilage" fetch="select">
+            <column name="usr_role_privilage_id" not-null="true" />
+        </many-to-one>
+        <property name="actionName" type="string">
+            <column name="action_name" length="100" />
+        </property>
+        <property name="actionStatus" type="boolean">
+            <column name="action_status" not-null="true" />
+        </property>
+    </class>
+</hibernate-mapping>

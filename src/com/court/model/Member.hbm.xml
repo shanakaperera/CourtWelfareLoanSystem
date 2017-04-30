@@ -1,0 +1,75 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<!-- Generated Apr 18, 2017 4:12:16 PM by Hibernate Tools 4.3.1 -->
+<hibernate-mapping>
+    <class name="com.court.model.Member" table="member" catalog="court_loan" optimistic-lock="version">
+        <id name="id" type="java.lang.Integer">
+            <column name="id" />
+            <generator class="identity" />
+        </id>
+        <many-to-one name="branch" class="com.court.model.Branch" fetch="select">
+            <column name="branch_id" not-null="true" />
+        </many-to-one>
+        <property name="memberId" type="string">
+            <column name="member_id" length="45" not-null="true" unique="true" />
+        </property>
+        <property name="fullName" type="string">
+            <column name="full_name" length="200" />
+        </property>
+        <property name="nameWithIns" type="string">
+            <column name="name_with_ins" length="200" />
+        </property>
+        <property name="address" type="string">
+            <column name="address" length="65535" />
+        </property>
+        <property name="email" type="string">
+            <column name="email" length="45" />
+        </property>
+        <property name="jobTitle" type="string">
+            <column name="job_title" length="45" />
+        </property>
+        <property name="tel1" type="string">
+            <column name="tel_1" length="12" />
+        </property>
+        <property name="tel2" type="string">
+            <column name="tel_2" length="12" />
+        </property>
+        <property name="sex" type="string">
+            <column name="sex" length="6" />
+        </property>
+        <property name="maritalStatus" type="string">
+            <column name="marital_status" length="7" />
+        </property>
+        <property name="dob" type="date">
+            <column name="dob" length="10" />
+        </property>
+        <property name="appintedDate" type="date">
+            <column name="appinted_date" length="10" />
+        </property>
+        <property name="joinedDate" type="date">
+            <column name="joined_date" length="10" />
+        </property>
+        <property name="description" type="string">
+            <column name="description" length="65535" />
+        </property>
+        <property name="imgPath" type="string">
+            <column name="img_path" length="65535" />
+        </property>
+        <property name="status" type="boolean">
+            <column name="status" not-null="true" />
+        </property>
+        <set name="memberLoans" table="member_loan" inverse="true" lazy="false" fetch="join" cascade="all">
+            <key>
+                <column name="member_id" not-null="true" />
+            </key>
+            <one-to-many class="com.court.model.MemberLoan" />
+        </set>
+        <set name="documents" table="document" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="member_id" not-null="true" />
+            </key>
+            <one-to-many class="com.court.model.Document" />
+        </set>
+    </class>
+</hibernate-mapping>

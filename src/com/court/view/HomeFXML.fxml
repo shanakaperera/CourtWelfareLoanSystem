@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import eu.hansolo.tilesfx.*?>
+<?import org.controlsfx.glyphfont.*?>
+<?import javafx.scene.image.*?>
+<?import java.lang.*?>
+<?import java.net.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.text.*?>
+<?import javafx.scene.shape.*?>
+<?import javafx.scene.chart.*?>
+
+<VBox alignment="CENTER" VBox.vgrow="ALWAYS" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.court.controller.HomeFXMLController">
+    <stylesheets>
+        <URL value="@/com/court/asserts/style.css" />
+    </stylesheets>
+    <children>
+        <HBox alignment="CENTER" prefHeight="50.0" prefWidth="200.0" styleClass="VBox" VBox.vgrow="NEVER">
+            <children>
+                <Label text="DASHBOARD">
+                    <font>
+                        <Font size="18.0" />
+                    </font>
+                </Label>
+            </children>
+        </HBox>
+       
+        <TitledPane prefHeight="200.0" prefWidth="200.0" text="GENERAL INFROMATION">
+            <content>
+                <GridPane hgap="5.0" vgap="5.0">
+                    <columnConstraints>
+                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                  <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                    </columnConstraints>
+                    <rowConstraints>
+                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                    </rowConstraints>
+               <children>
+                  <Tile skinType="TEXT" text="TOTAL MEMBERS" textSize="BIGGER" />
+                  <Tile skinType="CLOCK" GridPane.columnIndex="2" />
+                  <Tile skinType="SLIDER" GridPane.columnIndex="1" />
+                  <Tile skinType="TEXT" text="TOTAL COLLECTION" textSize="BIGGER" GridPane.columnIndex="3" />
+                  <Label text="10" textFill="WHITE">
+                     <font>
+                        <Font size="31.0" />
+                     </font>
+                     <GridPane.margin>
+                        <Insets left="10.0" />
+                     </GridPane.margin>
+                  </Label>
+                  <Label text="4500" textFill="WHITE" GridPane.columnIndex="3">
+                     <font>
+                        <Font size="31.0" />
+                     </font>
+                     <GridPane.margin>
+                        <Insets left="10.0" />
+                     </GridPane.margin>
+                  </Label>
+               </children>
+                </GridPane>
+            </content>
+        </TitledPane>
+        <TitledPane prefHeight="200.0" prefWidth="200.0" text="Loans Released - Monthly">
+            <content>
+                <LineChart fx:id="loan_release_chart">
+                    <xAxis>
+                        <CategoryAxis label="Month" side="BOTTOM" />
+                    </xAxis>
+                    <yAxis>
+                        <NumberAxis label="Loans" side="LEFT" />
+                    </yAxis>
+                </LineChart>
+            </content>
+        </TitledPane>
+        <TitledPane layoutX="10.0" layoutY="194.0" prefHeight="200.0" prefWidth="200.0" text="Loan Collections - Monthly">
+            <content>
+                <LineChart fx:id="loan_collection_chart">
+                    <xAxis>
+                        <CategoryAxis label="Month" side="BOTTOM" />
+                    </xAxis>
+                    <yAxis>
+                        <NumberAxis label="Amount Rs" side="LEFT" />
+                    </yAxis>
+                </LineChart>
+            </content>
+        </TitledPane>
+    </children>
+</VBox>

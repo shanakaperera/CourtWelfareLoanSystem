@@ -1,0 +1,39 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<!-- Generated Apr 18, 2017 4:12:16 PM by Hibernate Tools 4.3.1 -->
+<hibernate-mapping>
+    <class name="com.court.model.Document" table="document" catalog="court_loan" optimistic-lock="version">
+        <id name="id" type="java.lang.Integer">
+            <column name="id" />
+            <generator class="identity" />
+        </id>
+        <many-to-one name="member" class="com.court.model.Member" fetch="select">
+            <column name="member_id" not-null="true" />
+        </many-to-one>
+        <property name="docCode" type="string">
+            <column name="doc_code" length="45" not-null="true" unique="true" />
+        </property>
+        <property name="docName" type="string">
+            <column name="doc_name" length="45" />
+        </property>
+        <property name="docType" type="string">
+            <column name="doc_type" length="2" />
+        </property>
+        <property name="docDate" type="date">
+            <column name="doc_date" length="10" />
+        </property>
+        <property name="attachPath" type="string">
+            <column name="attach_path" length="65535" />
+        </property>
+        <property name="status" type="boolean">
+            <column name="status" not-null="true" />
+        </property>
+        <property name="description" type="string">
+            <column name="description" length="65535" />
+        </property>
+         <property name="memeberLoanId" type="java.lang.Integer">
+            <column name="member_loan_id" />
+        </property>
+    </class>
+</hibernate-mapping>

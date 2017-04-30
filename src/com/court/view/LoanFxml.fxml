@@ -1,0 +1,216 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.String?>
+<?import java.net.URL?>
+<?import javafx.collections.FXCollections?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.TitledPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<VBox alignment="TOP_CENTER" prefHeight="549.0" prefWidth="640.0" spacing="10.0" VBox.vgrow="ALWAYS" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.court.controller.LoanFxmlController">
+    <stylesheets>
+        <URL value="@/com/court/asserts/style.css" />
+    </stylesheets>
+    <children>
+        <HBox alignment="CENTER" prefHeight="50.0" prefWidth="200.0" styleClass="VBox" VBox.vgrow="NEVER">
+            <children>
+                <Label text="LOAN MANAGEMENT">
+                    <font>
+                        <Font size="18.0" />
+                    </font>
+                    <HBox.margin>
+                        <Insets bottom="10.0" top="10.0" />
+                    </HBox.margin>
+                </Label>
+            </children>
+        </HBox>
+        <HBox VBox.vgrow="ALWAYS">
+            <children>
+                <VBox spacing="10.0" HBox.hgrow="ALWAYS">
+                    <children>
+                        <TitledPane prefHeight="200.0" prefWidth="200.0" text="SEARCH LOAN">
+                            <content>
+                                <GridPane fx:id="search_grid">
+                                    <columnConstraints>
+                                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                                    </columnConstraints>
+                                    <rowConstraints>
+                                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                    </rowConstraints>
+                                    <children>
+                                        <Label text="Search and Find Loan" underline="true" GridPane.columnSpan="2">
+                                            <font>
+                                                <Font size="16.0" />
+                                            </font>
+                                        </Label>
+                                        <Label text="Loan ID" GridPane.rowIndex="1" />
+                                        <Label text="Loan Name" GridPane.rowIndex="2" />
+                                        <TextField fx:id="loan_search_id_txt" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                                        <TextField fx:id="loan_search_name_txt" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                                        <HBox alignment="BOTTOM_CENTER" spacing="5.0" GridPane.columnIndex="1" GridPane.rowIndex="3">
+                                            <children>
+                                                <Button mnemonicParsing="false" onAction="#onSearchBtnAction" style="-fx-text-fill: #ffff; -fx-font-size: 14;" text="Search">
+                                                    <styleClass>
+                                                        <String fx:value="btn" />
+                                                        <String fx:value="btn-success" />
+                                                    </styleClass>
+                                                </Button>
+                                                <Button layoutX="10.0" layoutY="10.0" mnemonicParsing="false" onAction="#onClearBtnAction" style="-fx-text-fill: #ffff; -fx-font-size: 14;" text="Clear All">
+                                                    <styleClass>
+                                                        <String fx:value="btn" />
+                                                        <String fx:value="btn-primary" />
+                                                    </styleClass>
+                                                </Button>
+                                            </children>
+                                        </HBox>
+                                    </children>
+                                </GridPane>
+                            </content>
+                        </TitledPane>
+                        <TitledPane prefHeight="400.0" prefWidth="200.0" text="View / Save Branch" VBox.vgrow="ALWAYS">
+                            <content>
+                                <GridPane fx:id="save_grid">
+                                    <columnConstraints>
+                                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="30.0" />
+                                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                                    </columnConstraints>
+                                    <rowConstraints>
+                                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                    </rowConstraints>
+                                    <children>
+                                        <Label text="Save / View Loan" underline="true" GridPane.columnSpan="2">
+                                            <font>
+                                                <Font size="16.0" />
+                                            </font>
+                                        </Label>
+                                        <Label text="Loan ID" GridPane.rowIndex="1" />
+                                        <Label text="Loan Name" GridPane.rowIndex="2" />
+                                        <Label text="Interest Method" GridPane.rowIndex="3" />
+                                        <Label text="Loan Interest %" GridPane.rowIndex="4" />
+                                        <Label text="Loan Duration" GridPane.rowIndex="5" />
+                                        <TextField fx:id="loan_id_txt" editable="false" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                                        <TextField fx:id="loan_name_txt" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                                        <ComboBox fx:id="int_method_combo" prefWidth="300.0" promptText="-- SELECT --" GridPane.columnIndex="1" GridPane.rowIndex="3">
+                                            <items>
+                                                <FXCollections fx:factory="observableArrayList">
+                                                    <String fx:value="Flat Rate" />
+                                                    <String fx:value="Reducing Balance - Equal Installments" />
+                                                    <String fx:value="Compound Interest" />
+                                                </FXCollections>
+                                            </items>
+                                        </ComboBox>
+                                        <HBox prefHeight="100.0" prefWidth="200.0" spacing="5.0" GridPane.columnIndex="1" GridPane.rowIndex="7">
+                                            <children>
+                                                <Button mnemonicParsing="false" onAction="#onNewBtnAction" style="-fx-text-fill: #ffff; -fx-font-size: 14;" text="New">
+                                                    <styleClass>
+                                                        <String fx:value="btn" />
+                                                        <String fx:value="btn-primary" />
+                                                    </styleClass>
+                                                </Button>
+                                                <Button mnemonicParsing="false" onAction="#onSaveBtnAction" style="-fx-text-fill: #ffff; -fx-font-size: 14;" text="Save">
+                                                    <styleClass>
+                                                        <String fx:value="btn" />
+                                                        <String fx:value="btn-success" />
+                                                    </styleClass>
+                                                </Button>
+                                                <Button fx:id="deactive_btn" mnemonicParsing="false" onAction="#onDeactiveBtnAction" style="-fx-text-fill: #ffff; -fx-font-size: 14;" text="Deactivate">
+                                                    <styleClass>
+                                                        <String fx:value="btn" />
+                                                        <String fx:value="btn-warning" />
+                                                    </styleClass>
+                                                </Button>
+                                                <Button layoutX="91.0" layoutY="10.0" mnemonicParsing="false" onAction="#onDeleteBtnAction" style="-fx-text-fill: #ffff; -fx-font-size: 14;" text="Delete">
+                                                    <styleClass>
+                                                        <String fx:value="btn" />
+                                                        <String fx:value="btn-danger" />
+                                                    </styleClass>
+                                                </Button>
+                                            </children>
+                                        </HBox>
+                                        <Label text="Repayments" GridPane.rowIndex="6" />
+                                        <HBox fx:id="loan_int_hbox" alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" spacing="2.0" GridPane.columnIndex="1" GridPane.rowIndex="4">
+                                            <children>
+                                                <TextField fx:id="loan_int_txt" />
+                                                <ComboBox fx:id="loan_int_combo" prefWidth="150.0" promptText="-- SELECT --">
+                                                    <items>
+                                                        <FXCollections fx:factory="observableArrayList">
+                                                            <String fx:value="Per Month" />
+                                                            <String fx:value="Per Year" />
+                                                        </FXCollections>
+                                                    </items>
+                                                </ComboBox>
+                                            </children>
+                                        </HBox>
+                                        <HBox fx:id="loan_due_hbox" alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" spacing="2.0" GridPane.columnIndex="1" GridPane.rowIndex="5">
+                                            <children>
+                                                <TextField fx:id="loan_due_txt" />
+                                                <ComboBox fx:id="loan_due_combo" prefWidth="150.0" promptText="-- SELECT --">
+                                                    <items>
+                                                        <FXCollections fx:factory="observableArrayList">
+                                                            <String fx:value="Months" />
+                                                            <String fx:value="Years" />
+                                                        </FXCollections>
+                                                    </items>
+                                                </ComboBox>
+                                            </children>
+                                        </HBox>
+                                        <HBox fx:id="loan_repay_hbox" alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" spacing="2.0" GridPane.columnIndex="1" GridPane.rowIndex="6">
+                                            <children>
+                                                <TextField fx:id="repay_txt" />
+                                                <ComboBox fx:id="repay_combo" prefWidth="150.0" promptText="Repayment Cycle">
+                                                    <items>
+                                                        <FXCollections fx:factory="observableArrayList">
+                                                            <String fx:value="Monthly" />
+                                                        </FXCollections>
+                                                    </items>
+                                                </ComboBox>
+                                            </children>
+                                        </HBox>
+                                        <Label fx:id="deactive_label" alignment="CENTER_RIGHT" prefHeight="17.0" prefWidth="290.0" GridPane.columnIndex="1" />
+                                    </children>
+                                </GridPane>
+                            </content>
+                        </TitledPane>
+                    </children>
+                </VBox>
+                <VBox HBox.hgrow="ALWAYS">
+                    <children>
+                        <TableView fx:id="loan_manage_table" prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS">
+                            <columns>
+                                <TableColumn fx:id="loan_id_col" prefWidth="75.0" text="Loan ID" />
+                                <TableColumn fx:id="loan_name_col" prefWidth="100.0" text="Loan Name" />
+                                <TableColumn fx:id="loan_inmeth_col" prefWidth="150.0" text="Interest Method" />
+                                <TableColumn fx:id="loan_in_col" prefWidth="75.0" text="Interest %" />
+                                <TableColumn fx:id="loan_due_col" prefWidth="50.0" text="Duration" />
+                                <TableColumn fx:id="status_col" prefWidth="75.0" text="Status" />
+                            </columns>
+                        </TableView>
+                    </children>
+                </VBox>
+            </children>
+        </HBox>
+      
+    </children>
+</VBox>

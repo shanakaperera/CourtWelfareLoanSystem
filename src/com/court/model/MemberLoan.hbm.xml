@@ -1,0 +1,63 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<!-- Generated Apr 18, 2017 4:12:16 PM by Hibernate Tools 4.3.1 -->
+<hibernate-mapping>
+    <class name="com.court.model.MemberLoan" table="member_loan" catalog="court_loan" optimistic-lock="version">
+        <id name="id" type="java.lang.Integer">
+            <column name="id" />
+            <generator class="identity" />
+        </id>
+        <many-to-one name="member" class="com.court.model.Member" fetch="select">
+            <column name="member_id" not-null="true" />
+        </many-to-one>
+        <property name="memberLoanCode" type="string">
+            <column name="member_loan_code" length="45" not-null="true" />
+        </property>
+        <property name="grantedDate" type="date">
+            <column name="granted_date" length="10" />
+        </property>
+        <property name="guarantors" type="string">
+            <column name="guarantors" length="65535" />
+        </property>
+        <property name="loanAmount" type="java.lang.Double">
+            <column name="loan_amount" precision="22" scale="0" />
+        </property>
+        <property name="loanInterest" type="java.lang.Double">
+            <column name="loan_interest" precision="22" scale="0" />
+        </property>
+        <property name="interestPer" type="string">
+            <column name="interest_per" length="45" />
+        </property>
+        <property name="interestMethod" type="string">
+            <column name="interest_method" length="45" />
+        </property>
+        <property name="loanDuration" type="java.lang.Integer">
+            <column name="loan_duration" />
+        </property>
+        <property name="durationPer" type="string">
+            <column name="duration_per" length="45" />
+        </property>
+        <property name="repaymentCycle" type="string">
+            <column name="repayment_cycle" length="45" />
+        </property>
+        <property name="noOfRepay" type="java.lang.Integer">
+            <column name="no_of_repay" />
+        </property>
+        <property name="loanInstallment" type="java.lang.Double">
+            <column name="loan_installment" precision="22" scale="0" />
+        </property>
+        <property name="isComplete" type="boolean">
+            <column name="is_complete" not-null="true" />
+        </property>
+        <property name="status" type="boolean">
+            <column name="status" not-null="true" />
+        </property>
+        <set name="loanPayments" table="loan_payment" inverse="true" lazy="false" fetch="join"  cascade="all">
+            <key>
+                <column name="member_loan_id" not-null="true" />
+            </key>
+            <one-to-many class="com.court.model.LoanPayment" />
+        </set>
+    </class>
+</hibernate-mapping>

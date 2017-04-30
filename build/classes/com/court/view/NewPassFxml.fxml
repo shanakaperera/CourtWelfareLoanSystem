@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.String?>
+<?import java.net.URL?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox alignment="CENTER" VBox.vgrow="ALWAYS" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.court.controller.NewPassFxmlController">
+    <stylesheets>
+        <URL value="@/com/court/asserts/style.css" />
+    </stylesheets>
+    <children>
+        <GridPane>
+            <columnConstraints>
+                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="30.0" />
+                <ColumnConstraints hgrow="ALWAYS" minWidth="10.0" percentWidth="70.0" />
+            </columnConstraints>
+            <rowConstraints>
+                <RowConstraints minHeight="10.0" prefHeight="50.0" vgrow="SOMETIMES" />
+                <RowConstraints minHeight="10.0" prefHeight="50.0" vgrow="SOMETIMES" />
+                <RowConstraints minHeight="10.0" prefHeight="20.0" vgrow="SOMETIMES" />
+            </rowConstraints>
+            <children>
+                <Label text="New Password" />
+                <Label text="Password Again" GridPane.rowIndex="1" />
+            <VBox fx:id="boxfield_2" GridPane.columnIndex="1" GridPane.rowIndex="1">
+               <children>
+                  <PasswordField fx:id="pass_again_field" />
+               </children>
+            </VBox>
+            <VBox fx:id="boxfield_1" GridPane.columnIndex="1">
+               <children>
+                  <PasswordField fx:id="pass_field" />
+               </children>
+            </VBox>
+            <Label fx:id="error_label" textFill="#cd6464" GridPane.columnSpan="2" GridPane.rowIndex="2" GridPane.vgrow="ALWAYS" />
+            </children>
+        </GridPane>
+        <HBox alignment="TOP_RIGHT" spacing="10.0">
+            <children>
+                <Button fx:id="save_btn" mnemonicParsing="false" style="-fx-text-fill: #ffff; -fx-font-size: 14;" text="Save Password">
+                    <styleClass>
+                        <String fx:value="btn" />
+                        <String fx:value="btn-success" />
+                    </styleClass>
+                </Button>
+                <Button fx:id="cancel_btn" layoutX="179.0" layoutY="10.0" mnemonicParsing="false" style="-fx-text-fill: #ffff; -fx-font-size: 14;" text="Cancel">
+                    <styleClass>
+                        <String fx:value="btn" />
+                        <String fx:value="btn-primary" />
+                    </styleClass>
+                </Button>
+            </children>
+        </HBox>
+    </children>
+</VBox>

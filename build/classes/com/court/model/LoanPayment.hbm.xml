@@ -1,0 +1,33 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<!-- Generated Apr 18, 2017 4:12:16 PM by Hibernate Tools 4.3.1 -->
+<hibernate-mapping>
+    <class name="com.court.model.LoanPayment" table="loan_payment" catalog="court_loan" optimistic-lock="version">
+        <id name="id" type="int">
+            <column name="id" />
+            <generator class="identity" />
+        </id>
+        <many-to-one name="memberLoan" class="com.court.model.MemberLoan" fetch="select">
+            <column name="member_loan_id" not-null="true" />
+        </many-to-one>
+        <property name="installmentNo" type="java.lang.Integer">
+            <column name="installment_no" />
+        </property>
+        <property name="chequeNo" type="string">
+            <column name="cheque_no" length="50" />
+        </property>
+        <property name="installmentDue" type="java.lang.Integer">
+            <column name="installment_due" />
+        </property>
+        <property name="paymentDue" type="java.lang.Double">
+            <column name="payment_due" precision="22" scale="0" />
+        </property>
+        <property name="paymentDate" type="date">
+            <column name="payment_date" length="10" />
+        </property>
+        <property name="isLast" type="boolean">
+            <column name="is_last" not-null="true" />
+        </property>
+    </class>
+</hibernate-mapping>

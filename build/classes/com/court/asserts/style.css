@@ -1,0 +1,485 @@
+/*
+ * Empty Stylesheet file.
+ */
+
+.HBox {
+    -fx-background-color: linear-gradient(#61a2b1, #2A5058);
+}
+
+.VBox {
+    -fx-background-color: cornsilk;
+}
+
+.error-field{
+    -fx-background-color: #ea8787;
+}
+
+.menu-button .label {
+    -fx-text-fill: white;
+}
+.menu-item .label {
+    -fx-text-fill: black;
+}
+.arrow-btn .arrow {
+    -fx-background-color: white;
+} 
+.form-control {
+    -fx-display: block;
+    -fx-width: 100%;
+    -fx-height: 34px;
+    -fx-padding: 6px 12px;
+    -fx-font-size: 14px;
+    -fx-line-height: 1.428571429;
+    -fx-color: #555555;
+    -fx-vertical-align: middle;
+    -fx-background-color: #ffffff;
+    -fx-background-image: none;
+    -fx-border: 1px solid #cccccc;
+    -fx-border-radius: 4px;
+
+    -fx-effect:dropshadow(three-pass-box,rgba(0, 0, 0, 0.075),0,0,1,1);
+    -fx-transition: border-color ease-in-out 0.15s, box-shadow ease-in-out 0.15s;
+
+}
+
+.form-control:focus {
+    -fx-border-color: #66afe9;
+    -fx-outline: 0;
+
+    -fx-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(102, 175, 233, 0.6);
+}
+
+.form-control:-moz-placeholder {
+    -fx-color: #999999;
+}
+
+.form-control::-moz-placeholder {
+    -fx-color: #999999;
+    -fx-opacity: 1;
+}
+
+.form-control:-ms-input-placeholder {
+    -fx-color: #999999;
+}
+
+.form-control::-webkit-input-placeholder {
+    -fx-color: #999999;
+}
+
+.form-control[disabled],
+.form-control[readonly],
+fieldset[disabled] .form-control {
+    -fx-cursor: null;
+    -fx-background-color: #eeeeee;
+}
+
+textarea.form-control {
+    -fx-height: auto;
+}
+
+.form-group {
+    -fx-margin-bottom: 15px;
+}
+
+
+.btn {
+    -fx-display: inline-block;
+    -fx-padding: 6px 12px;
+    -fx-margin-bottom: 0;
+    -fx-font-size: 14px;
+    -fx-font-weight: normal;
+    -fx-line-height: 1.428571429;
+    -fx-text-align: center;
+    -fx-white-space: nowrap;
+    -fx-vertical-align: middle;
+    -fx-cursor: default;
+    -fx-background-image:none;
+    -fx-border: 1px solid transparent;
+    -fx-border-radius: 4px;
+
+}
+
+.btn:focus {
+    -fx-outline: thin dotted;
+    -fx-outline: 5px auto -webkit-focus-ring-color;
+    -fx-outline-offset: -2px;
+}
+
+.btn:hover,
+.btn:focus {
+    -fx-color: #333333;
+    -fx-text-decoration: none;
+}
+
+.btn:active,
+.btn.active {
+    -fx-background-image: none;
+    -fx-outline: 0;
+    -webkit-box-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
+    box-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
+    -fx-effect:dropshadow(three-pass-box,rgba(0, 0, 0, 0.125),0,0,3,5);
+}
+
+.btn.disabled,
+.btn[disabled],
+fieldset[disabled] .btn {
+    -fx-cursor:null;
+    -fx-opacity: 0.65;
+    -fx-filter: alpha(opacity=65);
+    -webkit-box-shadow: none;
+
+}
+
+.btn-default {
+    -fx-color: #333333;
+    -fx-background-color: #ffffff;
+    -fx-border-color: #cccccc;
+}
+
+.btn-default:hover,
+.btn-default:focus,
+.btn-default:active,
+.btn-default.active,
+.open .dropdown-toggle.btn-default {
+    -fx-color: #333333;
+    -fx-background-color: #ebebeb;
+    -fx-border-color: #adadad;
+}
+
+.btn-default:active,
+.btn-default.active,
+.open .dropdown-toggle.btn-default {
+    -fx-background-image: none;
+}
+
+.btn-default.disabled,
+.btn-default[disabled],
+fieldset[disabled] .btn-default,
+.btn-default.disabled:hover,
+.btn-default[disabled]:hover,
+fieldset[disabled] .btn-default:hover,
+.btn-default.disabled:focus,
+.btn-default[disabled]:focus,
+fieldset[disabled] .btn-default:focus,
+.btn-default.disabled:active,
+.btn-default[disabled]:active,
+fieldset[disabled] .btn-default:active,
+.btn-default.disabled.active,
+.btn-default[disabled].active,
+fieldset[disabled] .btn-default.active {
+    -fx-background-color: #ffffff;
+    -fx-border-color: #cccccc;
+}
+
+.btn-default .badge {
+    -fx-color: #ffffff;
+    -fx-background-color: #fff;
+}
+
+.btn-primary {
+    -fx-color: #ffffff;
+    -fx-background-color: #428bca;
+    -fx-border-color: #357ebd;
+}
+
+.btn-primary:hover,
+.btn-primary:focus,
+.btn-primary:active,
+.btn-primary.active,
+.open .dropdown-toggle.btn-primary {
+    -fx-color: #ffffff;
+    -fx-background-color: #3276b1;
+    -fx-border-color: #285e8e;
+}
+
+.btn-primary:active,
+.btn-primary.active,
+.open .dropdown-toggle.btn-primary {
+    -fx-background-image: none;
+}
+
+.btn-primary.disabled,
+.btn-primary[disabled],
+fieldset[disabled] .btn-primary,
+.btn-primary.disabled:hover,
+.btn-primary[disabled]:hover,
+fieldset[disabled] .btn-primary:hover,
+.btn-primary.disabled:focus,
+.btn-primary[disabled]:focus,
+fieldset[disabled] .btn-primary:focus,
+.btn-primary.disabled:active,
+.btn-primary[disabled]:active,
+fieldset[disabled] .btn-primary:active,
+.btn-primary.disabled.active,
+.btn-primary[disabled].active,
+fieldset[disabled] .btn-primary.active {
+    -fx-background-color: #428bca;
+    -fx-border-color: #357ebd;
+}
+
+.btn-primary .badge {
+    -fx-color: #428bca;
+    -fx-background-color: #fff;
+}
+
+.btn-warning {
+    -fx-color: #ffffff;
+    -fx-background-color: #f0ad4e;
+    -fx-border-color: #eea236;
+}
+
+.btn-warning:hover,
+.btn-warning:focus,
+.btn-warning:active,
+.btn-warning.active,
+.open .dropdown-toggle.btn-warning {
+    -fx-color: #ffffff;
+    -fx-background-color: #ed9c28;
+    -fx-border-color: #d58512;
+}
+
+.btn-warning:active,
+.btn-warning.active,
+.open .dropdown-toggle.btn-warning {
+    -fx-background-image: none;
+}
+
+.btn-warning.disabled,
+.btn-warning[disabled],
+fieldset[disabled] .btn-warning,
+.btn-warning.disabled:hover,
+.btn-warning[disabled]:hover,
+fieldset[disabled] .btn-warning:hover,
+.btn-warning.disabled:focus,
+.btn-warning[disabled]:focus,
+fieldset[disabled] .btn-warning:focus,
+.btn-warning.disabled:active,
+.btn-warning[disabled]:active,
+fieldset[disabled] .btn-warning:active,
+.btn-warning.disabled.active,
+.btn-warning[disabled].active,
+fieldset[disabled] .btn-warning.active {
+    -fx-background-color: #f0ad4e;
+    -fx-border-color: #eea236;
+}
+
+.btn-warning .badge {
+    -fx-color: #f0ad4e;
+    -fx-background-color: #fff;
+}
+
+.btn-danger {
+    -fx-color: #ffffff;
+    -fx-background-color: #d9534f;
+    -fx-border-color: #d43f3a;
+}
+
+.btn-danger:hover,
+.btn-danger:focus,
+.btn-danger:active,
+.btn-danger.active,
+.open .dropdown-toggle.btn-danger {
+    -fx-color: #ffffff;
+    -fx-background-color: #d2322d;
+    -fx-border-color: #ac2925;
+}
+
+.btn-danger:active,
+.btn-danger.active,
+.open .dropdown-toggle.btn-danger {
+    -fx-background-image: none;
+}
+
+.btn-danger.disabled,
+.btn-danger[disabled],
+fieldset[disabled] .btn-danger,
+.btn-danger.disabled:hover,
+.btn-danger[disabled]:hover,
+fieldset[disabled] .btn-danger:hover,
+.btn-danger.disabled:focus,
+.btn-danger[disabled]:focus,
+fieldset[disabled] .btn-danger:focus,
+.btn-danger.disabled:active,
+.btn-danger[disabled]:active,
+fieldset[disabled] .btn-danger:active,
+.btn-danger.disabled.active,
+.btn-danger[disabled].active,
+fieldset[disabled] .btn-danger.active {
+    -fx-background-color: #d9534f;
+    -fx-border-color: #d43f3a;
+}
+
+.btn-danger .badge {
+    -fx-color: #d9534f;
+    -fx-background-color: #fff;
+}
+
+.btn-success {
+    -fx-color: #ffffff;
+    -fx-background-color: #5cb85c;
+    -fx-border-color: #4cae4c;
+}
+
+.btn-success:hover,
+.btn-success:focus,
+.btn-success:active,
+.btn-success.active,
+.open .dropdown-toggle.btn-success {
+    -fx-color: #ffffff;
+    -fx-background-color: #47a447;
+    -fx-border-color: #398439;
+}
+
+.btn-success:active,
+.btn-success.active,
+.open .dropdown-toggle.btn-success {
+    -fx-background-image: none;
+}
+
+.btn-success.disabled,
+.btn-success[disabled],
+fieldset[disabled] .btn-success,
+.btn-success.disabled:hover,
+.btn-success[disabled]:hover,
+fieldset[disabled] .btn-success:hover,
+.btn-success.disabled:focus,
+.btn-success[disabled]:focus,
+fieldset[disabled] .btn-success:focus,
+.btn-success.disabled:active,
+.btn-success[disabled]:active,
+fieldset[disabled] .btn-success:active,
+.btn-success.disabled.active,
+.btn-success[disabled].active,
+fieldset[disabled] .btn-success.active {
+    -fx-background-color: #5cb85c;
+    -fx-border-color: #4cae4c;
+}
+
+.btn-success .badge {
+    -fx-color: #5cb85c;
+    -fx-background-color: #fff;
+}
+
+.btn-info {
+    -fx-color: #ffffff;
+    -fx-background-color: #5bc0de;
+    -fx-border-color: #46b8da;
+}
+
+.btn-info:hover,
+.btn-info:focus,
+.btn-info:active,
+.btn-info.active,
+.open .dropdown-toggle.btn-info {
+    -fx-color: #ffffff;
+    -fx-background-color: #39b3d7;
+    -fx-border-color: #269abc;
+}
+
+.btn-info:active,
+.btn-info.active,
+.open .dropdown-toggle.btn-info {
+    -fx-background-image: none;
+}
+
+.btn-info.disabled,
+.btn-info[disabled],
+fieldset[disabled] .btn-info,
+.btn-info.disabled:hover,
+.btn-info[disabled]:hover,
+fieldset[disabled] .btn-info:hover,
+.btn-info.disabled:focus,
+.btn-info[disabled]:focus,
+fieldset[disabled] .btn-info:focus,
+.btn-info.disabled:active,
+.btn-info[disabled]:active,
+fieldset[disabled] .btn-info:active,
+.btn-info.disabled.active,
+.btn-info[disabled].active,
+fieldset[disabled] .btn-info.active {
+    -fx-background-color: #5bc0de;
+    -fx-border-color: #46b8da;
+}
+
+.btn-info .badge {
+    -fx-color: #5bc0de;
+    -fx-background-color: #fff;
+}
+
+.btn-link {
+    -fx-font-weight: normal;
+    -fx-color: #428bca;
+    -fx-cursor: default;
+    -fx-border-radius: 0;
+}
+
+.btn-link,
+.btn-link:active,
+.btn-link[disabled],
+fieldset[disabled] .btn-link {
+    -fx-background-color: transparent;
+
+}
+
+.btn-link,
+.btn-link:hover,
+.btn-link:focus,
+.btn-link:active {
+    -fx-border-color: transparent;
+}
+
+.btn-link:hover,
+.btn-link:focus {
+    -fx-color: #2a6496;
+    -fx-text-decoration: underline;
+    -fx-background-color: transparent;
+}
+
+.btn-link[disabled]:hover,
+fieldset[disabled] .btn-link:hover,
+.btn-link[disabled]:focus,
+fieldset[disabled] .btn-link:focus {
+    -fx-color: #999999;
+    -fx-text-decoration: none;
+}
+
+.btn-lg {
+    -fx-padding: 10px 16px;
+    -fx-font-size: 18px;
+    -fx-line-height: 1.33;
+    -fx-border-radius: 6px;
+}
+
+.btn-sm {
+    -fx-padding: 5px 10px;
+    -fx-font-size: 12px;
+    -fx-line-height: 1.5;
+    -fx-border-radius: 3px;
+}
+
+.btn-xs {
+    -fx-padding: 1px 5px;
+    -fx-font-size: 12px;
+    -fx-line-height: 1.5;
+    -fx-border-radius: 3px;
+}
+
+.btn-block {
+    -fx-display: block;
+    -fx-width: 100%;
+    -fx-padding-right: 0;
+    -fx-padding-left: 0;
+}
+
+.btn-block + .btn-block {
+    -fx-margin-top: 5px;
+}
+
+input[type="submit"].btn-block,
+input[type="reset"].btn-block,
+input[type="button"].btn-block {
+    -fx-width: 100%;
+}
+.pagination .control-box {
+    -fx-spacing: 10;
+}

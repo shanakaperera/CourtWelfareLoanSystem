@@ -1,0 +1,42 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<!-- Generated Apr 18, 2017 4:12:16 PM by Hibernate Tools 4.3.1 -->
+<hibernate-mapping>
+    <class name="com.court.model.Loan" table="loan" catalog="court_loan" optimistic-lock="version">
+        <id name="id" type="java.lang.Integer">
+            <column name="id" />
+            <generator class="identity" />
+        </id>
+        <property name="loanId" type="string">
+            <column name="loan_id" length="45" not-null="true" unique="true" />
+        </property>
+        <property name="loanName" type="string">
+            <column name="loan_name" length="45" />
+        </property>
+        <property name="interestMethod" type="string">
+            <column name="interest_method" length="37" />
+        </property>
+        <property name="loanInterest" type="java.lang.Double">
+            <column name="loan_interest" precision="22" scale="0" />
+        </property>
+        <property name="interestPer" type="string">
+            <column name="interest_per" length="10" />
+        </property>
+        <property name="loanDuration" type="java.lang.Integer">
+            <column name="loan_duration" />
+        </property>
+        <property name="durationPer" type="string">
+            <column name="duration_per" length="7" />
+        </property>
+        <property name="repaymentCycle" type="string">
+            <column name="repayment_cycle" length="8" />
+        </property>
+        <property name="noOfRepay" type="java.lang.Integer">
+            <column name="no_of_repay" />
+        </property>
+        <property name="status" type="boolean">
+            <column name="status" not-null="true" />
+        </property>
+    </class>
+</hibernate-mapping>
