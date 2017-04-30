@@ -207,6 +207,8 @@ public class MemberfxmlController implements Initializable {
     private CheckBox mbr_ln_chk;
 
     AutoCompletionBinding<String> ba1, ba2;
+    @FXML
+    private TextField doc_desc_txt;
 
     /**
      * Initializes the controller class.
@@ -846,7 +848,22 @@ public class MemberfxmlController implements Initializable {
 
     @FXML
     private void onSaveDocBtnAction(ActionEvent event) {
-
+        Session session = HibernateUtil.getSessionFactory().openSession();
+        session.beginTransaction();
+        Document doc = new Document();
+        doc.setDocName(doc_desc_txt.getText());
+        doc.setDocCode(doc_id_txt.getText());
+        doc.setDocType(doc_typ_txt.getText());
+        doc.setDocDate(Date.valueOf(doc_date_chooser.getValue()));
+        if (mbr_ln_chk.isSelected()) {
+            doc.setMemeberLoanId(mbr_ln_txt.getText());
+        }
+        session.save(doc);
+        session.getTransaction().commit();
+        session.close();
+        ///After Completing Save......
+        autoCompleteFieldData(ba2, getAllDocuments().stream()
+                .map(d -> d.getDocType()).collect(Collectors.toList()), doc_typ_txt);
     }
 
     @FXML
