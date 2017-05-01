@@ -429,13 +429,13 @@
                                         </VBox>
                                         <VBox prefHeight="200.0" HBox.hgrow="ALWAYS">
                                             <children>
-                                                <TableView prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS">
+                                                <TableView fx:id="doc_tbl_view" prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS">
                                                     <columns>
-                                                        <TableColumn prefWidth="75.0" text="Doc ID" />
-                                                        <TableColumn prefWidth="75.0" text="Doc Type" />
-                                                        <TableColumn prefWidth="75.0" text="Doc Name" />
-                                                        <TableColumn prefWidth="75.0" text="Other" />
-                                                        <TableColumn prefWidth="75.0" text="Action" />
+                                                        <TableColumn fx:id="doc_id_col" prefWidth="75.0" text="Doc ID" />
+                                                        <TableColumn fx:id="doc_typ_col" prefWidth="150.0" text="Doc Type" />
+                                                        <TableColumn fx:id="doc_des_col" prefWidth="150.0" text="Doc Desc" />
+                                                        <TableColumn fx:id="doc_date_col" prefWidth="75.0" text="Date" />
+                                                        <TableColumn fx:id="doc_act_col" prefWidth="100.0" text="Action" />
                                                     </columns>
                                                 </TableView>
                                             </children>

@@ -185,7 +185,7 @@ public class UserManageFxmlController implements Initializable {
     private void newBtnAction(ActionEvent event) {
         FxUtilsHandler.clearFields(main_grid);
         imgString = null;
-        usr_img_view.setImage(new Image(getClass().getResourceAsStream(ImageHandler.MEMBER_DEFAULT)));
+        usr_img_view.setImage(new Image(getClass().getResourceAsStream(ImageHandler.MEMBER_DEFAULT_IMG)));
         FxUtilsHandler.activeDeactiveChildrenControls(true, main_grid);
     }
 
@@ -301,7 +301,7 @@ public class UserManageFxmlController implements Initializable {
             initUserRoleTable(getAllUserRoles());
             FxUtilsHandler.clearFields(main_grid);
             imgString = null;
-            usr_img_view.setImage(new Image(getClass().getResourceAsStream(ImageHandler.MEMBER_DEFAULT)));
+            usr_img_view.setImage(new Image(getClass().getResourceAsStream(ImageHandler.MEMBER_DEFAULT_IMG)));
             FxUtilsHandler.activeDeactiveChildrenControls(true, main_grid);
         }
 
@@ -679,14 +679,6 @@ public class UserManageFxmlController implements Initializable {
 
             };
         });
-        role_tbl.setItems(roles);
-        role_tbl.getSelectionModel().selectedItemProperty().addListener((ob, ov, nv) -> {
-            if (role_tbl.getSelectionModel().getSelectedItem() != null) {
-                UserRole selectedRole = role_tbl.getSelectionModel().getSelectedItem();
-                usr_role_name_txt.setText(selectedRole.getRoleName());
-                getRoleInfoById(selectedRole.getId());
-            }
-        });
         action_col.setCellFactory((TableColumn<UserRole, Button> param) -> {
             return new TableCell<UserRole, Button>() {
                 @Override
@@ -707,6 +699,15 @@ public class UserManageFxmlController implements Initializable {
 
             };
         });
+        role_tbl.setItems(roles);
+        role_tbl.getSelectionModel().selectedItemProperty().addListener((ob, ov, nv) -> {
+            if (role_tbl.getSelectionModel().getSelectedItem() != null) {
+                UserRole selectedRole = role_tbl.getSelectionModel().getSelectedItem();
+                usr_role_name_txt.setText(selectedRole.getRoleName());
+                getRoleInfoById(selectedRole.getId());
+            }
+        });
+
         role_tbl.getSelectionModel().selectFirst();
     }
 

@@ -22,6 +22,8 @@ import com.court.model.Member;
 import com.court.model.MemberLoan;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.qoppa.pdf.dom.IPDFDocument;
+import com.qoppa.pdfViewerFX.PDFViewer;
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -205,10 +207,23 @@ public class MemberfxmlController implements Initializable {
     private CheckBox mbr_gen_chk;
     @FXML
     private CheckBox mbr_ln_chk;
-
-    AutoCompletionBinding<String> ba1, ba2;
     @FXML
     private TextField doc_desc_txt;
+
+    AutoCompletionBinding<String> ba1, ba2;
+    private File docChoosen;
+    @FXML
+    private TableView<Document> doc_tbl_view;
+    @FXML
+    private TableColumn<Document, String> doc_id_col;
+    @FXML
+    private TableColumn<Document, String> doc_typ_col;
+    @FXML
+    private TableColumn<Document, String> doc_des_col;
+    @FXML
+    private TableColumn<Document, Date> doc_date_col;
+    @FXML
+    private TableColumn<Document, Button> doc_act_col;
 
     /**
      * Initializes the controller class.
@@ -253,7 +268,7 @@ public class MemberfxmlController implements Initializable {
         FxUtilsHandler.clearFields(main_grid_pane, date_hbox, tel_hbox);
         fillMemberCodeTxt(member_code_txt);
         imgString = null;
-        member_img.setImage(new Image(getClass().getResourceAsStream(ImageHandler.MEMBER_DEFAULT)));
+        member_img.setImage(new Image(getClass().getResourceAsStream(ImageHandler.MEMBER_DEFAULT_IMG)));
         FxUtilsHandler.activeDeactiveChildrenControls(true,
                 main_grid_pane, date_hbox, tel_hbox);
         FxUtilsHandler.activeBtnAppearanceChange(member_deactive_btn, true, true);
@@ -305,7 +320,7 @@ public class MemberfxmlController implements Initializable {
                 FxUtilsHandler.clearFields(main_grid_pane, date_hbox, tel_hbox);
                 fillMemberCodeTxt(member_code_txt);
                 imgString = null;
-                member_img.setImage(new Image(getClass().getResourceAsStream(ImageHandler.MEMBER_DEFAULT)));
+                member_img.setImage(new Image(getClass().getResourceAsStream(ImageHandler.MEMBER_DEFAULT_IMG)));
 
                 ObservableList<Member> allMembers = getAllMembers();
                 List<String> memberCodes = allMembers.stream()
@@ -361,7 +376,7 @@ public class MemberfxmlController implements Initializable {
         FxUtilsHandler.clearFields(search_grid_pane, main_grid_pane, date_hbox, tel_hbox);
         fillMemberCodeTxt(member_code_txt);
         imgString = null;
-        member_img.setImage(new Image(getClass().getResourceAsStream(ImageHandler.MEMBER_DEFAULT)));
+        member_img.setImage(new Image(getClass().getResourceAsStream(ImageHandler.MEMBER_DEFAULT_IMG)));
         FxUtilsHandler.activeDeactiveChildrenControls(true,
                 main_grid_pane, date_hbox, tel_hbox);
         FxUtilsHandler.activeBtnAppearanceChange(member_deactive_btn, true, true);
@@ -378,7 +393,7 @@ public class MemberfxmlController implements Initializable {
         File file = chooser.showOpenDialog(new Stage());
         if (file != null) {
             imgString = ImageHandler.
-                    getImageBy(file, member_code_txt.getText().trim(), ImageHandler.MEMBER_PATH);
+                    getImageBy(file, member_code_txt.getText().trim(), ImageHandler.MEMBER_IMG_PATH);
             member_img.setImage(imgString.getImg());
 
         }
@@ -396,6 +411,7 @@ public class MemberfxmlController implements Initializable {
                         .distinctByKey(p -> p.getId()))
                 .collect(Collectors.toList());
         initMemberLoanTable(FXCollections.observableArrayList(filteredCollection));
+        initDocTable(FXCollections.observableArrayList(getAllDocumentsOf(member_code_txt.getText())));
     }
 
     private void getMemberByCodeOrName(String mCode, String mName) throws MalformedURLException {
@@ -847,23 +863,38 @@ public class MemberfxmlController implements Initializable {
     }
 
     @FXML
-    private void onSaveDocBtnAction(ActionEvent event) {
-        Session session = HibernateUtil.getSessionFactory().openSession();
-        session.beginTransaction();
+    private void onSaveDocBtnAction(ActionEvent event) throws IOException {
+
+        String pdf_path = ImageHandler.copyPdfToLocation(docChoosen,
+                ImageHandler.DOC_PDF_PATH, doc_id_txt.getText());
+
         Document doc = new Document();
         doc.setDocName(doc_desc_txt.getText());
         doc.setDocCode(doc_id_txt.getText());
         doc.setDocType(doc_typ_txt.getText());
         doc.setDocDate(Date.valueOf(doc_date_chooser.getValue()));
+        doc.setAttachPath(pdf_path);
+        doc.setMember(getMemberByCode(member_code_txt.getText()));
         if (mbr_ln_chk.isSelected()) {
             doc.setMemeberLoanId(mbr_ln_txt.getText());
         }
+        Session session = HibernateUtil.getSessionFactory().openSession();
+        session.beginTransaction();
         session.save(doc);
         session.getTransaction().commit();
         session.close();
-        ///After Completing Save......
-        autoCompleteFieldData(ba2, getAllDocuments().stream()
-                .map(d -> d.getDocType()).collect(Collectors.toList()), doc_typ_txt);
+
+        Alert alert_success = new Alert(Alert.AlertType.INFORMATION);
+        alert_success.setTitle("Success");
+        alert_success.setHeaderText("Successfully Saved !");
+        alert_success.setContentText("You have successfully saved the selected document.");
+        Optional<ButtonType> result = alert_success.showAndWait();
+
+        if (result.get() == ButtonType.OK) {
+            autoCompleteFieldData(ba2, getAllDocuments().stream()
+                    .map(d -> d.getDocType()).collect(Collectors.toList()), doc_typ_txt);
+        }
+
     }
 
     @FXML
@@ -873,9 +904,11 @@ public class MemberfxmlController implements Initializable {
         chooser.getExtensionFilters().addAll(
                 new FileChooser.ExtensionFilter("Pdf Files", "*.pdf"));
         File file = chooser.showOpenDialog(new Stage());
+        docChoosen = file;
         String filename = file.getAbsolutePath();
         PdfDecoder pdf = new PdfDecoder();
         pdf.openPdfFile(filename);
+
         ImageHandler.setGivenPdfPageAsImage(1, pdf, doc_imgview);
     }
 
@@ -918,6 +951,71 @@ public class MemberfxmlController implements Initializable {
         Session session = HibernateUtil.getSessionFactory().openSession();
         List<Document> docList = session.createCriteria(Document.class).list();
         return docList;
+    }
+
+    private List<Document> getAllDocumentsOf(String mCode) {
+        Session session = HibernateUtil.getSessionFactory().openSession();
+        List<Document> docList = session.createCriteria(Document.class)
+                .createAlias("member", "m")
+                .add(Restrictions.eq("m.memberId", mCode))
+                .list();
+        return docList;
+
+    }
+
+    private void initDocTable(ObservableList<Document> docs) {
+        doc_id_col.setCellValueFactory(new PropertyValueFactory<>("docCode"));
+        doc_typ_col.setCellValueFactory(new PropertyValueFactory<>("docType"));
+        doc_des_col.setCellValueFactory(new PropertyValueFactory<>("docName"));
+        doc_date_col.setCellValueFactory(new PropertyValueFactory<>("docDate"));
+
+        doc_date_col.setCellFactory(column -> {
+            return new TableCell<Document, Date>() {
+                @Override
+                protected void updateItem(Date item, boolean empty) {
+                    super.updateItem(item, empty);
+                    if (!isEmpty()) {
+                        setText(new SimpleDateFormat("yyyy-MM-dd").format(item));
+                    }
+                }
+
+            };
+        });
+        doc_act_col.setCellFactory((TableColumn<Document, Button> param) -> {
+            return new TableCell<Document, Button>() {
+                @Override
+                protected void updateItem(Button item, boolean empty) {
+                    super.updateItem(item, empty);
+                    TableRow<Document> tableRow = getTableRow();
+                    if (!empty) {
+                        item = new Button("View Document");
+                        item.getStyleClass().add("btn");
+                        item.getStyleClass().add("btn-primary");
+                        item.setStyle("-fx-text-fill:#ffffff;");
+                        item.setOnAction((event) -> {
+                            //view pdf doc future improvement
+                            try {
+                                PDFViewer viewer = new PDFViewer();
+                                viewer.loadPDF(tableRow.getItem().getAttachPath());
+                                Alert pdf_viewer = new Alert(Alert.AlertType.NONE);
+                                pdf_viewer.setTitle("PDF Viewer");
+                                pdf_viewer.getDialogPane().setContent(new VBox(viewer));
+                                ButtonType buttonTypeCancel = new ButtonType("", ButtonData.CANCEL_CLOSE);
+                                pdf_viewer.getButtonTypes().add(buttonTypeCancel);
+                                pdf_viewer.getDialogPane().lookupButton(buttonTypeCancel).setVisible(false);
+                                pdf_viewer.show();
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                        });
+                        setGraphic(item);
+                    }
+                }
+
+            };
+        });
+
+        doc_tbl_view.setItems(docs);
 
     }
 

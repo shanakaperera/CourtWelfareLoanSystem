@@ -24,9 +24,10 @@ import org.jpedal.exception.PdfException;
  */
 public class ImageHandler {
 
-    public static final String MEMBER_PATH = "\\court_system\\img\\member_img\\";
-    public static final String MEMBER_DEFAULT = "/com/court/asserts/default.jpg";
-    public static final String LOADING_DEFAULT = "/com/court/asserts/loading.gif";
+    public static final String MEMBER_IMG_PATH = "\\court_system\\img\\member_img\\";
+    public static final String DOC_PDF_PATH = "\\court_system\\docs_pdf\\";
+    public static final String MEMBER_DEFAULT_IMG = "/com/court/asserts/default.jpg";
+    public static final String LOADING_DEFAULT_GIF = "/com/court/asserts/loading.gif";
 
     public static final String USER_PATH = "\\court_system\\img\\user_img\\";
 
@@ -50,6 +51,22 @@ public class ImageHandler {
     }
 
     /**
+     * This method use to copy chosen pdf file to given path*
+     * @param docChoosen
+     * @param DOC_PDF_PATH
+     * @param pdf_name
+     * @return string value of copying path
+     * @throws java.io.IOException
+     */
+    public static String copyPdfToLocation(File docChoosen, String DOC_PDF_PATH, String pdf_name) throws IOException {
+        String copyPath = FileSystemView.getFileSystemView().
+                getDefaultDirectory().getPath() + DOC_PDF_PATH + pdf_name + ".pdf";
+        File copyingFile = new File(copyPath);
+        Files.copy(docChoosen.toPath(), copyingFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+        return copyPath;
+    }
+
+    /**
      * This method use to convert selected pdf file required page to FXImage
      *
      * @param page int page number
@@ -64,7 +81,7 @@ public class ImageHandler {
         if (page < 1) {
             return;
         }
-        imgV.setImage(new Image(LOADING_DEFAULT));
+        imgV.setImage(new Image(LOADING_DEFAULT_GIF));
         Task<Image> imageDisplay = new Task<Image>() {
 
             {
