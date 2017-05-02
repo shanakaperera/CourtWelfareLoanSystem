@@ -22,11 +22,10 @@ import com.court.model.Member;
 import com.court.model.MemberLoan;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import com.qoppa.pdf.dom.IPDFDocument;
-import com.qoppa.pdfViewerFX.PDFViewer;
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.sql.Date;
 import java.text.SimpleDateFormat;
@@ -34,6 +33,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.ResourceBundle;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import javafx.beans.property.ReadOnlyDoubleWrapper;
 import javafx.collections.FXCollections;
@@ -76,6 +77,7 @@ import org.hibernate.Session;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import org.jpedal.PdfDecoder;
+import org.jpedal.examples.viewer.OpenViewerFX;
 import org.jpedal.exception.PdfException;
 
 /**
@@ -988,25 +990,25 @@ public class MemberfxmlController implements Initializable {
                     super.updateItem(item, empty);
                     TableRow<Document> tableRow = getTableRow();
                     if (!empty) {
-                        item = new Button("View Document");
+                        item = new Button("View");
                         item.getStyleClass().add("btn");
                         item.getStyleClass().add("btn-primary");
                         item.setStyle("-fx-text-fill:#ffffff;");
                         item.setOnAction((event) -> {
-                            //view pdf doc future improvement
-                            try {
-                                PDFViewer viewer = new PDFViewer();
-                                viewer.loadPDF(tableRow.getItem().getAttachPath());
-                                Alert pdf_viewer = new Alert(Alert.AlertType.NONE);
-                                pdf_viewer.setTitle("PDF Viewer");
-                                pdf_viewer.getDialogPane().setContent(new VBox(viewer));
-                                ButtonType buttonTypeCancel = new ButtonType("", ButtonData.CANCEL_CLOSE);
-                                pdf_viewer.getButtonTypes().add(buttonTypeCancel);
-                                pdf_viewer.getDialogPane().lookupButton(buttonTypeCancel).setVisible(false);
-                                pdf_viewer.show();
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                            }
+
+                            VBox bx = new VBox();
+                            String prf_path = new File("").getAbsolutePath() + "/src/pdf-settings.xml";
+                            OpenViewerFX viewer = new OpenViewerFX(bx, prf_path);
+                            viewer.getRoot().setPrefSize(800, 600);
+                            viewer.setupViewer();
+                            viewer.openDefaultFile(tableRow.getItem().getAttachPath());
+                            Alert pdf_viewer = new Alert(Alert.AlertType.NONE);
+                            pdf_viewer.setTitle("PDF Viewer");
+                            pdf_viewer.getDialogPane().setContent(bx);
+                            ButtonType buttonTypeCancel = new ButtonType("", ButtonData.CANCEL_CLOSE);
+                            pdf_viewer.getButtonTypes().add(buttonTypeCancel);
+                            pdf_viewer.getDialogPane().lookupButton(buttonTypeCancel).setVisible(false);
+                            pdf_viewer.show();
                         });
                         setGraphic(item);
                     }
