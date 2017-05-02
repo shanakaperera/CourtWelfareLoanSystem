@@ -11,11 +11,13 @@ import com.court.handler.TextFormatHandler;
 import java.net.URL;
 import java.text.ParseException;
 import java.util.ResourceBundle;
+import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
@@ -26,6 +28,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
 import org.controlsfx.validation.ValidationSupport;
 import org.controlsfx.validation.Validator;
 
@@ -87,11 +90,12 @@ public class LoanCalculatorFxmlController implements Initializable {
         principal_amount_txt.setTextFormatter(TextFormatHandler.currencyFormatter());
         loan_int_txt.setTextFormatter(TextFormatHandler.percentageFormatter());
         loan_du_txt.setTextFormatter(TextFormatHandler.numbersOnlyFieldFormatter());
-        registerInputValidation();
+        bindValidationOnPaneControlFocus(grid_pane);
     }
 
     @FXML
     private void onCalculateBtnAction(ActionEvent event) throws ParseException {
+        registerInputValidation();
         if (validationSupport.validationResultProperty().get().getErrors().isEmpty()) {
             int loan_int_com = loan_int_combo.getSelectionModel().getSelectedIndex();
             int loan_du_com = loan_du_combo.getSelectionModel().getSelectedIndex();
@@ -167,6 +171,9 @@ public class LoanCalculatorFxmlController implements Initializable {
     }
 
     private void registerInputValidation() {
+        if (!validationSupport.getRegisteredControls().isEmpty()) {
+            return;
+        }
         validationSupport.registerValidator(interest_method_combo,
                 Validator.createEmptyValidator("Interest method Selection required !"));
         validationSupport.registerValidator(loan_int_combo,
@@ -200,6 +207,19 @@ public class LoanCalculatorFxmlController implements Initializable {
                     }
                 };
             });
+        }
+    }
+
+    private void bindValidationOnPaneControlFocus(Pane... parent_panes) {
+        ObservableList<Node> children = FXCollections.observableArrayList();
+        for (Pane parent_pane : parent_panes) {
+            children.addAll(parent_pane.getChildren());
+        }
+        for (Node c : children) {
+            c.focusedProperty().addListener(e -> {
+                registerInputValidation();
+            });
+
         }
     }
 }

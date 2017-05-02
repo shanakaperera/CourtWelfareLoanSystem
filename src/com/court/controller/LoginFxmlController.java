@@ -13,6 +13,9 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.Optional;
 import java.util.ResourceBundle;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -22,6 +25,7 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
+import javafx.scene.image.ImageView;
 import javafx.scene.paint.Color;
 import org.hibernate.Criteria;
 import org.hibernate.Session;
@@ -46,6 +50,8 @@ public class LoginFxmlController implements Initializable {
     @FXML
     private Button closeBtn;
     private BasicPasswordEncryptor encryptor;
+    @FXML
+    private ImageView loading_imgV;
 
     /**
      * Initializes the controller class.
@@ -64,25 +70,7 @@ public class LoginFxmlController implements Initializable {
 
     @FXML
     private void loginBtnAction(ActionEvent event) throws IOException {
-
-        Session session = HibernateUtil.getSessionFactory().openSession();
-        Criteria c = session.createCriteria(User.class);
-        User loggedU = (User) c.add(Restrictions.eq("userName", unameField.getText().trim()))
-                .uniqueResult();
-
-        if (loggedU != null) {
-            if (encryptor.checkPassword(passField.getText().trim(), loggedU.getPassword())) {
-                DashBoardFxmlController.controller.
-                        setLoggedSession(getUserHasUsrRoleFromUser(session, loggedU));
-                DashBoardFxmlController.controller.loginSuccess();
-                DashBoardFxmlController.login.close();
-            } else {
-                errorLabel.setText("Incorrect password!. Please try again !");
-            }
-        } else {
-            errorLabel.setText("Invalid username!. Please try again !");
-        }
-        session.close();
+        performUserLogin();
     }
 
     @FXML
@@ -104,6 +92,51 @@ public class LoginFxmlController implements Initializable {
                 add(Restrictions.eq("u.id", loggedU.getId()))
                 .uniqueResult();
         return uniqueResult;
+    }
+
+    private void performUserLogin() throws IOException {
+        errorLabel.setText("Loading ......!");
+        Task<UserSession> userTask = new Task<UserSession>() {
+
+            {
+                setOnSucceeded(e -> {
+                    UserSession us = getValue();
+                    if (us.getUser() != null) {
+                        if (encryptor.checkPassword(passField.getText().trim(), us.getUser().getPassword())) {
+                            DashBoardFxmlController.controller.
+                                    setLoggedSession(getUserHasUsrRoleFromUser(us.getSession(), us.getUser()));
+                            try {
+                                DashBoardFxmlController.controller.loginSuccess();
+                            } catch (IOException ex) {
+                                Logger.getLogger(LoginFxmlController.class.getName()).log(Level.SEVERE, null, ex);
+                            }
+                            DashBoardFxmlController.login.close();
+                        } else {
+                            errorLabel.setText("Incorrect password!. Please try again !");
+                        }
+                    } else {
+                        errorLabel.setText("Invalid username!. Please try again !");
+                    }
+                    us.getSession().close();
+
+                });
+                setOnFailed(f -> getException().printStackTrace());
+            }
+
+            @Override
+            protected UserSession call() throws Exception {
+                Session session = HibernateUtil.getSessionFactory().openSession();
+                Criteria c = session.createCriteria(User.class);
+                User loggedU = (User) c.add(Restrictions.eq("userName", unameField.getText().trim()))
+                        .uniqueResult();
+                return new UserSession(loggedU, session);
+            }
+        };
+
+        Thread usrfigThread = new Thread(userTask, "user-task");
+        usrfigThread.setDaemon(true);
+        usrfigThread.start();
+
     }
 
 }

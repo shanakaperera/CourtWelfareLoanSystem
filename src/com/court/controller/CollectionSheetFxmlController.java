@@ -25,6 +25,7 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.Node;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.CheckBox;
@@ -37,6 +38,7 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.Pane;
 import org.controlsfx.control.textfield.AutoCompletionBinding;
 import org.controlsfx.control.textfield.TextFields;
 import org.controlsfx.validation.Severity;
@@ -94,7 +96,6 @@ public class CollectionSheetFxmlController implements Initializable {
     public void initialize(URL url, ResourceBundle rb) {
         validationSupport = new ValidationSupport();
         FxUtilsHandler.setDatePickerTimeFormat(chk_date_chooser);
-        registerInputValidation();
         chk_amt_txt.setTextFormatter(TextFormatHandler.currencyFormatter());
     }
 
@@ -106,6 +107,7 @@ public class CollectionSheetFxmlController implements Initializable {
                 .mapToDouble(MemberLoan::getLoanInstallment).sum();
 
         chk_amt_txt.setText(TextFormatHandler.CURRENCY_DECIMAL_FORMAT.format(tot_pay));
+        bindValidationOnPaneControlFocus(collection_grid);
     }
 
     @FXML
@@ -123,7 +125,7 @@ public class CollectionSheetFxmlController implements Initializable {
 
     @FXML
     private void onProceedBtnAction(ActionEvent event) {
-
+        registerInputValidation();
         if (validationSupport.validationResultProperty().get().getErrors().isEmpty()) {
 
             if (collection_tbl.getItems().isEmpty()) {
@@ -383,6 +385,9 @@ public class CollectionSheetFxmlController implements Initializable {
     }
 
     private void registerInputValidation() {
+        if (!validationSupport.getRegisteredControls().isEmpty()) {
+            return;
+        }
         validationSupport.registerValidator(chk_amt_txt,
                 Validator.createEmptyValidator("This field is not optional !"));
         validationSupport.registerValidator(chk_no_txt,
@@ -390,6 +395,19 @@ public class CollectionSheetFxmlController implements Initializable {
                         Validator.createRegexValidator("Only alphanumeric and hyphen(-) allowed !", "^[a-zA-Z0-9\\-]*$", Severity.ERROR)));
         validationSupport.registerValidator(chk_date_chooser,
                 Validator.createEmptyValidator("Check date is required !"));
+    }
+
+    private void bindValidationOnPaneControlFocus(Pane... parent_panes) {
+        ObservableList<Node> children = FXCollections.observableArrayList();
+        for (Pane parent_pane : parent_panes) {
+            children.addAll(parent_pane.getChildren());
+        }
+        for (Node c : children) {
+            c.focusedProperty().addListener(e -> {
+                registerInputValidation();
+            });
+
+        }
     }
 
 }

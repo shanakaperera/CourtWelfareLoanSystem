@@ -25,7 +25,6 @@ import com.google.gson.reflect.TypeToken;
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.sql.Date;
 import java.text.SimpleDateFormat;
@@ -33,8 +32,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.ResourceBundle;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import javafx.beans.property.ReadOnlyDoubleWrapper;
 import javafx.collections.FXCollections;
@@ -43,6 +40,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Node;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonBar.ButtonData;
@@ -64,6 +62,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
@@ -79,7 +78,6 @@ import org.hibernate.criterion.Restrictions;
 import org.jpedal.PdfDecoder;
 import org.jpedal.examples.viewer.OpenViewerFX;
 import org.jpedal.exception.PdfException;
-import org.jpedal.objects.raw.FormObject;
 
 /**
  * FXML Controller class
@@ -235,7 +233,7 @@ public class MemberfxmlController implements Initializable {
     public void initialize(URL url, ResourceBundle rb) {
         validationSupport = new ValidationSupport();
         va = new ValidationSupport();
-        registerInputValidation();
+        // registerInputValidation();
         fillMemberCodeTxt(member_code_txt);
         fillMemberDocCodeTxt(doc_id_txt);
 
@@ -264,6 +262,7 @@ public class MemberfxmlController implements Initializable {
         disableTabs(true);
         mbr_gen_chk.setSelected(true);
         disableButtonWithLoggingPrv(DashBoardFxmlController.controller.loggedSession());
+        bindValidationOnPaneControlFocus(main_grid_pane, date_hbox, tel_hbox);
     }
 
     @FXML
@@ -281,6 +280,7 @@ public class MemberfxmlController implements Initializable {
 
     @FXML
     private void onMemberSaveBtnAction(ActionEvent event) throws IOException {
+        registerInputValidation();
         if (validationSupport.validationResultProperty().get().getErrors().isEmpty()) {
             Session session = HibernateUtil.getSessionFactory().openSession();
             session.beginTransaction();
@@ -347,6 +347,7 @@ public class MemberfxmlController implements Initializable {
 
     @FXML
     private void onMemberDeactiveBtnAction(ActionEvent event) {
+        registerInputValidation();
         if (validationSupport.validationResultProperty().get().getErrors().isEmpty()) {
             Session session = HibernateUtil.getSessionFactory().openSession();
             session.beginTransaction();
@@ -578,6 +579,9 @@ public class MemberfxmlController implements Initializable {
     }
 
     private void registerInputValidation() {
+        if (!validationSupport.getRegisteredControls().isEmpty()) {
+            return;
+        }
         validationSupport.registerValidator(member_full_name_txt,
                 Validator.createEmptyValidator("This field is not optional."));
         validationSupport.registerValidator(member_namins_txt,
@@ -1022,4 +1026,16 @@ public class MemberfxmlController implements Initializable {
 
     }
 
+    private void bindValidationOnPaneControlFocus(Pane... parent_panes) {
+        ObservableList<Node> children = FXCollections.observableArrayList();
+        for (Pane parent_pane : parent_panes) {
+            children.addAll(parent_pane.getChildren());
+        }
+        for (Node c : children) {
+            c.focusedProperty().addListener(e -> {
+                registerInputValidation();
+            });
+
+        }
+    }
 }

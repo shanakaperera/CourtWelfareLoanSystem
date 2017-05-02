@@ -38,6 +38,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Node;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonBar;
@@ -55,6 +56,7 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
@@ -155,7 +157,6 @@ public class UserManageFxmlController implements Initializable {
         validationSupport = new ValidationSupport();
         va1 = new ValidationSupport();
         va2 = new ValidationSupport();
-        registerInputValidation();
 
         usr_role_combo.getItems().addAll(getAvailableUserRoles());
         searchUser("", "");
@@ -164,6 +165,7 @@ public class UserManageFxmlController implements Initializable {
 
         initUserRoleTable(getAllUserRoles());
         disableButtonWithLoggingPrv(DashBoardFxmlController.controller.loggedSession());
+        bindValidationOnPaneControlFocus(main_grid);
     }
 
     @FXML
@@ -200,6 +202,7 @@ public class UserManageFxmlController implements Initializable {
             uhur = (UserHasUserRole) session.load(UserHasUserRole.class, id);
         } else {
             uhur = new UserHasUserRole();
+            registerInputValidation();
             if (!validationSupport.validationResultProperty().get().getErrors().isEmpty()) {
                 validationSupport.validationResultProperty().get().getErrors()
                         .forEach(e -> {
@@ -246,7 +249,7 @@ public class UserManageFxmlController implements Initializable {
 
     @FXML
     private void deactiveBtnAction(ActionEvent event) {
-
+        registerInputValidation();
     }
 
     @FXML
@@ -434,7 +437,9 @@ public class UserManageFxmlController implements Initializable {
     }
 
     private void registerInputValidation() {
-
+        if (!validationSupport.getRegisteredControls().isEmpty()) {
+            return;
+        }
         validationSupport.registerValidator(full_name_txt,
                 Validator.createEmptyValidator("This field is not optional !"));
         validationSupport.registerValidator(email_txt,
@@ -756,4 +761,16 @@ public class UserManageFxmlController implements Initializable {
         ur_deact_btn.setDisable(!ls.checkPrivilegeExist(10108));
     }
 
+    private void bindValidationOnPaneControlFocus(Pane... parent_panes) {
+        ObservableList<Node> children = FXCollections.observableArrayList();
+        for (Pane parent_pane : parent_panes) {
+            children.addAll(parent_pane.getChildren());
+        }
+        for (Node c : children) {
+            c.focusedProperty().addListener(e -> {
+                registerInputValidation();
+            });
+
+        }
+    }
 }

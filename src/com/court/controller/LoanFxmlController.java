@@ -21,6 +21,7 @@ import javafx.collections.transformation.FilteredList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.Node;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
@@ -34,6 +35,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
 import org.controlsfx.control.textfield.TextFields;
 import org.controlsfx.validation.ValidationSupport;
 import org.controlsfx.validation.Validator;
@@ -109,7 +111,6 @@ public class LoanFxmlController implements Initializable {
     public void initialize(URL url, ResourceBundle rb) {
         validationSupport = new ValidationSupport();
         fillLoanCodeTxt(loan_id_txt);
-        registerInputValidation();
         loan_int_txt.setTextFormatter(TextFormatHandler.percentageFormatter());
         loan_due_txt.setTextFormatter(TextFormatHandler.numbersOnlyFieldFormatter());
 
@@ -121,6 +122,7 @@ public class LoanFxmlController implements Initializable {
                 .map(Loan::getLoanName).collect(Collectors.toList());
         TextFields.bindAutoCompletion(loan_search_id_txt, loanCodes);
         TextFields.bindAutoCompletion(loan_search_name_txt, loanNames);
+        bindValidationOnPaneControlFocus(save_grid, loan_int_hbox, search_grid, loan_due_hbox, loan_repay_hbox);
     }
 
     @FXML
@@ -154,6 +156,7 @@ public class LoanFxmlController implements Initializable {
 
     @FXML
     private void onSaveBtnAction(ActionEvent event) {
+        registerInputValidation();
         if (validationSupport.validationResultProperty().get().getErrors().isEmpty()) {
             Session session = HibernateUtil.getSessionFactory().openSession();
             session.beginTransaction();
@@ -211,6 +214,7 @@ public class LoanFxmlController implements Initializable {
 
     @FXML
     private void onDeactiveBtnAction(ActionEvent event) {
+        registerInputValidation();
         if (validationSupport.validationResultProperty().get().getErrors().isEmpty()) {
             Session session = HibernateUtil.getSessionFactory().openSession();
             session.beginTransaction();
@@ -252,6 +256,9 @@ public class LoanFxmlController implements Initializable {
     }
 
     private void registerInputValidation() {
+        if (!validationSupport.getRegisteredControls().isEmpty()) {
+            return;
+        }
         validationSupport.registerValidator(int_method_combo,
                 Validator.createEmptyValidator("Interest method Selection required !"));
         validationSupport.registerValidator(loan_name_txt,
@@ -420,6 +427,19 @@ public class LoanFxmlController implements Initializable {
         });
         if (!filtered.isEmpty()) {
             initLoanTable(filtered);
+        }
+    }
+
+    private void bindValidationOnPaneControlFocus(Pane... parent_panes) {
+        ObservableList<Node> children = FXCollections.observableArrayList();
+        for (Pane parent_pane : parent_panes) {
+            children.addAll(parent_pane.getChildren());
+        }
+        for (Node c : children) {
+            c.focusedProperty().addListener(e -> {
+                registerInputValidation();
+            });
+
         }
     }
 }

@@ -6,6 +6,7 @@
 package com.court.controller;
 
 import com.court.handler.GlyphIcons;
+import com.court.handler.ImageHandler;
 import com.court.handler.LoggedSessionHandler;
 import com.court.main.MainClass;
 import com.court.model.UserHasUserRole;
@@ -15,18 +16,20 @@ import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.animation.FadeTransition;
+import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.scene.Node;
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.MenuItem;
-import javafx.scene.control.ProgressIndicator;
 import javafx.scene.control.SplitPane;
 import javafx.scene.effect.Effect;
 import javafx.scene.effect.GaussianBlur;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
@@ -75,7 +78,7 @@ public class DashBoardFxmlController implements Initializable {
     @FXML
     private MenuItem loancal_menu_item;
 
-    private ProgressIndicator loadingIndicator;
+    private ImageView progressIndicator;
 
     public LoggedSessionHandler loggedSession() {
         return sHandler;
@@ -86,10 +89,11 @@ public class DashBoardFxmlController implements Initializable {
      */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        loadingIndicator = new ProgressIndicator();
+        progressIndicator = new ImageView();
+        progressIndicator.setImage(new Image(ImageHandler.LOADING_DEFAULT_GIF));
         btnMenuBar.setGraphic(new GlyphIcons().setFontAwesomeIconGlyph('\uf023', Color.WHITESMOKE, 20.0));
         try {
-            setDataPane(nonFadeAnimate("/com/court/view/HomeFXML.fxml"));
+            loadDataPane("/com/court/view/HomeFXML.fxml");
             controller = this;
 
         } catch (IOException ex) {
@@ -97,11 +101,11 @@ public class DashBoardFxmlController implements Initializable {
         }
 
     }
-
-    public void setDataPane(Node node) {
-        // update VBox with new form(FXML) depends on which button is clicked
-        dataPane.getChildren().setAll(node);
-    }
+//
+//    public void setDataPane(Node node) {
+//        // update VBox with new form(FXML) depends on which button is clicked
+//        dataPane.getChildren().setAll(node);
+//    }
 
     public void loginSuccess() throws IOException {
         base_split_pane.setEffect(null);
@@ -115,7 +119,7 @@ public class DashBoardFxmlController implements Initializable {
 
     public void performLoginAction(Stage stage) throws IOException {
         //navigate to dashboard 
-        setDataPane(nonFadeAnimate("/com/court/view/HomeFXML.fxml"));
+        loadDataPane("/com/court/view/HomeFXML.fxml");
 
         login = new Stage();
         login.initStyle(StageStyle.TRANSPARENT);
@@ -145,34 +149,51 @@ public class DashBoardFxmlController implements Initializable {
         return v;
     }
 
-    public VBox nonFadeAnimate(String url) throws IOException {
-        VBox v = (VBox) FXMLLoader.load(getClass().getResource(url));
-        return v;
+    public void loadDataPane(String url) throws IOException {
+        VBox v = new VBox(progressIndicator);
+        v.setAlignment(Pos.CENTER);
+        dataPane.getChildren().setAll(v);
+        Task<VBox> vboxTask = new Task<VBox>() {
+            {
+                setOnSucceeded(e -> {
+                    dataPane.getChildren().setAll(getValue());
+                });
+                setOnFailed(workerStateEvent -> getException().printStackTrace());
+            }
+
+            @Override
+            protected VBox call() throws Exception {
+                return  FXMLLoader.load(getClass().getResource(url));
+            }
+        };
+        Thread fillpaneThread = new Thread(vboxTask, "vbox-task");
+        fillpaneThread.setDaemon(true);
+        fillpaneThread.start();
     }
 
     @FXML
     private void dashboardBtnAction(ActionEvent event) throws IOException {
-        setDataPane(nonFadeAnimate("/com/court/view/HomeFXML.fxml"));
+        loadDataPane("/com/court/view/HomeFXML.fxml");
     }
 
     @FXML
     private void collectSheetBtnAction(ActionEvent event) throws IOException {
-        setDataPane(nonFadeAnimate("/com/court/view/CollectionSheetFxml.fxml"));
+        loadDataPane("/com/court/view/CollectionSheetFxml.fxml");
     }
 
     @FXML
     private void memberBtnAction(ActionEvent event) throws IOException {
-        setDataPane(nonFadeAnimate("/com/court/view/Memberfxml.fxml"));
+        loadDataPane("/com/court/view/Memberfxml.fxml");
     }
 
     @FXML
     private void branchBtnAction(ActionEvent event) throws IOException {
-        setDataPane(nonFadeAnimate("/com/court/view/BranchFxml.fxml"));
+        loadDataPane("/com/court/view/BranchFxml.fxml");
     }
 
     @FXML
     private void paymentBtnAction(ActionEvent event) throws IOException {
-        setDataPane(nonFadeAnimate("/com/court/view/PaymentsFxml.fxml"));
+        loadDataPane("/com/court/view/PaymentsFxml.fxml");
     }
 
     @FXML
@@ -181,7 +202,7 @@ public class DashBoardFxmlController implements Initializable {
 
     @FXML
     private void usrmngBtnAction(ActionEvent event) throws IOException {
-        setDataPane(nonFadeAnimate("/com/court/view/UserManageFxml.fxml"));
+        loadDataPane("/com/court/view/UserManageFxml.fxml");
     }
 
     @FXML
@@ -192,16 +213,16 @@ public class DashBoardFxmlController implements Initializable {
 
     @FXML
     private void loanmngBtnAction(ActionEvent event) throws IOException {
-        setDataPane(nonFadeAnimate("/com/court/view/LoanFxml.fxml"));
+        loadDataPane("/com/court/view/LoanFxml.fxml");
     }
 
     @FXML
     private void loancalBtnAction(ActionEvent event) throws IOException {
-        setDataPane(nonFadeAnimate("/com/court/view/LoanCalculatorFxml.fxml"));
+        loadDataPane("/com/court/view/LoanCalculatorFxml.fxml");
     }
 
     private void disableButtonWithLoggingPrv(LoggedSessionHandler ls) {
-        
+
         collect_sheet_btn.setDisable(!anyChildPrivExist("105", 2, ls));
         member_btn.setDisable(!anyChildPrivExist("102", 2, ls));
         loanmng_menu_item.setDisable(!anyChildPrivExist("103", 4, ls));

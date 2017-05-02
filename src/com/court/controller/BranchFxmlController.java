@@ -21,6 +21,7 @@ import javafx.collections.transformation.FilteredList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.Node;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
@@ -33,6 +34,7 @@ import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.Pane;
 import org.controlsfx.control.textfield.TextFields;
 import org.controlsfx.validation.Severity;
 import org.controlsfx.validation.ValidationSupport;
@@ -94,7 +96,6 @@ public class BranchFxmlController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         validationSupport = new ValidationSupport();
-        registerInputValidation();
         fillBranchCodeTxt(br_id_txt);
 
         ObservableList<Branch> allBranches = getAllBranches();
@@ -107,10 +108,12 @@ public class BranchFxmlController implements Initializable {
         TextFields.bindAutoCompletion(branch_search_name, branchNames);
 
         disableButtonWithLoggingPrv(DashBoardFxmlController.controller.loggedSession());
+        bindValidationOnPaneControlFocus(branch_grid_pane);
     }
 
     @FXML
     private void onBranchSaveBtnAction(ActionEvent event) {
+        registerInputValidation();
         if (validationSupport.validationResultProperty().get().getErrors().isEmpty()) {
             Session session = HibernateUtil.getSessionFactory().openSession();
             session.beginTransaction();
@@ -306,6 +309,9 @@ public class BranchFxmlController implements Initializable {
     }
 
     private void registerInputValidation() {
+        if (!validationSupport.getRegisteredControls().isEmpty()) {
+            return;
+        }
         validationSupport.registerValidator(branch_name_txt,
                 Validator.createEmptyValidator("This field is not optional."));
         validationSupport.registerValidator(branch_adrs_txt,
@@ -362,6 +368,19 @@ public class BranchFxmlController implements Initializable {
     private void disableButtonWithLoggingPrv(LoggedSessionHandler ls) {
         sav_brnch_btn.setDisable(!ls.checkPrivilegeExist(10402));
         branch_actv_deactv_btn.setDisable(!ls.checkPrivilegeExist(10403));
+    }
+
+    private void bindValidationOnPaneControlFocus(Pane... parent_panes) {
+        ObservableList<Node> children = FXCollections.observableArrayList();
+        for (Pane parent_pane : parent_panes) {
+            children.addAll(parent_pane.getChildren());
+        }
+        for (Node c : children) {
+            c.focusedProperty().addListener(e -> {
+                registerInputValidation();
+            });
+
+        }
     }
 
 }
