@@ -5,6 +5,7 @@
  */
 package com.court.controller;
 
+import com.court.handler.GlyphIcons;
 import com.court.handler.LoggedSessionHandler;
 import com.court.main.MainClass;
 import com.court.model.UserHasUserRole;
@@ -28,6 +29,7 @@ import javafx.scene.effect.Effect;
 import javafx.scene.effect.GaussianBlur;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
@@ -85,6 +87,7 @@ public class DashBoardFxmlController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         loadingIndicator = new ProgressIndicator();
+        btnMenuBar.setGraphic(new GlyphIcons().setFontAwesomeIconGlyph('\uf023', Color.WHITESMOKE, 20.0));
         try {
             setDataPane(nonFadeAnimate("/com/court/view/HomeFXML.fxml"));
             controller = this;
@@ -112,8 +115,8 @@ public class DashBoardFxmlController implements Initializable {
 
     public void performLoginAction(Stage stage) throws IOException {
         //navigate to dashboard 
-         setDataPane(nonFadeAnimate("/com/court/view/HomeFXML.fxml"));
-         
+        setDataPane(nonFadeAnimate("/com/court/view/HomeFXML.fxml"));
+
         login = new Stage();
         login.initStyle(StageStyle.TRANSPARENT);
         setFadeEffect(new GaussianBlur(10));
@@ -183,6 +186,7 @@ public class DashBoardFxmlController implements Initializable {
 
     @FXML
     private void logoutBtnAction(ActionEvent event) throws IOException {
+        btnMenuBar.setText("Logged User");
         performLoginAction(MainClass.primaryStage);
     }
 
@@ -197,6 +201,7 @@ public class DashBoardFxmlController implements Initializable {
     }
 
     private void disableButtonWithLoggingPrv(LoggedSessionHandler ls) {
+        
         collect_sheet_btn.setDisable(!anyChildPrivExist("105", 2, ls));
         member_btn.setDisable(!anyChildPrivExist("102", 2, ls));
         loanmng_menu_item.setDisable(!anyChildPrivExist("103", 4, ls));

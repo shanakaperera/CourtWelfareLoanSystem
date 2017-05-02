@@ -79,6 +79,7 @@ import org.hibernate.criterion.Restrictions;
 import org.jpedal.PdfDecoder;
 import org.jpedal.examples.viewer.OpenViewerFX;
 import org.jpedal.exception.PdfException;
+import org.jpedal.objects.raw.FormObject;
 
 /**
  * FXML Controller class
@@ -995,7 +996,7 @@ public class MemberfxmlController implements Initializable {
                         item.getStyleClass().add("btn-primary");
                         item.setStyle("-fx-text-fill:#ffffff;");
                         item.setOnAction((event) -> {
-
+// ===========================Something there to consider again with pdf viewer print btn and left sidebar
                             VBox bx = new VBox();
                             String prf_path = new File("").getAbsolutePath() + "/src/pdf-settings.xml";
                             OpenViewerFX viewer = new OpenViewerFX(bx, prf_path);
