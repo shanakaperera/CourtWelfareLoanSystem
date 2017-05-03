@@ -76,6 +76,7 @@ import org.hibernate.Session;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import org.jpedal.PdfDecoder;
+import org.jpedal.examples.baseviewer.BaseViewerFX;
 import org.jpedal.examples.viewer.OpenViewerFX;
 import org.jpedal.exception.PdfException;
 
@@ -280,7 +281,14 @@ public class MemberfxmlController implements Initializable {
 
     @FXML
     private void onMemberSaveBtnAction(ActionEvent event) throws IOException {
-        registerInputValidation();
+        if (isValidationEmpty()) {
+            Alert alert_error = new Alert(Alert.AlertType.ERROR);
+            alert_error.setTitle("Error");
+            alert_error.setHeaderText("Empty Fields !");
+            alert_error.setContentText(PropHandler.getStringProperty("empty_fields"));
+            alert_error.show();
+            return;
+        }
         if (validationSupport.validationResultProperty().get().getErrors().isEmpty()) {
             Session session = HibernateUtil.getSessionFactory().openSession();
             session.beginTransaction();
@@ -346,8 +354,15 @@ public class MemberfxmlController implements Initializable {
     }
 
     @FXML
-    private void onMemberDeactiveBtnAction(ActionEvent event) {
-        registerInputValidation();
+    private void onMemberDeactiveBtnAction(ActionEvent event) throws IOException {
+        if (isValidationEmpty()) {
+            Alert alert_error = new Alert(Alert.AlertType.ERROR);
+            alert_error.setTitle("Error");
+            alert_error.setHeaderText("Empty Fields !");
+            alert_error.setContentText(PropHandler.getStringProperty("empty_fields"));
+            alert_error.show();
+            return;
+        }
         if (validationSupport.validationResultProperty().get().getErrors().isEmpty()) {
             Session session = HibernateUtil.getSessionFactory().openSession();
             session.beginTransaction();
@@ -1000,6 +1015,12 @@ public class MemberfxmlController implements Initializable {
                         item.getStyleClass().add("btn-primary");
                         item.setStyle("-fx-text-fill:#ffffff;");
                         item.setOnAction((event) -> {
+//                            Stage stg = new Stage();
+//                            BaseViewerFX fx = new BaseViewerFX();
+//                            stg.setScene(fx.setupViewer(800, 600));
+//                            stg.show();
+//                            fx.loadPDF(new File(tableRow.getItem().getAttachPath()));
+
 // ===========================Something there to consider again with pdf viewer print btn and left sidebar
                             VBox bx = new VBox();
                             String prf_path = new File("").getAbsolutePath() + "/src/pdf-settings.xml";
@@ -1037,5 +1058,9 @@ public class MemberfxmlController implements Initializable {
             });
 
         }
+    }
+
+    private boolean isValidationEmpty() {
+        return validationSupport.validationResultProperty().get() == null;
     }
 }

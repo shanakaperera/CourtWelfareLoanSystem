@@ -192,7 +192,7 @@ public class UserManageFxmlController implements Initializable {
     }
 
     @FXML
-    private void saveBtnAction(ActionEvent event) {
+    private void saveBtnAction(ActionEvent event) throws IOException {
 
         Session session = HibernateUtil.getSessionFactory().openSession();
         session.beginTransaction();
@@ -202,7 +202,14 @@ public class UserManageFxmlController implements Initializable {
             uhur = (UserHasUserRole) session.load(UserHasUserRole.class, id);
         } else {
             uhur = new UserHasUserRole();
-            registerInputValidation();
+            if (isValidationEmpty()) {
+                Alert alert_error = new Alert(Alert.AlertType.ERROR);
+                alert_error.setTitle("Error");
+                alert_error.setHeaderText("Empty Fields !");
+                alert_error.setContentText(PropHandler.getStringProperty("empty_fields"));
+                alert_error.show();
+                return;
+            }
             if (!validationSupport.validationResultProperty().get().getErrors().isEmpty()) {
                 validationSupport.validationResultProperty().get().getErrors()
                         .forEach(e -> {
@@ -248,8 +255,16 @@ public class UserManageFxmlController implements Initializable {
     }
 
     @FXML
-    private void deactiveBtnAction(ActionEvent event) {
-        registerInputValidation();
+    private void deactiveBtnAction(ActionEvent event) throws IOException {
+        if (isValidationEmpty()) {
+            Alert alert_error = new Alert(Alert.AlertType.ERROR);
+            alert_error.setTitle("Error");
+            alert_error.setHeaderText("Empty Fields !");
+            alert_error.setContentText(PropHandler.getStringProperty("empty_fields"));
+            alert_error.show();
+            return;
+        }
+        System.out.println("");
     }
 
     @FXML
@@ -772,5 +787,9 @@ public class UserManageFxmlController implements Initializable {
             });
 
         }
+    }
+
+    private boolean isValidationEmpty() {
+        return validationSupport.validationResultProperty().get() == null;
     }
 }

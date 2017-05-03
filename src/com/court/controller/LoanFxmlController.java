@@ -8,8 +8,10 @@ package com.court.controller;
 import com.court.db.HibernateUtil;
 import com.court.handler.DocSeqHandler;
 import com.court.handler.FxUtilsHandler;
+import com.court.handler.PropHandler;
 import com.court.handler.TextFormatHandler;
 import com.court.model.Loan;
+import java.io.IOException;
 import java.net.URL;
 import java.util.List;
 import java.util.Optional;
@@ -155,8 +157,15 @@ public class LoanFxmlController implements Initializable {
     }
 
     @FXML
-    private void onSaveBtnAction(ActionEvent event) {
-        registerInputValidation();
+    private void onSaveBtnAction(ActionEvent event) throws IOException {
+        if (isValidationEmpty()) {
+            Alert alert_error = new Alert(Alert.AlertType.ERROR);
+            alert_error.setTitle("Error");
+            alert_error.setHeaderText("Empty Fields !");
+            alert_error.setContentText(PropHandler.getStringProperty("empty_fields"));
+            alert_error.show();
+            return;
+        }
         if (validationSupport.validationResultProperty().get().getErrors().isEmpty()) {
             Session session = HibernateUtil.getSessionFactory().openSession();
             session.beginTransaction();
@@ -213,8 +222,15 @@ public class LoanFxmlController implements Initializable {
     }
 
     @FXML
-    private void onDeactiveBtnAction(ActionEvent event) {
-        registerInputValidation();
+    private void onDeactiveBtnAction(ActionEvent event) throws IOException {
+        if (isValidationEmpty()) {
+            Alert alert_error = new Alert(Alert.AlertType.ERROR);
+            alert_error.setTitle("Error");
+            alert_error.setHeaderText("Empty Fields !");
+            alert_error.setContentText(PropHandler.getStringProperty("empty_fields"));
+            alert_error.show();
+            return;
+        }
         if (validationSupport.validationResultProperty().get().getErrors().isEmpty()) {
             Session session = HibernateUtil.getSessionFactory().openSession();
             session.beginTransaction();
@@ -441,5 +457,9 @@ public class LoanFxmlController implements Initializable {
             });
 
         }
+    }
+
+    private boolean isValidationEmpty() {
+        return validationSupport.validationResultProperty().get() == null;
     }
 }

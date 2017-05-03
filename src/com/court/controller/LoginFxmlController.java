@@ -7,6 +7,7 @@ package com.court.controller;
 
 import com.court.db.HibernateUtil;
 import com.court.handler.GlyphIcons;
+import com.court.handler.ImageHandler;
 import com.court.model.User;
 import com.court.model.UserHasUserRole;
 import java.io.IOException;
@@ -25,6 +26,7 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.paint.Color;
 import org.hibernate.Criteria;
@@ -95,7 +97,7 @@ public class LoginFxmlController implements Initializable {
     }
 
     private void performUserLogin() throws IOException {
-        errorLabel.setText("Loading ......!");
+        loading_imgV.setImage(new Image(ImageHandler.LOADING_LOGIN_GIF));
         Task<UserSession> userTask = new Task<UserSession>() {
 
             {

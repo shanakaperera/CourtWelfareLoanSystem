@@ -27,6 +27,7 @@ public class ImageHandler {
     public static final String DOC_PDF_PATH = "\\court_system\\docs_pdf\\";
     public static final String MEMBER_DEFAULT_IMG = "/com/court/asserts/default.jpg";
     public static final String LOADING_DEFAULT_GIF = "/com/court/asserts/loading.gif";
+    public static final String LOADING_LOGIN_GIF = "/com/court/asserts/ellipsis.gif";
 
     public static final String USER_PATH = "\\court_system\\img\\user_img\\";
 

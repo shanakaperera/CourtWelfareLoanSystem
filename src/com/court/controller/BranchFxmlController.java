@@ -9,7 +9,9 @@ import com.court.db.HibernateUtil;
 import com.court.handler.DocSeqHandler;
 import com.court.handler.FxUtilsHandler;
 import com.court.handler.LoggedSessionHandler;
+import com.court.handler.PropHandler;
 import com.court.model.Branch;
+import java.io.IOException;
 import java.net.URL;
 import java.util.List;
 import java.util.Optional;
@@ -112,8 +114,15 @@ public class BranchFxmlController implements Initializable {
     }
 
     @FXML
-    private void onBranchSaveBtnAction(ActionEvent event) {
-        registerInputValidation();
+    private void onBranchSaveBtnAction(ActionEvent event) throws IOException {
+        if (isValidationEmpty()) {
+            Alert alert_error = new Alert(Alert.AlertType.ERROR);
+            alert_error.setTitle("Error");
+            alert_error.setHeaderText("Empty Fields !");
+            alert_error.setContentText(PropHandler.getStringProperty("empty_fields"));
+            alert_error.show();
+            return;
+        }
         if (validationSupport.validationResultProperty().get().getErrors().isEmpty()) {
             Session session = HibernateUtil.getSessionFactory().openSession();
             session.beginTransaction();
@@ -176,7 +185,15 @@ public class BranchFxmlController implements Initializable {
     }
 
     @FXML
-    private void onBranchDeactiveBtnAction(ActionEvent event) {
+    private void onBranchDeactiveBtnAction(ActionEvent event) throws IOException {
+        if (isValidationEmpty()) {
+            Alert alert_error = new Alert(Alert.AlertType.ERROR);
+            alert_error.setTitle("Error");
+            alert_error.setHeaderText("Empty Fields !");
+            alert_error.setContentText(PropHandler.getStringProperty("empty_fields"));
+            alert_error.show();
+            return;
+        }
         if (validationSupport.validationResultProperty().get().getErrors().isEmpty()) {
             Session session = HibernateUtil.getSessionFactory().openSession();
             session.beginTransaction();
@@ -381,6 +398,10 @@ public class BranchFxmlController implements Initializable {
             });
 
         }
+    }
+
+    private boolean isValidationEmpty() {
+        return validationSupport.validationResultProperty().get() == null;
     }
 
 }

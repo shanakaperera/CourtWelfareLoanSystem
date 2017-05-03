@@ -7,7 +7,9 @@ package com.court.controller;
 
 import com.court.handler.FxUtilsHandler;
 import com.court.handler.LoanCalculationHandler;
+import com.court.handler.PropHandler;
 import com.court.handler.TextFormatHandler;
+import java.io.IOException;
 import java.net.URL;
 import java.text.ParseException;
 import java.util.ResourceBundle;
@@ -94,8 +96,15 @@ public class LoanCalculatorFxmlController implements Initializable {
     }
 
     @FXML
-    private void onCalculateBtnAction(ActionEvent event) throws ParseException {
-        registerInputValidation();
+    private void onCalculateBtnAction(ActionEvent event) throws ParseException, IOException {
+        if (isValidationEmpty()) {
+            Alert alert_error = new Alert(Alert.AlertType.ERROR);
+            alert_error.setTitle("Error");
+            alert_error.setHeaderText("Empty Fields !");
+            alert_error.setContentText(PropHandler.getStringProperty("empty_fields"));
+            alert_error.show();
+            return;
+        }
         if (validationSupport.validationResultProperty().get().getErrors().isEmpty()) {
             int loan_int_com = loan_int_combo.getSelectionModel().getSelectedIndex();
             int loan_du_com = loan_du_combo.getSelectionModel().getSelectedIndex();
@@ -221,5 +230,9 @@ public class LoanCalculatorFxmlController implements Initializable {
             });
 
         }
+    }
+
+    private boolean isValidationEmpty() {
+        return validationSupport.validationResultProperty().get() == null;
     }
 }

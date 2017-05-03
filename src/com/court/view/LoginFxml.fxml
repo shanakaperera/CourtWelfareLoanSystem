@@ -38,9 +38,9 @@
                 <Font name="Courier New" size="22.0" />
             </font>
         </PasswordField>
-        <VBox layoutX="45.0" layoutY="345.0">
+        <VBox alignment="TOP_CENTER" layoutX="45.0" layoutY="339.0">
             <children>
-            <ImageView fx:id="loading_imgV" fitHeight="20.0" fitWidth="258.0" pickOnBounds="true" preserveRatio="true" />
+            <ImageView fx:id="loading_imgV" fitHeight="30.0" fitWidth="100.0" pickOnBounds="true" preserveRatio="true" />
                 <Label fx:id="errorLabel" prefHeight="21.0" prefWidth="258.0" textFill="#bc3636" />
             </children>
         </VBox>

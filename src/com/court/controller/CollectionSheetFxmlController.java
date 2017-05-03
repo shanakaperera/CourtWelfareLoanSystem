@@ -8,11 +8,13 @@ package com.court.controller;
 import com.court.db.HibernateUtil;
 import com.court.handler.CheckBoxCellValueFactory;
 import com.court.handler.FxUtilsHandler;
+import com.court.handler.PropHandler;
 import com.court.handler.TextFormatHandler;
 import com.court.model.LoanPayCheque;
 import com.court.model.LoanPayment;
 import com.court.model.Member;
 import com.court.model.MemberLoan;
+import java.io.IOException;
 import java.net.URL;
 import java.sql.Date;
 import java.util.LinkedHashSet;
@@ -124,8 +126,15 @@ public class CollectionSheetFxmlController implements Initializable {
     }
 
     @FXML
-    private void onProceedBtnAction(ActionEvent event) {
-        registerInputValidation();
+    private void onProceedBtnAction(ActionEvent event) throws IOException {
+        if (isValidationEmpty()) {
+            Alert alert_error = new Alert(Alert.AlertType.ERROR);
+            alert_error.setTitle("Error");
+            alert_error.setHeaderText("Empty Fields !");
+            alert_error.setContentText(PropHandler.getStringProperty("empty_fields"));
+            alert_error.show();
+            return;
+        }
         if (validationSupport.validationResultProperty().get().getErrors().isEmpty()) {
 
             if (collection_tbl.getItems().isEmpty()) {
@@ -408,6 +417,10 @@ public class CollectionSheetFxmlController implements Initializable {
             });
 
         }
+    }
+
+    private boolean isValidationEmpty() {
+        return validationSupport.validationResultProperty().get() == null;
     }
 
 }

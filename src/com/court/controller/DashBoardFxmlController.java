@@ -91,7 +91,7 @@ public class DashBoardFxmlController implements Initializable {
     public void initialize(URL url, ResourceBundle rb) {
         progressIndicator = new ImageView();
         progressIndicator.setImage(new Image(ImageHandler.LOADING_DEFAULT_GIF));
-        btnMenuBar.setGraphic(new GlyphIcons().setFontAwesomeIconGlyph('\uf023', Color.WHITESMOKE, 20.0));
+        btnMenuBar.setGraphic(new GlyphIcons().setFontAwesomeIconGlyph('\uf007', Color.WHITESMOKE, 20.0));
         try {
             loadDataPane("/com/court/view/HomeFXML.fxml");
             controller = this;
