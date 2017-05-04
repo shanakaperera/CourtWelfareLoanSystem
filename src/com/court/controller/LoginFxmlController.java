@@ -114,9 +114,11 @@ public class LoginFxmlController implements Initializable {
                             }
                             DashBoardFxmlController.login.close();
                         } else {
+                            loading_imgV.setImage(null);
                             errorLabel.setText("Incorrect password!. Please try again !");
                         }
                     } else {
+                        loading_imgV.setImage(null);
                         errorLabel.setText("Invalid username!. Please try again !");
                     }
                     us.getSession().close();

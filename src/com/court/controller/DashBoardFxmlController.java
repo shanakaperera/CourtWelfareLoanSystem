@@ -163,7 +163,7 @@ public class DashBoardFxmlController implements Initializable {
 
             @Override
             protected VBox call() throws Exception {
-                return  FXMLLoader.load(getClass().getResource(url));
+                return FXMLLoader.load(getClass().getResource(url));
             }
         };
         Thread fillpaneThread = new Thread(vboxTask, "vbox-task");
@@ -245,6 +245,13 @@ public class DashBoardFxmlController implements Initializable {
             }
         }
         return flag;
+    }
+
+    @FXML
+    private void onLoggedUsrBtnAction(ActionEvent event) throws IOException {
+        if (loggedSession() != null) {
+            loadDataPane("/com/court/view/ProfileFxml.fxml");
+        }
     }
 
 }

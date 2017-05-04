@@ -76,7 +76,6 @@ import org.hibernate.Session;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import org.jpedal.PdfDecoder;
-import org.jpedal.examples.baseviewer.BaseViewerFX;
 import org.jpedal.examples.viewer.OpenViewerFX;
 import org.jpedal.exception.PdfException;
 

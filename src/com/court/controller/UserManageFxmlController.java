@@ -147,6 +147,7 @@ public class UserManageFxmlController implements Initializable {
     private Button ur_save_btn;
     @FXML
     private Button ur_deact_btn;
+    private LoggedSessionHandler loggedSession;
 
     /**
      * Initializes the controller class.
@@ -164,7 +165,8 @@ public class UserManageFxmlController implements Initializable {
         autoCompleteFieldData(ba2, getAvailableUserFullNames(), full_name_src_txt);
 
         initUserRoleTable(getAllUserRoles());
-        disableButtonWithLoggingPrv(DashBoardFxmlController.controller.loggedSession());
+        loggedSession = DashBoardFxmlController.controller.loggedSession();
+        disableButtonWithLoggingPrv(loggedSession);
         bindValidationOnPaneControlFocus(main_grid);
     }
 
@@ -333,7 +335,8 @@ public class UserManageFxmlController implements Initializable {
     private void resetPassAction(ActionEvent event) throws IOException {
         boolean flag = isPassAlreadyExist(user_name_txt.getText());
         if (flag) {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/court/view/NewPassFxml.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass()
+                    .getResource("/com/court/view/NewPassFxml.fxml"));
             VBox node = (VBox) loader.load();
             NewPassFxmlController controller = (NewPassFxmlController) loader.getController();
             Alert alert_custom = new Alert(Alert.AlertType.NONE);
@@ -472,7 +475,7 @@ public class UserManageFxmlController implements Initializable {
         Validator<String> checkUserNames = ((control, value) -> {
             boolean condition = value != null ? getAlreadyTakenUserNames()
                     .contains(value) : value == null;
-            reset_btn.setDisable(!condition);
+            reset_btn.setDisable(!(condition && loggedSession.checkPrivilegeExist(10105)));
             return ValidationResult.fromMessageIf(control,
                     "Username is already taken .", Severity.ERROR, condition);
         });
@@ -771,7 +774,7 @@ public class UserManageFxmlController implements Initializable {
         ud_save_btn.setDisable(!ls.checkPrivilegeExist(10102));
         ud_deact_btn.setDisable(!ls.checkPrivilegeExist(10103));
         ud_delete_btn.setDisable(!ls.checkPrivilegeExist(10104));
-        reset_btn.setDisable(!ls.checkPrivilegeExist(10105));
+        // reset_btn.setDisable(!ls.checkPrivilegeExist(10105));
         ur_save_btn.setDisable(!ls.checkPrivilegeExist(10107));
         ur_deact_btn.setDisable(!ls.checkPrivilegeExist(10108));
     }
