@@ -14,7 +14,7 @@ import com.court.model.UserHasUserRole;
  */
 public class LoggedSessionHandler {
 
-    private final UserHasUserRole urole;
+    private UserHasUserRole urole;
 
     public LoggedSessionHandler(UserHasUserRole urole) {
         this.urole = urole;
@@ -24,9 +24,20 @@ public class LoggedSessionHandler {
         return this.urole.getUser();
     }
 
+    public void updateLoggedUser(User u) {
+        this.urole.setUser(u);
+    }
+
     public boolean checkPrivilegeExist(int privId) {
         return this.urole.getUserRole().getPrivCats().stream()
                 .anyMatch(p -> p.getUsrRolePrivilage().getPrivId() == privId);
     }
 
+    public UserHasUserRole getUrole() {
+        return urole;
+    }
+
+    public void setUrole(UserHasUserRole urole) {
+        this.urole = urole;
+    }
 }

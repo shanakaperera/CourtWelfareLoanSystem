@@ -109,12 +109,12 @@ public class DashBoardFxmlController implements Initializable {
 
     public void loginSuccess() throws IOException {
         base_split_pane.setEffect(null);
-        btnMenuBar.setText(loggedSession().loggedUser().getFullName());
         disableButtonWithLoggingPrv(loggedSession());
     }
 
     public void setLoggedSession(UserHasUserRole uhur) {
         sHandler = new LoggedSessionHandler(uhur);
+        btnMenuBar.setText(loggedSession().loggedUser().getFullName());
     }
 
     public void performLoginAction(Stage stage) throws IOException {

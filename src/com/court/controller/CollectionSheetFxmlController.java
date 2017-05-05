@@ -176,6 +176,7 @@ public class CollectionSheetFxmlController implements Initializable {
                     lp.setPaymentDue(FxUtilsHandler.roundNumber(ml.getLoanInstallment() * (ml.getNoOfRepay() - (getLastPay.getInstallmentNo() + 1)), 2));
                     lp.setInstallmentNo(getLastPay.getInstallmentNo() + 1);
                     session.save(lp);
+                    //end loan if the final inatallment......
                     if (ml.getNoOfRepay() == (getLastPay.getInstallmentNo() + 1)) {
                         endLoan(session, ml);
                     }
@@ -390,6 +391,7 @@ public class CollectionSheetFxmlController implements Initializable {
     private void endLoan(Session session, MemberLoan ml) {
         int getEndingLoan = ml.getId();
         MemberLoan mml = (MemberLoan) session.load(MemberLoan.class, getEndingLoan);
+        mml.setIsComplete(true);
         session.update(mml);
     }
 

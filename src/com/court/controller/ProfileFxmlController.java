@@ -18,6 +18,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -88,6 +89,10 @@ public class ProfileFxmlController implements Initializable {
         validationSupport = new ValidationSupport();
         loggedSession = DashBoardFxmlController.controller.loggedSession();
         loadLoggedUserToForm(loggedSession.loggedUser());
+        usr_name_txt.textProperty().addListener(e -> {
+            boolean b = getAlreadyTakenUserNames().contains(usr_name_txt.getText());
+            rest_btn.setDisable(!b);
+        });
         bindValidationOnPaneControlFocus(main_grid);
     }
 
@@ -116,8 +121,33 @@ public class ProfileFxmlController implements Initializable {
             alert_error.show();
             return;
         }
-        
-        System.out.println("");
+        if (validationSupport.validationResultProperty().get().getErrors().isEmpty()) {
+            Session session = HibernateUtil.getSessionFactory().openSession();
+            session.beginTransaction();
+
+            User user = (User) session.load(User.class, loggedSession.loggedUser().getId());
+            user.setUserName(usr_name_txt.getText());
+            user.setFullName(fullname_txt.getText());
+            user.setTel(tel_text.getText());
+            user.setAddress(adrs_txt.getText());
+            user.setEmail(email_txt.getText());
+            user.setImgPath(imgString == null ? "" : imgString.getImg_path().toString());
+            session.save(user);
+
+            session.getTransaction().commit();
+            session.close();
+
+            Alert success = new Alert(Alert.AlertType.INFORMATION);
+            success.setTitle("Success");
+            success.setHeaderText("Successfully Updated !");
+            success.setContentText("You have successfully updated your information !");
+            Optional<ButtonType> result = success.showAndWait();
+            if (result.get() == ButtonType.OK) {
+                loadLoggedUserToForm(user);
+                loggedSession.updateLoggedUser(user);
+                DashBoardFxmlController.controller.setLoggedSession(loggedSession.getUrole());
+            }
+        }
     }
 
     @FXML
@@ -259,16 +289,9 @@ public class ProfileFxmlController implements Initializable {
                 Validator.combine(Validator.createEmptyValidator("This field is not optional."),
                         Validator.createRegexValidator("Should be a telephone number with 10 digits.",
                                 "\\d{10}", Severity.ERROR)));
-        Validator<String> checkUserNames = ((control, value) -> {
-            boolean condition = value != null ? getAlreadyTakenUserNames()
-                    .contains(value) : value == null;
-            rest_btn.setDisable(!condition);
-            return ValidationResult.fromMessageIf(control,
-                    "Username is already taken .", Severity.ERROR, condition);
-        });
 
-        validationSupport.registerValidator(usr_name_txt, Validator.combine(
-                Validator.createEmptyValidator("This field is not optional."), checkUserNames));
+        validationSupport.registerValidator(usr_name_txt,
+                Validator.createEmptyValidator("This field is not optional."));
     }
 
     private List<String> getAlreadyTakenUserNames() {

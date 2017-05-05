@@ -195,64 +195,58 @@ public class UserManageFxmlController implements Initializable {
 
     @FXML
     private void saveBtnAction(ActionEvent event) throws IOException {
-
+//user save validation problem :(---------
         Session session = HibernateUtil.getSessionFactory().openSession();
         session.beginTransaction();
         UserHasUserRole uhur;
         int id = getUHasRoleIdByUserName(session, user_name_txt.getText());
         if (id != 0) {
             uhur = (UserHasUserRole) session.load(UserHasUserRole.class, id);
+            //  ValidationSupport.setRequired(user_name_txt, true);
         } else {
             uhur = new UserHasUserRole();
-            if (isValidationEmpty()) {
-                Alert alert_error = new Alert(Alert.AlertType.ERROR);
-                alert_error.setTitle("Error");
-                alert_error.setHeaderText("Empty Fields !");
-                alert_error.setContentText(PropHandler.getStringProperty("empty_fields"));
-                alert_error.show();
-                return;
-            }
-            if (!validationSupport.validationResultProperty().get().getErrors().isEmpty()) {
-                validationSupport.validationResultProperty().get().getErrors()
-                        .forEach(e -> {
-//                            System.out.println(e.getTarget().getId());
-//                            System.out.println(e.getText());
-//                            System.out.println("==============================");
-                        });
-                Alert alert_error = new Alert(Alert.AlertType.ERROR);
-                alert_error.setTitle("Error");
-                alert_error.setHeaderText("Missing Fields !");
-                alert_error.setContentText("You have some error fields left."
-                        + " Move the cursor to the red \"X\""
-                        + " sign and find the error.");
-                alert_error.show();
-                return;
-            }
         }
-        User u = new User();
-        u.setFullName(full_name_txt.getText());
-        u.setUserName(user_name_txt.getText());
-        u.setEmail(email_txt.getText());
-        u.setAddress(address_txt.getText());
-        u.setTel(tele_txt.getText());
-        u.setImgPath(imgString == null ? "" : imgString.getImg_path().toString());
-        u.setStatus(true);
 
-        uhur.setUser(u);
-        uhur.setUserRole(getUserRoleFrom(usr_role_combo.getSelectionModel()
-                .getSelectedItem(), session));
-        session.saveOrUpdate(uhur);
-        session.getTransaction().commit();
-        session.close();
+        if (isValidationEmpty()) {
+            Alert alert_error = new Alert(Alert.AlertType.ERROR);
+            alert_error.setTitle("Error");
+            alert_error.setHeaderText("Empty Fields !");
+            alert_error.setContentText(PropHandler.getStringProperty("empty_fields"));
+            alert_error.show();
+            return;
+        }
+        if (validationSupport.validationResultProperty().get().getErrors().isEmpty()) {
 
-        Alert alert_success = new Alert(Alert.AlertType.INFORMATION);
-        alert_success.setTitle("Success");
-        alert_success.setHeaderText("Successfully Saved !");
-        alert_success.setContentText("You have successfully saved"
-                + " \"" + full_name_txt.getText() + "\".");
-        Optional<ButtonType> result = alert_success.showAndWait();
-        if (result.get() == ButtonType.OK) {
-            initUserRoleTable(getAllUserRoles());
+            User u = new User();
+            u.setFullName(full_name_txt.getText());
+            u.setUserName(user_name_txt.getText());
+            u.setEmail(email_txt.getText());
+            u.setAddress(address_txt.getText());
+            u.setTel(tele_txt.getText());
+            u.setImgPath(imgString == null ? "" : imgString.getImg_path().toString());
+            u.setStatus(true);
+
+            uhur.setUser(u);
+            uhur.setUserRole(getUserRoleFrom(usr_role_combo.getSelectionModel()
+                    .getSelectedItem(), session));
+            session.saveOrUpdate(uhur);
+            session.getTransaction().commit();
+            session.close();
+
+            Alert alert_success = new Alert(Alert.AlertType.INFORMATION);
+            alert_success.setTitle("Success");
+            alert_success.setHeaderText("Successfully Saved !");
+            alert_success.setContentText("You have successfully saved"
+                    + " \"" + full_name_txt.getText() + "\".");
+            Optional<ButtonType> result = alert_success.showAndWait();
+            if (result.get() == ButtonType.OK) {
+                initUserRoleTable(getAllUserRoles());
+                //if logged user changes his own details......
+                if (loggedSession.getUrole().getId() == id) {
+                    loggedSession.setUrole(uhur);
+                    DashBoardFxmlController.controller.setLoggedSession(loggedSession.getUrole());
+                }
+            }
         }
     }
 

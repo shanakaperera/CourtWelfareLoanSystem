@@ -658,6 +658,15 @@ public class MemberfxmlController implements Initializable {
 
     @FXML
     private void onAssignLoanBtnAction(ActionEvent event) throws IOException {
+        if (anyIncompleteLoansOfMember(member_code_txt.getText())) {
+            Alert alert_error = new Alert(Alert.AlertType.ERROR);
+            alert_error.setTitle("Error");
+            alert_error.setHeaderText("Incompleted Loan(s) are stil there !");
+            alert_error.setContentText(PropHandler.getStringProperty("incompleted_loans"));
+            alert_error.show();
+            return;
+        }
+
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/court/view/AssignNewLoanFxml.fxml"));
         VBox node = (VBox) loader.load();
         AssignNewLoanFxmlController controller = (AssignNewLoanFxmlController) loader.getController();
@@ -1061,5 +1070,14 @@ public class MemberfxmlController implements Initializable {
 
     private boolean isValidationEmpty() {
         return validationSupport.validationResultProperty().get() == null;
+    }
+
+    private boolean anyIncompleteLoansOfMember(String memberCode) {
+        Session session = HibernateUtil.getSessionFactory().openSession();
+        Criteria c = session.createCriteria(MemberLoan.class);
+        List<MemberLoan> lns = c.createAlias("member", "m")
+                .add(Restrictions.eq("m.memberId", memberCode))
+                .add(Restrictions.eq("isComplete", false)).list();
+        return !lns.isEmpty();
     }
 }
