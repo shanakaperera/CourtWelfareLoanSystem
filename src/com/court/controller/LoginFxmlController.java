@@ -7,7 +7,7 @@ package com.court.controller;
 
 import com.court.db.HibernateUtil;
 import com.court.handler.GlyphIcons;
-import com.court.handler.ImageHandler;
+import com.court.handler.FileHandler;
 import com.court.model.User;
 import com.court.model.UserHasUserRole;
 import java.io.IOException;
@@ -97,7 +97,7 @@ public class LoginFxmlController implements Initializable {
     }
 
     private void performUserLogin() throws IOException {
-        loading_imgV.setImage(new Image(ImageHandler.LOADING_LOGIN_GIF));
+        loading_imgV.setImage(new Image(FileHandler.LOADING_LOGIN_GIF));
         Task<UserSession> userTask = new Task<UserSession>() {
 
             {

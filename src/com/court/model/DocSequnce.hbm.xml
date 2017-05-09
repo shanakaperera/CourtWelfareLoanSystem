@@ -17,6 +17,9 @@
         <property name="format" type="string">
             <column name="format" length="65535" />
         </property>
+        <property name="defaultFormat" type="string">
+            <column name="default_format" length="65535" />
+        </property>
         <property name="startFrom" type="java.lang.Integer">
             <column name="start_from" />
         </property>

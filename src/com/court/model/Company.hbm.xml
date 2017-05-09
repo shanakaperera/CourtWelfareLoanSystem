@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<!-- Generated Apr 18, 2017 4:12:16 PM by Hibernate Tools 4.3.1 -->
+<hibernate-mapping>
+    <class name="com.court.model.Company" table="company" catalog="court_loan" optimistic-lock="version">
+        <id name="id" type="java.lang.Integer">
+            <column name="id" />
+            <generator class="identity" />
+        </id>
+        <property name="companyName" type="string">
+            <column name="company_name" length="100" />
+        </property>
+        <property name="titleName" type="string">
+            <column name="title_name" length="100" />
+        </property>
+        <property name="dateUpdated" type="date">
+            <column name="date_updated" length="10" />
+        </property>
+        <property name="defaults" type="string">
+            <column name="defaults" length="65535" />
+        </property>
+    </class>
+</hibernate-mapping>

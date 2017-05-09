@@ -6,7 +6,7 @@
 package com.court.controller;
 
 import com.court.handler.GlyphIcons;
-import com.court.handler.ImageHandler;
+import com.court.handler.FileHandler;
 import com.court.handler.LoggedSessionHandler;
 import com.court.main.MainClass;
 import com.court.model.UserHasUserRole;
@@ -24,6 +24,7 @@ import javafx.fxml.Initializable;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.SplitPane;
 import javafx.scene.effect.Effect;
@@ -79,6 +80,10 @@ public class DashBoardFxmlController implements Initializable {
     private MenuItem loancal_menu_item;
 
     private ImageView progressIndicator;
+    @FXML
+    private MenuItem gen_menu_item;
+    @FXML
+    private Label dashboard_header;
 
     public LoggedSessionHandler loggedSession() {
         return sHandler;
@@ -90,7 +95,7 @@ public class DashBoardFxmlController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         progressIndicator = new ImageView();
-        progressIndicator.setImage(new Image(ImageHandler.LOADING_DEFAULT_GIF));
+        progressIndicator.setImage(new Image(FileHandler.LOADING_DEFAULT_GIF));
         btnMenuBar.setGraphic(new GlyphIcons().setFontAwesomeIconGlyph('\uf007', Color.WHITESMOKE, 20.0));
         try {
             loadDataPane("/com/court/view/HomeFXML.fxml");
@@ -254,4 +259,12 @@ public class DashBoardFxmlController implements Initializable {
         }
     }
 
+    @FXML
+    private void genBtnAction(ActionEvent event) throws IOException {
+         loadDataPane("/com/court/view/GeneralSettingsFxml.fxml");
+    }
+
+    public Label getDashboard_header() {
+        return dashboard_header;
+    }
 }

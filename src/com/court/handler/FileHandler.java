@@ -8,6 +8,8 @@ package com.court.handler;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import javafx.concurrent.Task;
 import javafx.embed.swing.SwingFXUtils;
@@ -21,7 +23,7 @@ import org.jpedal.exception.PdfException;
  *
  * @author Shanaka P
  */
-public class ImageHandler {
+public class FileHandler {
 
     public static final String MEMBER_IMG_PATH = "\\court_system\\img\\member_img\\";
     public static final String DOC_PDF_PATH = "\\court_system\\docs_pdf\\";
@@ -51,7 +53,9 @@ public class ImageHandler {
     }
 
     /**
-     * This method use to copy chosen pdf file to given path*
+     * This method use to copy chosen pdf file to given path
+     *
+     *
      * @param docChoosen
      * @param DOC_PDF_PATH
      * @param pdf_name
@@ -101,6 +105,22 @@ public class ImageHandler {
         Thread decodingThread = new Thread(imageDisplay, "imge-display");
         decodingThread.setDaemon(true);
         decodingThread.start();
+    }
+
+    /*
+     * This method use to create all the directories software need
+     *
+     * @throws java.io.IOException
+     *
+     */
+    public static void createSoftwarePath() throws IOException {
+
+        String document_path = FileSystemView.getFileSystemView().
+                getDefaultDirectory().getPath() + "\\court_system\\";
+        if (!Files.isDirectory(Paths.get(document_path))) {
+            Path path = Paths.get(document_path + "docs_pdf\\..\\img\\member_img\\..\\user_img");
+            Files.createDirectories(path);
+        }
     }
 
 }

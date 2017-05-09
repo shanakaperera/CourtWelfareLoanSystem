@@ -20,7 +20,7 @@
     <children>
         <HBox fx:id="base_h_box" alignment="CENTER_RIGHT" prefHeight="50.0" spacing="20.0" styleClass="HBox" VBox.vgrow="NEVER">
             <children>
-                <Label prefHeight="40.0" text="COURT WELFARE ORGANIZATION LOAN MANAGEMENT" textFill="WHITE" HBox.hgrow="ALWAYS">
+                <Label fx:id="dashboard_header" prefHeight="40.0" text="COURT WELFARE ORGANIZATION LOAN MANAGEMENT" textFill="WHITE" HBox.hgrow="ALWAYS">
                     <font>
                         <Font name="System Bold" size="19.0" />
                     </font>
@@ -94,7 +94,7 @@
                                 <MenuButton alignment="CENTER" mnemonicParsing="false" popupSide="RIGHT" prefHeight="37.0" prefWidth="171.0" style="-fx-text-fill: #ffff; -fx-font-size: 16;" text="Settings">
                                     <items>
                                         <MenuItem fx:id="usrmng_menu_item" mnemonicParsing="false" onAction="#usrmngBtnAction" text="User Management" />
-                                        <MenuItem mnemonicParsing="false" text="General Settings" />
+                                        <MenuItem fx:id="gen_menu_item" mnemonicParsing="false" onAction="#genBtnAction" text="General Settings" />
                                     </items>
                                     <styleClass>
                                         <String fx:value="btn" />

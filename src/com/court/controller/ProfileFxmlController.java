@@ -6,7 +6,7 @@
 package com.court.controller;
 
 import com.court.db.HibernateUtil;
-import com.court.handler.ImageHandler;
+import com.court.handler.FileHandler;
 import com.court.handler.ImageWithString;
 import com.court.handler.LoggedSessionHandler;
 import com.court.handler.PasswordHandler;
@@ -104,8 +104,8 @@ public class ProfileFxmlController implements Initializable {
                 new FileChooser.ExtensionFilter("Image Files", "*.png", "*.jpg"));
         File file = chooser.showOpenDialog(new Stage());
         if (file != null) {
-            imgString = ImageHandler.
-                    getImageBy(file, usr_name_txt.getText().trim(), ImageHandler.USER_PATH);
+            imgString = FileHandler.
+                    getImageBy(file, usr_name_txt.getText().trim(), FileHandler.USER_PATH);
             prof_imgView.setImage(imgString.getImg());
 
         }

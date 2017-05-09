@@ -13,6 +13,7 @@ public class DocSequnce  implements java.io.Serializable {
      private String seqName;
      private String tableName;
      private String format;
+     private String defaultFormat;
      private Integer startFrom;
 
     public DocSequnce() {
@@ -23,6 +24,14 @@ public class DocSequnce  implements java.io.Serializable {
        this.tableName = tableName;
        this.format = format;
        this.startFrom = startFrom;
+    }
+
+    public String getDefaultFormat() {
+        return defaultFormat;
+    }
+
+    public void setDefaultFormat(String defaultFormat) {
+        this.defaultFormat = defaultFormat;
     }
    
     public Integer getId() {

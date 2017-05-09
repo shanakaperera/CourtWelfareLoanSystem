@@ -8,7 +8,7 @@ package com.court.controller;
 import com.court.db.HibernateUtil;
 import com.court.handler.DocSeqHandler;
 import com.court.handler.FxUtilsHandler;
-import com.court.handler.ImageHandler;
+import com.court.handler.FileHandler;
 import com.court.handler.ImageWithString;
 import com.court.handler.LoanCalculationHandler;
 import com.court.handler.LoggedSessionHandler;
@@ -270,7 +270,7 @@ public class MemberfxmlController implements Initializable {
         FxUtilsHandler.clearFields(main_grid_pane, date_hbox, tel_hbox);
         fillMemberCodeTxt(member_code_txt);
         imgString = null;
-        member_img.setImage(new Image(getClass().getResourceAsStream(ImageHandler.MEMBER_DEFAULT_IMG)));
+        member_img.setImage(new Image(getClass().getResourceAsStream(FileHandler.MEMBER_DEFAULT_IMG)));
         FxUtilsHandler.activeDeactiveChildrenControls(true,
                 main_grid_pane, date_hbox, tel_hbox);
         FxUtilsHandler.activeBtnAppearanceChange(member_deactive_btn, true, true);
@@ -330,7 +330,7 @@ public class MemberfxmlController implements Initializable {
                 FxUtilsHandler.clearFields(main_grid_pane, date_hbox, tel_hbox);
                 fillMemberCodeTxt(member_code_txt);
                 imgString = null;
-                member_img.setImage(new Image(getClass().getResourceAsStream(ImageHandler.MEMBER_DEFAULT_IMG)));
+                member_img.setImage(new Image(getClass().getResourceAsStream(FileHandler.MEMBER_DEFAULT_IMG)));
 
                 ObservableList<Member> allMembers = getAllMembers();
                 List<String> memberCodes = allMembers.stream()
@@ -394,7 +394,7 @@ public class MemberfxmlController implements Initializable {
         FxUtilsHandler.clearFields(search_grid_pane, main_grid_pane, date_hbox, tel_hbox);
         fillMemberCodeTxt(member_code_txt);
         imgString = null;
-        member_img.setImage(new Image(getClass().getResourceAsStream(ImageHandler.MEMBER_DEFAULT_IMG)));
+        member_img.setImage(new Image(getClass().getResourceAsStream(FileHandler.MEMBER_DEFAULT_IMG)));
         FxUtilsHandler.activeDeactiveChildrenControls(true,
                 main_grid_pane, date_hbox, tel_hbox);
         FxUtilsHandler.activeBtnAppearanceChange(member_deactive_btn, true, true);
@@ -410,8 +410,8 @@ public class MemberfxmlController implements Initializable {
                 new FileChooser.ExtensionFilter("Image Files", "*.png", "*.jpg"));
         File file = chooser.showOpenDialog(new Stage());
         if (file != null) {
-            imgString = ImageHandler.
-                    getImageBy(file, member_code_txt.getText().trim(), ImageHandler.MEMBER_IMG_PATH);
+            imgString = FileHandler.
+                    getImageBy(file, member_code_txt.getText().trim(), FileHandler.MEMBER_IMG_PATH);
             member_img.setImage(imgString.getImg());
 
         }
@@ -895,8 +895,8 @@ public class MemberfxmlController implements Initializable {
     @FXML
     private void onSaveDocBtnAction(ActionEvent event) throws IOException {
 
-        String pdf_path = ImageHandler.copyPdfToLocation(docChoosen,
-                ImageHandler.DOC_PDF_PATH, doc_id_txt.getText());
+        String pdf_path = FileHandler.copyPdfToLocation(docChoosen,
+                FileHandler.DOC_PDF_PATH, doc_id_txt.getText());
 
         Document doc = new Document();
         doc.setDocName(doc_desc_txt.getText());
@@ -939,7 +939,7 @@ public class MemberfxmlController implements Initializable {
         PdfDecoder pdf = new PdfDecoder();
         pdf.openPdfFile(filename);
 
-        ImageHandler.setGivenPdfPageAsImage(1, pdf, doc_imgview);
+        FileHandler.setGivenPdfPageAsImage(1, pdf, doc_imgview);
     }
 
     @FXML

@@ -40,27 +40,28 @@ made subject to such option by the copyright holder.
 Contributor(s):
 -->
 <hibernate-configuration>
-    <session-factory>
-        <property name="hibernate.dialect">org.hibernate.dialect.MySQLDialect</property>
-        <property name="hibernate.connection.driver_class">com.mysql.jdbc.Driver</property>
-        <property name="hibernate.connection.url">jdbc:mysql://localhost:3306/court_loan?zeroDateTimeBehavior=convertToNull</property>
-        <property name="hibernate.connection.username">root</property>
-        <property name="hibernate.connection.password">nbuser</property>
-        <property name="show_sql">true</property>
-        <property name="format_sql">true</property>
-        <property name="hibernate.enable_lazy_load_no_trans">true</property>
-        <mapping resource="com/court/model/DocSequnce.hbm.xml"/>
-        <mapping resource="com/court/model/Branch.hbm.xml"/>
-        <mapping resource="com/court/model/User.hbm.xml"/>
-        <mapping resource="com/court/model/LoanPayment.hbm.xml"/>
-        <mapping resource="com/court/model/MemberLoan.hbm.xml"/>
-        <mapping resource="com/court/model/Loan.hbm.xml"/>
-        <mapping resource="com/court/model/Document.hbm.xml"/>
-        <mapping resource="com/court/model/UserHasUserRole.hbm.xml"/>
-        <mapping resource="com/court/model/Member.hbm.xml"/>
-        <mapping resource="com/court/model/UserRole.hbm.xml"/>
-        <mapping resource="com/court/model/LoanPayCheque.hbm.xml"/>
-        <mapping resource="com/court/model/UsrRolePrivilage.hbm.xml"/>
-        <mapping resource="com/court/model/PrivCat.hbm.xml"/>
-    </session-factory>
+  <session-factory>
+    <property name="hibernate.dialect">org.hibernate.dialect.MySQLDialect</property>
+    <property name="hibernate.connection.driver_class">com.mysql.jdbc.Driver</property>
+    <property name="hibernate.connection.url">jdbc:mysql://localhost:3306/court_loan?zeroDateTimeBehavior=convertToNull</property>
+    <property name="hibernate.connection.username">root</property>
+    <property name="hibernate.connection.password">nbuser</property>
+    <property name="show_sql">true</property>
+    <property name="format_sql">true</property>
+    <property name="hibernate.enable_lazy_load_no_trans">true</property>
+    <mapping resource="com/court/model/DocSequnce.hbm.xml"/>
+    <mapping resource="com/court/model/Branch.hbm.xml"/>
+    <mapping resource="com/court/model/User.hbm.xml"/>
+    <mapping resource="com/court/model/LoanPayment.hbm.xml"/>
+    <mapping resource="com/court/model/MemberLoan.hbm.xml"/>
+    <mapping resource="com/court/model/Loan.hbm.xml"/>
+    <mapping resource="com/court/model/Document.hbm.xml"/>
+    <mapping resource="com/court/model/UserHasUserRole.hbm.xml"/>
+    <mapping resource="com/court/model/Member.hbm.xml"/>
+    <mapping resource="com/court/model/UserRole.hbm.xml"/>
+    <mapping resource="com/court/model/LoanPayCheque.hbm.xml"/>
+    <mapping resource="com/court/model/UsrRolePrivilage.hbm.xml"/>
+    <mapping resource="com/court/model/PrivCat.hbm.xml"/>
+    <mapping resource="com/court/model/Company.hbm.xml"/>
+  </session-factory>
 </hibernate-configuration>

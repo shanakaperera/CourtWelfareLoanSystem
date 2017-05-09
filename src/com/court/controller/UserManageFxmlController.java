@@ -7,7 +7,7 @@ package com.court.controller;
 
 import com.court.db.HibernateUtil;
 import com.court.handler.FxUtilsHandler;
-import com.court.handler.ImageHandler;
+import com.court.handler.FileHandler;
 import com.court.handler.ImageWithString;
 import com.court.handler.LoggedSessionHandler;
 import com.court.handler.PasswordHandler;
@@ -178,8 +178,8 @@ public class UserManageFxmlController implements Initializable {
                 new FileChooser.ExtensionFilter("Image Files", "*.png", "*.jpg"));
         File file = chooser.showOpenDialog(new Stage());
         if (file != null) {
-            imgString = ImageHandler.
-                    getImageBy(file, user_name_txt.getText().trim(), ImageHandler.USER_PATH);
+            imgString = FileHandler.
+                    getImageBy(file, user_name_txt.getText().trim(), FileHandler.USER_PATH);
             usr_img_view.setImage(imgString.getImg());
 
         }
@@ -189,7 +189,7 @@ public class UserManageFxmlController implements Initializable {
     private void newBtnAction(ActionEvent event) {
         FxUtilsHandler.clearFields(main_grid);
         imgString = null;
-        usr_img_view.setImage(new Image(getClass().getResourceAsStream(ImageHandler.MEMBER_DEFAULT_IMG)));
+        usr_img_view.setImage(new Image(getClass().getResourceAsStream(FileHandler.MEMBER_DEFAULT_IMG)));
         FxUtilsHandler.activeDeactiveChildrenControls(true, main_grid);
     }
 
@@ -315,7 +315,7 @@ public class UserManageFxmlController implements Initializable {
             initUserRoleTable(getAllUserRoles());
             FxUtilsHandler.clearFields(main_grid);
             imgString = null;
-            usr_img_view.setImage(new Image(getClass().getResourceAsStream(ImageHandler.MEMBER_DEFAULT_IMG)));
+            usr_img_view.setImage(new Image(getClass().getResourceAsStream(FileHandler.MEMBER_DEFAULT_IMG)));
             FxUtilsHandler.activeDeactiveChildrenControls(true, main_grid);
         }
 
