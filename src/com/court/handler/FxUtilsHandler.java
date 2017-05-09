@@ -5,16 +5,20 @@
  */
 package com.court.handler;
 
+import eu.hansolo.tilesfx.Tile;
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.Node;
@@ -27,6 +31,7 @@ import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
+import javafx.util.Duration;
 import javafx.util.StringConverter;
 
 /**
@@ -205,5 +210,26 @@ public class FxUtilsHandler {
 
         textField.textProperty().bindBidirectional(passwordField.textProperty());
         container.getChildren().addAll(textField, checkBox);
+    }
+
+    /**
+     * This method use to live update time of a time tile
+     *
+     * @param timeTile
+     *
+     */
+    public static void startTimeOf(Tile timeTile) {
+        Timeline timeline = new Timeline(
+                new KeyFrame(
+                        Duration.ZERO,
+                        actionEvent -> timeTile.setTime(ZonedDateTime
+                                .ofInstant(new Date().toInstant(), ZoneId.systemDefault()))
+                ),
+                new KeyFrame(
+                        Duration.seconds(60)
+                )
+        );
+        timeline.setCycleCount(Timeline.INDEFINITE);
+        timeline.play();
     }
 }

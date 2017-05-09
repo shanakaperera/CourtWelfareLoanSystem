@@ -14,6 +14,7 @@ import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
 import javafx.scene.layout.VBox;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
@@ -43,7 +44,7 @@ public class MainClass extends Application {
         mainPane.setPrefSize(s_size.getWidth(), s_size.getHeight());
         // add main form into the scene
         Scene scene = new Scene(mainPane);
-
+        primaryStage.getIcons().add(new Image(getClass().getResourceAsStream(FileHandler.TITLEBAR_ICO)));
         primaryStage.setTitle(c.getTitleName());
         primaryStage.setScene(scene);
         primaryStage.setMaximized(true);    // make the main form fit to the screen
