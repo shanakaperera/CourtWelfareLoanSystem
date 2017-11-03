@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
 "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
-<!-- Generated Apr 18, 2017 4:12:16 PM by Hibernate Tools 4.3.1 -->
+<!-- Generated Oct 9, 2017 7:05:12 PM by Hibernate Tools 4.3.1 -->
 <hibernate-mapping>
     <class name="com.court.model.Member" table="member" catalog="court_loan" optimistic-lock="version">
         <id name="id" type="java.lang.Integer">
@@ -13,6 +13,18 @@
         </many-to-one>
         <property name="memberId" type="string">
             <column name="member_id" length="45" not-null="true" unique="true" />
+        </property>
+        <property name="empId" type="string">
+            <column name="emp_id" length="10" />
+        </property>
+        <property name="nic" type="string">
+            <column name="nic" length="10" />
+        </property>
+        <property name="jobStatus" type="string">
+            <column name="job_status" length="15" />
+        </property>
+        <property name="paymentOfficer" type="string">
+            <column name="payment_officer" length="45" />
         </property>
         <property name="fullName" type="string">
             <column name="full_name" length="200" />
@@ -53,23 +65,50 @@
         <property name="description" type="string">
             <column name="description" length="65535" />
         </property>
+        <property name="spouse" type="string">
+            <column name="spouse" length="65535" />
+        </property>
+        <property name="mother" type="string">
+            <column name="mother" length="95" />
+        </property>
+        <property name="father" type="string">
+            <column name="father" length="95" />
+        </property>
+        <property name="memBenifits" type="string">
+            <column name="mem_benifits" length="65535" />
+        </property>
+        <property name="accBenifits" type="string">
+            <column name="acc_benifits" length="65535" />
+        </property>
         <property name="imgPath" type="string">
             <column name="img_path" length="65535" />
         </property>
         <property name="status" type="boolean">
             <column name="status" not-null="true" />
         </property>
-        <set name="memberLoans" table="member_loan" inverse="true" lazy="false" fetch="join" cascade="all">
+        <set name="memberLoans" table="member_loan" inverse="true" lazy="true" fetch="select">
             <key>
                 <column name="member_id" not-null="true" />
             </key>
             <one-to-many class="com.court.model.MemberLoan" />
+        </set>
+        <set name="memChilds" table="mem_child" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="member_id" not-null="true" />
+            </key>
+            <one-to-many class="com.court.model.MemChild" />
         </set>
         <set name="documents" table="document" inverse="true" lazy="true" fetch="select">
             <key>
                 <column name="member_id" not-null="true" />
             </key>
             <one-to-many class="com.court.model.Document" />
+        </set>
+        <set name="memberSubscriptions" table="member_subscriptions" inverse="true" lazy="false" fetch="select">
+            <key>
+                <column name="member_id" not-null="true" />
+            </key>
+            <one-to-many class="com.court.model.MemberSubscriptions" />
         </set>
     </class>
 </hibernate-mapping>

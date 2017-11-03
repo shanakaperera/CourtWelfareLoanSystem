@@ -1,5 +1,5 @@
 package com.court.model;
-// Generated Apr 18, 2017 4:12:00 PM by Hibernate Tools 4.3.1
+// Generated Oct 9, 2017 7:04:51 PM by Hibernate Tools 4.3.1
 
 
 import java.util.HashSet;

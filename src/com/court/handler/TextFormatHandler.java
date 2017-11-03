@@ -34,6 +34,7 @@ public class TextFormatHandler {
      *
      */
     public static TextFormatter<Double> currencyFormatter() {
+        
         return new TextFormatter<Double>(new StringConverter<Double>() {
             @Override
             public String toString(Double value) {
@@ -48,14 +49,16 @@ public class TextFormatHandler {
                     return Double.NaN;
                 }
             }
-        }, DEFAULT_VALUE, change -> {
-            try {
-                CURRENCY_DECIMAL_FORMAT.parse(change.getControlNewText());
-                return change;
-            } catch (ParseException e) {
-                return null;
-            }
-        });
+        }, DEFAULT_VALUE,
+                change -> {
+                    try {
+                        CURRENCY_DECIMAL_FORMAT.parse(change.getControlNewText());
+                        return change;
+                    } catch (ParseException e) {
+                        return null;
+                    }
+                }
+        );
     }
 
     /**
@@ -135,6 +138,9 @@ public class TextFormatHandler {
 
             return null;
         });
+    }
 
+    public static Long roundAmount(double amount) {
+        return Math.round(amount);
     }
 }

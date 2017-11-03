@@ -69,28 +69,42 @@
                                     <children>
                                         <Label text="Full Name" GridPane.rowIndex="2" />
                                         <Label text="Name With Initials" GridPane.rowIndex="3" />
-                                        <TextField fx:id="member_full_name_txt" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-                                        <TextField fx:id="member_namins_txt" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+                                        <TextField fx:id="member_full_name_txt" onAction="#onFullNameAction" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                                        <TextField fx:id="member_namins_txt" onAction="#onNwiAction" GridPane.columnIndex="1" GridPane.rowIndex="3" />
                                         <Label text="Address" GridPane.rowIndex="4" />
                                         <TextArea fx:id="member_adrs_txt" prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="4" />
                                         <Label text="Contact" GridPane.rowIndex="7" />
                                         <HBox fx:id="tel_hbox" alignment="CENTER_LEFT" spacing="20.0" GridPane.columnIndex="1" GridPane.rowIndex="7">
                                             <children>
                                                 <Label layoutX="179.0" layoutY="17.0" text="Telephone 1" />
-                                                <TextField fx:id="member_tel1_txt" HBox.hgrow="ALWAYS" />
+                                                <TextField fx:id="member_tel1_txt" onAction="#onTel1Action" HBox.hgrow="ALWAYS" />
                                                 <Label text="Telephone 2" />
-                                                <TextField fx:id="member_tel2_txt" HBox.hgrow="ALWAYS" />
+                                                <TextField fx:id="member_tel2_txt" onAction="#onTel2Action" HBox.hgrow="ALWAYS" />
                                                 <Label layoutX="265.0" layoutY="17.0" text="Email" />
-                                                <TextField fx:id="member_email_txt" HBox.hgrow="ALWAYS" />
+                                                <TextField fx:id="member_email_txt" onAction="#onEmailAction" HBox.hgrow="ALWAYS" />
                                             </children>
                                         </HBox>
                                         <Label text="Job Title" GridPane.rowIndex="5" />
-                                        <TextField fx:id="member_job_txt" GridPane.columnIndex="1" GridPane.rowIndex="5" />
-                                        <TextField fx:id="member_code_txt" editable="false" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                                        <HBox fx:id="job_title_box" alignment="CENTER_RIGHT" spacing="10.0" GridPane.columnIndex="1" GridPane.rowIndex="5">
+                                            <children>
+                                                <TextField fx:id="member_job_txt" onAction="#onJobTitleAction" prefHeight="25.0" prefWidth="258.0" HBox.hgrow="ALWAYS" />
+                                                <Label text="Appointed Date" HBox.hgrow="ALWAYS" />
+                                                <DatePicker fx:id="member_apo_chooser" onAction="#onAptDateAction" promptText="Appointment Date" HBox.hgrow="ALWAYS" />
+                                            </children>
+                                        </HBox>
+                                        <HBox fx:id="nic_col_id" alignment="CENTER_RIGHT" spacing="10.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                                            <children>
+                                                <TextField fx:id="member_code_txt" onAction="#onMemberCodeAction" prefHeight="25.0" HBox.hgrow="ALWAYS" />
+                                                <Label text="NIC No" HBox.hgrow="ALWAYS" />
+                                                <TextField fx:id="nic_no" onAction="#onNicAction" prefHeight="25.0" HBox.hgrow="ALWAYS" />
+                                                <Label text="EMP ID" />
+                                                <TextField fx:id="emp_id_txt" onAction="#onEmpAction" />
+                                            </children>
+                                        </HBox>
                                         <Label text="Member ID" GridPane.rowIndex="1" />
                                         <HBox fx:id="date_hbox" alignment="CENTER_RIGHT" prefHeight="100.0" prefWidth="200.0" spacing="20.0" GridPane.columnIndex="1" GridPane.rowIndex="8">
                                             <children>
-                                                <ComboBox fx:id="member_sex_combo" prefWidth="150.0" promptText="SEX">
+                                                <ComboBox fx:id="member_sex_combo" onAction="#onSexAction" prefWidth="150.0" promptText="SEX">
                                                     <items>
                                                         <FXCollections fx:factory="observableArrayList">
                                                             <String fx:value="male" />
@@ -98,7 +112,7 @@
                                                         </FXCollections>
                                                     </items>
                                                 </ComboBox>
-                                                <ComboBox fx:id="member_maritial_combo" prefWidth="150.0" promptText="Marital Status">
+                                                <ComboBox fx:id="member_maritial_combo" onAction="#onMartStatAction" prefWidth="150.0" promptText="Marital Status">
                                                     <items>
                                                         <FXCollections fx:factory="observableArrayList">
                                                             <String fx:value="single" />
@@ -106,9 +120,8 @@
                                                         </FXCollections>
                                                     </items>
                                                 </ComboBox>
-                                                <DatePicker fx:id="member_bday_chooser" promptText="Birth Date" />
-                                                <DatePicker fx:id="member_apo_chooser" promptText="Appointment Date" />
-                                                <DatePicker fx:id="member_join_chooser" promptText="Joined Date" />
+                                                <DatePicker fx:id="member_bday_chooser" onAction="#onDobAction" promptText="Birth Date" />
+                                                <DatePicker fx:id="member_join_chooser" onAction="#onJdAction" promptText="Joined Date" />
                                             </children>
                                         </HBox>
                                         <HBox alignment="CENTER_RIGHT" prefHeight="100.0" prefWidth="200.0" spacing="10.0" GridPane.columnIndex="1" GridPane.rowIndex="10">
@@ -129,12 +142,6 @@
                                                     <styleClass>
                                                         <String fx:value="btn" />
                                                         <String fx:value="btn-warning" />
-                                                    </styleClass>
-                                                </Button>
-                                                <Button fx:id="m_delete_btn" layoutX="236.0" layoutY="14.0" mnemonicParsing="false" prefHeight="43.0" prefWidth="142.0" style="-fx-text-fill: #ffff; -fx-font-size: 16;" text="DELETE" textAlignment="RIGHT">
-                                                    <styleClass>
-                                                        <String fx:value="btn" />
-                                                        <String fx:value="btn-danger" />
                                                     </styleClass>
                                                 </Button>
                                             </children>
@@ -176,33 +183,304 @@
                                                 </Label>
                                                 <TextField fx:id="member_code_srch_txt" GridPane.columnIndex="1" GridPane.rowIndex="1" />
                                                 <TextField fx:id="member_name_srch_txt" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-                                    <HBox alignment="BOTTOM_LEFT" spacing="10.0" GridPane.columnIndex="1" GridPane.rowIndex="3">
-                                       <children>
-                                                      <Button mnemonicParsing="false" onAction="#onMemberSearchBtnAction" style="-fx-text-fill: #ffff; -fx-font-size: 14;" text="Search Member">
-                                                          <styleClass>
-                                                              <String fx:value="btn" />
-                                                              <String fx:value="btn-success" />
-                                                          </styleClass>
-                                                      </Button>
-                                          <Button mnemonicParsing="false" onAction="#onClearBtnAction" style="-fx-text-fill: #ffff; -fx-font-size: 14;" text="Clear All">
-                                             <styleClass>
-                                                <String fx:value="btn" />
-                                                <String fx:value="btn-primary" />
-                                             </styleClass>
-                                          </Button>
-                                       </children>
-                                    </HBox>
-                                    <Label fx:id="deactive_label" prefHeight="17.0" prefWidth="240.0" textFill="#d9534f" GridPane.rowIndex="3" />
+                                                <HBox alignment="BOTTOM_LEFT" spacing="10.0" GridPane.columnIndex="1" GridPane.rowIndex="3">
+                                                    <children>
+                                                        <Button mnemonicParsing="false" onAction="#onMemberSearchBtnAction" style="-fx-text-fill: #ffff; -fx-font-size: 14;" text="Search Member">
+                                                            <styleClass>
+                                                                <String fx:value="btn" />
+                                                                <String fx:value="btn-success" />
+                                                            </styleClass>
+                                                        </Button>
+                                                        <Button mnemonicParsing="false" onAction="#onClearBtnAction" style="-fx-text-fill: #ffff; -fx-font-size: 14;" text="Clear All">
+                                                            <styleClass>
+                                                                <String fx:value="btn" />
+                                                                <String fx:value="btn-primary" />
+                                                            </styleClass>
+                                                        </Button>
+                                                    </children>
+                                                </HBox>
+                                                <Label fx:id="deactive_label" prefHeight="17.0" prefWidth="240.0" textFill="#d9534f" GridPane.rowIndex="3" />
                                             </children>
                                             <padding>
                                                 <Insets bottom="5.0" left="20.0" right="20.0" top="5.0" />
                                             </padding>
                                         </GridPane>
-                                        <Label text="Branch" GridPane.rowIndex="6" />
-                                        <TextField fx:id="member_brch_txt" GridPane.columnIndex="1" GridPane.rowIndex="6" />
+                                        <Label text="Working Place" GridPane.rowIndex="6" />
+                                        <HBox fx:id="working_box" alignment="CENTER_RIGHT" spacing="10.0" GridPane.columnIndex="1" GridPane.rowIndex="6">
+                                            <children>
+                                                <TextField fx:id="member_brch_txt" onAction="#onWrkPlsAction" prefHeight="25.0" prefWidth="209.0" HBox.hgrow="ALWAYS" />
+                                                <Label prefHeight="17.0" prefWidth="84.0" text="Job Status" HBox.hgrow="ALWAYS" />
+                                                <ComboBox fx:id="job_status_combo" onAction="#onJobStatAction" prefHeight="25.0" prefWidth="127.0" promptText="-- SELECT --" HBox.hgrow="ALWAYS">
+                                                    <items>
+                                                        <FXCollections fx:factory="observableArrayList">
+                                                            <String fx:value="Permanent" />
+                                                            <String fx:value="Temporary" />
+                                                        </FXCollections>
+                                                    </items>
+                                                </ComboBox>
+                                                <Label prefHeight="17.0" prefWidth="113.0" text="Payment Officer" HBox.hgrow="ALWAYS" />
+                                                <TextField fx:id="payment_officer_txt" editable="false" onAction="#onPayOfAction" prefHeight="25.0" prefWidth="120.0" HBox.hgrow="ALWAYS" />
+                                            </children>
+                                        </HBox>
                                     </children>
                                 </GridPane>
                             </children>
+                        </AnchorPane>
+                    </content>
+                </Tab>
+                <Tab fx:id="other_details_tab" text="OTHER DETAILS">
+                    <content>
+                        <AnchorPane minHeight="0.0" minWidth="0.0">
+                            <children>
+                                <VBox layoutX="205.0" layoutY="79.0" prefHeight="525.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                    <children>
+                                        <HBox>
+                                            <children>
+                                                <VBox fx:id="family_info_vbox" HBox.hgrow="ALWAYS">
+                                                    <children>
+                                                        <GridPane fx:id="family_gridbox" style="-fx-border-color: #ffff; -fx-border-width: 2px;">
+                                                            <columnConstraints>
+                                                                <ColumnConstraints hgrow="SOMETIMES" />
+                                                                <ColumnConstraints hgrow="ALWAYS" maxWidth="1.7976931348623157E308" minWidth="10.0" />
+                                                            </columnConstraints>
+                                                            <rowConstraints>
+                                                                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                                                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                                                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                                                <RowConstraints minHeight="10.0" prefHeight="200.0" vgrow="SOMETIMES" />
+                                                                <RowConstraints minHeight="10.0" prefHeight="90.0" vgrow="SOMETIMES" />
+                                                            </rowConstraints>
+                                                            <children>
+                                                                <Label text="FAMILY INFORMATION" underline="true" GridPane.columnSpan="2">
+                                                                    <font>
+                                                                        <Font size="18.0" />
+                                                                    </font>
+                                                                </Label>
+                                                                <Label text="Spouse Name" GridPane.rowIndex="1">
+                                                                    <GridPane.margin>
+                                                                        <Insets right="10.0" />
+                                                                    </GridPane.margin>
+                                                                </Label>
+                                                                <Label text="Children" GridPane.rowIndex="3">
+                                                                    <GridPane.margin>
+                                                                        <Insets right="10.0" />
+                                                                    </GridPane.margin>
+                                                                </Label>
+                                                                <TableView fx:id="children_tbl" prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" GridPane.rowIndex="3">
+                                                                    <columns>
+                                                                        <TableColumn fx:id="childName_col" minWidth="-1.0" prefWidth="150.0" text="Name" />
+                                                                        <TableColumn fx:id="childDOB_col" minWidth="-1.0" prefWidth="75.0" text="DOB" />
+                                                                        <TableColumn fx:id="childSexCol" minWidth="-1.0" prefWidth="67.0" text="Sex" />
+                                                                        <TableColumn fx:id="childHoi_col" minWidth="-1.0" prefWidth="75.0" text="HOI" />
+                                                                        <TableColumn fx:id="child_aci_col" minWidth="-1.0" prefWidth="75.0" text="ACI" />
+                                                                    </columns>
+                                                                </TableView>
+                                                                <Label text="Parents" GridPane.rowIndex="4">
+                                                                    <GridPane.margin>
+                                                                        <Insets right="10.0" />
+                                                                    </GridPane.margin>
+                                                                </Label>
+                                                                <GridPane fx:id="parents_box" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" GridPane.rowIndex="4">
+                                                                    <columnConstraints>
+                                                                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="263.0" minWidth="10.0" prefWidth="130.0" />
+                                                                        <ColumnConstraints hgrow="ALWAYS" maxWidth="1.7976931348623157E308" minWidth="10.0" />
+                                                                    </columnConstraints>
+                                                                    <rowConstraints>
+                                                                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                                                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                                                    </rowConstraints>
+                                                                    <children>
+                                                                        <Label text="Mother" />
+                                                                        <Label text="Father" GridPane.rowIndex="1" />
+                                                                        <TextField fx:id="mother_txt" GridPane.columnIndex="1" />
+                                                                        <TextField fx:id="father_txt" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                                                                    </children>
+                                                                </GridPane>
+                                                                <HBox fx:id="spouse_box" alignment="CENTER_RIGHT" prefHeight="100.0" prefWidth="200.0" spacing="10.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                                                                    <children>
+                                                                        <TextField fx:id="spouse_name_txt" prefHeight="25.0" HBox.hgrow="ALWAYS" />
+                                                                        <CheckBox fx:id="s_hoi_check" mnemonicParsing="false" text="HOI Include" HBox.hgrow="ALWAYS" />
+                                                                        <CheckBox fx:id="s_aci_check" mnemonicParsing="false" text="ACI Include" HBox.hgrow="ALWAYS" />
+                                                                    </children>
+                                                                </HBox>
+                                                                <HBox alignment="CENTER_RIGHT" prefHeight="100.0" prefWidth="200.0" spacing="5.0" GridPane.columnIndex="1" GridPane.rowIndex="2">
+                                                                    <children>
+                                                                        <Button mnemonicParsing="false" onAction="#newChildBtnAction" style="-fx-text-fill: #ffff;" text="New">
+                                                                            <styleClass>
+                                                                                <String fx:value="btn" />
+                                                                                <String fx:value="btn-success" />
+                                                                            </styleClass>
+                                                                        </Button>
+                                                                        <Button fx:id="update_child_btn" mnemonicParsing="false" onAction="#updateChildBtnAction" style="-fx-text-fill: #ffff;" text="Update">
+                                                                            <styleClass>
+                                                                                <String fx:value="btn" />
+                                                                                <String fx:value="btn-primary" />
+                                                                            </styleClass>
+                                                                        </Button>
+                                                                        <Button fx:id="delete_child_btn" mnemonicParsing="false" onAction="#deleteChildBtnAction" style="-fx-text-fill: #ffff;" text="Delete">
+                                                                            <styleClass>
+                                                                                <String fx:value="btn" />
+                                                                                <String fx:value="btn-danger" />
+                                                                            </styleClass>
+                                                                        </Button>
+                                                                    </children>
+                                                                    <GridPane.margin>
+                                                                        <Insets />
+                                                                    </GridPane.margin>
+                                                                </HBox>
+                                                            </children>
+                                                            <padding>
+                                                                <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                                                            </padding>
+                                                        </GridPane>
+                                                    </children>
+                                                </VBox>
+                                                <VBox spacing="10.0" style="-fx-border-color: #ffff; -fx-border-width: 2px;" HBox.hgrow="ALWAYS">
+                                                    <children>
+                                                        <Label text="Monthly contribution for membership is below given :">
+                                                            <font>
+                                                                <Font size="14.0" />
+                                                            </font>
+                                                        </Label>
+                                                        <GridPane fx:id="fee_box">
+                                                            <columnConstraints>
+                                                                <ColumnConstraints hgrow="SOMETIMES" percentWidth="30.0" />
+                                                                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                                                                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                                                            </columnConstraints>
+                                                            <rowConstraints>
+                                                                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                                                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                                                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                                                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                                                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                                                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                                            </rowConstraints>
+                                                            <children>
+                                                                <Label text="Membership fee" />
+                                                                <Label text="Savings fee" GridPane.rowIndex="1" />
+                                                                <Label text="HOI fee" GridPane.rowIndex="2" />
+                                                                <Label text="ACI fee" GridPane.rowIndex="3" />
+                                                                <Label text="Optional " GridPane.rowIndex="4" />
+                                                                <TextField fx:id="mem_fee_txt" onAction="#onMemberFeeAction" onMouseClicked="#onMbrFeeClicked" GridPane.columnIndex="1" />
+                                                                <TextField fx:id="sav_fee_txt" onAction="#onSavFeeAction" onMouseClicked="#onSavingsFeeClicked" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                                                                <TextField fx:id="hoi_fee_txt" onAction="#onHoiFeeAction" onMouseClicked="#onHoiFeeClicked" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                                                                <TextField fx:id="aci_fee_txt" onAction="#onAciFeeAction" onMouseClicked="#onAciFeeClicked" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+                                                                <TextField fx:id="optional_txt" onAction="#onOptionalFeeAction" onMouseClicked="#onOptionalClicked" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+                                                                <Label text="Admission Fee" GridPane.rowIndex="5" />
+                                                                <TextField fx:id="adm_fee_txt" onAction="#onAdmFeeAction" onMouseClicked="#onAdmFeeClicked" GridPane.columnIndex="1" GridPane.rowIndex="5" />
+                                                                <ComboBox fx:id="mem_fee_repay_combo" onAction="#onMemberFeeSelAction" prefWidth="150.0" promptText="-- Repay Type --" GridPane.columnIndex="2">
+                                                                    <items>
+                                                                        <FXCollections fx:factory="observableArrayList">
+                                                                            <String fx:value="Monthly" />
+                                                                            <String fx:value="Annually" />
+                                                                            <String fx:value="Once" />
+                                                                        </FXCollections>
+                                                                    </items>
+                                                                </ComboBox>
+                                                                <ComboBox fx:id="sav_fee_repay_combo" onAction="#onSavFeeSelAction" prefWidth="150.0" promptText="-- Repay Type --" GridPane.columnIndex="2" GridPane.rowIndex="1">
+                                                                    <items>
+                                                                        <FXCollections fx:factory="observableArrayList">
+                                                                            <String fx:value="Monthly" />
+                                                                            <String fx:value="Annually" />
+                                                                            <String fx:value="Once" />
+                                                                        </FXCollections>
+                                                                    </items>
+                                                                </ComboBox>
+                                                                <ComboBox fx:id="hoi_fee_repay_combo" onAction="#onHoiFeeSelAction" prefWidth="150.0" promptText="-- Repay Type --" GridPane.columnIndex="2" GridPane.rowIndex="2">
+                                                                    <items>
+                                                                        <FXCollections fx:factory="observableArrayList">
+                                                                            <String fx:value="Monthly" />
+                                                                            <String fx:value="Annually" />
+                                                                            <String fx:value="Once" />
+                                                                        </FXCollections>
+                                                                    </items>
+                                                                </ComboBox>
+                                                                <ComboBox fx:id="aci_fee_repay_combo" onAction="#onAciFeeSelAction" prefWidth="150.0" promptText="-- Repay Type --" GridPane.columnIndex="2" GridPane.rowIndex="3">
+                                                                    <items>
+                                                                        <FXCollections fx:factory="observableArrayList">
+                                                                            <String fx:value="Monthly" />
+                                                                            <String fx:value="Annually" />
+                                                                            <String fx:value="Once" />
+                                                                        </FXCollections>
+                                                                    </items>
+                                                                </ComboBox>
+                                                                <ComboBox fx:id="opt_fee_repay_combo" onAction="#onOptionalFeeSelAction" prefWidth="150.0" promptText="-- Repay Type --" GridPane.columnIndex="2" GridPane.rowIndex="4">
+                                                                    <items>
+                                                                        <FXCollections fx:factory="observableArrayList">
+                                                                            <String fx:value="Monthly" />
+                                                                            <String fx:value="Annually" />
+                                                                            <String fx:value="Once" />
+                                                                        </FXCollections>
+                                                                    </items>
+                                                                </ComboBox>
+                                                                <ComboBox fx:id="adm_fee_repay_combo" onAction="#onAdmFeeSelAction" prefWidth="150.0" promptText="-- Repay Type --" GridPane.columnIndex="2" GridPane.rowIndex="5">
+                                                                    <items>
+                                                                        <FXCollections fx:factory="observableArrayList">
+                                                                            <String fx:value="Monthly" />
+                                                                            <String fx:value="Annually" />
+                                                                            <String fx:value="Once" />
+                                                                        </FXCollections>
+                                                                    </items>
+                                                                </ComboBox>
+                                                            </children>
+                                                        </GridPane>
+                                                        <Label prefHeight="45.0" text="Surviving Spouse or child who get the benifit after the member ">
+                                                            <font>
+                                                                <Font size="14.0" />
+                                                            </font>
+                                                        </Label>
+                                                        <GridPane fx:id="benifits_box">
+                                                            <columnConstraints>
+                                                                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                                                                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                                                                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                                                            </columnConstraints>
+                                                            <rowConstraints>
+                                                                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                                                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                                                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                                            </rowConstraints>
+                                                            <children>
+                                                                <Label text="Membership benifits" GridPane.rowIndex="1" />
+                                                                <Label text="Accidental benefits" GridPane.rowIndex="2" />
+                                                                <Label text="Name" GridPane.columnIndex="1" GridPane.halignment="CENTER" />
+                                                                <Label text="Relation" GridPane.columnIndex="2" GridPane.halignment="CENTER" />
+                                                                <TextField fx:id="mb_ben_name" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                                                                <TextField fx:id="ac_ben_name" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                                                                <TextField fx:id="mem_ben_rel" GridPane.columnIndex="2" GridPane.rowIndex="1" />
+                                                                <TextField fx:id="ac_ben_rel" GridPane.columnIndex="2" GridPane.rowIndex="2" />
+                                                            </children>
+                                                        </GridPane>
+                                                    </children>
+                                                    <padding>
+                                                        <Insets bottom="5.0" left="5.0" right="5.0" top="10.0" />
+                                                    </padding>
+                                                    <HBox.margin>
+                                                        <Insets />
+                                                    </HBox.margin>
+                                                </VBox>
+                                            </children>
+                                        </HBox>
+                                        <HBox alignment="TOP_RIGHT" prefHeight="100.0" prefWidth="200.0">
+                                            <children>
+                                                <Button fx:id="othr_d_sav_btn" mnemonicParsing="false" onAction="#onOtherDetailsSaveBtnAction" prefHeight="43.0" prefWidth="142.0" style="-fx-text-fill: #ffff; -fx-font-size: 16;" text="SAVE" textAlignment="RIGHT">
+                                                    <styleClass>
+                                                        <String fx:value="btn" />
+                                                        <String fx:value="btn-primary" />
+                                                    </styleClass>
+                                                </Button>
+                                            </children>
+                                            <VBox.margin>
+                                                <Insets top="10.0" />
+                                            </VBox.margin>
+                                        </HBox>
+                                    </children>
+                                </VBox>
+                            </children>
+                            <padding>
+                                <Insets left="10.0" right="10.0" top="20.0" />
+                            </padding>
                         </AnchorPane>
                     </content>
                 </Tab>
@@ -236,7 +514,7 @@
                                                 <TableView fx:id="l_pay_tbl" prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
                                                     <columns>
                                                         <TableColumn fx:id="p_date_col" prefWidth="75.0" text="Date" />
-                                          <TableColumn fx:id="ins_no_col" prefWidth="50.0" text="Ins No" />
+                                                        <TableColumn fx:id="ins_no_col" prefWidth="50.0" text="Ins No" />
                                                         <TableColumn fx:id="p_due_col" prefWidth="120.0" text="Payment Due" />
                                                     </columns>
                                                 </TableView>
@@ -265,10 +543,10 @@
                                                         <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                                                         <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                                                         <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                                          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                                          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                                                         <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                                          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                                                         <RowConstraints minHeight="10.0" prefHeight="100.0" vgrow="SOMETIMES" />
                                                     </rowConstraints>
                                                     <children>
@@ -284,12 +562,12 @@
                                                         <TextField fx:id="l_du_txt" GridPane.columnIndex="1" GridPane.rowIndex="6" />
                                                         <TextField fx:id="l_type_txt" GridPane.columnIndex="1" GridPane.rowIndex="2" />
                                                         <Label text="Loan Type" GridPane.rowIndex="2" />
-                                          <Label text="Interest" GridPane.rowIndex="4" />
-                                          <TextField fx:id="l_int_txt" GridPane.columnIndex="1" GridPane.rowIndex="4" />
-                                          <TextField fx:id="l_repay_txt" GridPane.columnIndex="1" GridPane.rowIndex="7" />
-                                          <Label text="Repayment" GridPane.rowIndex="7" />
-                                          <Label text="Principal + Interest" GridPane.rowIndex="5" />
-                                          <TextField fx:id="int_pls_prin_txt" GridPane.columnIndex="1" GridPane.rowIndex="5" />
+                                                        <Label text="Interest" GridPane.rowIndex="4" />
+                                                        <TextField fx:id="l_int_txt" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+                                                        <TextField fx:id="l_repay_txt" GridPane.columnIndex="1" GridPane.rowIndex="7" />
+                                                        <Label text="Repayment" GridPane.rowIndex="7" />
+                                                        <Label text="Principal + Interest" GridPane.rowIndex="5" />
+                                                        <TextField fx:id="int_pls_prin_txt" GridPane.columnIndex="1" GridPane.rowIndex="5" />
                                                     </children>
                                                     <GridPane.margin>
                                                         <Insets left="5.0" right="5.0" />
@@ -297,6 +575,12 @@
                                                 </GridPane>
                                                 <HBox alignment="CENTER_RIGHT" spacing="4.0" GridPane.rowIndex="2">
                                                     <children>
+                                                        <Button mnemonicParsing="false" onAction="#onLoanRefreshAction" style="-fx-text-fill: #ffff; -fx-font-size: 16;" text="Refresh Loans" HBox.hgrow="ALWAYS">
+                                                            <styleClass>
+                                                                <String fx:value="bth" />
+                                                                <String fx:value="btn-primary" />
+                                                            </styleClass>
+                                                        </Button>
                                                         <Button mnemonicParsing="false" onAction="#onAssignLoanBtnAction" style="-fx-text-fill: #ffff; -fx-font-size: 16;" text="Assign New Loan" GridPane.halignment="CENTER" GridPane.rowIndex="2">
                                                             <styleClass>
                                                                 <String fx:value="btn" />
@@ -310,11 +594,25 @@
                                                             </styleClass>
                                                         </Button>
                                                     </children>
-                                       <padding>
-                                          <Insets left="2.0" right="2.0" />
-                                       </padding>
+                                                    <padding>
+                                                        <Insets left="2.0" right="2.0" />
+                                                    </padding>
                                                 </HBox>
-                                    <VBox fx:id="progress_box" alignment="CENTER" prefHeight="200.0" prefWidth="100.0" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                                                <VBox fx:id="progress_box" alignment="CENTER" prefHeight="200.0" prefWidth="100.0" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                                                <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="3.0" GridPane.columnIndex="2" GridPane.rowIndex="2">
+                                                    <children>
+                                                        <Label text="Loan Name">
+                                                            <font>
+                                                                <Font name="System Bold" size="12.0" />
+                                                            </font>
+                                                        </Label>
+                                                        <TextField fx:id="loan_nm_txt">
+                                                            <font>
+                                                                <Font name="System Bold" size="12.0" />
+                                                            </font>
+                                                        </TextField>
+                                                    </children>
+                                                </HBox>
                                             </children>
                                             <VBox.margin>
                                                 <Insets />
@@ -378,10 +676,10 @@
                                                                         <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
                                                                     </columnConstraints>
                                                                     <rowConstraints>
-                                                      <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                                                                         <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                                                      <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                                                      <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                                                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                                                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                                                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                                                                         <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                                                                         <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                                                                         <RowConstraints minHeight="10.0" prefHeight="120.0" vgrow="SOMETIMES" />
@@ -394,31 +692,31 @@
                                                                         <TextField fx:id="doc_typ_txt" GridPane.columnIndex="1" GridPane.rowIndex="4" />
                                                                         <DatePicker fx:id="doc_date_chooser" GridPane.columnIndex="1" GridPane.rowIndex="5" />
                                                                         <Label text="Document Date" GridPane.rowIndex="5" />
-                                                      <HBox spacing="3.0" GridPane.columnIndex="1" GridPane.rowIndex="7">
-                                                         <children>
-                                                                              <Button mnemonicParsing="false" onAction="#onSaveDocBtnAction" style="-fx-text-fill: #ffff; -fx-font-size: 14;" text="Save Document">
-                                                                                  <styleClass>
-                                                                                      <String fx:value="btn" />
-                                                                                      <String fx:value="btn-success" />
-                                                                                  </styleClass>
-                                                                              </Button>
-                                                            <Button layoutX="10.0" layoutY="10.0" mnemonicParsing="false" onAction="#onDeleteDocBtnAction" style="-fx-text-fill: #ffff; -fx-font-size: 14;" text="Delete Document">
-                                                               <styleClass>
-                                                                  <String fx:value="btn" />
-                                                                  <String fx:value="btn-danger" />
-                                                               </styleClass>
-                                                            </Button>
-                                                         </children>
-                                                      </HBox>
+                                                                        <HBox spacing="3.0" GridPane.columnIndex="1" GridPane.rowIndex="7">
+                                                                            <children>
+                                                                                <Button mnemonicParsing="false" onAction="#onSaveDocBtnAction" style="-fx-text-fill: #ffff; -fx-font-size: 14;" text="Save Document">
+                                                                                    <styleClass>
+                                                                                        <String fx:value="btn" />
+                                                                                        <String fx:value="btn-success" />
+                                                                                    </styleClass>
+                                                                                </Button>
+                                                                                <Button layoutX="10.0" layoutY="10.0" mnemonicParsing="false" onAction="#onDeleteDocBtnAction" style="-fx-text-fill: #ffff; -fx-font-size: 14;" text="Delete Document">
+                                                                                    <styleClass>
+                                                                                        <String fx:value="btn" />
+                                                                                        <String fx:value="btn-danger" />
+                                                                                    </styleClass>
+                                                                                </Button>
+                                                                            </children>
+                                                                        </HBox>
                                                                         <Label text="Attachment" GridPane.rowIndex="6" />
                                                                         <ImageView fx:id="doc_imgview" fitHeight="110.0" fitWidth="110.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="1" GridPane.rowIndex="6" />
                                                                         <Button mnemonicParsing="false" onAction="#onBrwsDocBtnAction" text="Browse" GridPane.columnIndex="1" GridPane.rowIndex="6" GridPane.valignment="BOTTOM" />
-                                                      <Label text="Member Loan ID" GridPane.rowIndex="2" />
-                                                      <TextField fx:id="mbr_ln_txt" disable="true" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-                                                      <CheckBox fx:id="mbr_gen_chk" mnemonicParsing="false" onAction="#onMbrGenChkAction" text="Member General Document" />
-                                                      <CheckBox fx:id="mbr_ln_chk" mnemonicParsing="false" onAction="#onMbrLoanChkAction" text="Member Loan Document" GridPane.columnIndex="1" />
-                                                      <Label text="Document Description" GridPane.rowIndex="3" />
-                                                      <TextField fx:id="doc_desc_txt" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+                                                                        <Label text="Member Loan ID" GridPane.rowIndex="2" />
+                                                                        <TextField fx:id="mbr_ln_txt" disable="true" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                                                                        <CheckBox fx:id="mbr_gen_chk" mnemonicParsing="false" onAction="#onMbrGenChkAction" text="Member General Document" />
+                                                                        <CheckBox fx:id="mbr_ln_chk" mnemonicParsing="false" onAction="#onMbrLoanChkAction" text="Member Loan Document" GridPane.columnIndex="1" />
+                                                                        <Label text="Document Description" GridPane.rowIndex="3" />
+                                                                        <TextField fx:id="doc_desc_txt" GridPane.columnIndex="1" GridPane.rowIndex="3" />
                                                                     </children>
                                                                 </GridPane>
                                                             </children>

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+
+<VBox maxHeight="-Infinity" maxWidth="-Infinity" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.court.controller.DisplayLoansTableFxmlController">
+   <children>
+      <TableView fx:id="member_ln_tbl" prefHeight="300.0" VBox.vgrow="ALWAYS">
+        <columns>
+          <TableColumn fx:id="loan_id_col" prefWidth="75.0" text="Loan ID" />
+            <TableColumn fx:id="ins_no_col" prefWidth="102.0" text="Installment Num" />
+          <TableColumn fx:id="ln_type_col" prefWidth="150.0" text="Loan Type" />
+            <TableColumn fx:id="ln_amt_col" prefWidth="106.0" text="Loan Amount" />
+            <TableColumn fx:id="ln_inst_col" prefWidth="109.0" text="Loan Installment" />
+            <TableColumn fx:id="ln_int_col" prefWidth="86.0" text="Loan Interest" />
+        </columns>
+      </TableView>
+      <HBox alignment="TOP_RIGHT" prefHeight="38.0" prefWidth="630.0">
+         <children>
+            <Label prefHeight="32.0" prefWidth="103.0" text="TOTAL">
+               <font>
+                  <Font name="System Bold" size="22.0" />
+               </font>
+            </Label>
+            <Label fx:id="tot_inst_lbl" prefHeight="32.0" prefWidth="136.0" text="Rs00000.00">
+               <font>
+                  <Font name="System Bold" size="22.0" />
+               </font>
+            </Label>
+         </children>
+      </HBox>
+   </children>
+</VBox>

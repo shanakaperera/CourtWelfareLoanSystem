@@ -30,7 +30,6 @@ public class LoanCalculationHandler {
      */
     public static ObservableList<LoanSchedule> reducingBalanceEqInstallmentsCalculator(double principal_amt,
             double interest_rate, int no_of_ins, int interestPer, int tenureIn, int repay_cycle) {
-
         double P = principal_amt;
         double R = interestPer == 0 ? interest_rate / 100 : (interest_rate / 100) / 12;
         double N = tenureIn == 0 ? no_of_ins : no_of_ins * 12;
@@ -111,10 +110,10 @@ public class LoanCalculationHandler {
             double interest_rate, int no_of_ins, int interestPer, int tenureIn, int repay_cycle) {
 
         double P = principal_amt;
-        double R = interestPer == 0 ? interest_rate / 100 : (interest_rate / 100) / 12;
+        double R = interest_rate > 0 ? (interestPer == 0 ? interest_rate / 100 : (interest_rate / 100) / 12) : 0;
         double N = tenureIn == 0 ? no_of_ins : no_of_ins * 12;
 
-        double total_interest = P * R * N;
+        double total_interest = R > 0 ? (P * R * N) : 0;
         double installment = (P + total_interest) / N;
         double intPerInstallment = total_interest / N;
 

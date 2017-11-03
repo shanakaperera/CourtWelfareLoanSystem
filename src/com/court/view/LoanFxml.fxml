@@ -111,8 +111,8 @@
                                         <Label text="Loan Interest %" GridPane.rowIndex="4" />
                                         <Label text="Loan Duration" GridPane.rowIndex="5" />
                                         <TextField fx:id="loan_id_txt" editable="false" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-                                        <TextField fx:id="loan_name_txt" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-                                        <ComboBox fx:id="int_method_combo" prefWidth="300.0" promptText="-- SELECT --" GridPane.columnIndex="1" GridPane.rowIndex="3">
+                                        <TextField fx:id="loan_name_txt" onAction="#onLoanNameAction" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                                        <ComboBox fx:id="int_method_combo" onAction="#onInterMethAction" prefWidth="300.0" promptText="-- SELECT --" GridPane.columnIndex="1" GridPane.rowIndex="3">
                                             <items>
                                                 <FXCollections fx:factory="observableArrayList">
                                                     <String fx:value="Flat Rate" />
@@ -149,11 +149,11 @@
                                                 </Button>
                                             </children>
                                         </HBox>
-                                        <Label text="Repayments" GridPane.rowIndex="6" />
+                                        <Label text="Repayments Count" GridPane.rowIndex="6" />
                                         <HBox fx:id="loan_int_hbox" alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" spacing="2.0" GridPane.columnIndex="1" GridPane.rowIndex="4">
                                             <children>
-                                                <TextField fx:id="loan_int_txt" />
-                                                <ComboBox fx:id="loan_int_combo" prefWidth="150.0" promptText="-- SELECT --">
+                                                <TextField fx:id="loan_int_txt" onAction="#onLoanIntAction" onMouseClicked="#onLoanIntClicked" />
+                                                <ComboBox fx:id="loan_int_combo" onAction="#onLnIntSelAction" prefWidth="150.0" promptText="-- SELECT --">
                                                     <items>
                                                         <FXCollections fx:factory="observableArrayList">
                                                             <String fx:value="Per Month" />
@@ -165,8 +165,8 @@
                                         </HBox>
                                         <HBox fx:id="loan_due_hbox" alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" spacing="2.0" GridPane.columnIndex="1" GridPane.rowIndex="5">
                                             <children>
-                                                <TextField fx:id="loan_due_txt" />
-                                                <ComboBox fx:id="loan_due_combo" prefWidth="150.0" promptText="-- SELECT --">
+                                                <TextField fx:id="loan_due_txt" onAction="#onLnDueAction" />
+                                                <ComboBox fx:id="loan_due_combo" onAction="#onLnDueSelAction" prefWidth="150.0" promptText="-- SELECT --">
                                                     <items>
                                                         <FXCollections fx:factory="observableArrayList">
                                                             <String fx:value="Months" />
@@ -178,14 +178,7 @@
                                         </HBox>
                                         <HBox fx:id="loan_repay_hbox" alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" spacing="2.0" GridPane.columnIndex="1" GridPane.rowIndex="6">
                                             <children>
-                                                <TextField fx:id="repay_txt" />
-                                                <ComboBox fx:id="repay_combo" prefWidth="150.0" promptText="Repayment Cycle">
-                                                    <items>
-                                                        <FXCollections fx:factory="observableArrayList">
-                                                            <String fx:value="Monthly" />
-                                                        </FXCollections>
-                                                    </items>
-                                                </ComboBox>
+                                                <TextField fx:id="repay_txt" editable="false" />
                                             </children>
                                         </HBox>
                                         <Label fx:id="deactive_label" alignment="CENTER_RIGHT" prefHeight="17.0" prefWidth="290.0" GridPane.columnIndex="1" />

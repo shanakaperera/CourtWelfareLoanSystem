@@ -1,5 +1,5 @@
 package com.court.model;
-// Generated Apr 23, 2017 7:05:18 PM by Hibernate Tools 4.3.1
+// Generated Oct 9, 2017 7:04:51 PM by Hibernate Tools 4.3.1
 
 
 import java.util.HashSet;
@@ -12,7 +12,7 @@ public class UsrRolePrivilage  implements java.io.Serializable {
 
 
      private Integer id;
-     private Integer privId;
+     private int privId;
      private String privName;
      private boolean status;
      private Set<PrivCat> privCats = new HashSet<>();
@@ -21,10 +21,12 @@ public class UsrRolePrivilage  implements java.io.Serializable {
     }
 
 	
-    public UsrRolePrivilage(boolean status) {
+    public UsrRolePrivilage(int privId, boolean status) {
+        this.privId = privId;
         this.status = status;
     }
-    public UsrRolePrivilage(String privName, boolean status, Set<PrivCat> privCats) {
+    public UsrRolePrivilage(int privId, String privName, boolean status, Set<PrivCat> privCats) {
+       this.privId = privId;
        this.privName = privName;
        this.status = status;
        this.privCats = privCats;
@@ -36,6 +38,13 @@ public class UsrRolePrivilage  implements java.io.Serializable {
     
     public void setId(Integer id) {
         this.id = id;
+    }
+    public int getPrivId() {
+        return this.privId;
+    }
+    
+    public void setPrivId(int privId) {
+        this.privId = privId;
     }
     public String getPrivName() {
         return this.privName;
@@ -57,14 +66,6 @@ public class UsrRolePrivilage  implements java.io.Serializable {
     
     public void setPrivCats(Set<PrivCat> privCats) {
         this.privCats = privCats;
-    }
-
-    public Integer getPrivId() {
-        return privId;
-    }
-
-    public void setPrivId(Integer privId) {
-        this.privId = privId;
     }
 
 

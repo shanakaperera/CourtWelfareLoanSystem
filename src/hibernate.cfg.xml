@@ -49,19 +49,22 @@ Contributor(s):
     <property name="show_sql">true</property>
     <property name="format_sql">true</property>
     <property name="hibernate.enable_lazy_load_no_trans">true</property>
+    <mapping resource="com/court/model/UsrRolePrivilage.hbm.xml"/>
     <mapping resource="com/court/model/DocSequnce.hbm.xml"/>
-    <mapping resource="com/court/model/Branch.hbm.xml"/>
     <mapping resource="com/court/model/User.hbm.xml"/>
     <mapping resource="com/court/model/LoanPayment.hbm.xml"/>
+    <mapping resource="com/court/model/Document.hbm.xml"/>
+    <mapping resource="com/court/model/UserRole.hbm.xml"/>
+    <mapping resource="com/court/model/Company.hbm.xml"/>
+    <mapping resource="com/court/model/LoanPayCheque.hbm.xml"/>
+    <mapping resource="com/court/model/Branch.hbm.xml"/>
+    <mapping resource="com/court/model/MemChild.hbm.xml"/>
     <mapping resource="com/court/model/MemberLoan.hbm.xml"/>
     <mapping resource="com/court/model/Loan.hbm.xml"/>
-    <mapping resource="com/court/model/Document.hbm.xml"/>
     <mapping resource="com/court/model/UserHasUserRole.hbm.xml"/>
-    <mapping resource="com/court/model/Member.hbm.xml"/>
-    <mapping resource="com/court/model/UserRole.hbm.xml"/>
-    <mapping resource="com/court/model/LoanPayCheque.hbm.xml"/>
-    <mapping resource="com/court/model/UsrRolePrivilage.hbm.xml"/>
+    <mapping resource="com/court/model/MemberSubscription.hbm.xml"/>
     <mapping resource="com/court/model/PrivCat.hbm.xml"/>
-    <mapping resource="com/court/model/Company.hbm.xml"/>
+    <mapping resource="com/court/model/Member.hbm.xml"/>
+    <mapping resource="com/court/model/MemberSubscriptions.hbm.xml"/>
   </session-factory>
 </hibernate-configuration>

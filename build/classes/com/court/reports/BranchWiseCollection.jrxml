@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.4.3.final using JasperReports Library version 6.4.3  -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="report name" pageWidth="595" pageHeight="842" columnWidth="535" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="687b04e8-7552-4a35-873e-74518ddc0959">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="One Empty Record"/>
+	<parameter name="companyName" class="java.lang.String"/>
+	<parameter name="companyAddress" class="java.lang.String"/>
+	<parameter name="reportTitle" class="java.lang.String"/>
+	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["C:\\Users\\Shanaka P\\Documents\\NetBeansProjects\\CourtWelfareLoanSystem\\src\\com\\court\\reports\\"]]></defaultValueExpression>
+	</parameter>
+	<field name="memberLoanCode" class="java.lang.String"/>
+	<field name="member" class="com.court.model.Member"/>
+	<field name="loanAmount" class="java.lang.Double"/>
+	<field name="loanInstallment" class="java.lang.Double"/>
+	<field name="loanInterest" class="java.lang.Double"/>
+	<variable name="loanInt" class="java.lang.Double">
+		<variableExpression><![CDATA[new java.lang.Double($F{loanInterest}.doubleValue()/100)]]></variableExpression>
+	</variable>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="76" splitType="Stretch">
+			<textField>
+				<reportElement x="0" y="0" width="555" height="28" uuid="5fa1e9f5-8f70-4b0f-a481-10c7ef9f091c"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="16" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{companyName}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="29" width="555" height="20" uuid="29534688-2ce0-481b-8a9e-c43659d9744d"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="14" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{companyAddress}]]></textFieldExpression>
+			</textField>
+			<rectangle>
+				<reportElement x="390" y="54" width="164" height="20" uuid="97d537d6-b033-4e83-9294-6d080add78f8"/>
+			</rectangle>
+			<textField pattern="MMMMM dd, yyyy">
+				<reportElement x="476" y="55" width="72" height="20" uuid="af2ddb6a-4d5e-41fb-8e01-03d4f96804df"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="8" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="390" y="55" width="86" height="20" uuid="0fb45594-00b5-4a5f-8e0b-1ddecc2fbd56"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="8" isBold="false"/>
+				</textElement>
+				<text><![CDATA[Report Genarated Date]]></text>
+			</staticText>
+		</band>
+	</title>
+	<pageHeader>
+		<band height="43">
+			<textField>
+				<reportElement x="0" y="0" width="555" height="20" uuid="1103a199-189e-4ea3-8e03-dc37ed77222d"/>
+				<textElement>
+					<font size="12" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{reportTitle}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="22" width="555" height="20" uuid="7e355124-e039-42d0-9c5e-804269aba3d8"/>
+				<textElement verticalAlignment="Middle">
+					<font size="9" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{member}.getBranch().getBranchName()]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageHeader>
+	<columnHeader>
+		<band height="21" splitType="Stretch">
+			<staticText>
+				<reportElement x="0" y="0" width="43" height="21" uuid="9a75efb3-93c2-491e-99a5-334ebbec6457"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Code]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="43" y="1" width="77" height="20" uuid="491b4915-2ade-4076-8029-cf7b476805cd"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Name]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="120" y="1" width="52" height="20" uuid="42100978-dc89-4103-97f2-afc0be2f1787"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Job Title]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="228" y="1" width="50" height="20" uuid="9f1ff4a0-3506-457d-a7ee-d7ac1755d9aa"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Loan]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="172" y="1" width="56" height="20" uuid="925986ba-5994-479e-a689-9375dd38b105"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[LoanCode]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="278" y="1" width="53" height="20" uuid="5248bc77-28fa-40f8-a00a-26fe157a7cb9"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Installment]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="331" y="1" width="42" height="20" uuid="ca649707-c2cc-42f9-9c62-26e719ca2afc"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Interest]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="85" splitType="Stretch">
+			<textField>
+				<reportElement x="0" y="0" width="43" height="20" uuid="c1aed57b-0bc5-4560-9e72-16cd986364b9"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{member}.getMemberId()]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="43" y="0" width="77" height="20" uuid="7f9be937-f91d-4539-9291-83a8db7f11db"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{member}.getNameWithIns()]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="120" y="0" width="52" height="20" uuid="3ac82a76-0524-4e93-a20b-7c67ef2a5059"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{member}.getJobTitle()]]></textFieldExpression>
+			</textField>
+			<textField pattern="Rs#,##0.00">
+				<reportElement x="228" y="0" width="50" height="20" uuid="4a766775-c391-4e2e-86b0-89c144e3ef07"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{loanAmount}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="172" y="0" width="56" height="20" uuid="779dcc10-9504-458b-a6c8-20eef265aebe"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{memberLoanCode}]]></textFieldExpression>
+			</textField>
+			<textField pattern="Rs#,##0.00">
+				<reportElement x="278" y="0" width="53" height="20" uuid="fd30314f-012d-41c3-8aff-8fd32c129ea0"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{loanInstallment}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.0 %">
+				<reportElement x="331" y="0" width="42" height="20" uuid="4040915b-fa89-4d43-b6da-ba754f528315"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{loanInt}]]></textFieldExpression>
+			</textField>
+			<subreport>
+				<reportElement x="0" y="23" width="373" height="62" uuid="4f03b8a5-8e31-44a6-a0aa-9036efc7499b"/>
+				<dataSourceExpression><![CDATA[com.court.handler.FxUtilsHandler.getMemberSubscriptions($F{member})]]></dataSourceExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "BranchWiseCollectionSubreport.jasper"]]></subreportExpression>
+			</subreport>
+		</band>
+	</detail>
+</jasperReport>

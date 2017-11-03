@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.stream.Collectors;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
@@ -35,6 +36,7 @@ import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
@@ -86,8 +88,6 @@ public class LoanFxmlController implements Initializable {
     @FXML
     private TextField repay_txt;
     @FXML
-    private ComboBox<String> repay_combo;
-    @FXML
     private TableView<Loan> loan_manage_table;
     @FXML
     private TableColumn<Loan, String> loan_id_col;
@@ -96,9 +96,9 @@ public class LoanFxmlController implements Initializable {
     @FXML
     private TableColumn<Loan, String> loan_inmeth_col;
     @FXML
-    private TableColumn<Loan, Double> loan_in_col;
+    private TableColumn<Loan, String> loan_in_col;
     @FXML
-    private TableColumn<Loan, Integer> loan_due_col;
+    private TableColumn<Loan, String> loan_due_col;
     @FXML
     private Button deactive_btn;
     @FXML
@@ -185,7 +185,7 @@ public class LoanFxmlController implements Initializable {
             loan.setInterestPer(loan_int_combo.getSelectionModel().getSelectedItem());
             loan.setLoanDuration(Integer.parseInt(loan_due_txt.getText().trim()));
             loan.setDurationPer(loan_due_combo.getSelectionModel().getSelectedItem());
-            loan.setRepaymentCycle(repay_combo.getSelectionModel().getSelectedItem());
+            loan.setRepaymentCycle("Monthly");
             loan.setNoOfRepay(Integer.parseInt(repay_txt.getText().trim()));
             loan.setStatus(true);
             session.saveOrUpdate(loan);
@@ -283,8 +283,6 @@ public class LoanFxmlController implements Initializable {
                 Validator.createEmptyValidator("Selection Required !"));
         validationSupport.registerValidator(loan_due_combo,
                 Validator.createEmptyValidator("Selection Required !"));
-        validationSupport.registerValidator(repay_combo,
-                Validator.createEmptyValidator("Selection Required !"));
         validationSupport.registerValidator(loan_due_txt,
                 Validator.createEmptyValidator("This field is not optional !"));
         validationSupport.registerValidator(loan_int_txt,
@@ -339,32 +337,18 @@ public class LoanFxmlController implements Initializable {
         loan_inmeth_col.setCellValueFactory(new PropertyValueFactory<>("interestMethod"));
         loan_in_col.setCellValueFactory(new PropertyValueFactory<>("loanInterest"));
         loan_due_col.setCellValueFactory(new PropertyValueFactory<>("loanDuration"));
-        loan_in_col.setCellFactory((column) -> {
-            return new TableCell<Loan, Double>() {
-                @Override
-                protected void updateItem(Double item, boolean empty) {
-                    super.updateItem(item, empty);
-                    TableRow<Double> currentRow = getTableRow();
-                    if (!isEmpty()) {
-                        setText(item + "% " + loans.get(currentRow.getIndex()).getInterestPer());
-                    }
-                }
+        loan_in_col.setCellValueFactory((TableColumn.CellDataFeatures<Loan, String> param) -> {
+            Loan l = param.getValue();
+            return new SimpleObjectProperty<>(l.getLoanInterest() + " % " + l.getInterestPer());
 
-            };
         });
-        loan_due_col.setCellFactory((column) -> {
-            return new TableCell<Loan, Integer>() {
-                @Override
-                protected void updateItem(Integer item, boolean empty) {
-                    super.updateItem(item, empty);
-                    TableRow<Integer> currentRow = getTableRow();
-                    if (!isEmpty()) {
-                        setText(item + " " + loans.get(currentRow.getIndex()).getDurationPer());
-                    }
-                }
 
-            };
+        loan_due_col.setCellValueFactory((TableColumn.CellDataFeatures<Loan, String> param) -> {
+            Loan l = param.getValue();
+            return new SimpleObjectProperty<>(l.getLoanDuration() + " " + l.getDurationPer());
+
         });
+
         status_col.setCellFactory((column) -> {
             return new TableCell<Loan, Boolean>() {
                 @Override
@@ -403,7 +387,6 @@ public class LoanFxmlController implements Initializable {
                 format(filteredLoan.getLoanInterest() / 100d));
         loan_due_txt.setText(String.valueOf(filteredLoan.getLoanDuration()));
         repay_txt.setText(String.valueOf(filteredLoan.getNoOfRepay()));
-        repay_combo.getSelectionModel().select(filteredLoan.getRepaymentCycle());
         loan_due_combo.getSelectionModel().select(filteredLoan.getDurationPer());
         loan_int_combo.getSelectionModel().select(filteredLoan.getInterestPer());
         int_method_combo.getSelectionModel().select(filteredLoan.getInterestMethod());
@@ -461,5 +444,41 @@ public class LoanFxmlController implements Initializable {
 
     private boolean isValidationEmpty() {
         return validationSupport.validationResultProperty().get() == null;
+    }
+
+    @FXML
+    private void onLoanIntClicked(MouseEvent event) {
+        loan_int_txt.selectRange(0, loan_int_txt.getText().length() - 1);
+    }
+
+    @FXML
+    private void onLoanNameAction(ActionEvent event) {
+        int_method_combo.requestFocus();
+    }
+
+    @FXML
+    private void onInterMethAction(ActionEvent event) {
+        loan_int_txt.requestFocus();
+        loan_int_txt.selectRange(0, loan_int_txt.getText().length() - 1);
+    }
+
+    @FXML
+    private void onLoanIntAction(ActionEvent event) {
+        loan_int_combo.requestFocus();
+    }
+
+    @FXML
+    private void onLnIntSelAction(ActionEvent event) {
+        loan_due_txt.requestFocus();
+    }
+
+    @FXML
+    private void onLnDueAction(ActionEvent event) {
+        loan_due_combo.requestFocus();
+    }
+
+    @FXML
+    private void onLnDueSelAction(ActionEvent event) {
+        repay_txt.requestFocus();
     }
 }

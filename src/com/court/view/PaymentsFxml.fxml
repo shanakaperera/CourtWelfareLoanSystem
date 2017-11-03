@@ -94,14 +94,10 @@
                 </TitledPane>
                 <TableView fx:id="payment_tbl" prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS">
                     <columns>
-                        <TableColumn fx:id="member_id_col" prefWidth="75.0" text="Member ID" />
-                        <TableColumn fx:id="member_name_col" prefWidth="100.0" text="Name" />
-                        <TableColumn fx:id="loan_id_col" prefWidth="75.0" text="Loan ID" />
-                        <TableColumn fx:id="loan_type_col" prefWidth="200.0" text="Loan Type" />
-                  <TableColumn fx:id="date_col" prefWidth="75.0" text="Date Paid" />
-                        <TableColumn fx:id="loan_amt_col" prefWidth="150.0" text="Amount" />
-                        <TableColumn fx:id="ins_no_col" prefWidth="50.0" text="Inst No" />
-                        <TableColumn fx:id="inst_amt_col" prefWidth="75.0" text="Inst Amount" />
+                        <TableColumn fx:id="chk_no_col" prefWidth="75.0" text="Cheque No" />
+                        <TableColumn fx:id="chk_date_col" prefWidth="100.0" text="Cheque Date" />
+                  <TableColumn fx:id="chk_amt_col" prefWidth="130.0" text="Cheque Amount" />
+                  <TableColumn fx:id="action_col" prefWidth="100.0" text="Action" />
                     </columns>
                 </TableView>
             </children>

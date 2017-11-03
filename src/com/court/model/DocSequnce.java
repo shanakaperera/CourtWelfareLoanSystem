@@ -1,5 +1,5 @@
 package com.court.model;
-// Generated Apr 18, 2017 4:12:00 PM by Hibernate Tools 4.3.1
+// Generated Oct 9, 2017 7:04:51 PM by Hibernate Tools 4.3.1
 
 
 
@@ -19,19 +19,12 @@ public class DocSequnce  implements java.io.Serializable {
     public DocSequnce() {
     }
 
-    public DocSequnce(String seqName, String tableName, String format, Integer startFrom) {
+    public DocSequnce(String seqName, String tableName, String format, String defaultFormat, Integer startFrom) {
        this.seqName = seqName;
        this.tableName = tableName;
        this.format = format;
+       this.defaultFormat = defaultFormat;
        this.startFrom = startFrom;
-    }
-
-    public String getDefaultFormat() {
-        return defaultFormat;
-    }
-
-    public void setDefaultFormat(String defaultFormat) {
-        this.defaultFormat = defaultFormat;
     }
    
     public Integer getId() {
@@ -61,6 +54,13 @@ public class DocSequnce  implements java.io.Serializable {
     
     public void setFormat(String format) {
         this.format = format;
+    }
+    public String getDefaultFormat() {
+        return this.defaultFormat;
+    }
+    
+    public void setDefaultFormat(String defaultFormat) {
+        this.defaultFormat = defaultFormat;
     }
     public Integer getStartFrom() {
         return this.startFrom;

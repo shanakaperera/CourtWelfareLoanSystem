@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="report name" pageWidth="595" pageHeight="842" columnWidth="535" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="0e8f4d60-6f24-41a1-a529-719d815f1212">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="companyName" class="java.lang.String"/>
+	<parameter name="companyAddress" class="java.lang.String"/>
+	<parameter name="SUBREPORT" class="net.sf.jasperreports.engine.JasperReport"/>
+	<parameter name="reportTitle" class="java.lang.String"/>
+	<field name="memberLoans" class="java.util.Set"/>
+	<field name="memberId" class="java.lang.String"/>
+	<field name="nic" class="java.lang.String"/>
+	<field name="nameWithIns" class="java.lang.String"/>
+	<field name="jobTitle" class="java.lang.String"/>
+	<field name="branch" class="com.court.model.Branch"/>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="76" splitType="Stretch">
+			<textField>
+				<reportElement x="0" y="0" width="555" height="28" uuid="5fa1e9f5-8f70-4b0f-a481-10c7ef9f091c"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="16" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{companyName}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="29" width="555" height="20" uuid="29534688-2ce0-481b-8a9e-c43659d9744d"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="14" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{companyAddress}]]></textFieldExpression>
+			</textField>
+			<rectangle>
+				<reportElement x="390" y="54" width="164" height="20" uuid="97d537d6-b033-4e83-9294-6d080add78f8"/>
+			</rectangle>
+			<textField pattern="MMMMM dd, yyyy">
+				<reportElement x="476" y="55" width="72" height="20" uuid="af2ddb6a-4d5e-41fb-8e01-03d4f96804df"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="8" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="390" y="55" width="86" height="20" uuid="0fb45594-00b5-4a5f-8e0b-1ddecc2fbd56"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="8" isBold="false"/>
+				</textElement>
+				<text><![CDATA[Report Genarated Date]]></text>
+			</staticText>
+		</band>
+	</title>
+	<pageHeader>
+		<band height="28">
+			<textField>
+				<reportElement x="0" y="0" width="555" height="20" uuid="1103a199-189e-4ea3-8e03-dc37ed77222d"/>
+				<textElement>
+					<font size="12" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{reportTitle}]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageHeader>
+	<columnHeader>
+		<band height="21" splitType="Stretch">
+			<staticText>
+				<reportElement x="0" y="0" width="100" height="20" uuid="03b2f8be-b029-4250-b13e-2ab94f0c45f2"/>
+				<textElement>
+					<font size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Member Code]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="165" y="1" width="100" height="20" uuid="723b497a-8b8c-4d0a-b8e4-e9f60021be00"/>
+				<textElement>
+					<font size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Name]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="265" y="0" width="100" height="20" uuid="ebd47b72-5a06-4be6-8462-7d34afb77702"/>
+				<textElement>
+					<font size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Job Title]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="365" y="1" width="100" height="20" uuid="164847b8-766a-4376-932e-aaa78266ff92"/>
+				<textElement>
+					<font size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Branch]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="100" y="0" width="65" height="20" uuid="713c84f3-3a8a-45d4-95fe-7ab97da51274"/>
+				<textElement>
+					<font size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[NIC]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="119" splitType="Stretch">
+			<textField>
+				<reportElement x="0" y="9" width="100" height="20" uuid="3fd84910-8bb1-43ed-8072-fc3ff69d6887"/>
+				<textFieldExpression><![CDATA[$F{memberId}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="100" y="9" width="65" height="20" uuid="66692838-0908-4f5c-86ad-153979044c36"/>
+				<textFieldExpression><![CDATA[$F{nic}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="165" y="9" width="100" height="20" uuid="5f653171-e4b3-4a96-bc7e-bda35171329f"/>
+				<textFieldExpression><![CDATA[$F{nameWithIns}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="265" y="9" width="100" height="20" uuid="d643da04-621b-49f9-9ded-414d44230e26"/>
+				<textFieldExpression><![CDATA[$F{jobTitle}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="365" y="9" width="100" height="20" uuid="af9aefd3-0b70-4789-a4f4-2e0480bf7b50"/>
+				<textFieldExpression><![CDATA[$F{branch}.getBranchName()]]></textFieldExpression>
+			</textField>
+			<subreport>
+				<reportElement x="0" y="32" width="555" height="84" uuid="caaf3428-8ccc-4f84-9c1e-860ff00d1c5e"/>
+				<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($F{memberLoans})]]></dataSourceExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT}]]></subreportExpression>
+			</subreport>
+			<line>
+				<reportElement x="0" y="6" width="555" height="1" uuid="4e80fe7c-b8f2-4704-a43b-7b1a2215d289"/>
+			</line>
+		</band>
+	</detail>
+</jasperReport>

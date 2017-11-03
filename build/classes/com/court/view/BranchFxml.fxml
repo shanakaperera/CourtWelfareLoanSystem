@@ -7,8 +7,8 @@
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
-<?import javafx.scene.control.TableColumn?>
-<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TreeTableColumn?>
+<?import javafx.scene.control.TreeTableView?>
 <?import javafx.scene.control.TextArea?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.control.TitledPane?>
@@ -40,7 +40,7 @@
             <children>
                 <VBox spacing="10.0" HBox.hgrow="ALWAYS">
                     <children>
-                        <TitledPane prefHeight="200.0" prefWidth="200.0" text="SEARCH BRANCH">
+                        <TitledPane fx:id="btitle_pane" prefHeight="200.0" prefWidth="200.0" text="SEARCH BRANCH">
                             <content>
                                 <GridPane fx:id="branch_search_grid_pane">
                                     <columnConstraints>
@@ -55,24 +55,24 @@
                                     <children>
                                         <Label text="Branch ID" />
                                         <Label text="Branch Name" GridPane.rowIndex="1" />
-                              <HBox alignment="CENTER_LEFT" spacing="5.0" GridPane.columnIndex="1" GridPane.rowIndex="2">
-                                 <children>
-                                              <Button mnemonicParsing="false" onAction="#onBranchSearchBtnAction" style="-fx-text-fill: #ffff; -fx-font-size: 14;" text="Search">
-                                                  <styleClass>
-                                                      <String fx:value="btn" />
-                                                      <String fx:value="btn-success" />
-                                                  </styleClass>
-                                              </Button>
-                                    <Button mnemonicParsing="false" onAction="#onClearBtnAction" style="-fx-text-fill: #ffff; -fx-font-size: 14;" text="Clear All">
-                                       <styleClass>
-                                          <String fx:value="btn" />
-                                          <String fx:value="btn-primary" />
-                                       </styleClass>
-                                    </Button>
-                                 </children>
-                              </HBox>
-                              <TextField fx:id="branch_search_id" GridPane.columnIndex="1" />
-                              <TextField fx:id="branch_search_name" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                                        <HBox alignment="CENTER_LEFT" spacing="5.0" GridPane.columnIndex="1" GridPane.rowIndex="2">
+                                            <children>
+                                                <Button mnemonicParsing="false" onAction="#onBranchSearchBtnAction" style="-fx-text-fill: #ffff; -fx-font-size: 14;" text="Search">
+                                                    <styleClass>
+                                                        <String fx:value="btn" />
+                                                        <String fx:value="btn-success" />
+                                                    </styleClass>
+                                                </Button>
+                                                <Button mnemonicParsing="false" onAction="#onClearBtnAction" style="-fx-text-fill: #ffff; -fx-font-size: 14;" text="Clear All">
+                                                    <styleClass>
+                                                        <String fx:value="btn" />
+                                                        <String fx:value="btn-primary" />
+                                                    </styleClass>
+                                                </Button>
+                                            </children>
+                                        </HBox>
+                                        <TextField fx:id="branch_search_id" GridPane.columnIndex="1" />
+                                        <TextField fx:id="branch_search_name" GridPane.columnIndex="1" GridPane.rowIndex="1" />
                                     </children>
                                 </GridPane>
                             </content>
@@ -125,17 +125,19 @@
                                         <ComboBox fx:id="branch_type_combo" prefHeight="25.0" promptText="--- SELECT ---" GridPane.columnIndex="1" GridPane.rowIndex="2">
                                             <items>
                                                 <FXCollections fx:factory="observableArrayList">
+                                                    <String fx:value="Supreme Court" />
+                                                    <String fx:value="Appeal Court" />
                                                     <String fx:value="High Court" />
                                                     <String fx:value="District Court" />
                                                     <String fx:value="Magistrate Court" />
                                                 </FXCollections>
                                             </items>
                                         </ComboBox>
-                              <TextField fx:id="br_id_txt" editable="false" GridPane.columnIndex="1" />
-                              <TextField fx:id="branch_name_txt" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-                              <TextField fx:id="branch_adrs_txt" GridPane.columnIndex="1" GridPane.rowIndex="3" />
-                              <TextField fx:id="branch_tel_txt" GridPane.columnIndex="1" GridPane.rowIndex="4" />
-                              <TextArea fx:id="branch_des_txt" prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="5" />
+                                        <TextField fx:id="br_id_txt" editable="false" GridPane.columnIndex="1" />
+                                        <TextField fx:id="branch_name_txt" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                                        <TextField fx:id="branch_adrs_txt" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+                                        <TextField fx:id="branch_tel_txt" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+                                        <TextArea fx:id="branch_des_txt" prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="5" />
                                     </children>
                                 </GridPane>
                             </content>
@@ -144,15 +146,15 @@
                 </VBox>
                 <VBox HBox.hgrow="ALWAYS">
                     <children>
-                        <TableView fx:id="branch_table" prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS">
+                        <TreeTableView fx:id="branch_table" prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS">
                             <columns>
-                                <TableColumn fx:id="branch_id_col" prefWidth="75.0" text="Branch ID" />
-                                <TableColumn fx:id="branch_name_col" prefWidth="150.0" text="Branch Name" />
-                                <TableColumn fx:id="address_col" prefWidth="200.0" text="Address" />
-                                <TableColumn fx:id="contact_no_col" prefWidth="75.0" text="Contact No" />
-                        <TableColumn fx:id="status_col" prefWidth="70.0" text="Status" />
+                                <TreeTableColumn fx:id="branch_id_col" prefWidth="75.0" text="Branch ID" />
+                                <TreeTableColumn fx:id="branch_name_col" prefWidth="150.0" text="Branch Name" />
+                                <TreeTableColumn fx:id="address_col" prefWidth="200.0" text="Address" />
+                                <TreeTableColumn fx:id="contact_no_col" prefWidth="75.0" text="Contact No" />
+                                <TreeTableColumn fx:id="status_col" prefWidth="70.0" text="Status" />
                             </columns>
-                        </TableView>
+                        </TreeTableView>
                     </children>
                 </VBox>
             </children>

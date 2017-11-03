@@ -32,7 +32,6 @@ public class DocSeqHandler {
     private void extractSeqCode(String seq_format, int start_from) {
         Matcher m = Pattern.compile("\\{(.*?)\\}").matcher(seq_format);
         while (m.find()) {
-            
             setSeq_code(seq_format.replace(m.group(), "")
                     + String.format("%0" + m.group(1).replaceAll("\\D+", "") + "d",
                             start_from));

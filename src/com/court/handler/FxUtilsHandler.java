@@ -5,6 +5,10 @@
  */
 package com.court.handler;
 
+import com.court.db.HibernateUtil;
+import com.court.model.LoanPayment;
+import com.court.model.Member;
+import com.court.model.MemberSubscriptions;
 import eu.hansolo.tilesfx.Tile;
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
@@ -13,8 +17,10 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import javafx.animation.KeyFrame;
@@ -33,6 +39,9 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.util.Duration;
 import javafx.util.StringConverter;
+import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
+import org.hibernate.Session;
+import org.hibernate.criterion.Restrictions;
 
 /**
  *
@@ -81,7 +90,16 @@ public class FxUtilsHandler {
         }
         for (Node c : children) {
             if (c instanceof TextField) {
-                ((TextField) c).setText("");
+                if (((TextField) c).getText() != null) {
+                    if (((TextField) c).getText().contains("Rs")) {
+                        ((TextField) c).setText(TextFormatHandler.CURRENCY_DECIMAL_FORMAT.format(0));
+                    } else if (((TextField) c).getText().contains("%")) {
+                        ((TextField) c).setText(TextFormatHandler.PRECENTAGE_DECIMAL_FORMAT.format(0));
+                    } else {
+                        ((TextField) c).setText(null);
+                    }
+                }
+
             }
             if (c instanceof ComboBox) {
                 ((ComboBox) c).getSelectionModel().select(null);
@@ -91,6 +109,38 @@ public class FxUtilsHandler {
             }
             if (c instanceof DatePicker) {
                 ((DatePicker) c).setValue(null);
+            }
+            if (c instanceof CheckBox) {
+                ((CheckBox) c).setSelected(false);
+            }
+
+        }
+    }
+
+    /**
+     * This method use to disable all the inputs and set to default.
+     *
+     * @param disable
+     * @param parent_panes
+     *
+     */
+    public static void disableFields(boolean disable, Pane... parent_panes) {
+        ObservableList<Node> children = FXCollections.observableArrayList();
+        for (Pane parent_pane : parent_panes) {
+            children.addAll(parent_pane.getChildren());
+        }
+        for (Node c : children) {
+            if (c instanceof TextField) {
+                ((TextField) c).setDisable(disable);
+            }
+            if (c instanceof ComboBox) {
+                ((ComboBox) c).setDisable(disable);
+            }
+            if (c instanceof TextArea) {
+                ((TextArea) c).setDisable(disable);
+            }
+            if (c instanceof DatePicker) {
+                ((DatePicker) c).setDisable(disable);
             }
 
         }
@@ -105,7 +155,7 @@ public class FxUtilsHandler {
     public static void setDatePickerTimeFormat(DatePicker... datePickers) {
         for (DatePicker datePicker : datePickers) {
             datePicker.setConverter(new StringConverter<LocalDate>() {
-                DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+                DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
 
                 @Override
                 public String toString(LocalDate date) {
@@ -169,10 +219,15 @@ public class FxUtilsHandler {
      * @return double value
      */
     public static double roundNumber(double value, int numberOfDigitsAfterDecimalPoint) {
-        BigDecimal bigDecimal = new BigDecimal(value);
-        bigDecimal = bigDecimal.setScale(numberOfDigitsAfterDecimalPoint,
-                BigDecimal.ROUND_HALF_UP);
-        return bigDecimal.doubleValue();
+        if (value > 0) {
+            BigDecimal bigDecimal = new BigDecimal(value);
+            bigDecimal = bigDecimal.setScale(numberOfDigitsAfterDecimalPoint,
+                    BigDecimal.ROUND_HALF_UP);
+            return bigDecimal.doubleValue();
+        } else {
+            return 0;
+        }
+
     }
 
     /**
@@ -231,5 +286,31 @@ public class FxUtilsHandler {
         );
         timeline.setCycleCount(Timeline.INDEFINITE);
         timeline.play();
+    }
+
+    public static List<LoanPayment> previousInstallments(int memeberId) {
+        Session session = HibernateUtil.getSessionFactory().openSession();
+        List<LoanPayment> list = session.createCriteria(LoanPayment.class)
+                .createAlias("memberLoan", "ml")
+                .createAlias("ml.member", "m")
+                .add(Restrictions.disjunction()
+                        .add(Restrictions.eq("m.id", memeberId))).list();
+        session.close();
+        System.out.println("MId - " + memeberId + " : Size - " + list.size());
+        return list;
+    }
+
+    public static JRBeanCollectionDataSource getMemberSubscriptions(Member m) {
+        List<MemberSubscriptions> mbrSubs = new CopyOnWriteArrayList<>(m.getMemberSubscriptions());
+        boolean flag = FxUtilsHandler.previousInstallments(m.getId()).isEmpty();
+
+        for (MemberSubscriptions ms : mbrSubs) {
+            if (flag) {
+                if (ms.getRepaymentType().equalsIgnoreCase("Once")) {
+                    ms.setAmount(0.0);
+                }
+            }
+        }
+        return new JRBeanCollectionDataSource(mbrSubs);
     }
 }

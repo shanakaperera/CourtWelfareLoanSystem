@@ -41,15 +41,20 @@ Contributor(s):
 -->
 <hibernate-reverse-engineering>
   <schema-selection match-catalog="court_loan"/>
-  <table-filter match-name="user_role"/>
-  <table-filter match-name="member_loan"/>
-  <table-filter match-name="member"/>
-  <table-filter match-name="loan"/>
-  <table-filter match-name="document"/>
-  <table-filter match-name="loan_pay_cheque"/>
+  <table-filter match-name="priv_cat"/>
+  <table-filter match-name="mem_child"/>
   <table-filter match-name="user_has_user_role"/>
-  <table-filter match-name="branch"/>
+  <table-filter match-name="loan"/>
   <table-filter match-name="user"/>
+  <table-filter match-name="usr_role_privilage"/>
+  <table-filter match-name="company"/>
+  <table-filter match-name="user_role"/>
   <table-filter match-name="loan_payment"/>
+  <table-filter match-name="member_loan"/>
+  <table-filter match-name="loan_pay_cheque"/>
+  <table-filter match-name="member_subscription"/>
+  <table-filter match-name="member"/>
+  <table-filter match-name="document"/>
   <table-filter match-name="doc_sequnce"/>
+  <table-filter match-name="branch"/>
 </hibernate-reverse-engineering>

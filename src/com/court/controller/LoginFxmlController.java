@@ -65,7 +65,7 @@ public class LoginFxmlController implements Initializable {
         closeBtn.setGraphic(new GlyphIcons().setFontAwesomeIconGlyph('\uf00d', Color.WHITESMOKE, 20.0));
 
         //==========DEVELOPMENT PROGRESS GOING ON============================
-        unameField.setText("nimesh@1234");
+        unameField.setText("admin@1234");
         passField.setText("Nimesh@1234");
         //==========DEVELOPMENT PROGRESS GOING ON============================
     }

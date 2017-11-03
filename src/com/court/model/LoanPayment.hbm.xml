@@ -1,13 +1,16 @@
 <?xml version="1.0"?>
 <!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
 "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
-<!-- Generated Apr 18, 2017 4:12:16 PM by Hibernate Tools 4.3.1 -->
+<!-- Generated Oct 9, 2017 7:05:12 PM by Hibernate Tools 4.3.1 -->
 <hibernate-mapping>
     <class name="com.court.model.LoanPayment" table="loan_payment" catalog="court_loan" optimistic-lock="version">
-        <id name="id" type="int">
+        <id name="id" type="java.lang.Integer">
             <column name="id" />
             <generator class="identity" />
         </id>
+        <many-to-one name="loanPayCheque" class="com.court.model.LoanPayCheque" fetch="select">
+            <column name="loan_pay_cheque_id" not-null="true" />
+        </many-to-one>
         <many-to-one name="memberLoan" class="com.court.model.MemberLoan" fetch="select">
             <column name="member_loan_id" not-null="true" />
         </many-to-one>
@@ -28,6 +31,24 @@
         </property>
         <property name="isLast" type="boolean">
             <column name="is_last" not-null="true" />
+        </property>
+        <property name="membershipFee" type="java.lang.Double">
+            <column name="membership_fee" precision="22" scale="0" />
+        </property>
+        <property name="savingsFee" type="java.lang.Double">
+            <column name="savings_fee" precision="22" scale="0" />
+        </property>
+        <property name="hoiFee" type="java.lang.Double">
+            <column name="hoi_fee" precision="22" scale="0" />
+        </property>
+        <property name="aciFee" type="java.lang.Double">
+            <column name="aci_fee" precision="22" scale="0" />
+        </property>
+        <property name="optionalFee" type="java.lang.Double">
+            <column name="optional_fee" precision="22" scale="0" />
+        </property>
+        <property name="admissionFee" type="java.lang.Double">
+            <column name="admission_fee" precision="22" scale="0" />
         </property>
     </class>
 </hibernate-mapping>

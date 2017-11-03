@@ -28,6 +28,7 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
@@ -193,8 +194,8 @@ public class LoanCalculatorFxmlController implements Initializable {
                 Validator.createEmptyValidator("This field is not optional !"));
         validationSupport.registerValidator(principal_amount_txt,
                 Validator.createPredicateValidator((principal) -> {
-                    return TextFormatHandler.getCurrencyFieldValue(principal_amount_txt) > 10000d;
-                }, "Principal amount should be more than Rs 10000.00 !"));
+                    return TextFormatHandler.getCurrencyFieldValue(principal_amount_txt) > 1000d;
+                }, "Principal amount should be more than Rs 1000.00 !"));
         validationSupport.registerValidator(loan_int_txt,
                 Validator.createPredicateValidator((percentage) -> {
                     return TextFormatHandler.getPercentageFieldValue(loan_int_txt) < 100d;
@@ -234,5 +235,51 @@ public class LoanCalculatorFxmlController implements Initializable {
 
     private boolean isValidationEmpty() {
         return validationSupport.validationResultProperty().get() == null;
+    }
+
+    @FXML
+    private void onPAmtMouseClicked(MouseEvent event) {
+        principal_amount_txt.selectRange(2, principal_amount_txt.getText().length());
+    }
+
+    @FXML
+    private void onLoanIntMouseClicked(MouseEvent event) {
+        loan_int_txt.selectRange(0, loan_int_txt.getText().length() - 1);
+    }
+
+    @FXML
+    private void onIntMethAction(ActionEvent event) {
+        loan_int_txt.requestFocus();
+        loan_int_txt.selectRange(0, loan_int_txt.getText().length() - 1);
+    }
+
+    @FXML
+    private void onLoanIntAction(ActionEvent event) {
+        loan_int_combo.requestFocus();
+    }
+
+    @FXML
+    private void onLoanIntSelAction(ActionEvent event) {
+        loan_du_txt.requestFocus();
+    }
+
+    @FXML
+    private void onLoanDueAction(ActionEvent event) {
+        loan_du_combo.requestFocus();
+    }
+
+    @FXML
+    private void onLoanDueSelAction(ActionEvent event) {
+        repay_cycle_combo.requestFocus();
+    }
+
+    @FXML
+    private void onRepaySelAction(ActionEvent event) {
+        repay_no_txt.requestFocus();
+    }
+
+    @FXML
+    private void onPrinAmtAction(ActionEvent event) {
+        interest_method_combo.requestFocus();
     }
 }

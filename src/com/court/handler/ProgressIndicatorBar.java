@@ -49,8 +49,8 @@ public class ProgressIndicatorBar extends StackPane {
     // synchronizes the progress indicated with the work done.
     private void syncProgress() {
         if (workDone == null || totalWork == 0) {
-            text.setText("");
-            bar.setProgress(ProgressBar.INDETERMINATE_PROGRESS);
+            text.setText("0%");
+            bar.setProgress(0.0);
         } else {
             text.setText(String.format(WORK_DONE_LABEL_FORMAT, Math.ceil(workDone.get())) + "%");
             bar.setProgress(workDone.get() / totalWork);

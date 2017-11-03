@@ -84,6 +84,8 @@ public class DashBoardFxmlController implements Initializable {
     private MenuItem gen_menu_item;
     @FXML
     private Label dashboard_header;
+    @FXML
+    private Button guarant_btn;
 
     public LoggedSessionHandler loggedSession() {
         return sHandler;
@@ -202,7 +204,8 @@ public class DashBoardFxmlController implements Initializable {
     }
 
     @FXML
-    private void reportBtnAction(ActionEvent event) {
+    private void reportBtnAction(ActionEvent event) throws IOException {
+        loadDataPane("/com/court/view/ReportFormFxml.fxml");
     }
 
     @FXML
@@ -224,6 +227,27 @@ public class DashBoardFxmlController implements Initializable {
     @FXML
     private void loancalBtnAction(ActionEvent event) throws IOException {
         loadDataPane("/com/court/view/LoanCalculatorFxml.fxml");
+    }
+
+    @FXML
+    private void onLoggedUsrBtnAction(ActionEvent event) throws IOException {
+        if (loggedSession() != null) {
+            loadDataPane("/com/court/view/ProfileFxml.fxml");
+        }
+    }
+
+    @FXML
+    private void genBtnAction(ActionEvent event) throws IOException {
+        loadDataPane("/com/court/view/GeneralSettingsFxml.fxml");
+    }
+
+    @FXML
+    private void guarntBtnAction(ActionEvent event) throws IOException {
+        loadDataPane("/com/court/view/GuarantorsFxml.fxml");
+    }
+
+    public Label getDashboard_header() {
+        return dashboard_header;
     }
 
     private void disableButtonWithLoggingPrv(LoggedSessionHandler ls) {
@@ -252,19 +276,4 @@ public class DashBoardFxmlController implements Initializable {
         return flag;
     }
 
-    @FXML
-    private void onLoggedUsrBtnAction(ActionEvent event) throws IOException {
-        if (loggedSession() != null) {
-            loadDataPane("/com/court/view/ProfileFxml.fxml");
-        }
-    }
-
-    @FXML
-    private void genBtnAction(ActionEvent event) throws IOException {
-         loadDataPane("/com/court/view/GeneralSettingsFxml.fxml");
-    }
-
-    public Label getDashboard_header() {
-        return dashboard_header;
-    }
 }

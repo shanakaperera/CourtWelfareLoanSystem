@@ -10,6 +10,7 @@ import com.court.handler.DocSeqHandler;
 import com.court.handler.FxUtilsHandler;
 import com.court.handler.LoggedSessionHandler;
 import com.court.handler.PropHandler;
+import com.court.handler.RecursiveTreeItem;
 import com.court.model.Branch;
 import java.io.IOException;
 import java.net.URL;
@@ -17,6 +18,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.stream.Collectors;
+import javafx.beans.binding.Bindings;
+import javafx.beans.property.ReadOnlyBooleanWrapper;
+import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
@@ -28,15 +32,24 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.ComboBox;
-import javafx.scene.control.TableCell;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableRow;
-import javafx.scene.control.TableView;
+import javafx.scene.control.ContextMenu;
+import javafx.scene.control.Label;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
-import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.control.TitledPane;
+import javafx.scene.control.TreeItem;
+import javafx.scene.control.TreeTableCell;
+import javafx.scene.control.TreeTableColumn;
+import javafx.scene.control.TreeTableRow;
+import javafx.scene.control.TreeTableView;
+import javafx.scene.input.ClipboardContent;
+import javafx.scene.input.DataFormat;
+import javafx.scene.input.Dragboard;
+import javafx.scene.input.TransferMode;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.VBox;
 import org.controlsfx.control.textfield.TextFields;
 import org.controlsfx.validation.Severity;
 import org.controlsfx.validation.ValidationSupport;
@@ -54,6 +67,7 @@ import org.hibernate.criterion.Restrictions;
 public class BranchFxmlController implements Initializable {
 
     private static final String TABLE_NAME = "branch";
+    private static final DataFormat SERIALIZED_MIME_TYPE = new DataFormat("application/x-java-serialized-object");
     private ValidationSupport validationSupport;
     @FXML
     private ComboBox<String> branch_type_combo;
@@ -68,17 +82,17 @@ public class BranchFxmlController implements Initializable {
     @FXML
     private TextArea branch_des_txt;
     @FXML
-    private TableView<Branch> branch_table;
+    private TreeTableView<Branch> branch_table;
     @FXML
-    private TableColumn<Branch, String> branch_id_col;
+    private TreeTableColumn<Branch, String> branch_id_col;
     @FXML
-    private TableColumn<Branch, String> branch_name_col;
+    private TreeTableColumn<Branch, String> branch_name_col;
     @FXML
-    private TableColumn<Branch, String> address_col;
+    private TreeTableColumn<Branch, String> address_col;
     @FXML
-    private TableColumn<Branch, String> contact_no_col;
+    private TreeTableColumn<Branch, String> contact_no_col;
     @FXML
-    private TableColumn<Branch, Boolean> status_col;
+    private TreeTableColumn<Branch, Boolean> status_col;
     @FXML
     private TextField branch_search_id;
     @FXML
@@ -91,6 +105,9 @@ public class BranchFxmlController implements Initializable {
     private GridPane branch_search_grid_pane;
     @FXML
     private Button sav_brnch_btn;
+    @FXML
+    private TitledPane btitle_pane;
+    private int parent_id = 0;
 
     /**
      * Initializes the controller class.
@@ -101,7 +118,7 @@ public class BranchFxmlController implements Initializable {
         fillBranchCodeTxt(br_id_txt);
 
         ObservableList<Branch> allBranches = getAllBranches();
-        initBranchTable(allBranches);
+        initBranchTable(allBranches, false);
         List<String> branchCodes = allBranches.stream()
                 .map(Branch::getBranchCode).collect(Collectors.toList());
         List<String> branchNames = allBranches.stream()
@@ -130,6 +147,7 @@ public class BranchFxmlController implements Initializable {
             int id = getIdByBranchCode(session, br_id_txt.getText().trim());
             if (id != 0) {
                 branch = (Branch) session.load(Branch.class, id);
+                parent_id = branch.getParentId();
             } else {
                 branch = new Branch();
             }
@@ -141,6 +159,7 @@ public class BranchFxmlController implements Initializable {
             branch.setContactNo(branch_tel_txt.getText());
             branch.setDescription(branch_des_txt.getText().isEmpty() ? "No Description" : branch_des_txt.getText());
             branch.setStatus(true);
+            branch.setParentId(parent_id);
             session.saveOrUpdate(branch);
             session.getTransaction().commit();
             session.close();
@@ -156,13 +175,16 @@ public class BranchFxmlController implements Initializable {
                 fillBranchCodeTxt(br_id_txt);
 
                 ObservableList<Branch> allBranches = getAllBranches();
-                initBranchTable(allBranches);
+                initBranchTable(allBranches, false);
                 List<String> branchCodes = allBranches.stream()
                         .map(Branch::getBranchCode).collect(Collectors.toList());
                 List<String> branchNames = allBranches.stream()
                         .map(Branch::getBranchName).collect(Collectors.toList());
                 TextFields.bindAutoCompletion(branch_search_id, branchCodes);
                 TextFields.bindAutoCompletion(branch_search_name, branchNames);
+                btitle_pane.setContent(branch_search_grid_pane);
+                parent_id = 0;
+
             }
 
         } else {
@@ -182,6 +204,7 @@ public class BranchFxmlController implements Initializable {
         fillBranchCodeTxt(br_id_txt);
         FxUtilsHandler.activeDeactiveChildrenControls(true, branch_grid_pane);
         FxUtilsHandler.activeBtnAppearanceChange(branch_actv_deactv_btn, true, false);
+        parent_id = 0;
     }
 
     @FXML
@@ -215,9 +238,10 @@ public class BranchFxmlController implements Initializable {
             if (result.get() == ButtonType.OK) {
                 //deactivation proccess----------
                 ObservableList<Branch> allBranches = getAllBranches();
-                initBranchTable(allBranches);
+                initBranchTable(allBranches, false);
                 FxUtilsHandler.activeDeactiveChildrenControls(set_status, branch_grid_pane);
                 FxUtilsHandler.activeBtnAppearanceChange(branch_actv_deactv_btn, set_status, false);
+                parent_id = 0;
             }
         } else {
             Alert alert_inf = new Alert(Alert.AlertType.INFORMATION);
@@ -231,7 +255,7 @@ public class BranchFxmlController implements Initializable {
 
     @FXML
     private void onBranchSearchBtnAction(ActionEvent event) {
-
+        parent_id = 0;
         FilteredList<Branch> filteredBranches = new FilteredList<>(getAllBranches(), p -> true);
         String newValue_id = branch_search_id.getText();
         String newValue_name = branch_search_name.getText();
@@ -241,11 +265,12 @@ public class BranchFxmlController implements Initializable {
 
     @FXML
     private void onClearBtnAction(ActionEvent event) {
-        initBranchTable(getAllBranches());
+        initBranchTable(getAllBranches(), false);
         FxUtilsHandler.clearFields(branch_grid_pane, branch_search_grid_pane);
         fillBranchCodeTxt(br_id_txt);
         FxUtilsHandler.activeDeactiveChildrenControls(true, branch_grid_pane);
         FxUtilsHandler.activeBtnAppearanceChange(branch_actv_deactv_btn, true, false);
+        parent_id = 0;
     }
 
     private void fillBranchCodeTxt(TextField branchCodeField) {
@@ -254,6 +279,7 @@ public class BranchFxmlController implements Initializable {
         Criteria c = session.createCriteria(Branch.class);
         c.addOrder(Order.desc("id"));
         c.setMaxResults(1);
+
         Branch br = (Branch) c.uniqueResult();
         session.close();
         if (br != null) {
@@ -263,44 +289,181 @@ public class BranchFxmlController implements Initializable {
             seqHandler.reqTable(TABLE_NAME, 0);
             branchCodeField.setText(seqHandler.getSeq_code());
         }
-
     }
 
-    private void initBranchTable(ObservableList<Branch> branches) {
-        branch_id_col.setCellValueFactory(new PropertyValueFactory<>("branchCode"));
-        branch_name_col.setCellValueFactory(new PropertyValueFactory<>("branchName"));
-        address_col.setCellValueFactory(new PropertyValueFactory<>("address"));
-        contact_no_col.setCellValueFactory(new PropertyValueFactory<>("contactNo"));
+    private void initBranchTable(ObservableList<Branch> branches, boolean isSearch) {
+        branch_id_col.setCellValueFactory(param -> new ReadOnlyStringWrapper(param.getValue().getValue().getBranchCode()));
+        branch_name_col.setCellValueFactory(param -> new ReadOnlyStringWrapper(param.getValue().getValue().getBranchName()));
+        address_col.setCellValueFactory(param -> new ReadOnlyStringWrapper(param.getValue().getValue().getAddress()));
+        contact_no_col.setCellValueFactory(param -> new ReadOnlyStringWrapper(param.getValue().getValue().getContactNo()));
+        status_col.setCellValueFactory(param -> new ReadOnlyBooleanWrapper(param.getValue().getValue().isStatus()));
         status_col.setCellFactory((column) -> {
-            return new TableCell<Branch, Boolean>() {
+            return new TreeTableCell<Branch, Boolean>() {
                 @Override
                 protected void updateItem(Boolean item, boolean empty) {
                     super.updateItem(item, empty);
-                    TableRow<Boolean> currentRow = getTableRow();
+                    TreeTableRow<Branch> currentRow = getTreeTableRow();
                     if (!isEmpty()) {
                         setText(item ? "Active" : "Deactive");
                         currentRow.setStyle(item ? "" : "-fx-background-color:#d9534f");
+                    } else {
+                        setText(null);
+                        currentRow.setStyle("");
                     }
                 }
 
             };
         });
-        status_col.setCellValueFactory(new PropertyValueFactory<>("status"));
 
-        branch_table.setItems(branches);
+        Branch root = new Branch("Root");
+        root.getSubBranches().addAll(manage_subBranches(branches, isSearch));
+        TreeItem<Branch> rootItem = new RecursiveTreeItem<>(root, Branch::getSubBranches);
+        branch_table.setRoot(rootItem);
+        branch_table.setShowRoot(false);
 
         branch_table.getSelectionModel().selectedItemProperty()
                 .addListener((observable, oldValue, newValue) -> {
                     if (branch_table.getSelectionModel().getSelectedItem() != null) {
-                        Branch selectedBranch = branch_table.getSelectionModel().getSelectedItem();
+                        Branch selectedBranch = branch_table.getSelectionModel().getSelectedItem().getValue();
                         getBranchByCode(selectedBranch.getBranchCode());
                     }
                 });
+        branch_table.setRowFactory((TreeTableView<Branch> param) -> {
+            final TreeTableRow<Branch> row = new TreeTableRow<>();
+
+            final ContextMenu rowMenu = new ContextMenu();
+            MenuItem childBranch = new MenuItem("Add Child Branch");
+            childBranch.setOnAction((ActionEvent event) -> {
+                if (row.getItem().getParentId() > 0) {
+                    Alert alert_error = new Alert(Alert.AlertType.ERROR);
+                    alert_error.setTitle("Error");
+                    alert_error.setHeaderText("Invalid Attempt !");
+                    alert_error.setContentText("No more child branches allowed here !");
+                    alert_error.show();
+                } else {
+                    VBox content = new VBox();
+                    Button cancelBtn = new Button("Cancel");
+                    Label msgLabel = new Label("Add child branch to " + row.getItem().getBranchName() + ". Press Cancel to terminate the process.");
+                    cancelBtn.setStyle("-fx-text-fill: #ffff; -fx-font-size: 14; -fx-background-color: red;");
+                    msgLabel.setStyle("-fx-font-size: 14;");
+                    cancelBtn.setOnAction((ActionEvent evt) -> {
+                        btitle_pane.setContent(branch_search_grid_pane);
+                        parent_id = 0;
+                    });
+                    content.getChildren().add(msgLabel);
+                    content.getChildren().add(cancelBtn);
+                    btitle_pane.setContent(content);
+                    parent_id = row.getItem().getId();
+
+                    //=========================CLEAR FILEDS AND VIEW AS NEW======================
+                    FxUtilsHandler.clearFields(branch_grid_pane);
+                    fillBranchCodeTxt(br_id_txt);
+                    FxUtilsHandler.activeDeactiveChildrenControls(true, branch_grid_pane);
+                    FxUtilsHandler.activeBtnAppearanceChange(branch_actv_deactv_btn, true, false);
+                    //============================================================================
+
+                }
+            });
+            MenuItem deleteBranch = new MenuItem("Delete Selected Branch");
+            deleteBranch.setOnAction((ActionEvent event) -> {
+                System.out.println("Clicked");
+            });
+            MenuItem makeParent = new MenuItem("Set as Parent Branch");
+            makeParent.setOnAction((ActionEvent evt) -> {
+                if (row.getItem().getParentId() > 0) {
+                    Alert congf_alrt = new Alert(Alert.AlertType.CONFIRMATION);
+                    congf_alrt.setTitle("Message");
+                    congf_alrt.setHeaderText("Are you sure ?");
+                    congf_alrt.setContentText("You are trying to make \"" + row.getItem().getBranchName()
+                            + "\" as parent Branch.\n Click OK to continute or Cancel to terminate process. ");
+                    Optional<ButtonType> result = congf_alrt.showAndWait();
+                    if (result.get() == ButtonType.OK) {
+                        move_branch(row.getItem().getId(), 0);
+                        initBranchTable(getAllBranches(), false);
+                    }
+                } else {
+                    Alert alert_error = new Alert(Alert.AlertType.ERROR);
+                    alert_error.setTitle("Error");
+                    alert_error.setHeaderText("Invalid Attempt !");
+                    alert_error.setContentText("Selected branch is already a parent branch !");
+                    alert_error.show();
+                }
+            });
+            rowMenu.getItems().addAll(childBranch, deleteBranch, makeParent);
+
+            row.contextMenuProperty().bind(
+                    Bindings.when(Bindings.isNotNull(row.itemProperty()))
+                            .then(rowMenu)
+                            .otherwise((ContextMenu) null));
+
+            row.setOnDragDetected(event -> {
+                if (!row.isEmpty()) {
+                    Integer index = row.getItem().getId();
+                    Dragboard db = row.startDragAndDrop(TransferMode.MOVE);
+                    db.setDragView(row.snapshot(null, null));
+                    ClipboardContent cc = new ClipboardContent();
+                    cc.put(SERIALIZED_MIME_TYPE, index);
+                    db.setContent(cc);
+                    event.consume();
+                }
+            });
+            row.setOnDragOver(event -> {
+                Dragboard db = event.getDragboard();
+                if (db.hasContent(SERIALIZED_MIME_TYPE)) {
+                    if (row.getItem().getId() != ((Integer) db.getContent(SERIALIZED_MIME_TYPE))) {
+                        event.acceptTransferModes(TransferMode.COPY_OR_MOVE);
+                        event.consume();
+                    }
+                }
+            });
+
+            row.setOnDragDropped(event -> {
+                Dragboard db = event.getDragboard();
+                if (db.hasContent(SERIALIZED_MIME_TYPE)) {
+                    int draggedIndex = (Integer) db.getContent(SERIALIZED_MIME_TYPE);
+                    //System.out.println(draggedIndex);
+                    Branch dragedBranch = branches.stream().filter(p -> p.getId() == draggedIndex)
+                            .findFirst().get();
+                    int dropIndex;
+                    if (!row.isEmpty()) {
+                        dropIndex = row.getItem().getId();
+                        //check wether dropped on same item or not
+                        if (draggedIndex != dropIndex) {
+                            Branch dropedBranch = branches.stream().filter(p -> p.getId() == dropIndex)
+                                    .findFirst().get();
+
+                            if (dropedBranch.getParentId() == 0) {
+                                Alert alert_inf = new Alert(Alert.AlertType.CONFIRMATION);
+                                alert_inf.setTitle("Message");
+                                alert_inf.setHeaderText("Are you Sure ?");
+                                alert_inf.setContentText("You have moved \"" + dragedBranch.getBranchName()
+                                        + "\" into \"" + dropedBranch.getBranchName() + "\".\n Press OK to proceed or Cancel to terminate.");
+                                Optional<ButtonType> result = alert_inf.showAndWait();
+                                if (result.get() == ButtonType.OK) {
+                                    move_branch(draggedIndex, dropIndex);
+                                    initBranchTable(getAllBranches(), false);
+                                    event.setDropCompleted(true);
+                                    branch_table.getSelectionModel().clearAndSelect(dropIndex);
+                                }
+                            } else {
+                                Alert alert_error = new Alert(Alert.AlertType.ERROR);
+                                alert_error.setTitle("Error");
+                                alert_error.setHeaderText("Invalid Attempt !");
+                                alert_error.setContentText("At this level you can't move into a child branch !");
+                                alert_error.show();
+                            }
+                        }
+
+                    }
+                    event.consume();
+                }
+            });
+            return row;
+        });
 
     }
 
     private ObservableList<Branch> getAllBranches() {
-
         Session session = HibernateUtil.getSessionFactory().openSession();
         Criteria c = session.createCriteria(Branch.class);
         List<Branch> bList = c.list();
@@ -354,7 +517,7 @@ public class BranchFxmlController implements Initializable {
             return false;
         });
         if (!filtered.isEmpty()) {
-            initBranchTable(filtered);
+            initBranchTable(filtered, true);
         }
     }
 
@@ -371,7 +534,7 @@ public class BranchFxmlController implements Initializable {
             return false;
         });
         if (!filtered.isEmpty()) {
-            initBranchTable(filtered);
+            initBranchTable(filtered, true);
         }
     }
 
@@ -404,4 +567,31 @@ public class BranchFxmlController implements Initializable {
         return validationSupport.validationResultProperty().get() == null;
     }
 
+//SUB BRANCHES PARENT-CHILD MAY USEFUL IN FUTURE UPDATES=============================   
+    private List<Branch> manage_subBranches(ObservableList<Branch> branches, boolean isSearch) {
+        ObservableList<Branch> upperBranches = FXCollections.observableArrayList();
+        if (isSearch) {
+            upperBranches.addAll(branches);
+        } else {
+            upperBranches.addAll(branches.stream().filter(b -> b.getParentId() == 0).collect(Collectors.toList()));
+            for (Branch b : branches) {
+                for (Branch ub : upperBranches) {
+                    if (b.getParentId() == ub.getId()) {
+                        ub.getSubBranches().add(b);
+                    }
+                }
+            }
+        }
+        return upperBranches;
+    }
+
+    private void move_branch(int draggedIndex, int dropIndex) {
+        Session session = HibernateUtil.getSessionFactory().openSession();
+        session.beginTransaction();
+        Branch movingBranch = (Branch) session.load(Branch.class, draggedIndex);
+        movingBranch.setParentId(dropIndex);
+        session.update(movingBranch);
+        session.getTransaction().commit();
+        session.close();
+    }
 }

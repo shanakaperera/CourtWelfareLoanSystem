@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.court.controller.LoanPayChkFxmlController">
+   <children>
+      <TableView fx:id="detail_tbl" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0">
+        <columns>
+          <TableColumn fx:id="inr_m_id_col" prefWidth="75.0" text="Member ID" />
+          <TableColumn fx:id="inr_m_name_col" prefWidth="100.0" text="Member Name" />
+            <TableColumn fx:id="inr_l_id_col" prefWidth="75.0" text="Loan ID" />
+            <TableColumn fx:id="inr_l_name_col" prefWidth="100.0" text="Loan Name" />
+            <TableColumn fx:id="inr_amt_col" prefWidth="75.0" text="Loan Amt" />
+            <TableColumn fx:id="inr_ins_col" prefWidth="75.0" text="Installment" />
+            <TableColumn fx:id="inr_mon_subs_col" prefWidth="150.0" text="Monthly Subscription" />
+        </columns>
+      </TableView>
+   </children>
+</VBox>

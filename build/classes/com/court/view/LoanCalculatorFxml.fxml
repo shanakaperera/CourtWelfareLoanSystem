@@ -57,7 +57,7 @@
                             <children>
                                 <Label text="Principal Amount" />
                                 <Label text="Interest Method" GridPane.rowIndex="1" />
-                                <ComboBox fx:id="interest_method_combo" prefWidth="300.0" promptText="-- SELECT --" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                                <ComboBox fx:id="interest_method_combo" onAction="#onIntMethAction" prefWidth="300.0" promptText="-- SELECT --" GridPane.columnIndex="1" GridPane.rowIndex="1">
                                     <items>
                                         <FXCollections fx:factory="observableArrayList">
                                             <String fx:value="Flat Rate" />
@@ -69,8 +69,8 @@
                                 <Label text="Loan Interest %" GridPane.rowIndex="2" />
                                 <HBox fx:id="loan_int_hbox" alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" spacing="5.0" GridPane.columnIndex="1" GridPane.rowIndex="2">
                                     <children>
-                                        <TextField fx:id="loan_int_txt" />
-                                        <ComboBox fx:id="loan_int_combo" prefWidth="150.0" promptText="-- SELECT --">
+                                        <TextField fx:id="loan_int_txt" onAction="#onLoanIntAction" onMouseClicked="#onLoanIntMouseClicked" />
+                                        <ComboBox fx:id="loan_int_combo" onAction="#onLoanIntSelAction" prefWidth="150.0" promptText="-- SELECT --">
                                             <items>
                                                 <FXCollections fx:factory="observableArrayList">
                                                     <String fx:value="Per Month" />
@@ -83,8 +83,8 @@
                                 <Label text="Loan Duration" GridPane.rowIndex="3" />
                                 <HBox fx:id="loan_du_hbox" alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" spacing="5.0" GridPane.columnIndex="1" GridPane.rowIndex="3">
                                     <children>
-                                        <TextField fx:id="loan_du_txt" />
-                                        <ComboBox fx:id="loan_du_combo" prefWidth="150.0" promptText="-- SELECT --">
+                                        <TextField fx:id="loan_du_txt" onAction="#onLoanDueAction" />
+                                        <ComboBox fx:id="loan_du_combo" onAction="#onLoanDueSelAction" prefWidth="150.0" promptText="-- SELECT --">
                                             <items>
                                                 <FXCollections fx:factory="observableArrayList">
                                                     <String fx:value="Months" />
@@ -95,7 +95,7 @@
                                     </children>
                                 </HBox>
                                 <Label text="Repayment Cycle" GridPane.rowIndex="4" />
-                                <ComboBox fx:id="repay_cycle_combo" prefWidth="150.0" promptText="-- SELECT --" GridPane.columnIndex="1" GridPane.rowIndex="4">
+                                <ComboBox fx:id="repay_cycle_combo" onAction="#onRepaySelAction" prefWidth="150.0" promptText="-- SELECT --" GridPane.columnIndex="1" GridPane.rowIndex="4">
                                     <items>
                                         <FXCollections fx:factory="observableArrayList">
                                             <String fx:value="Monthly" />
@@ -103,7 +103,7 @@
                                     </items>
                                 </ComboBox>
                                 <Label text="Number of Repayments" GridPane.rowIndex="5" />
-                                <TextField fx:id="principal_amount_txt" GridPane.columnIndex="1">
+                                <TextField fx:id="principal_amount_txt" onAction="#onPrinAmtAction" onMouseClicked="#onPAmtMouseClicked" GridPane.columnIndex="1">
                                     <font>
                                         <Font name="System Bold" size="15.0" />
                                     </font>

@@ -5,7 +5,7 @@
  */
 package com.court.handler;
 
-import com.court.model.MemberLoan;
+import com.court.model.Member;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.control.CheckBox;
@@ -16,11 +16,11 @@ import javafx.util.Callback;
  *
  * @author Shanaka P
  */
-public class CheckBoxCellValueFactory implements Callback<TableColumn.CellDataFeatures<MemberLoan, CheckBox>, ObservableValue<CheckBox>> {
+public class CheckBoxCellValueFactory implements Callback<TableColumn.CellDataFeatures<Member, CheckBox>, ObservableValue<CheckBox>> {
 
     @Override
-    public ObservableValue<CheckBox> call(TableColumn.CellDataFeatures<MemberLoan, CheckBox> param) {
-        MemberLoan ml = param.getValue();
+    public ObservableValue<CheckBox> call(TableColumn.CellDataFeatures<Member, CheckBox> param) {
+        Member ml = param.getValue();
         CheckBox checkBox = new CheckBox();
         checkBox.selectedProperty().setValue(true);
         checkBox.selectedProperty().addListener((ov, old_val, new_val) -> {
