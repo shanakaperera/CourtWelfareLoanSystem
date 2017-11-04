@@ -928,7 +928,7 @@ public class MemberfxmlController implements Initializable {
         VBox node = (VBox) loader.load();
         AssignNewLoanFxmlController controller = (AssignNewLoanFxmlController) loader.getController();
         controller.setMember(getMemberByCode(member_code_txt.getText()));
-        controller.initFunction();
+        controller.initFunction(this);
         // System.out.println("C Member = " + controller.getMember());
         Alert alert_custom = new Alert(Alert.AlertType.NONE);
         alert_custom.setTitle("Assign New Loan");
@@ -946,6 +946,45 @@ public class MemberfxmlController implements Initializable {
 
     @FXML
     private void onRemoveLoanBtnAction(ActionEvent event) {
+
+        MemberLoan selectedLoan = l_taken_tbl.getSelectionModel().getSelectedItem();
+        if (selectedLoan != null) {
+            Alert alert_confirm = new Alert(Alert.AlertType.CONFIRMATION);
+            alert_confirm.setTitle("Warning");
+            alert_confirm.setHeaderText("Confirm ?");
+            alert_confirm.setContentText("Are you sure you want to remove the selected loan ?");
+            Optional<ButtonType> rs = alert_confirm.showAndWait();
+            if (rs.get() == ButtonType.OK) {
+                Session ses = HibernateUtil.getSessionFactory().openSession();
+                MemberLoan ml = (MemberLoan) ses.load(MemberLoan.class, selectedLoan.getId());
+                if (ml.getLoanPayments().isEmpty()) {
+                    ses.beginTransaction();
+                    ses.delete(ml);
+                    ses.getTransaction().commit();
+                    Alert alert_success = new Alert(Alert.AlertType.INFORMATION);
+                    alert_success.setTitle("Success");
+                    alert_success.setHeaderText("Successfully Removed !");
+                    alert_success.setContentText("You have successfully removed the member loan.");
+                    Optional<ButtonType> result = alert_success.showAndWait();
+                    if (result.get() == ButtonType.OK) {
+                        buildMemberLoanTable();
+                    }
+                } else {
+                    Alert error_alert = new Alert(Alert.AlertType.INFORMATION);
+                    error_alert.setTitle("Error");
+                    error_alert.setHeaderText("Error Occured !");
+                    error_alert.setContentText("There are already assigned payments for this loan.");
+                    error_alert.show();
+                }
+            }
+
+        } else {
+            Alert error_alert = new Alert(Alert.AlertType.INFORMATION);
+            error_alert.setTitle("Error");
+            error_alert.setHeaderText("Error Occured !");
+            error_alert.setContentText("You have to select a member loan to proceed.");
+            error_alert.show();
+        }
     }
 
     private void disableTabs(boolean active) {
@@ -1006,7 +1045,9 @@ public class MemberfxmlController implements Initializable {
                 .addListener((observable, oldValue, newValue) -> {
                     if (l_taken_tbl.getSelectionModel().getSelectedItem() != null) {
                         MemberLoan selectedLoan = l_taken_tbl.getSelectionModel().getSelectedItem();
-                        getMemberLoanByCode(selectedLoan.getMemberLoanCode(), selectedLoan.getChildId());
+                        if (selectedLoan != null) {
+                            getMemberLoanByCode(selectedLoan.getMemberLoanCode(), selectedLoan.getChildId());
+                        }
                     }
                 });
         l_taken_tbl.getSelectionModel().selectFirst();
@@ -1381,13 +1422,14 @@ public class MemberfxmlController implements Initializable {
     }
 
     private int getSubscriptionsByMemberAndSubscription(Session session, String fee_name, Integer id) {
+        System.out.println("===============QUERY START=============");
         Criteria c = session.createCriteria(MemberSubscriptions.class);
-        MemberSubscriptions ms = (MemberSubscriptions) c.createAlias("member", "m").createAlias("memberSubscription", "ms")
-                .add(Restrictions.disjunction()
-                        .add(Restrictions.eq("m.id", id))
-                        .add(Restrictions.eq("ms.feeName", fee_name))
-                )
+        MemberSubscriptions ms = (MemberSubscriptions) c.createAlias("member", "m")
+                .createAlias("memberSubscription", "ms")
+                .add(Restrictions.eq("m.id", id))
+                .add(Restrictions.eq("ms.feeName", fee_name))
                 .uniqueResult();
+        System.out.println("===============QUERY END=============");
         if (ms != null) {
             return ms.getId();
         } else {

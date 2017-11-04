@@ -116,6 +116,7 @@ public class AssignNewLoanFxmlController implements Initializable {
     private Member member;
     SuggestionProvider<String> p1, p3;
     SuggestionProvider<Member> p2;
+    private MemberfxmlController mCtr;
 
     /**
      * Initializes the controller class.
@@ -125,8 +126,8 @@ public class AssignNewLoanFxmlController implements Initializable {
 
     }
 
-    public void initFunction() {
-
+    public void initFunction(MemberfxmlController m_ctr) {
+        this.mCtr = m_ctr;
         allLoans = getAllLoans();
         List<String> loanCodes = allLoans.stream()
                 .map(Loan::getLoanId).collect(Collectors.toList());
@@ -186,7 +187,6 @@ public class AssignNewLoanFxmlController implements Initializable {
     }
 
     private ObservableList<Loan> getAllLoans() {
-
         Session session = HibernateUtil.getSessionFactory().openSession();
         Criteria c = session.createCriteria(Loan.class);
         List<Loan> lList = c.list();
@@ -377,6 +377,7 @@ public class AssignNewLoanFxmlController implements Initializable {
                 session.close();
                 error_label.setStyle("-fx-text-fill: #349a46;");
                 error_label.setText("Successfully assigned the loan.");
+               // mCtr.buildMemberLoanTable();
             } else {
                 error_label.setStyle("-fx-text-fill: #d32323;");
                 error_label.setText("Some error occured. Check again.");
@@ -386,9 +387,9 @@ public class AssignNewLoanFxmlController implements Initializable {
                 session.save(ml);
                 session.getTransaction().commit();
                 session.close();
-
                 error_label.setStyle("-fx-text-fill: #349a46;");
                 error_label.setText("Successfully assigned the loan.");
+               // mCtr.buildMemberLoanTable();
 
             } else {
                 error_label.setStyle("-fx-text-fill: #d32323;");
@@ -562,4 +563,5 @@ public class AssignNewLoanFxmlController implements Initializable {
     private void onSecLoanIntClicked(MouseEvent event) {
         c_loan_int_txt.selectRange(2, c_loan_int_txt.getText().length());
     }
+
 }

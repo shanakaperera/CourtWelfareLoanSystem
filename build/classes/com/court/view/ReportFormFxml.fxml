@@ -9,5 +9,6 @@
       <Button mnemonicParsing="false" onAction="#onMemberAction" prefHeight="54.0" prefWidth="147.0" text="Members" />
       <Button mnemonicParsing="false" onAction="#onMemberWiseLoanAction" prefHeight="61.0" prefWidth="147.0" text="Member Wise Loans" />
       <Button mnemonicParsing="false" onAction="#onBranchCollectionAction" prefHeight="59.0" prefWidth="147.0" text="Branch Wise Collection" />
+      <Button layoutX="10.0" layoutY="179.0" mnemonicParsing="false" onAction="#onMemberHistoryAction" prefHeight="59.0" prefWidth="147.0" text="Member History" />
    </children>
 </VBox>

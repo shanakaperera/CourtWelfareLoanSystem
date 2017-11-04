@@ -9,6 +9,8 @@ import com.court.controller.DashBoardFxmlController;
 import com.court.db.HibernateUtil;
 import com.court.handler.FileHandler;
 import com.court.model.Company;
+import it.sauronsoftware.junique.AlreadyLockedException;
+import it.sauronsoftware.junique.JUnique;
 import java.io.IOException;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -71,7 +73,17 @@ public class MainClass extends Application {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        launch(args);
+        String id = MainClass.class.getName();
+        boolean start;
+        try {
+            JUnique.acquireLock(id, null);
+            start = true;
+        } catch (AlreadyLockedException e) {
+            start = false;
+        }
+        if (start) {
+            launch(args);
+        }
     }
 
 }

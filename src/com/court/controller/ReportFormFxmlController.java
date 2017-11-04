@@ -140,4 +140,31 @@ public class ReportFormFxmlController implements Initializable {
         session.close();
     }
 
+    @FXML
+    private void onMemberHistoryAction(ActionEvent event) {
+        String mId = "5676M";
+        String reportPath = "com/court/reports/MemberHistoryReport.jasper";
+        Session session = HibernateUtil.getSessionFactory().openSession();
+        Criteria c = session.createCriteria(Member.class);
+        Member filteredM = (Member) c.add(Restrictions.eq("memberId", mId))
+                .uniqueResult();
+        System.out.println("MBR - " + filteredM.getFullName());
+        Map<String, Object> map = new HashMap<>();
+        map.put("companyName", ReportHandler.COMPANY_NAME);
+        map.put("companyAddress", ReportHandler.ADDRESS);
+        map.put("reportTitle", "Member History");
+        map.put("full_name", filteredM.getFullName());
+        map.put("nic", filteredM.getNic());
+        map.put("emp_id", filteredM.getEmpId());
+        map.put("job_title", filteredM.getJobTitle());
+        map.put("payment_office", filteredM.getPaymentOfficer());
+        map.put("mbr_status", filteredM.isStatus());
+        map.put("branch", filteredM.getBranch().getBranchName());
+        map.put("member_loans", filteredM.getMemberLoans());
+        ReportHandler rh = new ReportHandler(reportPath, map, null);
+        rh.genarateReport();
+        rh.viewReport();
+        session.close();
+    }
+
 }

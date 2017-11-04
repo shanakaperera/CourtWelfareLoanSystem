@@ -8,7 +8,7 @@
   </information>
   <resources>
     <j2se version="1.6+" href="http://java.sun.com/products/autodl/j2se"/>
-    <jar href="CourtWelfareLoanSystem.jar" size="584742" download="eager" />
+    <jar href="CourtWelfareLoanSystem.jar" size="595941" download="eager" />
     <jar href="lib\Medusa-7.5.jar" size="1456743" download="eager" />
     <jar href="lib\antlr-2.7.7.jar" size="437548" download="eager" />
     <jar href="lib\c3p0-0.9.2.1.jar" size="422423" download="eager" />
@@ -39,6 +39,7 @@
     <jar href="lib\jfoenix.jar" size="2323355" download="eager" />
     <jar href="lib\joda-time-2.3.jar" size="581571" download="eager" />
     <jar href="lib\jpedal_gpl.jar" size="2527561" download="eager" />
+    <jar href="lib\junique-1.0.4.jar" size="10262" download="eager" />
     <jar href="lib\mchange-commons-java-0.2.3.4.jar" size="584783" download="eager" />
     <jar href="lib\mysql-connector-java-5.1.23-bin.jar" size="834126" download="eager" />
     <jar href="lib\regulators-1.6.2.jar" size="235937" download="eager" />
