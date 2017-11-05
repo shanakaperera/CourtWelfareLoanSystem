@@ -47,6 +47,9 @@ public class Member implements java.io.Serializable {
     public Member() {
     }
 
+    public Member(String string) {
+    }
+
     public Member(Branch branch, String memberId, boolean status) {
         this.branch = branch;
         this.memberId = memberId;

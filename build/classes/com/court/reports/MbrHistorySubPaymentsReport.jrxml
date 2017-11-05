@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="MbrHistorySubPaymentsReport" pageWidth="555" pageHeight="802" columnWidth="555" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="24298405-4efc-4cf7-9dc4-405ec9a7a235">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<field name="installmentNo" class="java.lang.Integer"/>
+	<field name="chequeNo" class="java.lang.String"/>
+	<field name="paymentDate" class="java.util.Date"/>
+	<field name="memberLoan" class="com.court.model.MemberLoan"/>
+	<field name="membershipFee" class="java.lang.Double"/>
+	<field name="savingsFee" class="java.lang.Double"/>
+	<field name="hoiFee" class="java.lang.Double"/>
+	<field name="aciFee" class="java.lang.Double"/>
+	<field name="optionalFee" class="java.lang.Double"/>
+	<field name="admissionFee" class="java.lang.Double"/>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="17">
+			<staticText>
+				<reportElement x="0" y="2" width="100" height="15" uuid="86ed2485-8a19-4c12-91ad-a75b02056c29"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Payments]]></text>
+			</staticText>
+		</band>
+	</title>
+	<columnHeader>
+		<band height="21" splitType="Stretch">
+			<staticText>
+				<reportElement x="0" y="0" width="48" height="21" uuid="d8081dae-698b-4c08-9776-c6b4e5451ec1"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Installment]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="48" y="0" width="50" height="21" uuid="3d20daa6-1c02-4e55-b9f4-82560a47c721"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[ChequeNo]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="153" y="0" width="60" height="21" uuid="8b5e321a-d94a-4457-8a17-a2dd4ddf2948"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[InstallmentAmt]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="98" y="0" width="55" height="21" uuid="9f28b4fc-43cf-42ad-bbbb-2d56377b1bd8"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[PaymentDate]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="216" y="0" width="51" height="21" uuid="9a08f3ef-e3dd-4793-b367-8c5aa5ecfd6a"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[MbrshipFee]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="267" y="0" width="46" height="21" uuid="1f9a1910-5184-4420-954c-5d2c928ebefe"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[SavingsFee]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="315" y="0" width="42" height="21" uuid="a9d35346-830e-4b03-936d-a2ed2f6747e2"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[hoiFee]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="357" y="0" width="44" height="21" uuid="75b87ce6-fe91-4e70-afda-deee0aab8330"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[aciFee]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="401" y="0" width="58" height="21" uuid="8562326d-5d3d-41f5-8e0b-984dc84f5adb"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[optionalFee]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="459" y="0" width="59" height="21" uuid="3224614c-e570-410e-8f3c-e45de2061129"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[admissionFee]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="21" splitType="Stretch">
+			<textField>
+				<reportElement x="0" y="0" width="48" height="21" uuid="137e19e4-bf49-4cae-bf6e-eb221d9700e2"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{installmentNo}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="48" y="0" width="50" height="21" uuid="72d3d9a3-e31b-4d30-9ab8-185af8d9b460"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{chequeNo}]]></textFieldExpression>
+			</textField>
+			<textField pattern="Rs#,#00.00">
+				<reportElement x="153" y="0" width="60" height="21" uuid="f363e4cf-a61f-4de4-98ba-741f2b63ed29"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{memberLoan}.getLoanInstallment()]]></textFieldExpression>
+			</textField>
+			<textField pattern="dd/MM/yyyy">
+				<reportElement x="98" y="0" width="55" height="21" uuid="ab55d411-969e-459c-8bd9-e358a4e88af1"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{paymentDate}]]></textFieldExpression>
+			</textField>
+			<textField pattern="Rs#,#00.00">
+				<reportElement x="216" y="0" width="51" height="21" uuid="4f30ccfc-5bae-443c-9776-be8f7f1f4a5b"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{membershipFee}]]></textFieldExpression>
+			</textField>
+			<textField pattern="Rs#,#00.00">
+				<reportElement x="267" y="0" width="46" height="21" uuid="5d03a13c-f483-4378-ae8e-f802822f618d"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{savingsFee}]]></textFieldExpression>
+			</textField>
+			<textField pattern="Rs#,#00.00">
+				<reportElement x="315" y="0" width="42" height="21" uuid="693365e0-e8af-48cd-9cf4-fd8f90348ea7"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{hoiFee}]]></textFieldExpression>
+			</textField>
+			<textField pattern="Rs#,##0.00">
+				<reportElement x="357" y="0" width="44" height="21" uuid="c033e641-0a51-4704-a9f6-aaca6a600e07"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{aciFee}]]></textFieldExpression>
+			</textField>
+			<textField pattern="Rs#,##0.00">
+				<reportElement x="401" y="0" width="58" height="21" uuid="fe69a512-832c-46f8-803f-ad57ee52eed3"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{optionalFee}]]></textFieldExpression>
+			</textField>
+			<textField pattern="Rs#,##0.00">
+				<reportElement x="459" y="0" width="59" height="21" uuid="2ad00bb3-3b06-45f5-96d5-e7d26aaf7142"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{admissionFee}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+</jasperReport>

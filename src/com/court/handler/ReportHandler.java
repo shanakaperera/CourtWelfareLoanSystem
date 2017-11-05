@@ -15,6 +15,7 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.scene.control.Alert;
+import net.sf.jasperreports.engine.JREmptyDataSource;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperExportManager;
 import net.sf.jasperreports.engine.JasperFillManager;
@@ -28,6 +29,7 @@ import net.sf.jasperreports.engine.util.JRLoader;
  * @author Shanaka P
  */
 public class ReportHandler {
+
     public static String COMPANY_NAME = "JUDICIAL SERVICE MUTUAL BENEFIT SOCIETY";
     public static String ADDRESS = "High court building colombo - 12";
     private final String reportPath;
@@ -48,7 +50,7 @@ public class ReportHandler {
                     ClassLoader.getSystemResourceAsStream(reportPath));
             JasperPrint jp;
             if (ds == null) {
-                jp = JasperFillManager.fillReport(jr, map);
+                jp = JasperFillManager.fillReport(jr, map, new JREmptyDataSource());
             } else {
                 jp = JasperFillManager.fillReport(jr, map, ds);
             }

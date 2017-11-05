@@ -19,10 +19,13 @@ import impl.org.controlsfx.autocompletion.AutoCompletionTextFieldBinding;
 import impl.org.controlsfx.autocompletion.SuggestionProvider;
 import java.lang.reflect.Type;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.Set;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -377,7 +380,7 @@ public class AssignNewLoanFxmlController implements Initializable {
                 session.close();
                 error_label.setStyle("-fx-text-fill: #349a46;");
                 error_label.setText("Successfully assigned the loan.");
-               // mCtr.buildMemberLoanTable();
+                // mCtr.buildMemberLoanTable();
             } else {
                 error_label.setStyle("-fx-text-fill: #d32323;");
                 error_label.setText("Some error occured. Check again.");
@@ -389,7 +392,7 @@ public class AssignNewLoanFxmlController implements Initializable {
                 session.close();
                 error_label.setStyle("-fx-text-fill: #349a46;");
                 error_label.setText("Successfully assigned the loan.");
-               // mCtr.buildMemberLoanTable();
+                // mCtr.buildMemberLoanTable();
 
             } else {
                 error_label.setStyle("-fx-text-fill: #d32323;");
@@ -513,25 +516,29 @@ public class AssignNewLoanFxmlController implements Initializable {
 
         Criteria c2 = session.createCriteria(Member.class);
         List<Member> list;
-        if (getUniqueGuarantors(guarantors).isEmpty()) {
+        if (getUniqueGuarantors(guarantors, 3).isEmpty()) {
             list = c2.list();
         } else {
             list = c2.add(Restrictions.not(Restrictions.
-                    in("memberId", getUniqueGuarantors(guarantors)))).list();
+                    in("memberId", getUniqueGuarantors(guarantors, 3)))).list();
         }
         session.close();
         return list;
     }
 
-    private Set<String> getUniqueGuarantors(List<String> guarantors) {
+    private Set<String> getUniqueGuarantors(List<String> guarantors, int frquency) {
         Set<String> ug = new HashSet<>();
+        CopyOnWriteArrayList<String> ugc = new CopyOnWriteArrayList<>();
         ug.add(getMember().getMemberId());
         for (String string : guarantors) {
             Type type = new TypeToken<List<String>>() {
             }.getType();
             List<String> yourList = new Gson().fromJson(string, type);
             for (String yl : yourList) {
-                ug.add(yl);
+                ugc.add(yl);
+                if (Collections.frequency(ugc, yl) > frquency) {
+                    ug.add(yl);
+                }
             }
         }
         return ug;

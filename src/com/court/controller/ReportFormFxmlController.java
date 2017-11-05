@@ -141,18 +141,30 @@ public class ReportFormFxmlController implements Initializable {
     }
 
     @FXML
-    private void onMemberHistoryAction(ActionEvent event) {
+    private void onMemberHistoryAction(ActionEvent event) throws JRException {
         String mId = "5676M";
-        String reportPath = "com/court/reports/MemberHistoryReport.jasper";
+        String reportPath = "com/court/reports/MbrHistoryReport.jasper";
+        String subReportPath_1 = "com/court/reports/MbrHistorySubReport.jasper";
+        String subReportPath_2 = "com/court/reports/MbrHistorySubPaymentsReport.jasper";
+
+        JasperReport subReport_1 = (JasperReport) JRLoader.loadObject(
+                ClassLoader.getSystemResourceAsStream(subReportPath_1));
+
+        JasperReport subReport_2 = (JasperReport) JRLoader.loadObject(
+                ClassLoader.getSystemResourceAsStream(subReportPath_2));
+
         Session session = HibernateUtil.getSessionFactory().openSession();
         Criteria c = session.createCriteria(Member.class);
         Member filteredM = (Member) c.add(Restrictions.eq("memberId", mId))
                 .uniqueResult();
-        System.out.println("MBR - " + filteredM.getFullName());
+
         Map<String, Object> map = new HashMap<>();
         map.put("companyName", ReportHandler.COMPANY_NAME);
         map.put("companyAddress", ReportHandler.ADDRESS);
+        map.put("SUBREPORT_1", subReport_1);
+        map.put("SUBREPORT_2", subReport_2);
         map.put("reportTitle", "Member History");
+        map.put("member_id", filteredM.getMemberId());
         map.put("full_name", filteredM.getFullName());
         map.put("nic", filteredM.getNic());
         map.put("emp_id", filteredM.getEmpId());
