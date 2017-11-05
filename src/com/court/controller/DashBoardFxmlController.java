@@ -245,7 +245,7 @@ public class DashBoardFxmlController implements Initializable {
     private void guarntBtnAction(ActionEvent event) throws IOException {
         loadDataPane("/com/court/view/GuarantorsFxml.fxml");
     }
-
+    
     public Label getDashboard_header() {
         return dashboard_header;
     }

@@ -40,6 +40,7 @@ import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.Set;
 import java.util.stream.Collectors;
+import javafx.beans.binding.Bindings;
 import javafx.beans.property.ReadOnlyDoubleWrapper;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -56,9 +57,11 @@ import javafx.scene.control.ButtonBar.ButtonData;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.ContextMenu;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
@@ -1050,6 +1053,21 @@ public class MemberfxmlController implements Initializable {
                         }
                     }
                 });
+        l_taken_tbl.setRowFactory((TableView<MemberLoan> param) -> {
+            final TableRow<MemberLoan> row = new TableRow<>();
+            final ContextMenu rowMenu = new ContextMenu();
+            MenuItem makePayment = new MenuItem("Make Payment");
+            makePayment.setOnAction((ActionEvent evt) -> {
+                
+            });
+            rowMenu.getItems().addAll(makePayment);
+            row.contextMenuProperty().bind(
+                    Bindings.when(Bindings.isNotNull(row.itemProperty()))
+                            .then(rowMenu)
+                            .otherwise((ContextMenu) null));
+            return row;
+
+        });
         l_taken_tbl.getSelectionModel().selectFirst();
     }
 

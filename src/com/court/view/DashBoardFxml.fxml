@@ -73,13 +73,13 @@
                                         <String fx:value="btn-primary" />
                                     </styleClass>
                                 </MenuButton>
-                        <Button fx:id="guarant_btn" layoutX="10.0" layoutY="262.0" mnemonicParsing="false" onAction="#guarntBtnAction" prefHeight="37.0" prefWidth="171.0" style="-fx-text-fill: #ffff; -fx-font-size: 16;" text="Guarantors">
-                           <styleClass>
-                              <String fx:value="btn" />
-                              <String fx:value="btn-primary" />
-                           </styleClass>
-                        </Button>
-                                <Button fx:id="branch_btn" layoutX="10.0" layoutY="94.0" mnemonicParsing="false" onAction="#branchBtnAction" prefHeight="37.0" prefWidth="171.0" style="-fx-text-fill: #ffff; -fx-font-size: 16;" text="Branches">
+                                <Button fx:id="guarant_btn" layoutX="10.0" layoutY="262.0" mnemonicParsing="false" onAction="#guarntBtnAction" prefHeight="37.0" prefWidth="171.0" style="-fx-text-fill: #ffff; -fx-font-size: 16;" text="Guarantors">
+                                    <styleClass>
+                                        <String fx:value="btn" />
+                                        <String fx:value="btn-primary" />
+                                    </styleClass>
+                                </Button>
+                                <Button fx:id="branch_btn" layoutX="10.0" layoutY="94.0" mnemonicParsing="false" onAction="#branchBtnAction" prefHeight="37.0" prefWidth="171.0" style="-fx-text-fill: #ffff; -fx-font-size: 16;" text="Office">
                                     <styleClass>
                                         <String fx:value="btn" />
                                         <String fx:value="btn-primary" />

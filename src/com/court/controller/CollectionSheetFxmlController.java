@@ -429,7 +429,8 @@ public class CollectionSheetFxmlController implements Initializable {
                 Validator.createEmptyValidator("This field is not optional !"));
         validationSupport.registerValidator(chk_no_txt,
                 Validator.combine(Validator.createEmptyValidator("This field is not optional !"),
-                        Validator.createRegexValidator("Only alphanumeric and hyphen(-) allowed !", "^[a-zA-Z0-9\\-]*$", Severity.ERROR)));
+                        Validator.createRegexValidator("Only alphanumeric and hyphen(-) allowed !", 
+                                "^[a-zA-Z0-9\\-]*$", Severity.ERROR)));
         validationSupport.registerValidator(chk_date_chooser,
                 Validator.createEmptyValidator("Check date is required !"));
     }
