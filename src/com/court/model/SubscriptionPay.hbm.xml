@@ -1,0 +1,36 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+  "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping>
+    <class name="com.court.model.SubscriptionPay" table="subscription_pay" catalog="court_loan" optimistic-lock="version">
+        <id name="id" type="java.lang.Integer">
+            <column name="id" />
+            <generator class="identity" />
+        </id>
+        <many-to-one name="memberSubscriptions" class="com.court.model.MemberSubscriptions" fetch="select">
+            <column name="member_subscriptions_id" not-null="true" />
+        </many-to-one>
+        <property name="hoiFee" type="java.lang.Double">
+            <column name="hoi_fee" precision="22" scale="0" />
+        </property>
+        <property name="aciFee" type="java.lang.Double">
+            <column name="aci_fee" precision="22" scale="0" />
+        </property>
+        <property name="admissionFee" type="java.lang.Double">
+            <column name="admission_fee" precision="22" scale="0" />
+        </property>
+        <property name="savingsFee" type="java.lang.Double">
+            <column name="savings_fee" precision="22" scale="0" />
+        </property>
+        <property name="membershipFee" type="java.lang.Double">
+            <column name="membership_fee" precision="22" scale="0" />
+        </property>
+        <property name="optional" type="java.lang.Double">
+            <column name="optional" precision="22" scale="0" />
+        </property>
+        <property name="paymentDate" type="date">
+            <column name="payment_date" length="10" />
+        </property>
+    </class>
+</hibernate-mapping>

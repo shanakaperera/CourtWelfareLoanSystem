@@ -18,6 +18,7 @@ import com.court.handler.Spouse;
 import com.court.handler.TextFormatHandler;
 import com.court.model.Branch;
 import com.court.model.Document;
+import com.court.model.LoanPayCheque;
 import com.court.model.LoanPayment;
 import com.court.model.MemChild;
 import com.google.gson.Gson;
@@ -35,11 +36,14 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.sql.Date;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.ReadOnlyDoubleWrapper;
 import javafx.beans.value.ObservableValue;
@@ -49,19 +53,24 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonBar.ButtonData;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.CheckBox;
+import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.DatePicker;
+import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.MenuItem;
+import javafx.scene.control.PasswordField;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
@@ -83,6 +92,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import javafx.util.Pair;
 import org.controlsfx.validation.Severity;
 import org.controlsfx.validation.ValidationSupport;
 import org.controlsfx.validation.Validator;
@@ -1058,7 +1068,107 @@ public class MemberfxmlController implements Initializable {
             final ContextMenu rowMenu = new ContextMenu();
             MenuItem makePayment = new MenuItem("Make Payment");
             makePayment.setOnAction((ActionEvent evt) -> {
-                
+                Dialog<Pair<Integer, Double>> dialog = new Dialog<>();
+                dialog.setTitle("Make Payment");
+                dialog.setHeaderText("Make individual payment to " + row.getItem().getMemberLoanCode());
+                ButtonType savePayButtonType = new ButtonType("Make Payment", ButtonData.OK_DONE);
+                dialog.getDialogPane().getButtonTypes().addAll(savePayButtonType, ButtonType.CANCEL);
+
+                GridPane grid = new GridPane();
+                grid.setHgap(10);
+                grid.setVgap(10);
+                grid.setPadding(new Insets(20, 150, 10, 10));
+
+                LoanPayment lpLast = row.getItem().getLoanPayments().stream().filter(p -> p.isIsLast()).findFirst().orElse(null);
+                int installmentDue;
+                if (lpLast != null) {
+                    installmentDue = lpLast.getInstallmentDue();
+                } else {
+                    installmentDue = row.getItem().getNoOfRepay();
+                }
+                List<Integer> collect = Arrays.stream(IntStream.rangeClosed(1, installmentDue).toArray()).boxed().collect(Collectors.toList());
+                ObservableList<Integer> clist = FXCollections.observableArrayList(collect);
+                ComboBox<Integer> installments = new ComboBox(clist);
+                installments.getSelectionModel().select(0);
+
+                TextField totPay = new TextField();
+                totPay.setPromptText("Payment goes here");
+                totPay.setTextFormatter(TextFormatHandler.currencyFormatter());
+                totPay.setEditable(false);
+
+                grid.add(new Label("Paying Installments:"), 0, 0);
+                grid.add(installments, 1, 0);
+                grid.add(new Label("Total Payment:"), 0, 1);
+                grid.add(totPay, 1, 1);
+
+                Node savePayBtn = dialog.getDialogPane().lookupButton(savePayButtonType);
+                savePayBtn.setDisable(true);
+
+                installments.setOnAction((ActionEvent event) -> {
+                    savePayBtn.setDisable(false);
+                    double tot = row.getItem().getLoanInstallment() * installments.getSelectionModel().getSelectedItem();
+                    totPay.setText(TextFormatHandler.CURRENCY_DECIMAL_FORMAT.format(tot));
+                });
+
+                dialog.getDialogPane().setContent(grid);
+
+                // Request focus on the username field by default.
+                Platform.runLater(() -> installments.requestFocus());
+
+                dialog.setResultConverter(dialogButton -> {
+                    if (dialogButton == savePayButtonType) {
+                        return new Pair<>(installments.getSelectionModel().getSelectedItem(), TextFormatHandler.getCurrencyFieldValue(totPay));
+                    }
+                    return null;
+                });
+
+                Optional<Pair<Integer, Double>> result = dialog.showAndWait();
+
+                result.ifPresent(payment -> {
+                    int insts = payment.getKey();
+                    double instAmt = row.getItem().getLoanInstallment();
+                    int last_inst_paid = lpLast != null ? lpLast.getInstallmentNo() : 0;
+                    int no_of_repay = row.getItem().getNoOfRepay();
+                    Session s = HibernateUtil.getSessionFactory().openSession();
+                    s.beginTransaction();
+                    last_inst_paid++;
+
+                    LoanPayCheque lpc = new LoanPayCheque();
+                    lpc.setPaymentRecieved(new java.util.Date());
+                    lpc.setChequeAmount(payment.getValue());
+                    lpc.setPaymentType("cash");
+                    s.save(lpc);
+                    for (int i = 0; i < insts; i++) {
+                        LoanPayment lp = new LoanPayment();
+                        lp.setInstallmentNo(last_inst_paid);
+                        lp.setInstallmentDue(no_of_repay - last_inst_paid);
+                        lp.setPaymentDate(new java.util.Date());
+                        lp.setPaymentDue(instAmt * (no_of_repay - last_inst_paid));
+                        if (i == (insts - 1)) {
+                            lp.setIsLast(true);
+                        } else {
+                            lp.setIsLast(false);
+                        }
+                        lp.setMemberLoan(row.getItem());
+                        lp.setLoanPayCheque(lpc);
+                        s.save(lp);
+                        last_inst_paid++;
+
+                    }
+                    s.getTransaction().commit();
+                    s.close();
+
+                    Alert success = new Alert(AlertType.INFORMATION);
+                    success.setTitle("Information");
+                    success.setHeaderText("Successfully updated!");
+                    success.setContentText("You have successfully updated the loan payments!");
+                    Optional<ButtonType> rst = success.showAndWait();
+                    if (rst.get() == ButtonType.OK) {
+                        l_taken_tbl.getSelectionModel().select(row.getItem());
+                    }
+
+                });
+
             });
             rowMenu.getItems().addAll(makePayment);
             row.contextMenuProperty().bind(

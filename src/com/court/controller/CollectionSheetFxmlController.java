@@ -18,6 +18,7 @@ import com.court.model.LoanPayment;
 import com.court.model.Member;
 import com.court.model.MemberLoan;
 import com.court.model.MemberSubscriptions;
+import com.court.model.SubscriptionPay;
 import java.io.IOException;
 import java.net.URL;
 import java.sql.Date;
@@ -200,28 +201,30 @@ public class CollectionSheetFxmlController implements Initializable {
                         lp.setPaymentDue(FxUtilsHandler.roundNumber(l.getLoanInstallment() * (l.getNoOfRepay() - (getLastPay.getInstallmentNo() + 1)), 0));
                         lp.setInstallmentNo(getLastPay.getInstallmentNo() + 1);
 
+                        SubscriptionPay sp = new SubscriptionPay();
                         for (MemberSubscriptions mbrSub : mbrSubs) {
                             switch (mbrSub.getMemberSubscription().getFeeName()) {
                                 case "Membership Fee":
-                                    lp.setMembershipFee(mbrSub.getAmount());
+                                    sp.setMembershipFee(mbrSub.getAmount());
                                     break;
                                 case "Savings Fee":
-                                    lp.setSavingsFee(mbrSub.getAmount());
+                                    sp.setSavingsFee(mbrSub.getAmount());
                                     break;
                                 case "HOI Fee":
-                                    lp.setHoiFee(mbrSub.getAmount());
+                                    sp.setHoiFee(mbrSub.getAmount());
                                     break;
                                 case "ACI Fee":
-                                    lp.setAciFee(mbrSub.getAmount());
+                                    sp.setAciFee(mbrSub.getAmount());
                                     break;
                                 case "Optional":
-                                    lp.setOptionalFee(mbrSub.getAmount());
+                                    sp.setOptional(mbrSub.getAmount());
                                     break;
                                 case "Admission Fee":
-                                    lp.setAdmissionFee(0.0);
+                                    sp.setAdmissionFee(0.0);
                                     break;
                             }
                         }
+                        session.save(sp);
                         lp.setLoanPayCheque(payCheque);
                         session.save(lp);
                         //end loan if the final inatallment......
@@ -238,28 +241,30 @@ public class CollectionSheetFxmlController implements Initializable {
                         lp.setPaymentDue(FxUtilsHandler.roundNumber(l.getLoanInstallment() * (l.getNoOfRepay() - 1), 0));
                         lp.setInstallmentNo(1);
 
+                        SubscriptionPay sp = new SubscriptionPay();
                         for (MemberSubscriptions mbrSub : mbrSubs) {
                             switch (mbrSub.getMemberSubscription().getFeeName()) {
                                 case "Membership Fee":
-                                    lp.setMembershipFee(mbrSub.getAmount());
+                                    sp.setMembershipFee(mbrSub.getAmount());
                                     break;
                                 case "Savings Fee":
-                                    lp.setSavingsFee(mbrSub.getAmount());
+                                    sp.setSavingsFee(mbrSub.getAmount());
                                     break;
                                 case "HOI Fee":
-                                    lp.setHoiFee(mbrSub.getAmount());
+                                    sp.setHoiFee(mbrSub.getAmount());
                                     break;
                                 case "ACI Fee":
-                                    lp.setAciFee(mbrSub.getAmount());
+                                    sp.setAciFee(mbrSub.getAmount());
                                     break;
                                 case "Optional":
-                                    lp.setOptionalFee(mbrSub.getAmount());
+                                    sp.setOptional(mbrSub.getAmount());
                                     break;
                                 case "Admission Fee":
-                                    lp.setAdmissionFee(mbrSub.getAmount());
+                                    sp.setAdmissionFee(mbrSub.getAmount());
                                     break;
                             }
                         }
+                        session.save(sp);
                         lp.setLoanPayCheque(payCheque);
                         session.save(lp);
                     }
@@ -429,7 +434,7 @@ public class CollectionSheetFxmlController implements Initializable {
                 Validator.createEmptyValidator("This field is not optional !"));
         validationSupport.registerValidator(chk_no_txt,
                 Validator.combine(Validator.createEmptyValidator("This field is not optional !"),
-                        Validator.createRegexValidator("Only alphanumeric and hyphen(-) allowed !", 
+                        Validator.createRegexValidator("Only alphanumeric and hyphen(-) allowed !",
                                 "^[a-zA-Z0-9\\-]*$", Severity.ERROR)));
         validationSupport.registerValidator(chk_date_chooser,
                 Validator.createEmptyValidator("Check date is required !"));

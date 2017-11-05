@@ -8,6 +8,12 @@
             <column name="id" />
             <generator class="identity" />
         </id>
+        <property name="paymentType" type="string">
+            <column name="payment_type" length="7" />
+        </property>
+        <property name="paymentRecieved" type="date">
+            <column name="payment_recieved" length="10" />
+        </property>
         <property name="chequeNo" type="string">
             <column name="cheque_no" length="50" />
         </property>
@@ -16,6 +22,12 @@
         </property>
         <property name="chequeAmount" type="java.lang.Double">
             <column name="cheque_amount" precision="22" scale="0" />
+        </property>
+        <property name="branch" type="string">
+            <column name="branch" length="45" />
+        </property>
+        <property name="bankCode" type="string">
+            <column name="bank_code" length="45" />
         </property>
         <set name="loanPayments" table="loan_payment" inverse="true" lazy="true" fetch="select">
             <key>

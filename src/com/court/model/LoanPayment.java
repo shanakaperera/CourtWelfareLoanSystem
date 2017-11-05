@@ -17,12 +17,6 @@ public class LoanPayment implements java.io.Serializable {
     private Double paymentDue;
     private Date paymentDate;
     private boolean isLast;
-    private Double membershipFee;
-    private Double savingsFee;
-    private Double hoiFee;
-    private Double aciFee;
-    private Double optionalFee;
-    private Double admissionFee;
     
     public LoanPayment() {
     }
@@ -104,54 +98,6 @@ public class LoanPayment implements java.io.Serializable {
 
     public void setIsLast(boolean isLast) {
         this.isLast = isLast;
-    }
-
-    public Double getMembershipFee() {
-        return membershipFee;
-    }
-
-    public void setMembershipFee(Double membershipFee) {
-        this.membershipFee = membershipFee;
-    }
-
-    public Double getSavingsFee() {
-        return savingsFee;
-    }
-
-    public void setSavingsFee(Double savingsFee) {
-        this.savingsFee = savingsFee;
-    }
-
-    public Double getHoiFee() {
-        return hoiFee;
-    }
-
-    public void setHoiFee(Double hoiFee) {
-        this.hoiFee = hoiFee;
-    }
-
-    public Double getAciFee() {
-        return aciFee;
-    }
-
-    public void setAciFee(Double aciFee) {
-        this.aciFee = aciFee;
-    }
-
-    public Double getOptionalFee() {
-        return optionalFee;
-    }
-
-    public void setOptionalFee(Double optionalFee) {
-        this.optionalFee = optionalFee;
-    }
-
-    public Double getAdmissionFee() {
-        return admissionFee;
-    }
-
-    public void setAdmissionFee(Double admissionFee) {
-        this.admissionFee = admissionFee;
     }
 
     public LoanPayCheque getLoanPayCheque() {

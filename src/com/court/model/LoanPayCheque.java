@@ -11,18 +11,27 @@ import java.util.Set;
 public class LoanPayCheque implements java.io.Serializable {
 
     private Integer id;
+    private String paymentType;
+    private Date paymentRecieved;
     private String chequeNo;
     private Date chequeDate;
     private Double chequeAmount;
+    private String branch;
+    private String bankCode;
     private Set<LoanPayment> loanPayments = new HashSet<>();
 
     public LoanPayCheque() {
     }
 
-    public LoanPayCheque(String chequeNo, Date chequeDate, Double chequeAmount) {
+    public LoanPayCheque(String paymentType, Date paymentRecieved, String chequeNo, Date chequeDate, Double chequeAmount, String branch, String bankCode, Set<LoanPayment> loanPayments) {
+        this.paymentType = paymentType;
+        this.paymentRecieved = paymentRecieved;
         this.chequeNo = chequeNo;
         this.chequeDate = chequeDate;
         this.chequeAmount = chequeAmount;
+        this.branch = branch;
+        this.bankCode = bankCode;
+        this.loanPayments = loanPayments;
     }
 
     public Integer getId() {
@@ -31,6 +40,22 @@ public class LoanPayCheque implements java.io.Serializable {
 
     public void setId(Integer id) {
         this.id = id;
+    }
+
+    public String getPaymentType() {
+        return this.paymentType;
+    }
+
+    public void setPaymentType(String paymentType) {
+        this.paymentType = paymentType;
+    }
+
+    public Date getPaymentRecieved() {
+        return this.paymentRecieved;
+    }
+
+    public void setPaymentRecieved(Date paymentRecieved) {
+        this.paymentRecieved = paymentRecieved;
     }
 
     public String getChequeNo() {
@@ -57,8 +82,24 @@ public class LoanPayCheque implements java.io.Serializable {
         this.chequeAmount = chequeAmount;
     }
 
+    public String getBranch() {
+        return this.branch;
+    }
+
+    public void setBranch(String branch) {
+        this.branch = branch;
+    }
+
+    public String getBankCode() {
+        return this.bankCode;
+    }
+
+    public void setBankCode(String bankCode) {
+        this.bankCode = bankCode;
+    }
+
     public Set<LoanPayment> getLoanPayments() {
-        return loanPayments;
+        return this.loanPayments;
     }
 
     public void setLoanPayments(Set<LoanPayment> loanPayments) {

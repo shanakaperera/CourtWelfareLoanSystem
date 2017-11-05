@@ -80,7 +80,8 @@ public class LoanPayChkFxmlController implements Initializable {
 
         inr_mon_subs_col.setCellValueFactory((TableColumn.CellDataFeatures<LoanPayment, String> param) -> {
             LoanPayment lp = param.getValue();
-            double subs = lp.getAciFee() + lp.getAdmissionFee() + lp.getHoiFee() + lp.getMembershipFee() + lp.getOptionalFee() + lp.getSavingsFee();
+            double subs = 0.0;
+            //   double subs = lp.getAciFee() + lp.getAdmissionFee() + lp.getHoiFee() + lp.getMembershipFee() + lp.getOptionalFee() + lp.getSavingsFee();
             return new SimpleStringProperty(TextFormatHandler.CURRENCY_DECIMAL_FORMAT.format(subs));
         });
 

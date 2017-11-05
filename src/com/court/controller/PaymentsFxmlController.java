@@ -213,48 +213,48 @@ public class PaymentsFxmlController implements Initializable {
 
     private Node createContentGrid(List<MemberSubscriptions> mbrSubs, double sum, LoanPayment payment) {
 
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/court/view/DisplaySubscriptionFxml.fxml"));
-        GridPane pane;
-        try {
-            pane = (GridPane) loader.load();
-            DisplaySubscriptionFxmlController controller = (DisplaySubscriptionFxmlController) loader.getController();
+//        FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/court/view/DisplaySubscriptionFxml.fxml"));
+//        GridPane pane;
+//        try {
+//            pane = (GridPane) loader.load();
+//            DisplaySubscriptionFxmlController controller = (DisplaySubscriptionFxmlController) loader.getController();
+//
+//            callByName(controller, "setValueSubs_tot", TextFormatHandler.CURRENCY_DECIMAL_FORMAT.format(sum));
+//
+//            for (int i = 0; i < mbrSubs.size(); i++) {
+//                int j = i + 1;
+//                MemberSubscriptions get = mbrSubs.get(i);
+//                callByName(controller, "setValueSub_" + j, get.getMemberSubscription().getFeeName());
+//                callByName(controller, "setValueAmt_" + j, TextFormatHandler.CURRENCY_DECIMAL_FORMAT.format(get.getAmount()));
+//
+//                switch (get.getMemberSubscription().getFeeName()) {
+//                    case "Membership Fee":
+//                        callByName(controller, "setValueTkn_" + j, getparamValue(payment.getMembershipFee() == 0));
+//                        break;
+//                    case "Savings Fee":
+//                        callByName(controller, "setValueTkn_" + j, getparamValue(payment.getSavingsFee() == 0));
+//                        break;
+//                    case "HOI Fee":
+//                        callByName(controller, "setValueTkn_" + j, getparamValue(payment.getHoiFee() == 0));
+//                        break;
+//                    case "ACI Fee":
+//                        callByName(controller, "setValueTkn_" + j, getparamValue(payment.getAciFee() == 0));
+//                        break;
+//                    case "Optional":
+//                        callByName(controller, "setValueTkn_" + j, getparamValue(payment.getOptionalFee() == 0));
+//                        break;
+//                    case "Admission Fee":
+//                        callByName(controller, "setValueTkn_" + j, getparamValue(payment.getAdmissionFee() == 0));
+//                        break;
+//                }
+//            }
+//
+//        } catch (IOException | NoSuchMethodException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
+//            pane = null;
+//            Logger.getLogger(DisplaySubscriptionFactory.class.getName()).log(Level.SEVERE, null, ex);
+//        }
 
-            callByName(controller, "setValueSubs_tot", TextFormatHandler.CURRENCY_DECIMAL_FORMAT.format(sum));
-
-            for (int i = 0; i < mbrSubs.size(); i++) {
-                int j = i + 1;
-                MemberSubscriptions get = mbrSubs.get(i);
-                callByName(controller, "setValueSub_" + j, get.getMemberSubscription().getFeeName());
-                callByName(controller, "setValueAmt_" + j, TextFormatHandler.CURRENCY_DECIMAL_FORMAT.format(get.getAmount()));
-
-                switch (get.getMemberSubscription().getFeeName()) {
-                    case "Membership Fee":
-                        callByName(controller, "setValueTkn_" + j, getparamValue(payment.getMembershipFee() == 0));
-                        break;
-                    case "Savings Fee":
-                        callByName(controller, "setValueTkn_" + j, getparamValue(payment.getSavingsFee() == 0));
-                        break;
-                    case "HOI Fee":
-                        callByName(controller, "setValueTkn_" + j, getparamValue(payment.getHoiFee() == 0));
-                        break;
-                    case "ACI Fee":
-                        callByName(controller, "setValueTkn_" + j, getparamValue(payment.getAciFee() == 0));
-                        break;
-                    case "Optional":
-                        callByName(controller, "setValueTkn_" + j, getparamValue(payment.getOptionalFee() == 0));
-                        break;
-                    case "Admission Fee":
-                        callByName(controller, "setValueTkn_" + j, getparamValue(payment.getAdmissionFee() == 0));
-                        break;
-                }
-            }
-
-        } catch (IOException | NoSuchMethodException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
-            pane = null;
-            Logger.getLogger(DisplaySubscriptionFactory.class.getName()).log(Level.SEVERE, null, ex);
-        }
-
-        return pane;
+        return null;
     }
 
     private void callByName(DisplaySubscriptionFxmlController controller, String string, String arg)

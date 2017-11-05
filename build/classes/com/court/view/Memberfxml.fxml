@@ -620,6 +620,7 @@
                                         </GridPane>
                                     </children>
                                 </VBox>
+                        <Label layoutX="10.0" layoutY="466.0" prefHeight="17.0" prefWidth="360.0" text="* Right click on each member loan to make an individual payment." />
                             </children>
                         </AnchorPane>
                     </content>
