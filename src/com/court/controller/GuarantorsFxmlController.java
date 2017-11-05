@@ -11,8 +11,11 @@ import com.court.model.Member;
 import com.court.model.MemberLoan;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import impl.org.controlsfx.autocompletion.AutoCompletionTextFieldBinding;
+import impl.org.controlsfx.autocompletion.SuggestionProvider;
 import java.lang.reflect.Type;
 import java.net.URL;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -24,13 +27,16 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonBar.ButtonData;
 import javafx.scene.control.ButtonType;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.scene.control.TextField;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeTableColumn;
 import javafx.scene.control.TreeTableView;
@@ -87,7 +93,9 @@ public class GuarantorsFxmlController implements Initializable {
                         TableColumn<MemberLoan, String> lnId = new TableColumn<>("LoanId");
                         TableColumn<MemberLoan, String> lnAmt = new TableColumn<>("LoanAmt");
                         TableColumn<MemberLoan, String> loanInterest = new TableColumn<>("Interest");
-                        TableColumn<MemberLoan, Integer> loanDuration = new TableColumn<>("Duration");
+                        TableColumn<MemberLoan, String> grantedDate = new TableColumn<>("DateGranted");
+                        TableColumn<MemberLoan, String> loanDuration = new TableColumn<>("Duration");
+                        TableColumn<MemberLoan, String> member = new TableColumn<>("MbrGranted");
 
                         lnId.setCellValueFactory((TableColumn.CellDataFeatures<MemberLoan, String> param) -> {
                             return new SimpleObjectProperty<>(param.getValue().getMemberLoanCode());
@@ -98,16 +106,26 @@ public class GuarantorsFxmlController implements Initializable {
                         });
                         loanInterest.setCellValueFactory((TableColumn.CellDataFeatures<MemberLoan, String> param) -> {
                             return new SimpleObjectProperty<>(TextFormatHandler.PRECENTAGE_DECIMAL_FORMAT
-                                    .format(param.getValue().getLoanInterest() / 100.0));
+                                    .format(param.getValue().getLoanInterest() / 100.0) + " " + param.getValue().getInterestPer());
                         });
-                        loanDuration.setCellValueFactory((TableColumn.CellDataFeatures<MemberLoan, Integer> param) -> {
-                            return new SimpleObjectProperty<>(param.getValue().getLoanDuration());
+                        loanDuration.setCellValueFactory((TableColumn.CellDataFeatures<MemberLoan, String> param) -> {
+                            return new SimpleObjectProperty<>(param.getValue().getLoanDuration() + " " + param.getValue().getDurationPer());
                         });
+
+                        member.setCellValueFactory((TableColumn.CellDataFeatures<MemberLoan, String> param) -> {
+                            return new SimpleObjectProperty<>(param.getValue().getMember().getFullName());
+                        });
+                        grantedDate.setCellValueFactory((TableColumn.CellDataFeatures<MemberLoan, String> param) -> {
+                            return new SimpleObjectProperty<>(new SimpleDateFormat("yyyy-MM-dd")
+                                    .format(param.getValue().getGrantedDate()));
+                        });
+                        
                         ObservableList<MemberLoan> selected_data = getLoanPaymentsOf(newValue.getValue().getMemberId());
-                        table.getColumns().addAll(lnId, lnAmt, loanInterest, loanDuration);
+                        table.getColumns().addAll(lnId, lnAmt, grantedDate, loanInterest, loanDuration, member);
                         table.setItems(selected_data);
 
                         VBox vbox = new VBox(table);
+                        vbox.setPrefSize(600, 300);
                         Alert alert_custom = new Alert(Alert.AlertType.NONE);
                         alert_custom.setTitle("Guaranted Loans");
                         alert_custom.setHeaderText("Guaranted Loans of - " + newValue.getValue().getFullName());
