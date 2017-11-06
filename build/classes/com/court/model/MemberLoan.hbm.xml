@@ -53,6 +53,9 @@
         <property name="isComplete" type="boolean">
             <column name="is_complete" not-null="true" />
         </property>
+        <property name="paidUntil" type="date">
+            <column name="paid_until" />
+        </property>
         <property name="status" type="boolean">
             <column name="status" not-null="true" />
         </property>

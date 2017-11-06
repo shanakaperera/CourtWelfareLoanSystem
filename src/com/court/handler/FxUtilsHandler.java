@@ -8,6 +8,7 @@ package com.court.handler;
 import com.court.db.HibernateUtil;
 import com.court.model.LoanPayment;
 import com.court.model.Member;
+import com.court.model.MemberLoan;
 import com.court.model.MemberSubscriptions;
 import eu.hansolo.tilesfx.Tile;
 import java.math.BigDecimal;
@@ -42,6 +43,8 @@ import javafx.util.StringConverter;
 import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 import org.hibernate.Session;
 import org.hibernate.criterion.Restrictions;
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 
 /**
  *
@@ -312,5 +315,11 @@ public class FxUtilsHandler {
             }
         }
         return new JRBeanCollectionDataSource(mbrSubs);
+    }
+
+    public static Predicate<MemberLoan> checkIfLastPaidDateWithinCurrentMonth(Function<MemberLoan, Date> check_date) {
+        DateTimeZone zone = DateTimeZone.forID("Asia/Colombo");
+        DateTime now = DateTime.now(zone);
+        return t -> (new DateTime(check_date.apply(t), zone).getMonthOfYear() == now.getMonthOfYear()) && (new DateTime(check_date.apply(t), zone).getYear() == now.getYear());
     }
 }

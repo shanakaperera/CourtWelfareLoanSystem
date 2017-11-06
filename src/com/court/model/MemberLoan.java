@@ -27,6 +27,7 @@ public class MemberLoan implements java.io.Serializable {
     private Integer noOfRepay;
     private Double loanInstallment;
     private boolean isComplete;
+    private Date paidUntil;
     private boolean status;
     private boolean hasChild;
     private int childId;
@@ -36,7 +37,7 @@ public class MemberLoan implements java.io.Serializable {
     private List<MemberSubscription> mbrSubs = new ArrayList<>();
 
     public MemberLoan() {
-       
+
     }
 
     public MemberLoan(String memberLoanCode, Date grantedDate, Double loanAmount, String loanName) {
@@ -45,8 +46,6 @@ public class MemberLoan implements java.io.Serializable {
         this.loanAmount = loanAmount;
         this.loanName = loanName;
     }
-    
-    
 
     public MemberLoan(Member member, String memberLoanCode, boolean isComplete, boolean status, boolean hasChild, int childId) {
         this.member = member;
@@ -252,6 +251,14 @@ public class MemberLoan implements java.io.Serializable {
 
     public void setLoanName(String loanName) {
         this.loanName = loanName;
+    }
+
+    public Date getPaidUntil() {
+        return paidUntil;
+    }
+
+    public void setPaidUntil(Date paidUntil) {
+        this.paidUntil = paidUntil;
     }
 
 }
