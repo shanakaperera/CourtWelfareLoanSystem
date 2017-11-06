@@ -16,6 +16,7 @@ public class LoanPayment implements java.io.Serializable {
     private Integer installmentDue;
     private Double paymentDue;
     private Date paymentDate;
+    private Date installmentDate;
     private boolean isLast;
 
     public LoanPayment() {
@@ -108,5 +109,12 @@ public class LoanPayment implements java.io.Serializable {
         this.loanPayCheque = loanPayCheque;
     }
 
+    public Date getInstallmentDate() {
+        return installmentDate;
+    }
+
+    public void setInstallmentDate(Date installmentDate) {
+        this.installmentDate = installmentDate;
+    }
 
 }

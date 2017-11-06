@@ -320,6 +320,6 @@ public class FxUtilsHandler {
     public static Predicate<MemberLoan> checkIfLastPaidDateWithinCurrentMonth(Function<MemberLoan, Date> check_date) {
         DateTimeZone zone = DateTimeZone.forID("Asia/Colombo");
         DateTime now = DateTime.now(zone);
-        return t -> (new DateTime(check_date.apply(t), zone).getMonthOfYear() == now.getMonthOfYear()) && (new DateTime(check_date.apply(t), zone).getYear() == now.getYear());
+        return t -> (new DateTime(check_date.apply(t), zone).getMonthOfYear() <= now.getMonthOfYear()) && (new DateTime(check_date.apply(t), zone).getYear() <= now.getYear());
     }
 }

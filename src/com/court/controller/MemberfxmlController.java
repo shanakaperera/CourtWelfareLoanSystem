@@ -27,6 +27,7 @@ import com.court.model.Member;
 import com.court.model.MemberLoan;
 import com.court.model.MemberSubscription;
 import com.court.model.MemberSubscriptions;
+import com.court.model.SubscriptionPay;
 import impl.org.controlsfx.autocompletion.AutoCompletionTextFieldBinding;
 import impl.org.controlsfx.autocompletion.SuggestionProvider;
 import java.awt.Desktop;
@@ -46,6 +47,7 @@ import java.util.stream.IntStream;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.ReadOnlyDoubleWrapper;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -62,7 +64,6 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ButtonBar.ButtonData;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.CheckBox;
-import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.DatePicker;
@@ -70,7 +71,6 @@ import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.MenuItem;
-import javafx.scene.control.PasswordField;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
@@ -100,6 +100,8 @@ import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 import org.jpedal.PdfDecoder;
 import org.jpedal.exception.PdfException;
 
@@ -202,6 +204,8 @@ public class MemberfxmlController implements Initializable {
     private TableColumn<LoanPayment, Integer> ins_no_col;
     @FXML
     private TableColumn<LoanPayment, Double> p_due_col;
+    @FXML
+    private TableColumn<LoanPayment, Date> instment_date_col;
     @FXML
     private VBox progress_box;
     @FXML
@@ -337,6 +341,22 @@ public class MemberfxmlController implements Initializable {
     @FXML
     private HBox working_box;
     SuggestionProvider<String> p1, p2, p3, p4, p5, p6;
+    @FXML
+    private Tab mbrcon_tab;
+    @FXML
+    private TableView<SubscriptionPay> contr_tbl;
+    @FXML
+    private TableColumn<SubscriptionPay, String> con_paydate_col;
+    @FXML
+    private TableColumn<SubscriptionPay, Double> con_hoi_col;
+    @FXML
+    private TableColumn<SubscriptionPay, Double> con_acI_col;
+    @FXML
+    private TableColumn<SubscriptionPay, Double> con_savings_col;
+    @FXML
+    private TableColumn<SubscriptionPay, Double> con_mbr_col;
+    @FXML
+    private TableColumn<SubscriptionPay, Double> con_optional_col;
 
     /**
      * Initializes the controller class.
@@ -606,6 +626,7 @@ public class MemberfxmlController implements Initializable {
         identifyCodesEditable(false);
         initDocTable(FXCollections.observableArrayList(getAllDocumentsOf(member_code_txt.getText())));
         initMemChildTable(getChildrenOfMember(member_code_txt.getText()));
+        initContributionTable(FXCollections.observableArrayList(getAllContributionsOf(member_code_txt.getText())));
     }
 
     private void getMemberByCodeOrName(String mCode, String mName) throws MalformedURLException {
@@ -1004,6 +1025,7 @@ public class MemberfxmlController implements Initializable {
         loan_inf_tab.setDisable(active);
         other_details_tab.setDisable(active);
         doc_tab.setDisable(active);
+        mbrcon_tab.setDisable(active);
     }
 
     private void initMemberLoanTable(ObservableList<MemberLoan> mLoans) {
@@ -1068,6 +1090,14 @@ public class MemberfxmlController implements Initializable {
             final ContextMenu rowMenu = new ContextMenu();
             MenuItem makePayment = new MenuItem("Make Payment");
             makePayment.setOnAction((ActionEvent evt) -> {
+                if (row.getItem().isIsComplete()) {
+                    Alert success = new Alert(AlertType.INFORMATION);
+                    success.setTitle("Information");
+                    success.setHeaderText("Already completed !");
+                    success.setContentText("You cannot make any payment to an already completed loan!");
+                    Optional<ButtonType> rst = success.showAndWait();
+                    return;
+                }
                 Dialog<Pair<Integer, Double>> dialog = new Dialog<>();
                 dialog.setTitle("Make Payment");
                 dialog.setHeaderText("Make individual payment to " + row.getItem().getMemberLoanCode());
@@ -1138,11 +1168,18 @@ public class MemberfxmlController implements Initializable {
                     lpc.setChequeAmount(payment.getValue());
                     lpc.setPaymentType("cash");
                     s.save(lpc);
+
+                    java.util.Date[] instDates = setInstallmentDates(insts, lpLast);
+                    if (lpLast != null) {
+                        lpLast.setIsLast(false);
+                        s.update(lpLast);
+                    }
                     for (int i = 0; i < insts; i++) {
                         LoanPayment lp = new LoanPayment();
                         lp.setInstallmentNo(last_inst_paid);
                         lp.setInstallmentDue(no_of_repay - last_inst_paid);
                         lp.setPaymentDate(new java.util.Date());
+                        lp.setInstallmentDate(instDates[i]);
                         lp.setPaymentDue(instAmt * (no_of_repay - last_inst_paid));
                         if (i == (insts - 1)) {
                             lp.setIsLast(true);
@@ -1153,8 +1190,11 @@ public class MemberfxmlController implements Initializable {
                         lp.setLoanPayCheque(lpc);
                         s.save(lp);
                         last_inst_paid++;
-
+                        if (no_of_repay - last_inst_paid == 0) {
+                            endLoan(s, row.getItem());
+                        }
                     }
+
                     s.getTransaction().commit();
                     s.close();
 
@@ -1164,7 +1204,7 @@ public class MemberfxmlController implements Initializable {
                     success.setContentText("You have successfully updated the loan payments!");
                     Optional<ButtonType> rst = success.showAndWait();
                     if (rst.get() == ButtonType.OK) {
-                        l_taken_tbl.getSelectionModel().select(row.getItem());
+                        buildMemberLoanTable();
                     }
 
                 });
@@ -1185,6 +1225,7 @@ public class MemberfxmlController implements Initializable {
         p_date_col.setCellValueFactory(new PropertyValueFactory<>("paymentDate"));
         ins_no_col.setCellValueFactory(new PropertyValueFactory<>("installmentNo"));
         p_due_col.setCellValueFactory(new PropertyValueFactory<>("paymentDue"));
+        instment_date_col.setCellValueFactory(new PropertyValueFactory<>("installmentDate"));
 
         p_date_col.setCellFactory(column -> {
             return new TableCell<LoanPayment, Date>() {
@@ -1197,6 +1238,19 @@ public class MemberfxmlController implements Initializable {
                 }
             };
         });
+
+        instment_date_col.setCellFactory(column -> {
+            return new TableCell<LoanPayment, Date>() {
+                @Override
+                protected void updateItem(Date item, boolean empty) {
+                    super.updateItem(item, empty);
+                    if (!isEmpty()) {
+                        setText(new SimpleDateFormat("yyyy-MM-dd").format(item));
+                    }
+                }
+            };
+        });
+
         p_due_col.setCellFactory(column -> {
             return new TableCell<LoanPayment, Double>() {
                 @Override
@@ -1368,6 +1422,7 @@ public class MemberfxmlController implements Initializable {
     private List<Document> getAllDocuments() {
         Session session = HibernateUtil.getSessionFactory().openSession();
         List<Document> docList = session.createCriteria(Document.class).list();
+        session.close();
         return docList;
     }
 
@@ -1377,6 +1432,7 @@ public class MemberfxmlController implements Initializable {
                 .createAlias("member", "m")
                 .add(Restrictions.eq("m.memberId", mCode))
                 .list();
+        session.close();
         return docList;
 
     }
@@ -2074,5 +2130,58 @@ public class MemberfxmlController implements Initializable {
     @FXML
     private void onLoanRefreshAction(ActionEvent event) {
         buildMemberLoanTable();
+    }
+
+    private void initContributionTable(ObservableList<SubscriptionPay> subsPay) {
+
+        con_paydate_col.setCellValueFactory((TableColumn.CellDataFeatures<SubscriptionPay, String> param) -> {
+            return new SimpleObjectProperty<>(new SimpleDateFormat("dd-MM-yyyy").format(param.getValue().getPaymentDate()));
+        });
+        con_hoi_col.setCellValueFactory((TableColumn.CellDataFeatures<SubscriptionPay, Double> param) -> {
+            return new SimpleObjectProperty<>(param.getValue().getHoiFee());
+        });
+        con_acI_col.setCellValueFactory((TableColumn.CellDataFeatures<SubscriptionPay, Double> param) -> {
+            return new SimpleObjectProperty<>(param.getValue().getAciFee());
+        });
+        con_savings_col.setCellValueFactory((TableColumn.CellDataFeatures<SubscriptionPay, Double> param) -> {
+            return new SimpleObjectProperty<>(param.getValue().getSavingsFee());
+        });
+        con_mbr_col.setCellValueFactory((TableColumn.CellDataFeatures<SubscriptionPay, Double> param) -> {
+            return new SimpleObjectProperty<>(param.getValue().getMembershipFee());
+        });
+        con_optional_col.setCellValueFactory((TableColumn.CellDataFeatures<SubscriptionPay, Double> param) -> {
+            return new SimpleObjectProperty<>(param.getValue().getOptional());
+        });
+
+        contr_tbl.setItems(subsPay);
+    }
+
+    private List<SubscriptionPay> getAllContributionsOf(String memberId) {
+        Session session = HibernateUtil.getSessionFactory().openSession();
+        List<SubscriptionPay> totCtr = session.createCriteria(SubscriptionPay.class)
+                .createAlias("memberSubscriptions", "ms")
+                .createAlias("ms.member", "m")
+                .add(Restrictions.eq("m.memberId", memberId))
+                .list();
+        session.close();
+        return totCtr;
+    }
+
+    private java.util.Date[] setInstallmentDates(int insts, LoanPayment lpLast) {
+        java.util.Date lstDate = lpLast.getInstallmentDate();
+        DateTimeZone zone = DateTimeZone.forID("Asia/Colombo");
+        DateTime ld = new DateTime(new SimpleDateFormat("yyyy-MM-dd").format(lstDate), zone);
+        java.util.Date furueDates[] = new java.util.Date[insts];
+        for (int i = 0; i < insts; i++) {
+            furueDates[i] = ld.plusMonths(i + 1).toDate();
+        }
+        return furueDates;
+    }
+
+    private void endLoan(Session s, MemberLoan ml) {
+        int getEndingLoan = ml.getId();
+        MemberLoan mml = (MemberLoan) s.load(MemberLoan.class, getEndingLoan);
+        mml.setIsComplete(true);
+        s.update(mml);
     }
 }

@@ -23,6 +23,9 @@
         <property name="installmentDue" type="java.lang.Integer">
             <column name="installment_due" />
         </property>
+        <property name="installmentDate" type="date">
+            <column name="installment_date" length="10" />
+        </property>
         <property name="paymentDue" type="java.lang.Double">
             <column name="payment_due" precision="22" scale="0" />
         </property>

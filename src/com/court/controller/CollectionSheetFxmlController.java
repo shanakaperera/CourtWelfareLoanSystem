@@ -21,6 +21,7 @@ import com.court.model.SubscriptionPay;
 import java.io.IOException;
 import java.net.URL;
 import java.sql.Date;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.LinkedHashSet;
@@ -59,6 +60,8 @@ import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 
 /**
  * FXML Controller class
@@ -181,7 +184,9 @@ public class CollectionSheetFxmlController implements Initializable {
                 List<MemberLoan> mLoanList = ml.getMemberLoans().stream()
                         .sorted(Comparator.comparing(p -> p.getId()))
                         .filter(FxUtilsHandler.distinctByKey(p -> p.getMemberLoanCode()))
-                        .filter(p -> (!p.isIsComplete() && p.isStatus())).collect(Collectors.toList());
+                        .filter(p -> (!p.isIsComplete() && p.isStatus()))
+                        .filter(FxUtilsHandler.checkIfLastPaidDateWithinCurrentMonth(p -> p.getPaidUntil()))
+                        .collect(Collectors.toList());
 
                 List<MemberSubscriptions> mbrSubs = new ArrayList<>(ml.getMemberSubscriptions());
 
@@ -199,7 +204,7 @@ public class CollectionSheetFxmlController implements Initializable {
                         lp.setInstallmentDue(l.getNoOfRepay() - (getLastPay.getInstallmentNo() + 1));
                         lp.setPaymentDue(FxUtilsHandler.roundNumber(l.getLoanInstallment() * (l.getNoOfRepay() - (getLastPay.getInstallmentNo() + 1)), 0));
                         lp.setInstallmentNo(getLastPay.getInstallmentNo() + 1);
-
+                        lp.setInstallmentDate(getInstallmentDate(getLastPay.getInstallmentDate()));
                         SubscriptionPay sp = new SubscriptionPay();
                         for (MemberSubscriptions mbrSub : mbrSubs) {
                             switch (mbrSub.getMemberSubscription().getFeeName()) {
@@ -222,6 +227,8 @@ public class CollectionSheetFxmlController implements Initializable {
                                     sp.setAdmissionFee(0.0);
                                     break;
                             }
+                            sp.setPaymentDate(new java.util.Date());
+                            sp.setMemberSubscriptions(mbrSub);
                         }
                         session.save(sp);
                         lp.setLoanPayCheque(payCheque);
@@ -239,7 +246,7 @@ public class CollectionSheetFxmlController implements Initializable {
                         lp.setInstallmentDue(l.getNoOfRepay() - 1);
                         lp.setPaymentDue(FxUtilsHandler.roundNumber(l.getLoanInstallment() * (l.getNoOfRepay() - 1), 0));
                         lp.setInstallmentNo(1);
-
+                        lp.setInstallmentDate(getInstallmentDayOfMonth());
                         SubscriptionPay sp = new SubscriptionPay();
                         for (MemberSubscriptions mbrSub : mbrSubs) {
                             switch (mbrSub.getMemberSubscription().getFeeName()) {
@@ -262,10 +269,13 @@ public class CollectionSheetFxmlController implements Initializable {
                                     sp.setAdmissionFee(mbrSub.getAmount());
                                     break;
                             }
+                            sp.setPaymentDate(new java.util.Date());
+                            sp.setMemberSubscriptions(mbrSub);
                         }
                         session.save(sp);
                         lp.setLoanPayCheque(payCheque);
                         session.save(lp);
+                        updateMemberLoan(l, session, getInstallmentDayOfMonth());
                     }
                 });
             });
@@ -297,8 +307,15 @@ public class CollectionSheetFxmlController implements Initializable {
         Session session = HibernateUtil.getSessionFactory().openSession();
         Criteria c = session.createCriteria(Member.class);
         c.createAlias("branch", "b");
-        c.createAlias("memberLoans", "ml");
-        c.add(Restrictions.eq("ml.isComplete", false));
+
+//=====================================REMOVED DUE TO UNNASSARY FILTER=================================
+        //  c.createAlias("memberLoans", "ml");
+        //  c.add(Restrictions.eq("ml.isComplete", false));
+//        c.add(Restrictions.disjunction()
+//                .add(Restrictions.le("ml.paidUntil", new java.util.Date()))
+//                .add(Restrictions.isNull("ml.paidUntil"))
+//        );
+//=====================================REMOVED DUE TO UNNASSARY FILTER==================================
         int selected = search_typ_combo.getSelectionModel().getSelectedIndex();
         switch (selected) {
             case 0:
@@ -505,5 +522,22 @@ public class CollectionSheetFxmlController implements Initializable {
         List<String> collect = list.stream().map(LoanPayCheque::getChequeNo).collect(Collectors.toList());
         s.close();
         return collect;
+    }
+
+    private void updateMemberLoan(MemberLoan ml, Session session, java.util.Date payUntil) {
+        ml.setPaidUntil(payUntil);
+        session.update(ml);
+    }
+
+    private java.util.Date getInstallmentDate(java.util.Date lastInstDate) {
+        DateTimeZone zone = DateTimeZone.forID("Asia/Colombo");
+        DateTime lastInst = new DateTime(new SimpleDateFormat("yyyy-MM-dd").format(lastInstDate), zone);
+        DateTime nowDate = lastInst.plusMonths(1);
+        return nowDate.toDate();
+    }
+
+    private java.util.Date getInstallmentDayOfMonth() {
+        DateTime nowDate = new DateTime().withDayOfMonth(25);
+        return nowDate.toDate();
     }
 }
