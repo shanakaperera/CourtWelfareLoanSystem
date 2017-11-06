@@ -94,8 +94,8 @@
                 </TitledPane>
                 <TableView fx:id="payment_tbl" prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS">
                     <columns>
-                        <TableColumn fx:id="chk_no_col" prefWidth="75.0" text="Cheque No" />
-                        <TableColumn fx:id="chk_date_col" prefWidth="100.0" text="Cheque Date" />
+                        <TableColumn fx:id="chk_no_col" prefWidth="150.0" text="Cheque No" />
+                        <TableColumn fx:id="chk_date_col" prefWidth="150.0" text="Cheque Date" />
                   <TableColumn fx:id="chk_amt_col" prefWidth="130.0" text="Cheque Amount" />
                   <TableColumn fx:id="action_col" prefWidth="100.0" text="Action" />
                     </columns>

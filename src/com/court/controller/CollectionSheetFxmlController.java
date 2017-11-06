@@ -6,7 +6,6 @@
 package com.court.controller;
 
 import com.court.db.HibernateUtil;
-import com.court.handler.CheckBoxCellValueFactory;
 import com.court.handler.DisplaySubscriptionFactory;
 import com.court.handler.DisplayTotalInstallmentsFactory;
 import com.court.handler.FxUtilsHandler;
@@ -29,6 +28,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.stream.Collectors;
+import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -43,6 +44,7 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
@@ -94,11 +96,13 @@ public class CollectionSheetFxmlController implements Initializable {
     @FXML
     private TableColumn<Member, Button> rtot_pay_col;
     @FXML
-    private TableColumn<Member, Double> tot_inst_amt_col;
+    private TableColumn<Member, String> tot_inst_amt_col;
     @FXML
     private TableColumn<Member, Double> sub_tot_col;
-
-    private double subTotal = 0.0;
+    @FXML
+    private TextField branch_txt;
+    @FXML
+    private TextField bank_code_txt;
 
     /**
      * Initializes the controller class.
@@ -108,14 +112,6 @@ public class CollectionSheetFxmlController implements Initializable {
         validationSupport = new ValidationSupport();
         FxUtilsHandler.setDatePickerTimeFormat(chk_date_chooser);
         chk_amt_txt.setTextFormatter(TextFormatHandler.currencyFormatter());
-    }
-
-    public double getSubTotal() {
-        return subTotal;
-    }
-
-    public void setSubTotal(double subTotal) {
-        this.subTotal = +subTotal;
     }
 
     @FXML
@@ -332,31 +328,38 @@ public class CollectionSheetFxmlController implements Initializable {
         m_id_col.setCellValueFactory(new PropertyValueFactory<>("memberId"));
         m_name_col.setCellValueFactory(new PropertyValueFactory<>("nameWithIns"));
         total_pay_col.setCellValueFactory(new SubscriptionValueFactory());
-        colection_stat_col.setCellValueFactory(new CheckBoxCellValueFactory());
+        colection_stat_col.setCellValueFactory((TableColumn.CellDataFeatures<Member, CheckBox> param) -> {
+            Member ml = param.getValue();
+            CheckBox checkBox = new CheckBox();
+            checkBox.selectedProperty().setValue(true);
+            checkBox.selectedProperty().addListener((ov, old_val, new_val) -> {
+                param.getTableView().getSelectionModel().select(ml);
+                int row = param.getTableView().getSelectionModel().selectedIndexProperty().get();
+                bindSubTotalTo(chk_amt_txt, row, new_val);
+            });
+            return new SimpleObjectProperty<>(checkBox);
+        });
         detail_view_col.setCellValueFactory(new DisplaySubscriptionFactory());
         rtot_pay_col.setCellValueFactory(new DisplayTotalInstallmentsFactory());
-        tot_inst_amt_col.setCellValueFactory(new PropertyValueFactory<>("totalPayment"));
-        sub_tot_col.setCellValueFactory(new SubTotalValueFactory());
+        tot_inst_amt_col.setCellValueFactory((TableColumn.CellDataFeatures<Member, String> param) -> {
+            Member ml = param.getValue();
+            List<MemberLoan> list = ml.getMemberLoans().stream()
+                    .sorted(Comparator.comparing(p -> p.getId()))
+                    .filter(p -> !p.isIsComplete())
+                    .filter(p -> p.isStatus())
+                    .filter(FxUtilsHandler.distinctByKey(p -> p.getMemberLoanCode()))
+                    .collect(Collectors.toList());
 
-        tot_inst_amt_col.setCellFactory(col -> {
-            return new TableCell<Member, Double>() {
-                @Override
-                protected void updateItem(Double item, boolean empty) {
-                    super.updateItem(item, empty);
-                    if (!isEmpty()) {
-                        setText(TextFormatHandler.CURRENCY_DECIMAL_FORMAT.format(item));
-                    }
-                }
-            };
+            double sum = list.stream().mapToDouble(p -> p.getLoanInstallment()).sum();
+            return new SimpleStringProperty(TextFormatHandler.CURRENCY_DECIMAL_FORMAT.format(sum));
         });
-
+        sub_tot_col.setCellValueFactory(new SubTotalValueFactory());
         sub_tot_col.setCellFactory(col -> {
             return new TableCell<Member, Double>() {
                 @Override
                 protected void updateItem(Double item, boolean empty) {
                     super.updateItem(item, empty);
                     if (!isEmpty()) {
-                        setSubTotal(item);
                         bindSubTotalTo(chk_amt_txt);
                         setStyle("-fx-font-weight: bold;-fx-font-size: 15px;");
                         setText(TextFormatHandler.CURRENCY_DECIMAL_FORMAT.format(item));
@@ -364,11 +367,36 @@ public class CollectionSheetFxmlController implements Initializable {
                 }
             };
         });
+
         collection_tbl.setItems(mlz);
     }
 
+    double total = 0.0;
+
+    private void bindSubTotalTo(TextField chk_amt_txt, int index, boolean b) {
+
+        for (int i = 0; i < collection_tbl.getItems().size(); i++) {
+            if (index == i) {
+                if (b) {
+                    Double value = (Double) collection_tbl.getColumns().get(6).getCellObservableValue(i).getValue();
+                    total += value;
+                } else {
+                    Double value = (Double) collection_tbl.getColumns().get(6).getCellObservableValue(i).getValue();
+                    total -= value;
+                }
+            }
+        }
+        chk_amt_txt.setText(TextFormatHandler.CURRENCY_DECIMAL_FORMAT.format(total));
+    }
+
     private void bindSubTotalTo(TextField chk_amt_txt) {
-        chk_amt_txt.setText(TextFormatHandler.CURRENCY_DECIMAL_FORMAT.format(getSubTotal()));
+        double tot = 0.0;
+        for (int i = 0; i < collection_tbl.getItems().size(); i++) {
+            Double value = (Double) collection_tbl.getColumns().get(6).getCellObservableValue(i).getValue();
+            tot += value;
+        }
+        chk_amt_txt.setText(TextFormatHandler.CURRENCY_DECIMAL_FORMAT.format(tot));
+        total = tot;
     }
 
     private void performSearchTextActive(boolean b) {

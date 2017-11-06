@@ -16,6 +16,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.util.Date;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
@@ -117,13 +118,23 @@ public class PaymentsFxmlController implements Initializable {
 
         chk_no_col.setCellValueFactory((TableColumn.CellDataFeatures<LoanPayment, String> param) -> {
             LoanPayment payment = param.getValue();
-            return new SimpleStringProperty(payment.getChequeNo());
+            String chequeNo = payment.getChequeNo();
+            if (chequeNo != null) {
+                return new SimpleStringProperty(chequeNo);
+            } else {
+                return new SimpleStringProperty("No cheque no available.");
+            }
         });
 
         chk_date_col.setCellValueFactory((TableColumn.CellDataFeatures<LoanPayment, String> param) -> {
             LoanPayment payment = param.getValue();
-            return new SimpleStringProperty(new SimpleDateFormat("yyyy-MM-dd")
-                    .format(payment.getLoanPayCheque().getChequeDate()));
+            Date chequeDate = payment.getLoanPayCheque().getChequeDate();
+            if (chequeDate != null) {
+                return new SimpleStringProperty(new SimpleDateFormat("yyyy-MM-dd")
+                        .format(chequeDate));
+            } else {
+                return new SimpleStringProperty("No date available.");
+            }
         });
         chk_amt_col.setCellValueFactory((TableColumn.CellDataFeatures<LoanPayment, String> param) -> {
             LoanPayment payment = param.getValue();
@@ -253,7 +264,6 @@ public class PaymentsFxmlController implements Initializable {
 //            pane = null;
 //            Logger.getLogger(DisplaySubscriptionFactory.class.getName()).log(Level.SEVERE, null, ex);
 //        }
-
         return null;
     }
 
