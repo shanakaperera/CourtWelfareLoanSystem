@@ -36,7 +36,7 @@ public class DisplayTotalInstallmentsFactory implements Callback<TableColumn.Cel
         List<MemberLoan> list = ml.getMemberLoans().stream()
                 .sorted(Comparator.comparing(p -> p.getId()))
                 .filter(p -> !p.isIsComplete())
-               .filter(FxUtilsHandler.checkIfLastPaidDateWithinCurrentMonth(p -> p.getPaidUntil()))
+                .filter(FxUtilsHandler.checkIfLastPaidDateWithinCurrentMonth(p -> p.getPaidUntil()))
                 .filter(p -> p.isStatus())
                 .filter(FxUtilsHandler.distinctByKey(p -> p.getMemberLoanCode()))
                 .collect(Collectors.toList());
