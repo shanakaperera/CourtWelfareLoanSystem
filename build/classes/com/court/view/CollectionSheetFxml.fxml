@@ -99,7 +99,7 @@
                                 <TextField fx:id="chk_no_txt" GridPane.columnIndex="3" GridPane.rowIndex="1" />
                                 <DatePicker fx:id="chk_date_chooser" GridPane.columnIndex="3" GridPane.rowIndex="2" />
                                 <Label text="Cheque Amount" GridPane.columnIndex="2" GridPane.rowIndex="3" />
-                                <TextField fx:id="chk_amt_txt" GridPane.columnIndex="3" GridPane.rowIndex="3" />
+                                <TextField fx:id="chk_amt_txt" editable="false" GridPane.columnIndex="3" GridPane.rowIndex="3" />
                                 <Button mnemonicParsing="false" onAction="#onProceedBtnAction" text="Proceed" GridPane.columnIndex="5" GridPane.rowIndex="4">
                                     <styleClass>
                                         <String fx:value="btn" />

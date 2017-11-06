@@ -30,6 +30,13 @@
             <padding>
                 <Insets bottom="10.0" />
             </padding>
+         <children>
+            <Label text="Click on a single Guarantor to view ongoing guaranted loans.">
+               <font>
+                  <Font name="System Bold" size="13.0" />
+               </font>
+            </Label>
+         </children>
         </HBox>
         <TreeTableView fx:id="gurantor_tbl" prefHeight="572.0" prefWidth="640.0" VBox.vgrow="ALWAYS">
             <columns>
