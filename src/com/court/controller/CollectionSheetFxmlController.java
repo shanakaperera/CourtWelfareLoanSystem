@@ -27,6 +27,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.ResourceBundle;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -44,7 +45,6 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
@@ -171,6 +171,9 @@ public class CollectionSheetFxmlController implements Initializable {
             LoanPayCheque payCheque = new LoanPayCheque();
             payCheque.setChequeNo(chk_no_txt.getText());
             payCheque.setChequeDate(Date.valueOf(chk_date_chooser.getValue()));
+            payCheque.setBankCode(bank_code_txt.getText());
+            payCheque.setPaymentRecieved(new java.util.Date());
+            payCheque.setBranch(branch_txt.getText());
             payCheque.setChequeAmount(TextFormatHandler.getCurrencyFieldValue(chk_amt_txt));
             session.save(payCheque);
 
@@ -458,14 +461,24 @@ public class CollectionSheetFxmlController implements Initializable {
         if (!validationSupport.getRegisteredControls().isEmpty()) {
             return;
         }
+        Predicate<String> predicate = (t) -> {
+            return !getCList().contains(t);
+        };
         validationSupport.registerValidator(chk_amt_txt,
-                Validator.createEmptyValidator("This field is not optional !"));
+                Validator.createEmptyValidator("This field is not optional !")
+        );
         validationSupport.registerValidator(chk_no_txt,
                 Validator.combine(Validator.createEmptyValidator("This field is not optional !"),
                         Validator.createRegexValidator("Only alphanumeric and hyphen(-) allowed !",
-                                "^[a-zA-Z0-9\\-]*$", Severity.ERROR)));
+                                "^[a-zA-Z0-9\\-]*$", Severity.ERROR),
+                        Validator.createPredicateValidator(predicate, "This cheque is already used !")
+                ));
         validationSupport.registerValidator(chk_date_chooser,
                 Validator.createEmptyValidator("Check date is required !"));
+        validationSupport.registerValidator(branch_txt,
+                Validator.createEmptyValidator("Branch is not optional !"));
+        validationSupport.registerValidator(bank_code_txt,
+                Validator.createEmptyValidator("Bank code is not optional !"));
     }
 
     private void bindValidationOnPaneControlFocus(Pane... parent_panes) {
@@ -482,5 +495,14 @@ public class CollectionSheetFxmlController implements Initializable {
 
     private boolean isValidationEmpty() {
         return validationSupport.validationResultProperty().get() == null;
+    }
+
+    private List<String> getCList() {
+        Session s = HibernateUtil.getSessionFactory().openSession();
+        Criteria c = s.createCriteria(LoanPayCheque.class);
+        List<LoanPayCheque> list = c.add(Restrictions.eq("paymentType", "cheque")).list();
+        List<String> collect = list.stream().map(LoanPayCheque::getChequeNo).collect(Collectors.toList());
+        s.close();
+        return collect;
     }
 }
