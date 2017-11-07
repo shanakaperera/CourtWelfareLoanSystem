@@ -380,7 +380,7 @@ public class AssignNewLoanFxmlController implements Initializable {
                 session.close();
                 error_label.setStyle("-fx-text-fill: #349a46;");
                 error_label.setText("Successfully assigned the loan.");
-                // mCtr.buildMemberLoanTable();
+                apply_btn.setDisable(true);
             } else {
                 error_label.setStyle("-fx-text-fill: #d32323;");
                 error_label.setText("Some error occured. Check again.");
@@ -392,7 +392,7 @@ public class AssignNewLoanFxmlController implements Initializable {
                 session.close();
                 error_label.setStyle("-fx-text-fill: #349a46;");
                 error_label.setText("Successfully assigned the loan.");
-                // mCtr.buildMemberLoanTable();
+                apply_btn.setDisable(true);
 
             } else {
                 error_label.setStyle("-fx-text-fill: #d32323;");
