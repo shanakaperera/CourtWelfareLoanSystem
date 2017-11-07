@@ -74,7 +74,7 @@
                         </FXCollections>
                     </items>
                 </ComboBox>
-                <TextField fx:id="loan_due_txt" promptText="Loan Duration" GridPane.columnIndex="2" GridPane.rowIndex="2">
+                <TextField fx:id="loan_due_txt" editable="false" promptText="Loan Duration" GridPane.columnIndex="2" GridPane.rowIndex="2">
                     <GridPane.margin>
                         <Insets left="20.0" />
                     </GridPane.margin>
@@ -98,7 +98,7 @@
                     </GridPane.margin>
                 </ComboBox>
                 <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Repayment" GridPane.rowIndex="3" />
-                <TextField fx:id="repay_txt" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+                <TextField fx:id="repay_txt" editable="false" GridPane.columnIndex="1" GridPane.rowIndex="3" />
                 <HBox alignment="BOTTOM_RIGHT" prefHeight="100.0" prefWidth="200.0" spacing="10.0" GridPane.columnIndex="2" GridPane.columnSpan="2" GridPane.rowIndex="7" />
                 <Label fx:id="error_label" prefHeight="20.0" prefWidth="548.0" GridPane.columnSpan="4" GridPane.rowIndex="7">
                     <font>
@@ -146,9 +146,9 @@
                         <TextField fx:id="c_loan_id_txt" GridPane.columnIndex="1" />
                         <TextField fx:id="c_loan_name_txt" GridPane.columnIndex="1" GridPane.rowIndex="1" />
                         <TextField fx:id="c_principal_amt_txt" onMouseClicked="#onSecLoanAmtClicked" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-                        <TextField fx:id="c_repay_txt" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+                        <TextField fx:id="c_repay_txt" editable="false" GridPane.columnIndex="1" GridPane.rowIndex="3" />
                         <TextField fx:id="c_loan_int_txt" onMouseClicked="#onSecLoanIntClicked" promptText="Loan Interest" GridPane.columnIndex="2" GridPane.rowIndex="1" />
-                        <TextField fx:id="c_loan_due_txt" promptText="Loan Duration" GridPane.columnIndex="2" GridPane.rowIndex="2" />
+                        <TextField fx:id="c_loan_due_txt" editable="false" promptText="Loan Duration" GridPane.columnIndex="2" GridPane.rowIndex="2" />
                         <ComboBox fx:id="c_int_method_combo" prefHeight="25.0" prefWidth="165.0" promptText="-- SELECT --" GridPane.columnIndex="3" GridPane.hgrow="ALWAYS">
                             <items>
                                 <FXCollections fx:factory="observableArrayList">

@@ -1194,7 +1194,7 @@ public class MemberfxmlController implements Initializable {
                             endLoan(s, row.getItem());
                         }
                     }
-
+                    updateMemberLoan(row.getItem(), s, instDates[insts - 1]);
                     s.getTransaction().commit();
                     s.close();
 
@@ -2184,4 +2184,10 @@ public class MemberfxmlController implements Initializable {
         mml.setIsComplete(true);
         s.update(mml);
     }
+
+    private void updateMemberLoan(MemberLoan ml, Session session, java.util.Date payUntil) {
+        ml.setPaidUntil(payUntil);
+        session.update(ml);
+    }
+
 }
