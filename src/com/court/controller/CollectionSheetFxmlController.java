@@ -399,10 +399,12 @@ public class CollectionSheetFxmlController implements Initializable {
         for (int i = 0; i < collection_tbl.getItems().size(); i++) {
             if (index == i) {
                 if (b) {
-                    Double value = (Double) collection_tbl.getColumns().get(6).getCellObservableValue(i).getValue();
+                    Double value = (Double) collection_tbl.getColumns().get(6)
+                            .getCellObservableValue(i).getValue();
                     total += value;
                 } else {
-                    Double value = (Double) collection_tbl.getColumns().get(6).getCellObservableValue(i).getValue();
+                    Double value = (Double) collection_tbl.getColumns().get(6)
+                            .getCellObservableValue(i).getValue();
                     total -= value;
                 }
             }
