@@ -322,10 +322,11 @@ public class AssignNewLoanFxmlController implements Initializable {
         Session session = HibernateUtil.getSessionFactory().openSession();
         session.beginTransaction();
 
+        String PARENT = loan_name_txt.getText();
         MemberLoan ml = new MemberLoan();
         ml.setMemberLoanCode(fillMemberLoanCodeTxt());
         ml.setMember(getMember());
-        ml.setLoanName(loan_name_txt.getText());
+        ml.setLoanName(PARENT);
         ml.setGrantedDate(new java.util.Date());
         ml.setGuarantors(new Gson().toJson(guarantor_list.getItems().stream().map(Member::getMemberId).collect(Collectors.toList()), new TypeToken<List<String>>() {
         }.getType()));
@@ -346,14 +347,14 @@ public class AssignNewLoanFxmlController implements Initializable {
                 int_method_combo.getSelectionModel().getSelectedItem()));
         ml.setIsComplete(false);
         ml.setStatus(true);
-        ml.setChildId(0);
 
         if (child_loan_checkbox.isSelected()) {
             if (va.validationResultProperty().get().getErrors().isEmpty() && vs.validationResultProperty().get().getErrors().isEmpty()) {
-                session.save(ml);
+                String CHILD = c_loan_name_txt.getText();
                 MemberLoan ml2 = new MemberLoan();
                 ml2.setMemberLoanCode(fillMemberLoanCodeTxt());
                 ml2.setMember(getMember());
+                ml2.setLoanName(CHILD);
                 ml2.setGrantedDate(new java.util.Date());
                 ml2.setGuarantors(new Gson().toJson(guarantor_list.getItems().stream().map(Member::getMemberId).collect(Collectors.toList()), new TypeToken<List<String>>() {
                 }.getType()));
@@ -373,9 +374,12 @@ public class AssignNewLoanFxmlController implements Initializable {
                         c_int_method_combo.getSelectionModel().getSelectedItem()));
                 ml2.setIsComplete(false);
                 ml2.setStatus(true);
-                ml2.setHasChild(true);
-                ml2.setChildId(ml.getId());
+                ml2.setChildId(0);
                 session.save(ml2);
+
+                ml.setHasChild(true);
+                ml.setChildId(ml2.getId());
+                session.save(ml);
                 session.getTransaction().commit();
                 session.close();
                 error_label.setStyle("-fx-text-fill: #349a46;");
