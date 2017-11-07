@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.VBox?>
+
+
+<VBox xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.court.controller.SubscriptionPayChkFxmlController">
+   <children>
+      <TableView fx:id="subs_table" prefHeight="326.0" prefWidth="563.0">
+        <columns>
+          <TableColumn fx:id="sub_mbr_id_col" prefWidth="100.0" text="Member ID" />
+          <TableColumn fx:id="sub_mbr_name_col" prefWidth="150.0" text="Member Name" />
+            <TableColumn fx:id="subs_tot_col" prefWidth="100.0" text="Subscription" />
+        </columns>
+      </TableView>
+   </children>
+</VBox>

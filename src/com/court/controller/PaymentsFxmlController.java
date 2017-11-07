@@ -10,6 +10,7 @@ import com.court.handler.FxUtilsHandler;
 import com.court.handler.TextFormatHandler;
 import com.court.model.LoanPayment;
 import com.court.model.MemberSubscriptions;
+import com.court.model.SubscriptionPay;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
@@ -155,7 +156,7 @@ public class PaymentsFxmlController implements Initializable {
                     ctr.createDetailTable(loanPayments);
                     Alert alert_details = new Alert(Alert.AlertType.INFORMATION);
                     alert_details.setTitle("Cheque Payments");
-                    alert_details.setHeaderText("All the meber loan payments included with the cheque.");
+                    alert_details.setHeaderText("All the member loan payments included with the cheque.");
                     alert_details.getDialogPane().setContent(pane);
                     alert_details.show();
 
@@ -167,9 +168,25 @@ public class PaymentsFxmlController implements Initializable {
         });
 
         subs_payments_col.setCellValueFactory((TableColumn.CellDataFeatures<LoanPayment, Button> param) -> {
+            Date paymentDate = param.getValue().getPaymentDate();
             Button b = new Button("View Info");
             b.setOnAction(e -> {
+                List<SubscriptionPay> subPays = getAllSubscriptionPayOf(paymentDate);
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/court/view/SubscriptionPayChkFxml.fxml"));
 
+                try {
+                    VBox pane = (VBox) loader.load();
+                    SubscriptionPayChkFxmlController ctr = (SubscriptionPayChkFxmlController) loader.getController();
+                    ctr.createDetailTable(FXCollections.observableArrayList(subPays));
+                    Alert alert_details = new Alert(Alert.AlertType.INFORMATION);
+                    alert_details.setTitle("Cheque Payments");
+                    alert_details.setHeaderText("All the member subscription payments included with the cheque.");
+                    alert_details.getDialogPane().setContent(pane);
+                    alert_details.show();
+
+                } catch (IOException ee) {
+                    Logger.getLogger(PaymentsFxmlController.class.getName()).log(Level.SEVERE, null, ee);
+                }
             });
             return new SimpleObjectProperty<>(b);
         });
@@ -287,5 +304,15 @@ public class PaymentsFxmlController implements Initializable {
         } else {
             return "Yes";
         }
+    }
+
+    private List<SubscriptionPay> getAllSubscriptionPayOf(Date paymentDate) {
+
+        Session s = HibernateUtil.getSessionFactory().openSession();
+        Criteria c = s.createCriteria(SubscriptionPay.class);
+        List<SubscriptionPay> list = c.add(Restrictions.eq("paymentDate", paymentDate))
+                .list();
+        s.close();
+        return list;
     }
 }
