@@ -14,7 +14,6 @@
             <TableColumn fx:id="inr_l_name_col" prefWidth="100.0" text="Loan Name" />
             <TableColumn fx:id="inr_amt_col" prefWidth="75.0" text="Loan Amt" />
             <TableColumn fx:id="inr_ins_col" prefWidth="75.0" text="Installment" />
-            <TableColumn fx:id="inr_mon_subs_col" prefWidth="150.0" text="Monthly Subscription" />
         </columns>
       </TableView>
    </children>

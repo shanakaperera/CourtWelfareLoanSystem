@@ -37,8 +37,6 @@ public class LoanPayChkFxmlController implements Initializable {
     private TableColumn<LoanPayment, String> inr_ins_col;
     @FXML
     private TableView<LoanPayment> detail_tbl;
-    @FXML
-    private TableColumn<LoanPayment, String> inr_mon_subs_col;
 
     /**
      * Initializes the controller class.
@@ -76,13 +74,6 @@ public class LoanPayChkFxmlController implements Initializable {
         inr_ins_col.setCellValueFactory((TableColumn.CellDataFeatures<LoanPayment, String> param) -> {
             LoanPayment lp = param.getValue();
             return new SimpleStringProperty(TextFormatHandler.CURRENCY_DECIMAL_FORMAT.format(lp.getMemberLoan().getLoanInstallment()));
-        });
-
-        inr_mon_subs_col.setCellValueFactory((TableColumn.CellDataFeatures<LoanPayment, String> param) -> {
-            LoanPayment lp = param.getValue();
-            double subs = 0.0;
-            //   double subs = lp.getAciFee() + lp.getAdmissionFee() + lp.getHoiFee() + lp.getMembershipFee() + lp.getOptionalFee() + lp.getSavingsFee();
-            return new SimpleStringProperty(TextFormatHandler.CURRENCY_DECIMAL_FORMAT.format(subs));
         });
 
         detail_tbl.setItems(payments);

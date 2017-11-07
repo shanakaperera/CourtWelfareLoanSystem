@@ -6,7 +6,6 @@
 package com.court.controller;
 
 import com.court.db.HibernateUtil;
-import com.court.handler.DisplaySubscriptionFactory;
 import com.court.handler.FxUtilsHandler;
 import com.court.handler.TextFormatHandler;
 import com.court.model.LoanPayment;
@@ -76,6 +75,8 @@ public class PaymentsFxmlController implements Initializable {
     private TableColumn<LoanPayment, String> chk_amt_col;
     @FXML
     private TableColumn<LoanPayment, Button> action_col;
+    @FXML
+    private TableColumn<LoanPayment, Button> subs_payments_col;
 
     /**
      * Initializes the controller class.
@@ -154,13 +155,21 @@ public class PaymentsFxmlController implements Initializable {
                     ctr.createDetailTable(loanPayments);
                     Alert alert_details = new Alert(Alert.AlertType.INFORMATION);
                     alert_details.setTitle("Cheque Payments");
-                    alert_details.setHeaderText("All the payements included with the cheque.");
+                    alert_details.setHeaderText("All the meber loan payments included with the cheque.");
                     alert_details.getDialogPane().setContent(pane);
                     alert_details.show();
 
                 } catch (IOException e) {
                     Logger.getLogger(PaymentsFxmlController.class.getName()).log(Level.SEVERE, null, e);
                 }
+            });
+            return new SimpleObjectProperty<>(b);
+        });
+
+        subs_payments_col.setCellValueFactory((TableColumn.CellDataFeatures<LoanPayment, Button> param) -> {
+            Button b = new Button("View Info");
+            b.setOnAction(e -> {
+
             });
             return new SimpleObjectProperty<>(b);
         });

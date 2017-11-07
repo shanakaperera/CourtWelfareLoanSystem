@@ -28,6 +28,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.ResourceBundle;
+import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import javafx.beans.property.SimpleObjectProperty;
@@ -180,104 +181,82 @@ public class CollectionSheetFxmlController implements Initializable {
             payCheque.setChequeAmount(TextFormatHandler.getCurrencyFieldValue(chk_amt_txt));
             session.save(payCheque);
 
-            collection_tbl.getItems().forEach(ml -> {
-                List<MemberLoan> mLoanList = ml.getMemberLoans().stream()
+            collection_tbl.getItems().forEach(m -> {
+                //====================================MEMBERS SUBSCRIPTIONS SAVE=====================================
+                List<MemberSubscriptions> mbrSubs = new ArrayList<>(m.getMemberSubscriptions());
+                SubscriptionPay sp = new SubscriptionPay();
+                for (MemberSubscriptions mbrSub : mbrSubs) {
+                    switch (mbrSub.getMemberSubscription().getFeeName()) {
+                        case "Membership Fee":
+                            sp.setMembershipFee(mbrSub.getAmount());
+                            break;
+                        case "Savings Fee":
+                            sp.setSavingsFee(mbrSub.getAmount());
+                            break;
+                        case "HOI Fee":
+                            sp.setHoiFee(mbrSub.getAmount());
+                            break;
+                        case "ACI Fee":
+                            sp.setAciFee(mbrSub.getAmount());
+                            break;
+                        case "Optional":
+                            sp.setOptional(mbrSub.getAmount());
+                            break;
+                        case "Admission Fee":
+                            sp.setAdmissionFee(0.0);
+                            break;
+                    }
+                    sp.setPaymentDate(new java.util.Date());
+                    sp.setMemberSubscriptions(mbrSub);
+                }
+                session.save(sp);
+                //====================================END MEMBERS SUBSCRIPTIONS SAVE==================================
+                //====================================MEMBERS LOANS SAVE=====================================
+                List<MemberLoan> mLoanList = m.getMemberLoans().stream()
                         .sorted(Comparator.comparing(p -> p.getId()))
                         .filter(FxUtilsHandler.distinctByKey(p -> p.getMemberLoanCode()))
                         .filter(p -> (!p.isIsComplete() && p.isStatus()))
                         .filter(FxUtilsHandler.checkIfLastPaidDateWithinCurrentMonth(p -> p.getPaidUntil()))
                         .collect(Collectors.toList());
 
-                List<MemberSubscriptions> mbrSubs = new ArrayList<>(ml.getMemberSubscriptions());
-
-                mLoanList.forEach(l -> {
-                    LoanPayment getLastPay = l.getLoanPayments()
+                mLoanList.forEach(ml -> {
+                    LoanPayment getLastPay = ml.getLoanPayments()
                             .stream().filter(p -> p.isIsLast()).findAny().orElse(null);
 
                     if (getLastPay != null) {
                         updatePreviousInstallmentsOfMemberLoan(session, getLastPay);
                         LoanPayment lp = new LoanPayment();
                         lp.setChequeNo(chk_no_txt.getText());
-                        lp.setMemberLoan(l);
+                        lp.setMemberLoan(ml);
                         lp.setPaymentDate(new java.util.Date());
                         lp.setIsLast(true);
-                        lp.setInstallmentDue(l.getNoOfRepay() - (getLastPay.getInstallmentNo() + 1));
-                        lp.setPaymentDue(FxUtilsHandler.roundNumber(l.getLoanInstallment() * (l.getNoOfRepay() - (getLastPay.getInstallmentNo() + 1)), 0));
+                        lp.setInstallmentDue(ml.getNoOfRepay() - (getLastPay.getInstallmentNo() + 1));
+                        lp.setPaymentDue(FxUtilsHandler.roundNumber(ml.getLoanInstallment() * (ml.getNoOfRepay() - (getLastPay.getInstallmentNo() + 1)), 0));
                         lp.setInstallmentNo(getLastPay.getInstallmentNo() + 1);
                         lp.setInstallmentDate(getInstallmentDate(getLastPay.getInstallmentDate()));
-                        SubscriptionPay sp = new SubscriptionPay();
-                        for (MemberSubscriptions mbrSub : mbrSubs) {
-                            switch (mbrSub.getMemberSubscription().getFeeName()) {
-                                case "Membership Fee":
-                                    sp.setMembershipFee(mbrSub.getAmount());
-                                    break;
-                                case "Savings Fee":
-                                    sp.setSavingsFee(mbrSub.getAmount());
-                                    break;
-                                case "HOI Fee":
-                                    sp.setHoiFee(mbrSub.getAmount());
-                                    break;
-                                case "ACI Fee":
-                                    sp.setAciFee(mbrSub.getAmount());
-                                    break;
-                                case "Optional":
-                                    sp.setOptional(mbrSub.getAmount());
-                                    break;
-                                case "Admission Fee":
-                                    sp.setAdmissionFee(0.0);
-                                    break;
-                            }
-                            sp.setPaymentDate(new java.util.Date());
-                            sp.setMemberSubscriptions(mbrSub);
-                        }
-                        session.save(sp);
                         lp.setLoanPayCheque(payCheque);
                         session.save(lp);
                         //end loan if the final inatallment......
-                        if (l.getNoOfRepay() == (getLastPay.getInstallmentNo() + 1)) {
-                            endLoan(session, l);
+                        if (ml.getNoOfRepay() == (getLastPay.getInstallmentNo() + 1)) {
+                            endLoan(session, ml);
                         }
                     } else {
                         LoanPayment lp = new LoanPayment();
                         lp.setChequeNo(chk_no_txt.getText());
-                        lp.setMemberLoan(l);
+                        lp.setMemberLoan(ml);
                         lp.setPaymentDate(new java.util.Date());
                         lp.setIsLast(true);
-                        lp.setInstallmentDue(l.getNoOfRepay() - 1);
-                        lp.setPaymentDue(FxUtilsHandler.roundNumber(l.getLoanInstallment() * (l.getNoOfRepay() - 1), 0));
+                        lp.setInstallmentDue(ml.getNoOfRepay() - 1);
+                        lp.setPaymentDue(FxUtilsHandler.roundNumber(ml.getLoanInstallment() * (ml.getNoOfRepay() - 1), 0));
                         lp.setInstallmentNo(1);
                         lp.setInstallmentDate(getInstallmentDayOfMonth());
-                        SubscriptionPay sp = new SubscriptionPay();
-                        for (MemberSubscriptions mbrSub : mbrSubs) {
-                            switch (mbrSub.getMemberSubscription().getFeeName()) {
-                                case "Membership Fee":
-                                    sp.setMembershipFee(mbrSub.getAmount());
-                                    break;
-                                case "Savings Fee":
-                                    sp.setSavingsFee(mbrSub.getAmount());
-                                    break;
-                                case "HOI Fee":
-                                    sp.setHoiFee(mbrSub.getAmount());
-                                    break;
-                                case "ACI Fee":
-                                    sp.setAciFee(mbrSub.getAmount());
-                                    break;
-                                case "Optional":
-                                    sp.setOptional(mbrSub.getAmount());
-                                    break;
-                                case "Admission Fee":
-                                    sp.setAdmissionFee(mbrSub.getAmount());
-                                    break;
-                            }
-                            sp.setPaymentDate(new java.util.Date());
-                            sp.setMemberSubscriptions(mbrSub);
-                        }
-                        session.save(sp);
                         lp.setLoanPayCheque(payCheque);
                         session.save(lp);
-                        updateMemberLoan(l, session, getInstallmentDayOfMonth());
+                        updateMemberLoan(ml, session, getInstallmentDayOfMonth());
                     }
                 });
+
+                //=======================END MEMBERS LOANS SAVE==============================================
             });
 
             session.getTransaction().commit();

@@ -97,7 +97,8 @@
                         <TableColumn fx:id="chk_no_col" prefWidth="150.0" text="Cheque No" />
                         <TableColumn fx:id="chk_date_col" prefWidth="150.0" text="Cheque Date" />
                   <TableColumn fx:id="chk_amt_col" prefWidth="130.0" text="Cheque Amount" />
-                  <TableColumn fx:id="action_col" prefWidth="100.0" text="Action" />
+                  <TableColumn fx:id="action_col" prefWidth="100.0" text="Loan Payments" />
+                  <TableColumn fx:id="subs_payments_col" prefWidth="100.0" text="Subscription Payments" />
                     </columns>
                 </TableView>
             </children>
