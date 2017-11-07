@@ -361,7 +361,7 @@
                                                                 <Label text="Savings fee" GridPane.rowIndex="1" />
                                                                 <Label text="HOI fee" GridPane.rowIndex="2" />
                                                                 <Label text="ACI fee" GridPane.rowIndex="3" />
-                                                                <Label text="Optional " GridPane.rowIndex="4" />
+                                                                <Label text="CON Fee" GridPane.rowIndex="4" />
                                                                 <TextField fx:id="mem_fee_txt" onAction="#onMemberFeeAction" onMouseClicked="#onMbrFeeClicked" GridPane.columnIndex="1" />
                                                                 <TextField fx:id="sav_fee_txt" onAction="#onSavFeeAction" onMouseClicked="#onSavingsFeeClicked" GridPane.columnIndex="1" GridPane.rowIndex="1" />
                                                                 <TextField fx:id="hoi_fee_txt" onAction="#onHoiFeeAction" onMouseClicked="#onHoiFeeClicked" GridPane.columnIndex="1" GridPane.rowIndex="2" />
