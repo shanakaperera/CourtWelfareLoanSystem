@@ -33,6 +33,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.DatePicker;
+import javafx.scene.control.ListView;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
@@ -115,6 +116,9 @@ public class FxUtilsHandler {
             }
             if (c instanceof CheckBox) {
                 ((CheckBox) c).setSelected(false);
+            }
+            if (c instanceof ListView) {
+                ((ListView) c).getItems().clear();
             }
 
         }

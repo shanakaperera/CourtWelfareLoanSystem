@@ -18,6 +18,7 @@ import com.google.gson.reflect.TypeToken;
 import impl.org.controlsfx.autocompletion.AutoCompletionTextFieldBinding;
 import impl.org.controlsfx.autocompletion.SuggestionProvider;
 import java.lang.reflect.Type;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Collections;
 import java.util.HashSet;
@@ -309,7 +310,7 @@ public class AssignNewLoanFxmlController implements Initializable {
     }
 
     @FXML
-    private void onApplyBtnAction(ActionEvent event) {
+    private void onApplyBtnAction(ActionEvent event) throws MalformedURLException {
 
         if (guarantor_list.getItems().size() != 2) {
             Alert alert_error = new Alert(Alert.AlertType.ERROR);
@@ -382,9 +383,10 @@ public class AssignNewLoanFxmlController implements Initializable {
                 session.save(ml);
                 session.getTransaction().commit();
                 session.close();
-                error_label.setStyle("-fx-text-fill: #349a46;");
-                error_label.setText("Successfully assigned the loan.");
-                apply_btn.setDisable(true);
+                mCtr.showSuccessAlert();
+//                error_label.setStyle("-fx-text-fill: #349a46;");
+//                error_label.setText("Successfully assigned the loan.");
+//                apply_btn.setDisable(true);
             } else {
                 error_label.setStyle("-fx-text-fill: #d32323;");
                 error_label.setText("Some error occured. Check again.");
@@ -394,9 +396,10 @@ public class AssignNewLoanFxmlController implements Initializable {
                 session.save(ml);
                 session.getTransaction().commit();
                 session.close();
-                error_label.setStyle("-fx-text-fill: #349a46;");
-                error_label.setText("Successfully assigned the loan.");
-                apply_btn.setDisable(true);
+                mCtr.showSuccessAlert();
+//                error_label.setStyle("-fx-text-fill: #349a46;");
+//                error_label.setText("Successfully assigned the loan.");
+//                apply_btn.setDisable(true);
 
             } else {
                 error_label.setStyle("-fx-text-fill: #d32323;");

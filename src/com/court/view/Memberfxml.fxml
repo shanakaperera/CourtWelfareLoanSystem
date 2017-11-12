@@ -534,7 +534,7 @@
                                                         <Font name="System Bold" size="16.0" />
                                                     </font>
                                                 </Label>
-                                                <GridPane GridPane.columnIndex="2" GridPane.rowIndex="1">
+                                                <GridPane fx:id="loan_info_grid" GridPane.columnIndex="2" GridPane.rowIndex="1">
                                                     <columnConstraints>
                                                         <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="40.0" />
                                                         <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="120.0" />
@@ -600,7 +600,7 @@
                                                     </padding>
                                                 </HBox>
                                                 <VBox fx:id="progress_box" alignment="CENTER" prefHeight="200.0" prefWidth="100.0" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-                                                <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="3.0" GridPane.columnIndex="2" GridPane.rowIndex="2">
+                                                <HBox fx:id="loan_name_hbox" alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="3.0" GridPane.columnIndex="2" GridPane.rowIndex="2">
                                                     <children>
                                                         <Label text="Loan Name">
                                                             <font>

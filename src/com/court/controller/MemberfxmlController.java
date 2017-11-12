@@ -357,6 +357,10 @@ public class MemberfxmlController implements Initializable {
     private TableColumn<SubscriptionPay, Double> con_mbr_col;
     @FXML
     private TableColumn<SubscriptionPay, Double> con_optional_col;
+    @FXML
+    private GridPane loan_info_grid;
+    @FXML
+    private HBox loan_name_hbox;
 
     /**
      * Initializes the controller class.
@@ -577,7 +581,7 @@ public class MemberfxmlController implements Initializable {
 
     @FXML
     private void onClearBtnAction(ActionEvent event) {
-        FxUtilsHandler.clearFields(search_grid_pane, main_grid_pane, date_hbox, tel_hbox, nic_col_id, working_box, job_title_box);
+        FxUtilsHandler.clearFields(main_grid_pane, date_hbox, tel_hbox, benifits_box, fee_box, parents_box, loan_name_hbox, loan_info_grid, spouse_box, nic_col_id, working_box, job_title_box);
         identifyCodesEditable(true);
         fillMemberCodeTxt(member_code_txt);
         imgString = null;
@@ -620,7 +624,8 @@ public class MemberfxmlController implements Initializable {
 
     @FXML
     private void onMemberSearchBtnAction(ActionEvent event) throws MalformedURLException {
-        FxUtilsHandler.clearFields(main_grid_pane, date_hbox, tel_hbox, benifits_box, fee_box, parents_box, spouse_box, nic_col_id, working_box, job_title_box);
+        FxUtilsHandler.clearFields(main_grid_pane, date_hbox, tel_hbox, benifits_box, fee_box, parents_box, loan_name_hbox, loan_info_grid, spouse_box, nic_col_id, working_box, job_title_box);
+        clearProgressBar();
         getMemberByCodeOrName(member_code_srch_txt.getText(), member_name_srch_txt.getText());
         buildMemberLoanTable();
         identifyCodesEditable(false);
@@ -802,53 +807,55 @@ public class MemberfxmlController implements Initializable {
         c.add(Restrictions.eq("childId", childId));
         c.setMaxResults(1);
         MemberLoan ml = (MemberLoan) c.uniqueResult();
+        if (ml != null) {
+            gurantors_lstview.getItems().clear();
+            loan_id_txt.setText(ml.getMemberLoanCode());
+            g_date_txt.setText(new SimpleDateFormat("yyyy-MM-dd").format(ml.getGrantedDate()));
+            l_type_txt.setText(ml.getInterestMethod());
+            l_amount_txt.setText(TextFormatHandler.CURRENCY_DECIMAL_FORMAT.format(ml.getLoanAmount()));
+            l_int_txt.setText(TextFormatHandler.PRECENTAGE_DECIMAL_FORMAT.format(ml.getLoanInterest() / 100) + " " + ml.getInterestPer());
+            l_du_txt.setText(ml.getLoanDuration() + " " + ml.getDurationPer());
+            int_pls_prin_txt.setText(TextFormatHandler.CURRENCY_DECIMAL_FORMAT.format(ml.getLoanInstallment() * ml.getNoOfRepay()));
+            loan_nm_txt.setText(ml.getLoanName());
 
-        gurantors_lstview.getItems().clear();
-        loan_id_txt.setText(ml.getMemberLoanCode());
-        g_date_txt.setText(new SimpleDateFormat("yyyy-MM-dd").format(ml.getGrantedDate()));
-        l_type_txt.setText(ml.getInterestMethod());
-        l_amount_txt.setText(TextFormatHandler.CURRENCY_DECIMAL_FORMAT.format(ml.getLoanAmount()));
-        l_int_txt.setText(TextFormatHandler.PRECENTAGE_DECIMAL_FORMAT.format(ml.getLoanInterest() / 100) + " " + ml.getInterestPer());
-        l_du_txt.setText(ml.getLoanDuration() + " " + ml.getDurationPer());
-        int_pls_prin_txt.setText(TextFormatHandler.CURRENCY_DECIMAL_FORMAT.format(ml.getLoanInstallment() * ml.getNoOfRepay()));
-        loan_nm_txt.setText(ml.getLoanName());
+            gurantors_lstview.getItems().addAll(getSignedGuarantors(ml.getGuarantors(), session));
 
-        gurantors_lstview.getItems().addAll(getSignedGuarantors(ml.getGuarantors(), session));
+            l_repay_txt.setText(TextFormatHandler.CURRENCY_DECIMAL_FORMAT
+                    .format(ml.getLoanInstallment()));
 
-        l_repay_txt.setText(TextFormatHandler.CURRENCY_DECIMAL_FORMAT
-                .format(ml.getLoanInstallment()));
+            Criteria cl = session.createCriteria(LoanPayment.class);
+            cl.createAlias("memberLoan", "ml");
+            // cl.add(Restrictions.eq("ml.memberLoanCode", ml.getMemberLoanCode()));
+            cl.add(Restrictions.eq("ml.id", ml.getId()));
+            List<LoanPayment> filteredList = cl.list();
 
-        Criteria cl = session.createCriteria(LoanPayment.class);
-        cl.createAlias("memberLoan", "ml");
-        // cl.add(Restrictions.eq("ml.memberLoanCode", ml.getMemberLoanCode()));
-        cl.add(Restrictions.eq("ml.id", ml.getId()));
-        List<LoanPayment> filteredList = cl.list();
+            if (!filteredList.isEmpty()) {
+                List<LoanPayment> collect = filteredList.stream()
+                        .filter(FxUtilsHandler.distinctByKey(p -> p.getInstallmentNo()))
+                        .collect(Collectors.toList());
 
-        if (!filteredList.isEmpty()) {
-            List<LoanPayment> collect = filteredList.stream()
-                    .filter(FxUtilsHandler.distinctByKey(p -> p.getInstallmentNo()))
-                    .collect(Collectors.toList());
+                Double paymentDue = collect.stream()
+                        .filter(p -> p.isIsLast())
+                        .findFirst().get().getPaymentDue();
 
-            Double paymentDue = collect.stream()
-                    .filter(p -> p.isIsLast())
-                    .findFirst().get().getPaymentDue();
+                double loanComplete = (paymentDue / (ml.getLoanInstallment() * ml.getNoOfRepay())) * 100;
+                ReadOnlyDoubleWrapper workDone = new ReadOnlyDoubleWrapper();
+                ProgressIndicatorBar bar = new ProgressIndicatorBar(workDone, loanComplete);
+                bar.createProgressIndicatorBar(progress_box, workDone);
 
-            double loanComplete = (paymentDue / (ml.getLoanInstallment() * ml.getNoOfRepay())) * 100;
-            ReadOnlyDoubleWrapper workDone = new ReadOnlyDoubleWrapper();
-            ProgressIndicatorBar bar = new ProgressIndicatorBar(workDone, loanComplete);
-            bar.createProgressIndicatorBar(progress_box, workDone);
-
-            initLoanPayTable(FXCollections.observableArrayList(collect));
-        } else {
-            if (!l_pay_tbl.getItems().isEmpty()) {
-                l_pay_tbl.getItems().clear();
+                initLoanPayTable(FXCollections.observableArrayList(collect));
+            } else {
+                if (!l_pay_tbl.getItems().isEmpty()) {
+                    l_pay_tbl.getItems().clear();
+                }
+                ReadOnlyDoubleWrapper workDone = new ReadOnlyDoubleWrapper();
+                ProgressIndicatorBar bar = new ProgressIndicatorBar(workDone, 0);
+                bar.createProgressIndicatorBar(progress_box, workDone);
             }
-            ReadOnlyDoubleWrapper workDone = new ReadOnlyDoubleWrapper();
-            ProgressIndicatorBar bar = new ProgressIndicatorBar(workDone, 0);
-            bar.createProgressIndicatorBar(progress_box, workDone);
-        }
 
-        session.close();
+            session.close();
+
+        }
     }
 
     private void fillMemberCodeTxt(TextField memberCodeField) {
@@ -945,6 +952,7 @@ public class MemberfxmlController implements Initializable {
         validationSupport.registerValidator(emp_id_txt,
                 Validator.createEmptyValidator("Employee Id field cannot be empty"));
     }
+    Alert alert_custom;
 
     @FXML
     private void onAssignLoanBtnAction(ActionEvent event) throws IOException {
@@ -964,7 +972,7 @@ public class MemberfxmlController implements Initializable {
         controller.setMember(getMemberByCode(member_code_txt.getText()));
         controller.initFunction(this);
         // System.out.println("C Member = " + controller.getMember());
-        Alert alert_custom = new Alert(Alert.AlertType.NONE);
+        alert_custom = new Alert(Alert.AlertType.NONE);
         alert_custom.setTitle("Assign New Loan");
         alert_custom.setHeaderText("Member Loan Code - " + controller.fillMemberLoanCodeTxt());
         alert_custom.getDialogPane().setContent(node);
@@ -1001,6 +1009,8 @@ public class MemberfxmlController implements Initializable {
                     alert_success.setContentText("You have successfully removed the member loan.");
                     Optional<ButtonType> result = alert_success.showAndWait();
                     if (result.get() == ButtonType.OK) {
+                        FxUtilsHandler.clearFields(loan_name_hbox, loan_info_grid);
+                        clearProgressBar();
                         buildMemberLoanTable();
                     }
                 } else {
@@ -1078,7 +1088,7 @@ public class MemberfxmlController implements Initializable {
 
         l_taken_tbl.getSelectionModel().selectedItemProperty()
                 .addListener((observable, oldValue, newValue) -> {
-                    if (l_taken_tbl.getSelectionModel().getSelectedItem() != null) {
+                    if (newValue != null) {
                         MemberLoan selectedLoan = l_taken_tbl.getSelectionModel().getSelectedItem();
                         if (selectedLoan != null) {
                             getMemberLoanByCode(selectedLoan.getMemberLoanCode(), selectedLoan.getChildId());
@@ -2190,4 +2200,28 @@ public class MemberfxmlController implements Initializable {
         session.update(ml);
     }
 
+    public void showSuccessAlert() throws MalformedURLException {
+        alert_custom.close();
+        Alert alert_success = new Alert(Alert.AlertType.INFORMATION);
+        alert_success.setTitle("Information");
+        alert_success.setHeaderText("Loan Assigned successfully!");
+        alert_success.setContentText("You have successfully assigned the loan to the member.");
+        Optional<ButtonType> result = alert_success.showAndWait();
+        if (result.get() == ButtonType.OK) {
+            FxUtilsHandler.clearFields(main_grid_pane, date_hbox, tel_hbox, benifits_box, fee_box, parents_box, spouse_box, nic_col_id, working_box, job_title_box);
+            getMemberByCodeOrName(member_code_srch_txt.getText(), member_name_srch_txt.getText());
+            buildMemberLoanTable();
+            identifyCodesEditable(false);
+            initDocTable(FXCollections.observableArrayList(getAllDocumentsOf(member_code_txt.getText())));
+            initMemChildTable(getChildrenOfMember(member_code_txt.getText()));
+            initContributionTable(FXCollections.observableArrayList(getAllContributionsOf(member_code_txt.getText())));
+        }
+
+    }
+
+    private void clearProgressBar() {
+        ReadOnlyDoubleWrapper workDone = new ReadOnlyDoubleWrapper();
+        ProgressIndicatorBar bar = new ProgressIndicatorBar(workDone, 0.0);
+        bar.createProgressIndicatorBar(progress_box, workDone);
+    }
 }
