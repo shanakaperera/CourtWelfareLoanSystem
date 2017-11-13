@@ -752,16 +752,81 @@
                      <children>
                         <VBox layoutX="14.0" layoutY="6.0" prefHeight="525.0" prefWidth="757.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                            <children>
-                              <TableView fx:id="contr_tbl" prefHeight="365.0" prefWidth="757.0">
-                                <columns>
-                                  <TableColumn fx:id="con_paydate_col" prefWidth="100.0" text="Payment Date" />
-                                  <TableColumn fx:id="con_hoi_col" prefWidth="100.0" text="HOI Fee" />
-                                    <TableColumn fx:id="con_acI_col" prefWidth="100.0" text="ACI Fee" />
-                                    <TableColumn fx:id="con_savings_col" prefWidth="100.0" text="Savings Fee" />
-                                    <TableColumn fx:id="con_mbr_col" prefWidth="100.0" text="Membership Fee" />
-                                    <TableColumn fx:id="con_optional_col" prefWidth="100.0" text="Optional Fee" />
-                                </columns>
-                              </TableView>
+                              <HBox>
+                                 <children>
+                                    <TableView fx:id="contr_tbl">
+                                      <columns>
+                                        <TableColumn fx:id="con_paydate_col" prefWidth="100.0" text="Payment Date" />
+                                        <TableColumn fx:id="con_hoi_col" prefWidth="100.0" text="HOI Fee" />
+                                          <TableColumn fx:id="con_acI_col" prefWidth="100.0" text="ACI Fee" />
+                                          <TableColumn fx:id="con_savings_col" prefWidth="100.0" text="Savings Fee" />
+                                          <TableColumn fx:id="con_mbr_col" prefWidth="100.0" text="Membership Fee" />
+                                          <TableColumn fx:id="con_adm_col" prefWidth="75.0" text="Admission " />
+                                          <TableColumn fx:id="con_optional_col" prefWidth="100.0" text="Optional Fee" />
+                                      </columns>
+                                    </TableView>
+                                    <GridPane fx:id="subs_manual_grid" HBox.hgrow="ALWAYS">
+                                      <columnConstraints>
+                                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                                      </columnConstraints>
+                                      <rowConstraints>
+                                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                      </rowConstraints>
+                                       <children>
+                                          <Label alignment="CENTER" text="Subscription Manual Adjustment" underline="true" GridPane.columnSpan="2" GridPane.halignment="CENTER" GridPane.hgrow="ALWAYS">
+                                             <font>
+                                                <Font name="System Bold" size="14.0" />
+                                             </font>
+                                          </Label>
+                                          <Label text="Payment Date" GridPane.rowIndex="1" />
+                                          <DatePicker fx:id="m_subs_date" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                                          <Label text="HOI Fee" GridPane.rowIndex="2" />
+                                          <Label text="ACI Fee" GridPane.rowIndex="3" />
+                                          <Label text="Savings Fee" GridPane.rowIndex="4" />
+                                          <Label text="Membership Fee" GridPane.rowIndex="5" />
+                                          <Label text="Optional/Con Fee" GridPane.rowIndex="6" />
+                                          <TextField fx:id="m_subs_hoi" onAction="#onConHoiAction" onMouseClicked="#onConHoiClicked" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                                          <TextField fx:id="m_subs_aci" onAction="#onConAciAction" onMouseClicked="#onConAciClicked" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+                                          <TextField fx:id="m_subs_sav" onAction="#onConSavAction" onMouseClicked="#onConSavClicked" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+                                          <TextField fx:id="m_subs_mf" onAction="#onConMbrAction" onMouseClicked="#onConMFClicked" GridPane.columnIndex="1" GridPane.rowIndex="5" />
+                                          <TextField fx:id="m_subs_op" onAction="#onConOptAction" onMouseClicked="#onConOptClicked" GridPane.columnIndex="1" GridPane.rowIndex="6" />
+                                          <HBox alignment="TOP_RIGHT" spacing="3.0" GridPane.columnIndex="1" GridPane.rowIndex="8">
+                                             <children>
+                                                <Button mnemonicParsing="false" onAction="#onMbrSubManualAction" text="Add Payment">
+                                                   <styleClass>
+                                                      <String fx:value="btn" />
+                                                      <String fx:value="btn-primary" />
+                                                   </styleClass>
+                                                </Button>
+                                                <Button mnemonicParsing="false" onAction="#onMbrSubCancelAction" text="Cancel">
+                                                   <styleClass>
+                                                      <String fx:value="btn" />
+                                                      <String fx:value="btn-danger" />
+                                                   </styleClass>
+                                                </Button>
+                                             </children>
+                                          </HBox>
+                                          <Label text="Admission" GridPane.rowIndex="7" />
+                                          <TextField fx:id="m_subs_adm" onMouseClicked="#onConAdmClicked" GridPane.columnIndex="1" GridPane.rowIndex="7" />
+                                       </children>
+                                       <HBox.margin>
+                                          <Insets />
+                                       </HBox.margin>
+                                       <padding>
+                                          <Insets left="50.0" right="40.0" />
+                                       </padding>
+                                    </GridPane>
+                                 </children>
+                              </HBox>
                            </children>
                         </VBox>
                      </children>

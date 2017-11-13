@@ -114,7 +114,7 @@ public class MemberfxmlController implements Initializable {
 
     private static final String TABLE_NAME_M = "member";
     private static final String TABLE_NAME_DOC = "document";
-    private ValidationSupport validationSupport, va;
+    private ValidationSupport validationSupport, va, va_msub;
     private ImageWithString imgString = null;
     @FXML
     private TextField member_full_name_txt;
@@ -358,9 +358,27 @@ public class MemberfxmlController implements Initializable {
     @FXML
     private TableColumn<SubscriptionPay, Double> con_optional_col;
     @FXML
+    private TableColumn<SubscriptionPay, Double> con_adm_col;
+    @FXML
     private GridPane loan_info_grid;
     @FXML
     private HBox loan_name_hbox;
+    @FXML
+    private DatePicker m_subs_date;
+    @FXML
+    private TextField m_subs_hoi;
+    @FXML
+    private TextField m_subs_aci;
+    @FXML
+    private TextField m_subs_sav;
+    @FXML
+    private TextField m_subs_mf;
+    @FXML
+    private TextField m_subs_op;
+    @FXML
+    private GridPane subs_manual_grid;
+    @FXML
+    private TextField m_subs_adm;
 
     /**
      * Initializes the controller class.
@@ -369,6 +387,7 @@ public class MemberfxmlController implements Initializable {
     public void initialize(URL url, ResourceBundle rb) {
         validationSupport = new ValidationSupport();
         va = new ValidationSupport();
+        va_msub = new ValidationSupport();
         // registerInputValidation();
         fillMemberCodeTxt(member_code_txt);
         fillMemberDocCodeTxt(doc_id_txt);
@@ -414,7 +433,8 @@ public class MemberfxmlController implements Initializable {
         new AutoCompletionTextFieldBinding<>(doc_typ_txt, p5);
 
         FxUtilsHandler.setDatePickerTimeFormat(member_apo_chooser, member_bday_chooser,
-                member_join_chooser, doc_date_chooser);
+                member_join_chooser, doc_date_chooser, m_subs_date);
+        m_subs_date.setValue(TextFormatHandler.NowDate());
 
         ///Field formatters===================================
         mem_fee_txt.setTextFormatter(TextFormatHandler.currencyFormatter());
@@ -424,12 +444,20 @@ public class MemberfxmlController implements Initializable {
         optional_txt.setTextFormatter(TextFormatHandler.currencyFormatter());
         adm_fee_txt.setTextFormatter(TextFormatHandler.currencyFormatter());
 
+        m_subs_hoi.setTextFormatter(TextFormatHandler.currencyFormatter());
+        m_subs_aci.setTextFormatter(TextFormatHandler.currencyFormatter());
+        m_subs_sav.setTextFormatter(TextFormatHandler.currencyFormatter());
+        m_subs_mf.setTextFormatter(TextFormatHandler.currencyFormatter());
+        m_subs_op.setTextFormatter(TextFormatHandler.currencyFormatter());
+        m_subs_adm.setTextFormatter(TextFormatHandler.currencyFormatter());
+
         //================== Disable Tabs============================
         disableTabs(true);
         mbr_gen_chk.setSelected(true);
         disableButtonWithLoggingPrv(DashBoardFxmlController.controller.loggedSession());
         bindValidationOnPaneControlFocus(nic_col_id, main_grid_pane, date_hbox, tel_hbox, working_box, job_title_box);
         bindFamilyValidationOnPaneControlFocus(fee_box);
+        bindContValidationOnPaneControlFocus(subs_manual_grid);
         member_code_txt.requestFocus();
         member_code_srch_txt.focusedProperty()
                 .addListener((ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) -> {
@@ -838,6 +866,7 @@ public class MemberfxmlController implements Initializable {
                         .filter(p -> p.isIsLast())
                         .findFirst().get().getPaymentDue();
 
+                // System.out.println("ESTIMATE - " + paymentDue);
                 double loanComplete = (paymentDue / (ml.getLoanInstallment() * ml.getNoOfRepay())) * 100;
                 ReadOnlyDoubleWrapper workDone = new ReadOnlyDoubleWrapper();
                 ProgressIndicatorBar bar = new ProgressIndicatorBar(workDone, loanComplete);
@@ -845,9 +874,8 @@ public class MemberfxmlController implements Initializable {
 
                 initLoanPayTable(FXCollections.observableArrayList(collect));
             } else {
-                if (!l_pay_tbl.getItems().isEmpty()) {
-                    l_pay_tbl.getItems().clear();
-                }
+
+                initLoanPayTable(FXCollections.observableArrayList());
                 ReadOnlyDoubleWrapper workDone = new ReadOnlyDoubleWrapper();
                 ProgressIndicatorBar bar = new ProgressIndicatorBar(workDone, 0);
                 bar.createProgressIndicatorBar(progress_box, workDone);
@@ -876,6 +904,14 @@ public class MemberfxmlController implements Initializable {
 //            memberCodeField.setText(seqHandler.getSeq_code());
 //        }
         //=================== REMOVED DUE TO FIRST IMP ======================================
+    }
+
+    private void registerContributionValidation() {
+        if (!va_msub.getRegisteredControls().isEmpty()) {
+            return;
+        }
+        va_msub.registerValidator(m_subs_date,
+                Validator.createEmptyValidator("This field is not optional."));
     }
 
     private void registerOtherDetailsValidation() {
@@ -1086,6 +1122,9 @@ public class MemberfxmlController implements Initializable {
 
         l_taken_tbl.setItems(mLoans);
 
+        if (!l_pay_tbl.getItems().isEmpty()) {
+            l_pay_tbl.getItems().clear();
+        }
         l_taken_tbl.getSelectionModel().selectedItemProperty()
                 .addListener((observable, oldValue, newValue) -> {
                     if (newValue != null) {
@@ -1142,18 +1181,22 @@ public class MemberfxmlController implements Initializable {
                 grid.add(totPay, 1, 1);
 
                 Node savePayBtn = dialog.getDialogPane().lookupButton(savePayButtonType);
-                savePayBtn.setDisable(true);
+//                savePayBtn.setDisable(true);
 
                 installments.setOnAction((ActionEvent event) -> {
-                    savePayBtn.setDisable(false);
+//                    savePayBtn.setDisable(false);
                     double tot = row.getItem().getLoanInstallment() * installments.getSelectionModel().getSelectedItem();
                     totPay.setText(TextFormatHandler.CURRENCY_DECIMAL_FORMAT.format(tot));
                 });
 
                 dialog.getDialogPane().setContent(grid);
 
-                // Request focus on the username field by default.
-                Platform.runLater(() -> installments.requestFocus());
+                // Request focus on the combobox by default.
+                Platform.runLater(() -> {
+                    installments.requestFocus();
+                    totPay.setText(TextFormatHandler.CURRENCY_DECIMAL_FORMAT.format(row.getItem().getLoanInstallment()));
+                }
+                );
 
                 dialog.setResultConverter(dialogButton -> {
                     if (dialogButton == savePayButtonType) {
@@ -1270,9 +1313,9 @@ public class MemberfxmlController implements Initializable {
                         setText(TextFormatHandler.CURRENCY_DECIMAL_FORMAT.format(item));
                     }
                 }
-
             };
         });
+        l_pay_tbl.getItems().clear();
         l_pay_tbl.setItems(lPays);
     }
 
@@ -1523,6 +1566,18 @@ public class MemberfxmlController implements Initializable {
         for (Node c : children) {
             c.focusedProperty().addListener(e -> {
                 registerOtherDetailsValidation();
+            });
+        }
+    }
+
+    private void bindContValidationOnPaneControlFocus(Pane... parent_panes) {
+        ObservableList<Node> children = FXCollections.observableArrayList();
+        for (Pane parent_pane : parent_panes) {
+            children.addAll(parent_pane.getChildren());
+        }
+        for (Node c : children) {
+            c.focusedProperty().addListener(e -> {
+                registerContributionValidation();
             });
         }
     }
@@ -2137,6 +2192,67 @@ public class MemberfxmlController implements Initializable {
         mb_ben_name.requestFocus();
     }
 
+    //=================================CONTRIBUTION TAB FIELDS==========================================
+    @FXML
+    private void onConHoiClicked(MouseEvent event) {
+        m_subs_hoi.selectRange(2, m_subs_hoi.getText().length());
+    }
+
+    @FXML
+    private void onConAciClicked(MouseEvent event) {
+        m_subs_aci.selectRange(2, m_subs_aci.getText().length());
+    }
+
+    @FXML
+    private void onConSavClicked(MouseEvent event) {
+        m_subs_sav.selectRange(2, m_subs_sav.getText().length());
+    }
+
+    @FXML
+    private void onConMFClicked(MouseEvent event) {
+        m_subs_mf.selectRange(2, m_subs_mf.getText().length());
+    }
+
+    @FXML
+    private void onConOptClicked(MouseEvent event) {
+        m_subs_op.selectRange(2, m_subs_op.getText().length());
+    }
+
+    @FXML
+    private void onConHoiAction(ActionEvent event) {
+        m_subs_aci.requestFocus();
+        m_subs_aci.selectRange(2, m_subs_aci.getText().length());
+    }
+
+    @FXML
+    private void onConAciAction(ActionEvent event) {
+        m_subs_sav.requestFocus();
+        m_subs_sav.selectRange(2, m_subs_sav.getText().length());
+    }
+
+    @FXML
+    private void onConSavAction(ActionEvent event) {
+        m_subs_mf.requestFocus();
+        m_subs_mf.selectRange(2, m_subs_mf.getText().length());
+    }
+
+    @FXML
+    private void onConMbrAction(ActionEvent event) {
+        m_subs_op.requestFocus();
+        m_subs_op.selectRange(2, m_subs_op.getText().length());
+    }
+
+    @FXML
+    private void onConOptAction(ActionEvent event) {
+        m_subs_adm.requestFocus();
+        m_subs_adm.selectRange(2, m_subs_adm.getText().length());
+    }
+
+    @FXML
+    private void onConAdmClicked(MouseEvent event) {
+        m_subs_adm.selectRange(2, m_subs_adm.getText().length());
+    }
+
     @FXML
     private void onLoanRefreshAction(ActionEvent event) {
         buildMemberLoanTable();
@@ -2162,16 +2278,20 @@ public class MemberfxmlController implements Initializable {
         con_optional_col.setCellValueFactory((TableColumn.CellDataFeatures<SubscriptionPay, Double> param) -> {
             return new SimpleObjectProperty<>(param.getValue().getOptional());
         });
+        con_adm_col.setCellValueFactory((TableColumn.CellDataFeatures<SubscriptionPay, Double> param) -> {
+            return new SimpleObjectProperty<>(param.getValue().getAdmissionFee());
+        });
 
         contr_tbl.setItems(subsPay);
     }
 
     private List<SubscriptionPay> getAllContributionsOf(String memberId) {
         Session session = HibernateUtil.getSessionFactory().openSession();
-        List<SubscriptionPay> totCtr = session.createCriteria(SubscriptionPay.class)
-                .createAlias("memberSubscriptions", "ms")
+        List<SubscriptionPay> totCtr = session.createCriteria(SubscriptionPay.class, "sp")
+                .createAlias("sp.memberSubscriptions", "ms")
                 .createAlias("ms.member", "m")
                 .add(Restrictions.eq("m.memberId", memberId))
+                .addOrder(Order.asc("sp.paymentDate"))
                 .list();
         session.close();
         return totCtr;
@@ -2224,4 +2344,95 @@ public class MemberfxmlController implements Initializable {
         ProgressIndicatorBar bar = new ProgressIndicatorBar(workDone, 0.0);
         bar.createProgressIndicatorBar(progress_box, workDone);
     }
+
+    @FXML
+    private void onMbrSubManualAction(ActionEvent event) throws IOException {
+        if (isValidationEmpty(va_msub)) {
+            Alert alert_error = new Alert(Alert.AlertType.ERROR);
+            alert_error.setTitle("Error");
+            alert_error.setHeaderText("Empty Fields !");
+            alert_error.setContentText(PropHandler.getStringProperty("empty_fields"));
+            alert_error.show();
+            return;
+        }
+
+        if (isFormZero(subs_manual_grid)) {
+            Alert alert_error = new Alert(Alert.AlertType.ERROR);
+            alert_error.setTitle("Error");
+            alert_error.setHeaderText("No any payment detected !");
+            alert_error.setContentText("All the values you have entered are \"0\" . Please check again.");
+            alert_error.show();
+            return;
+        }
+
+        if (va_msub.validationResultProperty().get().getErrors().isEmpty()) {
+
+            Alert alert_conf = new Alert(Alert.AlertType.CONFIRMATION);
+            alert_conf.setTitle("Confirm");
+            alert_conf.setHeaderText("Are you sure ?");
+            alert_conf.setContentText("Are you sure you want to perform this task ?");
+            Optional<ButtonType> result = alert_conf.showAndWait();
+            if (result.get() == ButtonType.OK) {
+                Session s = HibernateUtil.getSessionFactory().openSession();
+                s.beginTransaction();
+                SubscriptionPay sp = new SubscriptionPay();
+                sp.setAciFee(TextFormatHandler.getCurrencyFieldValue(m_subs_aci));
+                sp.setHoiFee(TextFormatHandler.getCurrencyFieldValue(m_subs_hoi));
+                sp.setAdmissionFee(TextFormatHandler.getCurrencyFieldValue(m_subs_adm));
+                sp.setOptional(TextFormatHandler.getCurrencyFieldValue(m_subs_op));
+                sp.setSavingsFee(TextFormatHandler.getCurrencyFieldValue(m_subs_sav));
+                sp.setMembershipFee(TextFormatHandler.getCurrencyFieldValue(m_subs_mf));
+                sp.setPaymentDate(Date.valueOf(m_subs_date.getValue()));
+                sp.setMemberSubscriptions(getMemberSubscriptionsFromMember(member_code_txt.getText(), s));
+                s.save(sp);
+                s.getTransaction().commit();
+
+                Alert alert_success = new Alert(Alert.AlertType.INFORMATION);
+                alert_success.setTitle("Success");
+                alert_success.setHeaderText("Successfully Saved !");
+                alert_success.setContentText("You have successfully saved the member subscription payment .");
+                Optional<ButtonType> res = alert_success.showAndWait();
+                if (res.get() == ButtonType.OK) {
+                    initContributionTable(FXCollections.observableArrayList(getAllContributionsOf(member_code_txt.getText())));
+                }
+            }
+
+        } else {
+            Alert alert_error = new Alert(Alert.AlertType.ERROR);
+            alert_error.setTitle("Error");
+            alert_error.setHeaderText("Missing Fields !");
+            alert_error.setContentText(PropHandler.getStringProperty("missing_fields"));
+            alert_error.show();
+        }
+    }
+
+    @FXML
+    private void onMbrSubCancelAction(ActionEvent event) {
+        FxUtilsHandler.clearFields(subs_manual_grid);
+    }
+
+    private boolean isFormZero(GridPane subs_form) {
+        ObservableList<Node> children = subs_form.getChildren();
+        double val = 0.0;
+        for (Node c : children) {
+            if (c instanceof TextField) {
+                TextField text = (TextField) c;
+                Double fv = TextFormatHandler.getCurrencyFieldValue(text);
+                if (fv > val) {
+                    val = fv;
+                }
+            }
+        }
+        return val == 0.0;
+    }
+
+    private MemberSubscriptions getMemberSubscriptionsFromMember(String member_code, Session s) {
+        Criteria c = s.createCriteria(MemberSubscriptions.class, "ms");
+        c.createAlias("ms.member", "m")
+                .add(Restrictions.eq("m.memberId", member_code))
+                .setMaxResults(1);
+        MemberSubscriptions ms = (MemberSubscriptions) c.uniqueResult();
+        return ms;
+    }
+
 }

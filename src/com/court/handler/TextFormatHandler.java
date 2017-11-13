@@ -7,6 +7,10 @@ package com.court.handler;
 
 import java.text.DecimalFormat;
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.Calendar;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.scene.control.TextField;
@@ -34,7 +38,7 @@ public class TextFormatHandler {
      *
      */
     public static TextFormatter<Double> currencyFormatter() {
-        
+
         return new TextFormatter<Double>(new StringConverter<Double>() {
             @Override
             public String toString(Double value) {
@@ -138,6 +142,12 @@ public class TextFormatHandler {
 
             return null;
         });
+    }
+
+    public static LocalDate NowDate() {
+        String date = new SimpleDateFormat("dd-MM-yyyy").format(Calendar.getInstance().getTime());
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+        return LocalDate.parse(date, formatter);
     }
 
     public static Long roundAmount(double amount) {
