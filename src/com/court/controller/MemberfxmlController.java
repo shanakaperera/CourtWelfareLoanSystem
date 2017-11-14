@@ -379,6 +379,14 @@ public class MemberfxmlController implements Initializable {
     private GridPane subs_manual_grid;
     @FXML
     private TextField m_subs_adm;
+    @FXML
+    private Label tot_hoi_label;
+    @FXML
+    private Label tot_sav_label;
+    @FXML
+    private Label tot_aci_label;
+    @FXML
+    private Label tot_opt_label;
 
     /**
      * Initializes the controller class.
@@ -2283,6 +2291,17 @@ public class MemberfxmlController implements Initializable {
         });
 
         contr_tbl.setItems(subsPay);
+        
+        double sum_aci = subsPay.stream().mapToDouble(SubscriptionPay::getAciFee).sum();
+        double sum_hoi = subsPay.stream().mapToDouble(SubscriptionPay::getHoiFee).sum();
+        double sum_sav = subsPay.stream().mapToDouble(SubscriptionPay::getSavingsFee).sum();
+        double sum_opt = subsPay.stream().mapToDouble(SubscriptionPay::getOptional).sum();
+        tot_aci_label.setText(TextFormatHandler.CURRENCY_DECIMAL_FORMAT.format(sum_aci));
+        tot_hoi_label.setText(TextFormatHandler.CURRENCY_DECIMAL_FORMAT.format(sum_hoi));
+        tot_opt_label.setText(TextFormatHandler.CURRENCY_DECIMAL_FORMAT.format(sum_opt));
+        tot_sav_label.setText(TextFormatHandler.CURRENCY_DECIMAL_FORMAT.format(sum_sav));
+       
+        
     }
 
     private List<SubscriptionPay> getAllContributionsOf(String memberId) {

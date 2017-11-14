@@ -827,6 +827,63 @@
                                     </GridPane>
                                  </children>
                               </HBox>
+                              <HBox>
+                                 <children>
+                                    <Label prefHeight="27.0" prefWidth="102.0" text="Total HOI ">
+                                       <font>
+                                          <Font name="System Bold" size="18.0" />
+                                       </font>
+                                    </Label>
+                                    <Label fx:id="tot_hoi_label" text="Label">
+                                       <font>
+                                          <Font name="System Bold" size="18.0" />
+                                       </font>
+                                    </Label>
+                                    <Label prefHeight="27.0" prefWidth="304.0" text="Total Savings ">
+                                       <font>
+                                          <Font name="System Bold" size="18.0" />
+                                       </font>
+                                       <padding>
+                                          <Insets left="115.0" />
+                                       </padding>
+                                    </Label>
+                                    <Label fx:id="tot_sav_label" text="Label">
+                                       <font>
+                                          <Font name="System Bold" size="18.0" />
+                                       </font>
+                                    </Label>
+                                 </children>
+                                 <VBox.margin>
+                                    <Insets top="20.0" />
+                                 </VBox.margin>
+                              </HBox>
+                              <HBox>
+                                 <children>
+                                    <Label prefHeight="27.0" prefWidth="102.0" text="Total ACI ">
+                                       <font>
+                                          <Font name="System Bold" size="18.0" />
+                                       </font>
+                                    </Label>
+                                    <Label fx:id="tot_aci_label" text="Label">
+                                       <font>
+                                          <Font name="System Bold" size="18.0" />
+                                       </font>
+                                    </Label>
+                                    <Label prefHeight="27.0" prefWidth="304.0" text="Total Optional/Con">
+                                       <font>
+                                          <Font name="System Bold" size="18.0" />
+                                       </font>
+                                       <padding>
+                                          <Insets left="100.0" />
+                                       </padding>
+                                    </Label>
+                                    <Label fx:id="tot_opt_label" text="Label">
+                                       <font>
+                                          <Font name="System Bold" size="18.0" />
+                                       </font>
+                                    </Label>
+                                 </children>
+                              </HBox>
                            </children>
                         </VBox>
                      </children>
