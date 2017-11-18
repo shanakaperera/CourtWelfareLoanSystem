@@ -27,16 +27,19 @@ import com.court.model.Member;
 import com.court.model.MemberLoan;
 import com.court.model.MemberSubscription;
 import com.court.model.MemberSubscriptions;
+import com.court.model.ReceiptPay;
 import com.court.model.SubscriptionPay;
 import impl.org.controlsfx.autocompletion.AutoCompletionTextFieldBinding;
 import impl.org.controlsfx.autocompletion.SuggestionProvider;
 import java.awt.Desktop;
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Type;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.sql.Date;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -1188,9 +1191,8 @@ public class MemberfxmlController implements Initializable {
                 grid.add(new Label("Total Payment:"), 0, 1);
                 grid.add(totPay, 1, 1);
 
-                Node savePayBtn = dialog.getDialogPane().lookupButton(savePayButtonType);
+                // Node savePayBtn = dialog.getDialogPane().lookupButton(savePayButtonType);
 //                savePayBtn.setDisable(true);
-
                 installments.setOnAction((ActionEvent event) -> {
 //                    savePayBtn.setDisable(false);
                     double tot = row.getItem().getLoanInstallment() * installments.getSelectionModel().getSelectedItem();
@@ -1224,17 +1226,12 @@ public class MemberfxmlController implements Initializable {
                     s.beginTransaction();
                     last_inst_paid++;
 
-                    LoanPayCheque lpc = new LoanPayCheque();
-                    lpc.setPaymentRecieved(new java.util.Date());
-                    lpc.setChequeAmount(payment.getValue());
-                    lpc.setPaymentType("cash");
-                    s.save(lpc);
-
                     java.util.Date[] instDates = setInstallmentDates(insts, lpLast);
                     if (lpLast != null) {
                         lpLast.setIsLast(false);
                         s.update(lpLast);
                     }
+                    List<Integer> lpIds = new ArrayList<>();
                     for (int i = 0; i < insts; i++) {
                         LoanPayment lp = new LoanPayment();
                         lp.setInstallmentNo(last_inst_paid);
@@ -1248,13 +1245,23 @@ public class MemberfxmlController implements Initializable {
                             lp.setIsLast(false);
                         }
                         lp.setMemberLoan(row.getItem());
-                        lp.setLoanPayCheque(lpc);
                         s.save(lp);
+                        lpIds.add(lp.getId());
                         last_inst_paid++;
                         if (no_of_repay - last_inst_paid == 0) {
                             endLoan(s, row.getItem());
                         }
                     }
+                    Type type = new TypeToken<List<Integer>>() {
+                    }.getType();
+                    ReceiptPay rp = new ReceiptPay();
+                    rp.setMember(row.getItem().getMember());
+                    rp.setAmount(payment.getValue());
+                    rp.setPayDate(new java.util.Date());
+                    rp.setPaymentType("installment");
+                    rp.setPayIds(new Gson().toJson(lpIds, type));
+                    s.save(rp);
+
                     updateMemberLoan(row.getItem(), s, instDates[insts - 1]);
                     s.getTransaction().commit();
                     s.close();
@@ -2291,7 +2298,7 @@ public class MemberfxmlController implements Initializable {
         });
 
         contr_tbl.setItems(subsPay);
-        
+
         double sum_aci = subsPay.stream().mapToDouble(SubscriptionPay::getAciFee).sum();
         double sum_hoi = subsPay.stream().mapToDouble(SubscriptionPay::getHoiFee).sum();
         double sum_sav = subsPay.stream().mapToDouble(SubscriptionPay::getSavingsFee).sum();
@@ -2300,8 +2307,7 @@ public class MemberfxmlController implements Initializable {
         tot_hoi_label.setText(TextFormatHandler.CURRENCY_DECIMAL_FORMAT.format(sum_hoi));
         tot_opt_label.setText(TextFormatHandler.CURRENCY_DECIMAL_FORMAT.format(sum_opt));
         tot_sav_label.setText(TextFormatHandler.CURRENCY_DECIMAL_FORMAT.format(sum_sav));
-       
-        
+
     }
 
     private List<SubscriptionPay> getAllContributionsOf(String memberId) {

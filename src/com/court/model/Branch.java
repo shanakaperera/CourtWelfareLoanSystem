@@ -26,6 +26,11 @@ public class Branch implements java.io.Serializable {
     public Branch() {
     }
 
+    public Branch(String branchCode, String branchName) {
+        this.branchCode = branchCode;
+        this.branchName = branchName;
+    }
+
     public Branch(String branchCode, boolean status) {
         this.branchCode = branchCode;
         this.status = status;
@@ -44,7 +49,7 @@ public class Branch implements java.io.Serializable {
     }
 
     public Branch(String root) {
-        
+
     }
 
     public Integer getId() {
@@ -134,6 +139,10 @@ public class Branch implements java.io.Serializable {
     public void setSubBranches(ObservableList<Branch> subBranches) {
         this.subBranches = subBranches;
     }
-    
+
+    @Override
+    public String toString() {
+        return this.branchCode == null ? this.branchName : this.branchCode + "-" + this.branchName;
+    }
 
 }

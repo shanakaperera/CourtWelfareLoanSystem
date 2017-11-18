@@ -64,7 +64,6 @@ public class DisplaySubscriptionFactory implements Callback<TableColumn.CellData
         try {
             pane = (GridPane) loader.load();
             DisplaySubscriptionFxmlController controller = (DisplaySubscriptionFxmlController) loader.getController();
-
             callByName(controller, "setValueSubs_tot", TextFormatHandler.CURRENCY_DECIMAL_FORMAT.format(sum));
 
             for (int i = 0; i < mbrSubs.size(); i++) {
@@ -72,7 +71,7 @@ public class DisplaySubscriptionFactory implements Callback<TableColumn.CellData
                 MemberSubscriptions get = mbrSubs.get(i);
                 callByName(controller, "setValueSub_" + j, get.getMemberSubscription().getFeeName());
                 callByName(controller, "setValueAmt_" + j, TextFormatHandler.CURRENCY_DECIMAL_FORMAT.format(get.getAmount()));
-                callByName(controller, "setValueTkn_" + j, getparamValue(flag, get));
+                callByNameCheck(controller, "setValueTkn_" + j, getparamValue(flag, get));
             }
 
         } catch (IOException | NoSuchMethodException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
@@ -88,11 +87,16 @@ public class DisplaySubscriptionFactory implements Callback<TableColumn.CellData
         controller.getClass().getDeclaredMethod(string, String.class).invoke(controller, arg);
     }
 
-    private String getparamValue(boolean flag, MemberSubscriptions get) {
+    private void callByNameCheck(DisplaySubscriptionFxmlController controller, String string, boolean arg)
+            throws NoSuchMethodException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+        controller.getClass().getDeclaredMethod(string, Boolean.class).invoke(controller, arg);
+    }
+
+    private boolean getparamValue(boolean flag, MemberSubscriptions get) {
         if (get.getRepaymentType().equalsIgnoreCase("Once") && !flag) {
-            return "No";
+            return false;
         } else {
-            return "Yes";
+            return true;
         }
     }
 }

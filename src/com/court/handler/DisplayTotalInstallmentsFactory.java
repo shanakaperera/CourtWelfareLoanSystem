@@ -34,9 +34,9 @@ public class DisplayTotalInstallmentsFactory implements Callback<TableColumn.Cel
     public ObservableValue<Button> call(TableColumn.CellDataFeatures<Member, Button> param) {
         Member ml = param.getValue();
         List<MemberLoan> list = ml.getMemberLoans().stream()
-                .sorted(Comparator.comparing(p -> p.getId()))
+                .sorted(Comparator.comparing(MemberLoan::getChildId).reversed())
                 .filter(p -> !p.isIsComplete())
-                .filter(FxUtilsHandler.checkIfLastPaidDateWithinCurrentMonth(p -> p.getPaidUntil()))
+                //  .filter(FxUtilsHandler.checkIfLastPaidDateWithinCurrentMonth(p -> p.getPaidUntil()))
                 .filter(p -> p.isStatus())
                 .filter(FxUtilsHandler.distinctByKey(p -> p.getMemberLoanCode()))
                 .collect(Collectors.toList());

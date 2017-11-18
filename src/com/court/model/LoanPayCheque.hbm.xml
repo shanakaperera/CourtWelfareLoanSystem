@@ -20,6 +20,9 @@
         <property name="chequeDate" type="date">
             <column name="cheque_date" length="10" />
         </property>
+        <property name="chequeRealise" type="date">
+            <column name="cheque_realise" length="10" />
+        </property>
         <property name="chequeAmount" type="java.lang.Double">
             <column name="cheque_amount" precision="22" scale="0" />
         </property>
@@ -29,11 +32,5 @@
         <property name="bankCode" type="string">
             <column name="bank_code" length="45" />
         </property>
-        <set name="loanPayments" table="loan_payment" inverse="true" lazy="true" fetch="select">
-            <key>
-                <column name="loan_pay_cheque_id" not-null="true" />
-            </key>
-            <one-to-many class="com.court.model.LoanPayment" />
-        </set>
     </class>
 </hibernate-mapping>

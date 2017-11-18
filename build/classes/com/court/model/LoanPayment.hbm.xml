@@ -8,9 +8,6 @@
             <column name="id" />
             <generator class="identity" />
         </id>
-        <many-to-one name="loanPayCheque" class="com.court.model.LoanPayCheque" fetch="select">
-            <column name="loan_pay_cheque_id" not-null="true" />
-        </many-to-one>
         <many-to-one name="memberLoan" class="com.court.model.MemberLoan" fetch="select">
             <column name="member_loan_id" not-null="true" />
         </many-to-one>

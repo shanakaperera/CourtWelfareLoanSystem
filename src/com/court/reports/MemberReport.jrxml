@@ -14,6 +14,20 @@
     <field name="jobStatus" class="java.lang.String"/>
     <field name="nic" class="java.lang.String"/>
     <field name="branch" class="com.court.model.Branch"/>
+    <group name="branch_group">
+        <groupExpression><![CDATA[$F{branch}.getBranchName()]]></groupExpression>
+        <groupHeader>
+            <band height="22">
+                <textField>
+                    <reportElement x="0" y="0" width="555" height="22" uuid="c4cea5ed-7a83-4597-b205-c19675e486b1"/>
+                    <textElement>
+                        <font isBold="true"/>
+                    </textElement>
+                    <textFieldExpression><![CDATA[$F{branch}.getBranchName()]]></textFieldExpression>
+                </textField>
+            </band>
+        </groupHeader>
+    </group>
     <background>
         <band splitType="Stretch"/>
     </background>

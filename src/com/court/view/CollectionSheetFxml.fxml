@@ -79,7 +79,7 @@
                                     </font>
                                 </Label>
                                 <Label text="Cheque No" GridPane.columnIndex="2" GridPane.rowIndex="1" />
-                                <Label text="Cheque Date" GridPane.columnIndex="2" GridPane.rowIndex="2" />
+                                <Label text="Cheque Realise Date" GridPane.columnIndex="2" GridPane.rowIndex="2" />
                                 <HBox spacing="5.0" GridPane.columnIndex="1" GridPane.rowIndex="3">
                                     <children>
                                         <Button mnemonicParsing="false" onAction="#onSearchBtnAction" style="-fx-text-fill: #ffff; -fx-font-size: 14;" text="Search">
@@ -99,7 +99,10 @@
                                 <TextField fx:id="chk_no_txt" GridPane.columnIndex="3" GridPane.rowIndex="1" />
                                 <DatePicker fx:id="chk_date_chooser" GridPane.columnIndex="3" GridPane.rowIndex="2" />
                                 <Label text="Cheque Amount" GridPane.columnIndex="2" GridPane.rowIndex="3" />
-                                <TextField fx:id="chk_amt_txt" editable="false" GridPane.columnIndex="3" GridPane.rowIndex="3" />
+                                <TextField fx:id="chk_amt_txt" editable="false" GridPane.columnIndex="3" GridPane.rowIndex="3">
+                           <font>
+                              <Font name="System Bold" size="14.0" />
+                           </font></TextField>
                                 <Button mnemonicParsing="false" onAction="#onProceedBtnAction" text="Proceed" GridPane.columnIndex="5" GridPane.rowIndex="4">
                                     <styleClass>
                                         <String fx:value="btn" />
@@ -110,6 +113,8 @@
                         <TextField fx:id="branch_txt" GridPane.columnIndex="5" GridPane.rowIndex="1" />
                         <Label text="Bank Code" GridPane.columnIndex="4" GridPane.rowIndex="2" />
                         <TextField fx:id="bank_code_txt" GridPane.columnIndex="5" GridPane.rowIndex="2" />
+                        <Label text="Cheque of Month" GridPane.columnIndex="2" GridPane.rowIndex="4" />
+                        <DatePicker fx:id="chk_of_month_chooser" GridPane.columnIndex="3" GridPane.rowIndex="4" />
                             </children>
                         </GridPane>
                     </content>

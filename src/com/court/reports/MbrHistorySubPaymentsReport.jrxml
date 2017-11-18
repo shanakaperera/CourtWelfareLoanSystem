@@ -7,12 +7,6 @@
 	<field name="chequeNo" class="java.lang.String"/>
 	<field name="paymentDate" class="java.util.Date"/>
 	<field name="memberLoan" class="com.court.model.MemberLoan"/>
-	<field name="membershipFee" class="java.lang.Double"/>
-	<field name="savingsFee" class="java.lang.Double"/>
-	<field name="hoiFee" class="java.lang.Double"/>
-	<field name="aciFee" class="java.lang.Double"/>
-	<field name="optionalFee" class="java.lang.Double"/>
-	<field name="admissionFee" class="java.lang.Double"/>
 	<background>
 		<band splitType="Stretch"/>
 	</background>
@@ -57,48 +51,6 @@
 				</textElement>
 				<text><![CDATA[PaymentDate]]></text>
 			</staticText>
-			<staticText>
-				<reportElement x="216" y="0" width="51" height="21" uuid="9a08f3ef-e3dd-4793-b367-8c5aa5ecfd6a"/>
-				<textElement verticalAlignment="Middle">
-					<font size="8" isBold="true"/>
-				</textElement>
-				<text><![CDATA[MbrshipFee]]></text>
-			</staticText>
-			<staticText>
-				<reportElement x="267" y="0" width="46" height="21" uuid="1f9a1910-5184-4420-954c-5d2c928ebefe"/>
-				<textElement verticalAlignment="Middle">
-					<font size="8" isBold="true"/>
-				</textElement>
-				<text><![CDATA[SavingsFee]]></text>
-			</staticText>
-			<staticText>
-				<reportElement x="315" y="0" width="42" height="21" uuid="a9d35346-830e-4b03-936d-a2ed2f6747e2"/>
-				<textElement verticalAlignment="Middle">
-					<font size="8" isBold="true"/>
-				</textElement>
-				<text><![CDATA[hoiFee]]></text>
-			</staticText>
-			<staticText>
-				<reportElement x="357" y="0" width="44" height="21" uuid="75b87ce6-fe91-4e70-afda-deee0aab8330"/>
-				<textElement verticalAlignment="Middle">
-					<font size="8" isBold="true"/>
-				</textElement>
-				<text><![CDATA[aciFee]]></text>
-			</staticText>
-			<staticText>
-				<reportElement x="401" y="0" width="58" height="21" uuid="8562326d-5d3d-41f5-8e0b-984dc84f5adb"/>
-				<textElement verticalAlignment="Middle">
-					<font size="8" isBold="true"/>
-				</textElement>
-				<text><![CDATA[optionalFee]]></text>
-			</staticText>
-			<staticText>
-				<reportElement x="459" y="0" width="59" height="21" uuid="3224614c-e570-410e-8f3c-e45de2061129"/>
-				<textElement verticalAlignment="Middle">
-					<font size="8" isBold="true"/>
-				</textElement>
-				<text><![CDATA[admissionFee]]></text>
-			</staticText>
 		</band>
 	</columnHeader>
 	<detail>
@@ -130,48 +82,6 @@
 					<font size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{paymentDate}]]></textFieldExpression>
-			</textField>
-			<textField pattern="Rs#,#00.00">
-				<reportElement x="216" y="0" width="51" height="21" uuid="4f30ccfc-5bae-443c-9776-be8f7f1f4a5b"/>
-				<textElement verticalAlignment="Middle">
-					<font size="8"/>
-				</textElement>
-				<textFieldExpression><![CDATA[$F{membershipFee}]]></textFieldExpression>
-			</textField>
-			<textField pattern="Rs#,#00.00">
-				<reportElement x="267" y="0" width="46" height="21" uuid="5d03a13c-f483-4378-ae8e-f802822f618d"/>
-				<textElement verticalAlignment="Middle">
-					<font size="8"/>
-				</textElement>
-				<textFieldExpression><![CDATA[$F{savingsFee}]]></textFieldExpression>
-			</textField>
-			<textField pattern="Rs#,#00.00">
-				<reportElement x="315" y="0" width="42" height="21" uuid="693365e0-e8af-48cd-9cf4-fd8f90348ea7"/>
-				<textElement verticalAlignment="Middle">
-					<font size="8"/>
-				</textElement>
-				<textFieldExpression><![CDATA[$F{hoiFee}]]></textFieldExpression>
-			</textField>
-			<textField pattern="Rs#,##0.00">
-				<reportElement x="357" y="0" width="44" height="21" uuid="c033e641-0a51-4704-a9f6-aaca6a600e07"/>
-				<textElement verticalAlignment="Middle">
-					<font size="8"/>
-				</textElement>
-				<textFieldExpression><![CDATA[$F{aciFee}]]></textFieldExpression>
-			</textField>
-			<textField pattern="Rs#,##0.00">
-				<reportElement x="401" y="0" width="58" height="21" uuid="fe69a512-832c-46f8-803f-ad57ee52eed3"/>
-				<textElement verticalAlignment="Middle">
-					<font size="8"/>
-				</textElement>
-				<textFieldExpression><![CDATA[$F{optionalFee}]]></textFieldExpression>
-			</textField>
-			<textField pattern="Rs#,##0.00">
-				<reportElement x="459" y="0" width="59" height="21" uuid="2ad00bb3-3b06-45f5-96d5-e7d26aaf7142"/>
-				<textElement verticalAlignment="Middle">
-					<font size="8"/>
-				</textElement>
-				<textFieldExpression><![CDATA[$F{admissionFee}]]></textFieldExpression>
 			</textField>
 		</band>
 	</detail>

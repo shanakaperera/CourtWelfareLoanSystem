@@ -130,39 +130,41 @@ public class PaymentsFxmlController implements Initializable {
 
         chk_date_col.setCellValueFactory((TableColumn.CellDataFeatures<LoanPayment, String> param) -> {
             LoanPayment payment = param.getValue();
-            Date chequeDate = payment.getLoanPayCheque().getChequeDate();
-            if (chequeDate != null) {
-                return new SimpleStringProperty(new SimpleDateFormat("yyyy-MM-dd")
-                        .format(chequeDate));
-            } else {
-                return new SimpleStringProperty("No date available.");
-            }
+//            Date chequeDate = payment.getLoanPayCheque().getChequeDate();
+//            if (chequeDate != null) {
+//                return new SimpleStringProperty(new SimpleDateFormat("yyyy-MM-dd")
+//                        .format(chequeDate));
+//            } else {
+//                return new SimpleStringProperty("No date available.");
+//            }
+            return null;
         });
         chk_amt_col.setCellValueFactory((TableColumn.CellDataFeatures<LoanPayment, String> param) -> {
             LoanPayment payment = param.getValue();
-            return new SimpleObjectProperty<>(TextFormatHandler.CURRENCY_DECIMAL_FORMAT.format(payment.getLoanPayCheque().getChequeAmount()));
+           // return new SimpleObjectProperty<>(TextFormatHandler.CURRENCY_DECIMAL_FORMAT.format(payment.getLoanPayCheque().getChequeAmount()));
+            return null;
         });
 
         action_col.setCellValueFactory((TableColumn.CellDataFeatures<LoanPayment, Button> param) -> {
             LoanPayment payment = param.getValue();
             Button b = new Button("View Info");
             b.setOnAction(evt -> {
-                ObservableList<LoanPayment> loanPayments = FXCollections.observableArrayList(payment.getLoanPayCheque().getLoanPayments());
-                FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/court/view/LoanPayChkFxml.fxml"));
-
-                try {
-                    VBox pane = (VBox) loader.load();
-                    LoanPayChkFxmlController ctr = (LoanPayChkFxmlController) loader.getController();
-                    ctr.createDetailTable(loanPayments);
-                    Alert alert_details = new Alert(Alert.AlertType.INFORMATION);
-                    alert_details.setTitle("Cheque Payments");
-                    alert_details.setHeaderText("All the member loan payments included with the cheque.");
-                    alert_details.getDialogPane().setContent(pane);
-                    alert_details.show();
-
-                } catch (IOException e) {
-                    Logger.getLogger(PaymentsFxmlController.class.getName()).log(Level.SEVERE, null, e);
-                }
+//                ObservableList<LoanPayment> loanPayments = FXCollections.observableArrayList(payment.getLoanPayCheque().getLoanPayments());
+//                FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/court/view/LoanPayChkFxml.fxml"));
+//
+//                try {
+//                    VBox pane = (VBox) loader.load();
+//                    LoanPayChkFxmlController ctr = (LoanPayChkFxmlController) loader.getController();
+//                    ctr.createDetailTable(loanPayments);
+//                    Alert alert_details = new Alert(Alert.AlertType.INFORMATION);
+//                    alert_details.setTitle("Cheque Payments");
+//                    alert_details.setHeaderText("All the member loan payments included with the cheque.");
+//                    alert_details.getDialogPane().setContent(pane);
+//                    alert_details.show();
+//
+//                } catch (IOException e) {
+//                    Logger.getLogger(PaymentsFxmlController.class.getName()).log(Level.SEVERE, null, e);
+//                }
             });
             return new SimpleObjectProperty<>(b);
         });

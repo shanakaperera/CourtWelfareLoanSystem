@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.CheckBox?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.RowConstraints?>
@@ -9,7 +12,7 @@
 <GridPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="239.0" prefWidth="314.0" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.court.controller.DisplaySubscriptionFxmlController">
   <columnConstraints>
     <ColumnConstraints hgrow="SOMETIMES" />
-    <ColumnConstraints hgrow="SOMETIMES" />
+    <ColumnConstraints hgrow="SOMETIMES" percentWidth="40.0" />
       <ColumnConstraints hgrow="SOMETIMES" />
   </columnConstraints>
   <rowConstraints>
@@ -39,8 +42,6 @@
          </font>
       </Label>
       <Label fx:id="sub_1" text="Label" GridPane.rowIndex="1" />
-      <Label fx:id="amt_1" text="Label" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-      <Label fx:id="tkn_1" text="Label" GridPane.columnIndex="2" GridPane.rowIndex="1" />
       <Label fx:id="sub_2" text="Label" GridPane.rowIndex="2" />
       <Label fx:id="sub_3" text="Label" GridPane.rowIndex="3" />
       <Label fx:id="sub_4" text="Label" GridPane.rowIndex="4" />
@@ -56,15 +57,41 @@
             <Font name="System Bold" size="22.0" />
          </font>
       </Label>
-      <Label fx:id="amt_2" text="Label" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-      <Label fx:id="amt_3" text="Label" GridPane.columnIndex="1" GridPane.rowIndex="3" />
-      <Label fx:id="amt_4" text="Label" GridPane.columnIndex="1" GridPane.rowIndex="4" />
-      <Label fx:id="amt_5" text="Label" GridPane.columnIndex="1" GridPane.rowIndex="5" />
-      <Label fx:id="amt_6" text="Label" GridPane.columnIndex="1" GridPane.rowIndex="6" />
-      <Label fx:id="tkn_2" text="Label" GridPane.columnIndex="2" GridPane.rowIndex="2" />
-      <Label fx:id="tkn_3" text="Label" GridPane.columnIndex="2" GridPane.rowIndex="3" />
-      <Label fx:id="tkn_4" text="Label" GridPane.columnIndex="2" GridPane.rowIndex="4" />
-      <Label fx:id="tkn_5" text="Label" GridPane.columnIndex="2" GridPane.rowIndex="5" />
-      <Label fx:id="tkn_6" text="Label" GridPane.columnIndex="2" GridPane.rowIndex="6" />
+      <CheckBox fx:id="tkn_1" alignment="CENTER" mnemonicParsing="false" GridPane.columnIndex="2" GridPane.halignment="LEFT" GridPane.rowIndex="1">
+         <GridPane.margin>
+            <Insets left="10.0" />
+         </GridPane.margin>
+      </CheckBox>
+      <CheckBox fx:id="tkn_2" alignment="CENTER" mnemonicParsing="false" GridPane.columnIndex="2" GridPane.halignment="LEFT" GridPane.rowIndex="2">
+         <GridPane.margin>
+            <Insets left="10.0" />
+         </GridPane.margin>
+      </CheckBox>
+      <CheckBox fx:id="tkn_3" alignment="CENTER" mnemonicParsing="false" GridPane.columnIndex="2" GridPane.halignment="LEFT" GridPane.rowIndex="3">
+         <GridPane.margin>
+            <Insets left="10.0" />
+         </GridPane.margin>
+      </CheckBox>
+      <CheckBox fx:id="tkn_4" alignment="CENTER" mnemonicParsing="false" GridPane.columnIndex="2" GridPane.halignment="LEFT" GridPane.rowIndex="4">
+         <GridPane.margin>
+            <Insets left="10.0" />
+         </GridPane.margin>
+      </CheckBox>
+      <CheckBox fx:id="tkn_5" alignment="CENTER" mnemonicParsing="false" GridPane.columnIndex="2" GridPane.halignment="LEFT" GridPane.rowIndex="5">
+         <GridPane.margin>
+            <Insets left="10.0" />
+         </GridPane.margin>
+      </CheckBox>
+      <CheckBox fx:id="tkn_6" alignment="CENTER" mnemonicParsing="false" GridPane.columnIndex="2" GridPane.halignment="LEFT" GridPane.rowIndex="6">
+         <GridPane.margin>
+            <Insets left="10.0" />
+         </GridPane.margin>
+      </CheckBox>
+      <TextField fx:id="amt_1" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+      <TextField fx:id="amt_2" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+      <TextField fx:id="amt_3" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+      <TextField fx:id="amt_4" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+      <TextField fx:id="amt_5" GridPane.columnIndex="1" GridPane.rowIndex="5" />
+      <TextField fx:id="amt_6" GridPane.columnIndex="1" GridPane.rowIndex="6" />
    </children>
 </GridPane>

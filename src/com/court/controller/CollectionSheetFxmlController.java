@@ -28,7 +28,6 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.ResourceBundle;
-import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import javafx.beans.property.SimpleObjectProperty;
@@ -107,6 +106,8 @@ public class CollectionSheetFxmlController implements Initializable {
     private TextField branch_txt;
     @FXML
     private TextField bank_code_txt;
+    @FXML
+    private DatePicker chk_of_month_chooser;
 
     /**
      * Initializes the controller class.
@@ -114,7 +115,7 @@ public class CollectionSheetFxmlController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         validationSupport = new ValidationSupport();
-        FxUtilsHandler.setDatePickerTimeFormat(chk_date_chooser);
+        FxUtilsHandler.setDatePickerTimeFormat(chk_date_chooser, chk_of_month_chooser);
         chk_amt_txt.setTextFormatter(TextFormatHandler.currencyFormatter());
     }
 
@@ -174,10 +175,12 @@ public class CollectionSheetFxmlController implements Initializable {
 
             LoanPayCheque payCheque = new LoanPayCheque();
             payCheque.setChequeNo(chk_no_txt.getText());
-            payCheque.setChequeDate(Date.valueOf(chk_date_chooser.getValue()));
+            payCheque.setChequeDate(getDayOfMonth(Date.valueOf(chk_of_month_chooser.getValue())));
+            payCheque.setChequeRealise(Date.valueOf(chk_date_chooser.getValue()));
             payCheque.setBankCode(bank_code_txt.getText());
             payCheque.setPaymentRecieved(new java.util.Date());
             payCheque.setBranch(branch_txt.getText());
+            payCheque.setPaymentType("cheque");
             payCheque.setChequeAmount(TextFormatHandler.getCurrencyFieldValue(chk_amt_txt));
             session.save(payCheque);
 
@@ -206,17 +209,17 @@ public class CollectionSheetFxmlController implements Initializable {
                             sp.setAdmissionFee(0.0);
                             break;
                     }
-                    sp.setPaymentDate(new java.util.Date());
+                    sp.setPaymentDate(getDayOfMonth(Date.valueOf(chk_of_month_chooser.getValue())));
                     sp.setMemberSubscriptions(mbrSub);
                 }
                 session.save(sp);
                 //====================================END MEMBERS SUBSCRIPTIONS SAVE==================================
                 //====================================MEMBERS LOANS SAVE=====================================
                 List<MemberLoan> mLoanList = m.getMemberLoans().stream()
-                        .sorted(Comparator.comparing(p -> p.getId()))
-                        .filter(FxUtilsHandler.distinctByKey(p -> p.getMemberLoanCode()))
+                        .sorted(Comparator.comparing(MemberLoan::getChildId).reversed())
                         .filter(p -> (!p.isIsComplete() && p.isStatus()))
-                        .filter(FxUtilsHandler.checkIfLastPaidDateWithinCurrentMonth(p -> p.getPaidUntil()))
+                        .filter(FxUtilsHandler.distinctByKey(p -> p.getMemberLoanCode()))
+                        //  .filter(FxUtilsHandler.checkIfLastPaidDateWithinCurrentMonth(p -> p.getPaidUntil()))
                         .collect(Collectors.toList());
 
                 mLoanList.forEach(ml -> {
@@ -228,14 +231,16 @@ public class CollectionSheetFxmlController implements Initializable {
                         LoanPayment lp = new LoanPayment();
                         lp.setChequeNo(chk_no_txt.getText());
                         lp.setMemberLoan(ml);
-                        lp.setPaymentDate(new java.util.Date());
+                        lp.setPaymentDate(getDayOfMonth(Date.valueOf(chk_of_month_chooser.getValue())));
                         lp.setIsLast(true);
                         lp.setInstallmentDue(ml.getNoOfRepay() - (getLastPay.getInstallmentNo() + 1));
                         lp.setPaymentDue(FxUtilsHandler.roundNumber(ml.getLoanInstallment() * (ml.getNoOfRepay() - (getLastPay.getInstallmentNo() + 1)), 0));
                         lp.setInstallmentNo(getLastPay.getInstallmentNo() + 1);
                         lp.setInstallmentDate(getInstallmentDate(getLastPay.getInstallmentDate()));
-                        lp.setLoanPayCheque(payCheque);
+             
                         session.save(lp);
+                        updateMemberLoan(ml, session, getInstallmentDate(getLastPay.getInstallmentDate()));
+
                         //end loan if the final inatallment......
                         if (ml.getNoOfRepay() == (getLastPay.getInstallmentNo() + 1)) {
                             endLoan(session, ml);
@@ -244,15 +249,15 @@ public class CollectionSheetFxmlController implements Initializable {
                         LoanPayment lp = new LoanPayment();
                         lp.setChequeNo(chk_no_txt.getText());
                         lp.setMemberLoan(ml);
-                        lp.setPaymentDate(new java.util.Date());
+                        lp.setPaymentDate(getDayOfMonth(Date.valueOf(chk_of_month_chooser.getValue())));
                         lp.setIsLast(true);
                         lp.setInstallmentDue(ml.getNoOfRepay() - 1);
                         lp.setPaymentDue(FxUtilsHandler.roundNumber(ml.getLoanInstallment() * (ml.getNoOfRepay() - 1), 0));
                         lp.setInstallmentNo(1);
-                        lp.setInstallmentDate(getInstallmentDayOfMonth());
-                        lp.setLoanPayCheque(payCheque);
+                        lp.setInstallmentDate(getDayOfMonth(Date.valueOf(chk_of_month_chooser.getValue())));
+
                         session.save(lp);
-                        updateMemberLoan(ml, session, getInstallmentDayOfMonth());
+                        updateMemberLoan(ml, session, getDayOfMonth(Date.valueOf(chk_of_month_chooser.getValue())));
                     }
                 });
 
@@ -343,9 +348,9 @@ public class CollectionSheetFxmlController implements Initializable {
         tot_inst_amt_col.setCellValueFactory((TableColumn.CellDataFeatures<Member, String> param) -> {
             Member ml = param.getValue();
             List<MemberLoan> list = ml.getMemberLoans().stream()
-                    .sorted(Comparator.comparing(p -> p.getId()))
+                    .sorted(Comparator.comparing(MemberLoan::getChildId).reversed())
                     .filter(p -> !p.isIsComplete())
-                    .filter(FxUtilsHandler.checkIfLastPaidDateWithinCurrentMonth(p -> p.getPaidUntil()))
+                    // .filter(FxUtilsHandler.checkIfLastPaidDateWithinCurrentMonth(p -> p.getPaidUntil()))
                     .filter(p -> p.isStatus())
                     .filter(FxUtilsHandler.distinctByKey(p -> p.getMemberLoanCode()))
                     .collect(Collectors.toList());
@@ -473,6 +478,8 @@ public class CollectionSheetFxmlController implements Initializable {
                         Validator.createPredicateValidator(predicate, "This cheque is already used !")
                 ));
         validationSupport.registerValidator(chk_date_chooser,
+                Validator.createEmptyValidator("Check realise date is required !"));
+        validationSupport.registerValidator(chk_of_month_chooser,
                 Validator.createEmptyValidator("Check date is required !"));
         validationSupport.registerValidator(branch_txt,
                 Validator.createEmptyValidator("Branch is not optional !"));
@@ -517,8 +524,10 @@ public class CollectionSheetFxmlController implements Initializable {
         return nowDate.toDate();
     }
 
-    private java.util.Date getInstallmentDayOfMonth() {
-        DateTime nowDate = new DateTime().withDayOfMonth(25);
+    private java.util.Date getDayOfMonth(java.util.Date instDate) {
+        DateTimeZone zone = DateTimeZone.forID("Asia/Colombo");
+        DateTime insDateE = new DateTime(new SimpleDateFormat("yyyy-MM-dd").format(instDate), zone);
+        DateTime nowDate = insDateE.withDayOfMonth(25);
         return nowDate.toDate();
     }
 }

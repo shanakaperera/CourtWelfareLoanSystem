@@ -110,5 +110,11 @@
             </key>
             <one-to-many class="com.court.model.MemberSubscriptions" />
         </set>
+        <set name="receiptPays" table="receipt_pay" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="member_id" not-null="true" />
+            </key>
+            <one-to-many class="com.court.model.ReceiptPay" />
+        </set>
     </class>
 </hibernate-mapping>

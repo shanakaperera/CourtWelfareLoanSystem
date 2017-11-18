@@ -9,7 +9,6 @@ import java.util.Date;
 public class LoanPayment implements java.io.Serializable {
 
     private Integer id;
-    private LoanPayCheque loanPayCheque;
     private MemberLoan memberLoan;
     private Integer installmentNo;
     private String chequeNo;
@@ -99,14 +98,6 @@ public class LoanPayment implements java.io.Serializable {
 
     public void setIsLast(boolean isLast) {
         this.isLast = isLast;
-    }
-
-    public LoanPayCheque getLoanPayCheque() {
-        return loanPayCheque;
-    }
-
-    public void setLoanPayCheque(LoanPayCheque loanPayCheque) {
-        this.loanPayCheque = loanPayCheque;
     }
 
     public Date getInstallmentDate() {

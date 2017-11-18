@@ -41,6 +41,7 @@ public class Member implements java.io.Serializable {
     private Set<MemChild> memChilds = new HashSet<>();
     private Set<Document> documents = new HashSet<>();
     private Set<MemberSubscriptions> memberSubscriptions = new HashSet<>();
+    private Set<ReceiptPay> receiptPays = new HashSet<>();
     private double totalPayment;
     private double totalSubscription;
 
@@ -352,6 +353,14 @@ public class Member implements java.io.Serializable {
     @Override
     public String toString() {
         return (this.memberId + " - " + this.nameWithIns);
+    }
+
+    public Set<ReceiptPay> getReceiptPays() {
+        return receiptPays;
+    }
+
+    public void setReceiptPays(Set<ReceiptPay> receiptPays) {
+        this.receiptPays = receiptPays;
     }
 
 }

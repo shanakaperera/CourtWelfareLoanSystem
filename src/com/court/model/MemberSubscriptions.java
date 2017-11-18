@@ -5,6 +5,9 @@
  */
 package com.court.model;
 
+import java.util.HashSet;
+import java.util.Set;
+
 /**
  *
  * @author Shanaka P
@@ -16,6 +19,7 @@ public class MemberSubscriptions implements java.io.Serializable {
     private MemberSubscription memberSubscription;
     private String repaymentType;
     private Double amount;
+    private Set<SubscriptionPay> subscriptionPays = new HashSet<>();
 
     public MemberSubscriptions() {
     }
@@ -69,6 +73,14 @@ public class MemberSubscriptions implements java.io.Serializable {
 
     public void setRepaymentType(String repaymentType) {
         this.repaymentType = repaymentType;
+    }
+
+    public Set<SubscriptionPay> getSubscriptionPays() {
+        return subscriptionPays;
+    }
+
+    public void setSubscriptionPays(Set<SubscriptionPay> subscriptionPays) {
+        this.subscriptionPays = subscriptionPays;
     }
 
 }
