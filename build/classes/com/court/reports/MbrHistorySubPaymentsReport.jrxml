@@ -3,10 +3,14 @@
 	<property name="ireport.zoom" value="1.0"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
+	<queryString>
+		<![CDATA[]]>
+	</queryString>
 	<field name="installmentNo" class="java.lang.Integer"/>
 	<field name="chequeNo" class="java.lang.String"/>
 	<field name="paymentDate" class="java.util.Date"/>
 	<field name="memberLoan" class="com.court.model.MemberLoan"/>
+	<sortField name="installmentNo"/>
 	<background>
 		<band splitType="Stretch"/>
 	</background>
@@ -62,7 +66,7 @@
 				</textElement>
 				<textFieldExpression><![CDATA[$F{installmentNo}]]></textFieldExpression>
 			</textField>
-			<textField>
+			<textField isBlankWhenNull="true">
 				<reportElement x="48" y="0" width="50" height="21" uuid="72d3d9a3-e31b-4d30-9ab8-185af8d9b460"/>
 				<textElement verticalAlignment="Middle">
 					<font size="8"/>

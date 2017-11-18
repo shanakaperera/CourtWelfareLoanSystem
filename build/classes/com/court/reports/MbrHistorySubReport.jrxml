@@ -135,40 +135,40 @@
 	<detail>
 		<band height="82" splitType="Stretch">
 			<textField>
-				<reportElement x="0" y="0" width="59" height="20" uuid="d5f7d2a4-d505-464f-af4f-d48f699594a5"/>
+				<reportElement x="0" y="3" width="59" height="20" uuid="d5f7d2a4-d505-464f-af4f-d48f699594a5"/>
 				<textElement verticalAlignment="Middle">
 					<font size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{memberLoanCode}]]></textFieldExpression>
 			</textField>
 			<textField pattern="MM/dd/yyyy">
-				<reportElement x="59" y="0" width="58" height="20" uuid="f2b13d08-e47c-4ee3-9d3c-164d5d96f73d"/>
+				<reportElement x="59" y="3" width="58" height="20" uuid="f2b13d08-e47c-4ee3-9d3c-164d5d96f73d"/>
 				<textElement verticalAlignment="Middle">
 					<font size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{grantedDate}]]></textFieldExpression>
 			</textField>
 			<textField pattern="Rs#,#00.00">
-				<reportElement x="117" y="0" width="65" height="20" uuid="e63367c6-7d57-4bb0-b554-a1d541cfdd26"/>
+				<reportElement x="117" y="3" width="65" height="20" uuid="e63367c6-7d57-4bb0-b554-a1d541cfdd26"/>
 				<textElement verticalAlignment="Middle">
 					<font size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{loanAmount}]]></textFieldExpression>
 			</textField>
 			<textField pattern="#,##0.00 %">
-				<reportElement x="182" y="0" width="60" height="20" uuid="e4dff368-34b0-411a-bead-a4a9176c266c"/>
+				<reportElement x="182" y="3" width="60" height="20" uuid="e4dff368-34b0-411a-bead-a4a9176c266c"/>
 				<textElement verticalAlignment="Middle">
 					<font size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[new java.lang.Double($F{loanInterest}.doubleValue()/ 100.0)]]></textFieldExpression>
 			</textField>
 			<subreport>
-				<reportElement positionType="Float" isPrintRepeatedValues="false" x="1" y="20" width="241" height="50" isPrintWhenDetailOverflows="true" uuid="d9c49f1a-b105-4fee-bdf8-e79295632cd5"/>
+				<reportElement positionType="Float" isPrintRepeatedValues="false" x="1" y="23" width="241" height="50" isPrintWhenDetailOverflows="true" uuid="d9c49f1a-b105-4fee-bdf8-e79295632cd5"/>
 				<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($F{loanPayments})]]></dataSourceExpression>
 				<subreportExpression><![CDATA[$P{SUBREPORT_2}]]></subreportExpression>
 			</subreport>
 			<line>
-				<reportElement x="1" y="81" width="241" height="1" uuid="5bd81a37-d6bf-4d2f-8718-e35cce71c4f3"/>
+				<reportElement x="1" y="1" width="241" height="1" uuid="5bd81a37-d6bf-4d2f-8718-e35cce71c4f3"/>
 				<graphicElement>
 					<pen lineStyle="Dotted"/>
 				</graphicElement>
