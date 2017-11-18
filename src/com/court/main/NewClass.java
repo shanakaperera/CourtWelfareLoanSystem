@@ -5,6 +5,7 @@
  */
 package com.court.main;
 
+import com.court.handler.FxUtilsHandler;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import org.joda.time.DateTime;
@@ -17,15 +18,17 @@ import org.joda.time.DateTimeZone;
 public class NewClass {
 
     public static void main(String[] args) {
-        DateTimeZone zone = DateTimeZone.forID("Asia/Colombo");
-        DateTime dateTime = new DateTime(new SimpleDateFormat("yyyy-MM-dd").format(new Date()), zone);
-        // DateTime now = DateTime.parse("25-11-2016", DateTimeFormat.forPattern("dd-MM-yyyy"));
-        DateTime now = DateTime.now(zone);
-        if ((dateTime.getMonthOfYear() == now.getMonthOfYear()) && (dateTime.getYear() == now.getYear())) {
-            System.out.println("Working");
-        } else {
-            System.out.println("Not in rage");
-        }
+//        DateTimeZone zone = DateTimeZone.forID("Asia/Colombo");
+//        DateTime dateTime = new DateTime(new SimpleDateFormat("yyyy-MM-dd").format(new Date()), zone);
+//        // DateTime now = DateTime.parse("25-11-2016", DateTimeFormat.forPattern("dd-MM-yyyy"));
+//        DateTime now = DateTime.now(zone);
+//        if ((dateTime.getMonthOfYear() == now.getMonthOfYear()) && (dateTime.getYear() == now.getYear())) {
+//            System.out.println("Working");
+//        } else {
+//            System.out.println("Not in rage");
+//        }
+        System.out.println(new Date().getTime());
+        System.out.println(FxUtilsHandler.generateRandomNumber(7));
     }
 
 }

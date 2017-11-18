@@ -60,5 +60,8 @@ Contributor(s):
         <property name="paymentType" type="string">
             <column name="payment_type" length="12" not-null="true" />
         </property>
+        <property name="receiptCode" type="string">
+            <column name="receipt_code" length="45" />
+        </property>
     </class>
 </hibernate-mapping>

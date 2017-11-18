@@ -7,9 +7,7 @@ package com.court.handler;
 
 import com.court.db.HibernateUtil;
 import com.court.model.LoanPayment;
-import com.court.model.Member;
 import com.court.model.MemberLoan;
-import com.court.model.MemberSubscriptions;
 import eu.hansolo.tilesfx.Tile;
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
@@ -17,13 +15,14 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.collections.FXCollections;
@@ -41,7 +40,6 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.util.Duration;
 import javafx.util.StringConverter;
-import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 import org.hibernate.Session;
 import org.hibernate.criterion.Restrictions;
 import org.joda.time.DateTime;
@@ -295,6 +293,22 @@ public class FxUtilsHandler {
         timeline.play();
     }
 
+    /**
+     * This method use to generate random number of given length
+     *
+     *
+     * @param charLength
+     * @return
+     */
+    public static String generateRandomNumber(int charLength) {
+        String num = String.valueOf(new Date().getTime());
+        List<Character> chars = num.chars().mapToObj(c -> (char) c).collect(Collectors.toList());
+        Collections.shuffle(chars);
+        int min_num = (int) Math.pow(10, charLength - 1);
+        int gen_num = Integer.parseInt(chars.stream().map(c -> c.toString()).collect(Collectors.joining()).substring(0, charLength));
+        return String.valueOf(min_num > gen_num ? min_num + gen_num : gen_num);
+    }
+
     public static List<LoanPayment> previousInstallments(int memeberId) {
         Session session = HibernateUtil.getSessionFactory().openSession();
         List<LoanPayment> list = session.createCriteria(LoanPayment.class)
@@ -305,20 +319,6 @@ public class FxUtilsHandler {
         session.close();
         System.out.println("MId - " + memeberId + " : Size - " + list.size());
         return list;
-    }
-
-    public static JRBeanCollectionDataSource getMemberSubscriptions(Member m) {
-        List<MemberSubscriptions> mbrSubs = new CopyOnWriteArrayList<>(m.getMemberSubscriptions());
-        boolean flag = FxUtilsHandler.previousInstallments(m.getId()).isEmpty();
-
-        for (MemberSubscriptions ms : mbrSubs) {
-            if (flag) {
-                if (ms.getRepaymentType().equalsIgnoreCase("Once")) {
-                    ms.setAmount(0.0);
-                }
-            }
-        }
-        return new JRBeanCollectionDataSource(mbrSubs);
     }
 
     public static Predicate<MemberLoan> checkIfLastPaidDateWithinCurrentMonth(Function<MemberLoan, Date> check_date) {

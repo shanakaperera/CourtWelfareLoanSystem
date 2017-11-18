@@ -19,6 +19,7 @@ public class ReceiptPay implements java.io.Serializable {
     private Double amount;
     private String payIds;
     private String paymentType;
+    private String receiptCode;
 
     public ReceiptPay() {
     }
@@ -80,7 +81,16 @@ public class ReceiptPay implements java.io.Serializable {
         return this.paymentType;
     }
 
+    public String getReceiptCode() {
+        return receiptCode;
+    }
+
+    public void setReceiptCode(String receiptCode) {
+        this.receiptCode = receiptCode;
+    }
+
     public void setPaymentType(String paymentType) {
         this.paymentType = paymentType;
-    }
+    }    
+    
 }

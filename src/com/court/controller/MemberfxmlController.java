@@ -14,11 +14,11 @@ import com.court.handler.ImageWithString;
 import com.court.handler.LoggedSessionHandler;
 import com.court.handler.ProgressIndicatorBar;
 import com.court.handler.PropHandler;
+import com.court.handler.ReportHandler;
 import com.court.handler.Spouse;
 import com.court.handler.TextFormatHandler;
 import com.court.model.Branch;
 import com.court.model.Document;
-import com.court.model.LoanPayCheque;
 import com.court.model.LoanPayment;
 import com.court.model.MemChild;
 import com.google.gson.Gson;
@@ -37,11 +37,14 @@ import java.io.IOException;
 import java.lang.reflect.Type;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.sql.Connection;
 import java.sql.Date;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.Set;
@@ -103,6 +106,7 @@ import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
+import org.hibernate.internal.SessionImpl;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.jpedal.PdfDecoder;
@@ -390,6 +394,12 @@ public class MemberfxmlController implements Initializable {
     private Label tot_aci_label;
     @FXML
     private Label tot_opt_label;
+    @FXML
+    private VBox invo_gen_box;
+    @FXML
+    private Label subs_invo_warning;
+    @FXML
+    private Button subs_invo_btn;
 
     /**
      * Initializes the controller class.
@@ -402,7 +412,7 @@ public class MemberfxmlController implements Initializable {
         // registerInputValidation();
         fillMemberCodeTxt(member_code_txt);
         fillMemberDocCodeTxt(doc_id_txt);
-
+        invo_gen_box.setVisible(false);
         ObservableList<Member> allMembers = getAllMembers();
         ObservableList<Branch> allBranches = getAllBranches();
         List<Document> allDocs = getAllDocuments();
@@ -839,6 +849,13 @@ public class MemberfxmlController implements Initializable {
         return filteredM;
     }
 
+    private Member getMemberByCode(String mCode, Session s) {
+        Criteria c = s.createCriteria(Member.class);
+        c.add(Restrictions.eq("memberId", mCode));
+        Member filteredM = (Member) c.uniqueResult();
+        return filteredM;
+    }
+
     private void getMemberLoanByCode(String mlCode, int childId) {
         Session session = HibernateUtil.getSessionFactory().openSession();
         Criteria c = session.createCriteria(MemberLoan.class);
@@ -1260,6 +1277,7 @@ public class MemberfxmlController implements Initializable {
                     rp.setPayDate(new java.util.Date());
                     rp.setPaymentType("installment");
                     rp.setPayIds(new Gson().toJson(lpIds, type));
+                    rp.setReceiptCode("INV" + FxUtilsHandler.generateRandomNumber(7));
                     s.save(rp);
 
                     updateMemberLoan(row.getItem(), s, instDates[insts - 1]);
@@ -1273,6 +1291,7 @@ public class MemberfxmlController implements Initializable {
                     Optional<ButtonType> rst = success.showAndWait();
                     if (rst.get() == ButtonType.OK) {
                         buildMemberLoanTable();
+                        genaratePaymentReport(lpIds, row.getItem().getMember().getMemberId());
                     }
 
                 });
@@ -2369,6 +2388,9 @@ public class MemberfxmlController implements Initializable {
         ProgressIndicatorBar bar = new ProgressIndicatorBar(workDone, 0.0);
         bar.createProgressIndicatorBar(progress_box, workDone);
     }
+    // this list use to add the ids of individual subscription payments
+    List<Integer> subIds = new ArrayList<>();
+    double amt_totsub = 0.0;
 
     @FXML
     private void onMbrSubManualAction(ActionEvent event) throws IOException {
@@ -2410,6 +2432,9 @@ public class MemberfxmlController implements Initializable {
                 sp.setPaymentDate(Date.valueOf(m_subs_date.getValue()));
                 sp.setMemberSubscriptions(getMemberSubscriptionsFromMember(member_code_txt.getText(), s));
                 s.save(sp);
+                //adding each subids to the list======
+                subIds.add(sp.getId());
+                amt_totsub += subsTot(sp);
                 s.getTransaction().commit();
 
                 Alert alert_success = new Alert(Alert.AlertType.INFORMATION);
@@ -2418,6 +2443,8 @@ public class MemberfxmlController implements Initializable {
                 alert_success.setContentText("You have successfully saved the member subscription payment .");
                 Optional<ButtonType> res = alert_success.showAndWait();
                 if (res.get() == ButtonType.OK) {
+                    invo_gen_box.setVisible(true);
+                    freezeAtMemberContribution(true);
                     initContributionTable(FXCollections.observableArrayList(getAllContributionsOf(member_code_txt.getText())));
                 }
             }
@@ -2434,6 +2461,37 @@ public class MemberfxmlController implements Initializable {
     @FXML
     private void onMbrSubCancelAction(ActionEvent event) {
         FxUtilsHandler.clearFields(subs_manual_grid);
+    }
+
+    @FXML
+    private void onGenerateSubsInvoAction(ActionEvent event) {
+        Session s = HibernateUtil.getSessionFactory().openSession();
+        s.beginTransaction();
+        ReceiptPay rp = new ReceiptPay();
+        rp.setReceiptCode("INV" + FxUtilsHandler.generateRandomNumber(7));
+        rp.setPaymentType("subscription");
+        rp.setPayDate(new java.util.Date());
+        rp.setPayIds(new Gson().toJson(subIds, new TypeToken<List<Integer>>() {
+        }.getType()));
+        rp.setAmount(amt_totsub);
+        rp.setMember(getMemberByCode(member_code_txt.getText(), s));
+        s.save(rp);
+        s.getTransaction().commit();
+
+        String reportPath = "com/court/reports/SubscriptionPayInvoiceReport.jasper";
+
+        SessionImpl smpl = (SessionImpl) s;
+        Connection con = smpl.connection();
+        Map<String, Object> map = new HashMap<>();
+        map.put("companyName", ReportHandler.COMPANY_NAME);
+        map.put("companyAddress", ReportHandler.ADDRESS);
+        map.put("reportTitle", "Subscription Pay Invoice");
+        map.put("member_code", member_code_txt.getText());
+        map.put("sp_list", subIds.stream().map(i -> String.valueOf(i.intValue())).collect(Collectors.joining(",")));
+        ReportHandler rh = new ReportHandler(reportPath, map, null, con);
+        rh.genarateReport();
+        rh.viewReport();
+        s.close();
     }
 
     private boolean isFormZero(GridPane subs_form) {
@@ -2460,4 +2518,29 @@ public class MemberfxmlController implements Initializable {
         return ms;
     }
 
+    private void genaratePaymentReport(List<Integer> lpIds, String mCode) {
+        String reportPath = "com/court/reports/InstallmentPayInvoiceReport.jasper";
+        Session s = HibernateUtil.getSessionFactory().openSession();
+        SessionImpl smpl = (SessionImpl) s;
+        Connection con = smpl.connection();
+        Map<String, Object> map = new HashMap<>();
+        map.put("companyName", ReportHandler.COMPANY_NAME);
+        map.put("companyAddress", ReportHandler.ADDRESS);
+        map.put("reportTitle", "Installment Pay Invoice");
+        map.put("member_code", mCode);
+        map.put("lp_list", lpIds.stream().map(i -> String.valueOf(i.intValue())).collect(Collectors.joining(",")));
+        ReportHandler rh = new ReportHandler(reportPath, map, null, con);
+        rh.genarateReport();
+        rh.viewReport();
+        s.close();
+    }
+
+    private void freezeAtMemberContribution(boolean flag) {
+// FREAZING PROCCESS SHOULD BE IDENTIFIED IN THIS METHOD TO PREVENT USER FROM GOING WITHOUT REPORT
+    }
+
+    private double subsTot(SubscriptionPay sp) {
+        return sp.getAciFee() + sp.getAdmissionFee() + sp.getHoiFee()
+                + sp.getOptional() + sp.getSavingsFee() + sp.getMembershipFee();
+    }
 }
