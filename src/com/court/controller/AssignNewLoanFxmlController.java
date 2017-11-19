@@ -514,29 +514,50 @@ public class AssignNewLoanFxmlController implements Initializable {
         int_method_combo.getSelectionModel().select(filteredLoan.getInterestMethod());
     }
 
-    private List<Member> getAvailableGuarantors() {
+    private Set<Member> getAvailableGuarantors() {
         Session session = HibernateUtil.getSessionFactory().openSession();
         Criteria c1 = session.createCriteria(MemberLoan.class);
         List<MemberLoan> ml = c1.list();
+        //GET ALL GUARANTORS OF ONGOING LOANS
         List<String> guarantors = ml.stream().filter(p -> !p.isIsComplete())
                 .map(MemberLoan::getGuarantors).collect(Collectors.toList());
 
-        Criteria c2 = session.createCriteria(Member.class);
-        List<Member> list;
-        if (getUniqueGuarantors(guarantors, 3).isEmpty()) {
-            list = c2.list();
-        } else {
-            list = c2.add(Restrictions.not(Restrictions.
-                    in("memberId", getUniqueGuarantors(guarantors, 3)))).list();
+        //GET ALREADY GUARANTED MEMBERS OF THE GARNTOR
+        List<String> alreadyGurantedMembers = ml.stream().filter(p -> !p.isIsComplete())
+                .filter(p -> p.getMember().getMemberId().equalsIgnoreCase(getMember().getMemberId()))
+                .map(MemberLoan::getGuarantors).collect(Collectors.toList());
+
+        //========================
+        Set<Member> set = new HashSet<>();
+        //========================
+
+        //IF NO GUARANTORS AVAILABLE THEY CAN GURANT THE GRANTOR ULTIMATELY UNTIL ALL GUARANTED LOANS END
+        if (!alreadyGurantedMembers.isEmpty()) {
+            Set<Member> arlm = getAlreadyGurantedMembers(alreadyGurantedMembers, session);
+            set.addAll(arlm);
         }
+
+        //GET ALL MEMBERS EXCEPT THE LOAN GRANTOR
+        Criteria c2 = session.createCriteria(Member.class);
+        c2.add(Restrictions.ne("memberId", getMember().getMemberId()));
+
+        //IF NO GURANTORS FOUND THEN ALL MEMBERS CAN GUARANT FOR THE LOAN EXCEPT THE LOAN GRANTOR
+        if (getUniqueGuarantors(guarantors, 3).isEmpty()) {
+            set.addAll(c2.list());
+            //
+        } else {
+            List<Member> list = c2.add(Restrictions.not(Restrictions.
+                    in("memberId", getUniqueGuarantors(guarantors, 3)))).list();
+            set.addAll(list);
+        }
+
         session.close();
-        return list;
+        return set;
     }
 
     private Set<String> getUniqueGuarantors(List<String> guarantors, int frquency) {
         Set<String> ug = new HashSet<>();
         CopyOnWriteArrayList<String> ugc = new CopyOnWriteArrayList<>();
-        ug.add(getMember().getMemberId());
         for (String string : guarantors) {
             Type type = new TypeToken<List<String>>() {
             }.getType();
@@ -549,6 +570,22 @@ public class AssignNewLoanFxmlController implements Initializable {
             }
         }
         return ug;
+    }
+
+    private Set<Member> getAlreadyGurantedMembers(List<String> agm, Session s) {
+        Set<String> ug = new HashSet<>();
+        for (String string : agm) {
+            Type type = new TypeToken<List<String>>() {
+            }.getType();
+            List<String> yourList = new Gson().fromJson(string, type);
+            for (String yl : yourList) {
+                ug.add(yl);
+            }
+        }
+        Criteria cc2 = s.createCriteria(Member.class);
+        List<Member> list = cc2.add(Restrictions.in("memberId", ug)).list();
+        Set mbrs = new HashSet(list);
+        return mbrs;
     }
 
     private Member getMemberByMemberId(String mbrId) {
