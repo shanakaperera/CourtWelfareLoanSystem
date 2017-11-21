@@ -376,6 +376,7 @@ public class AssignNewLoanFxmlController implements Initializable {
                 ml2.setIsComplete(false);
                 ml2.setStatus(true);
                 ml2.setChildId(0);
+                ml2.setIsChild(true);
                 session.save(ml2);
 
                 ml.setHasChild(true);

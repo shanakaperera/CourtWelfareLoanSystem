@@ -62,8 +62,14 @@
         <property name="hasChild" type="boolean">
             <column name="has_child" not-null="true" />
         </property>
+        <property name="isChild" type="boolean">
+            <column name="is_child" not-null="true" />
+        </property>
         <property name="childId" type="int">
             <column name="child_id" not-null="true" />
+        </property>
+        <property name="closedLoan" type="boolean">
+            <column name="closed_loan" not-null="true" />
         </property>
         <set name="loanPayments" table="loan_payment" inverse="true" lazy="true" fetch="select">
             <key>

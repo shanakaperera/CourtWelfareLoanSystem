@@ -30,9 +30,11 @@ public class MemberLoan implements java.io.Serializable {
     private Date paidUntil;
     private boolean status;
     private boolean hasChild;
+    private boolean isChild;
     private int childId;
     private double totalPay;
     private String loanName;
+    private boolean closedLoan;
     private Set<LoanPayment> loanPayments = new HashSet<>();
     private List<MemberSubscription> mbrSubs = new ArrayList<>();
 
@@ -259,6 +261,22 @@ public class MemberLoan implements java.io.Serializable {
 
     public void setPaidUntil(Date paidUntil) {
         this.paidUntil = paidUntil;
+    }
+
+    public boolean isIsChild() {
+        return isChild;
+    }
+
+    public void setIsChild(boolean isChild) {
+        this.isChild = isChild;
+    }
+
+    public boolean isClosedLoan() {
+        return closedLoan;
+    }
+
+    public void setClosedLoan(boolean closedLoan) {
+        this.closedLoan = closedLoan;
     }
 
 }

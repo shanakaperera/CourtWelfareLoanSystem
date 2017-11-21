@@ -18,6 +18,7 @@ import com.court.handler.ReportHandler;
 import com.court.handler.Spouse;
 import com.court.handler.TextFormatHandler;
 import com.court.model.Branch;
+import com.court.model.ClosedLoan;
 import com.court.model.Document;
 import com.court.model.LoanPayment;
 import com.court.model.MemChild;
@@ -1166,7 +1167,319 @@ public class MemberfxmlController implements Initializable {
             final TableRow<MemberLoan> row = new TableRow<>();
             final ContextMenu rowMenu = new ContextMenu();
             MenuItem makePayment = new MenuItem("Make Payment");
+            MenuItem closeLoan = new MenuItem("Close Loan");
+
+            closeLoan.setOnAction((ActionEvent evt) -> {
+
+                Alert conf = new Alert(AlertType.CONFIRMATION);
+                conf.setTitle("Confirmation");
+                conf.setHeaderText("Are you sure ?");
+                conf.setContentText("Are you sure you want to continue this end loan process ?");
+                Optional<ButtonType> confm = conf.showAndWait();
+                if (confm.get() != ButtonType.OK) {
+                    return;
+                }
+
+                if (row.getItem().isIsComplete()) {
+                    Alert success = new Alert(AlertType.INFORMATION);
+                    success.setTitle("Information");
+                    success.setHeaderText("Already completed !");
+                    success.setContentText("You cannot make any payment to an already completed loan!");
+                    Optional<ButtonType> rst = success.showAndWait();
+                    return;
+                }
+
+                Session s = HibernateUtil.getSessionFactory().openSession();
+                s.beginTransaction();
+                List<Integer> lpIds = new ArrayList<>();
+
+                //IF CHILD LOAN SELECTED===============================================
+                if (row.getItem().isIsChild()) {
+
+                    MemberLoan childLoan = row.getItem();
+                    //GET PARENT LOAN OF SELECTED LOAN (IF HAS ANY)
+                    MemberLoan parentLoan = getParentOfChild(childLoan.getId(), s);
+
+                    //IF PARENT LOAN IS NOT COMPLETED
+                    if (!parentLoan.isIsComplete()) {
+
+                        parentLoan.setIsComplete(true);
+                        parentLoan.setClosedLoan(true);
+                        s.update(parentLoan);
+
+                        LoanPayment parentLastLoanPay = parentLoan.getLoanPayments()
+                                .stream().filter(p -> p.isIsLast()).findFirst().orElse(null);
+
+                        double installWithoutPolli = FxUtilsHandler.roundNumber(parentLoan.getLoanAmount() / parentLoan.getNoOfRepay(), 0);
+                        if (parentLastLoanPay != null) {
+
+                            int insts = parentLastLoanPay.getInstallmentDue();
+                            int last_inst_paid = parentLastLoanPay.getInstallmentNo();
+                            int no_of_repay = parentLoan.getNoOfRepay();
+                            double payment_amt = installWithoutPolli * insts;
+
+                            ClosedLoan pcl = new ClosedLoan();
+                            pcl.setEndedDate(new java.util.Date());
+                            pcl.setClosedStart(++last_inst_paid);
+                            pcl.setMemberLoanId(parentLoan.getId());
+                            pcl.setTotinstClosed(insts);
+                            pcl.setActualinstAmt(installWithoutPolli);
+                            pcl.setTotalPayment(insts * installWithoutPolli);
+                            s.save(pcl);
+
+                            java.util.Date[] instDates = setInstallmentDates(insts, parentLastLoanPay);
+                            parentLastLoanPay.setIsLast(false);
+                            s.update(parentLastLoanPay);
+
+                            for (int i = 0; i < insts; i++) {
+                                LoanPayment lp = new LoanPayment();
+                                lp.setInstallmentNo(last_inst_paid);
+                                lp.setInstallmentDue(no_of_repay - last_inst_paid);
+                                lp.setPaymentDate(new java.util.Date());
+                                lp.setInstallmentDate(instDates[i]);
+                                lp.setPaymentDue(installWithoutPolli * (no_of_repay - last_inst_paid));
+                                if (i == (insts - 1)) {
+                                    lp.setIsLast(true);
+                                } else {
+                                    lp.setIsLast(false);
+                                }
+                                lp.setMemberLoan(parentLoan);
+                                s.save(lp);
+                                lpIds.add(lp.getId());
+                                last_inst_paid++;
+                            }
+
+                            Type type = new TypeToken<List<Integer>>() {
+                            }.getType();
+                            ReceiptPay rp = new ReceiptPay();
+                            rp.setMember(parentLoan.getMember());
+                            rp.setAmount(payment_amt);
+                            rp.setPayDate(new java.util.Date());
+                            rp.setPaymentType("installment");
+                            rp.setPayIds(new Gson().toJson(lpIds, type));
+                            rp.setReceiptCode("INV" + FxUtilsHandler.generateRandomNumber(7));
+                            s.save(rp);
+
+                            updateMemberLoan(parentLoan, s, instDates[insts - 1]);
+
+                        }
+                    }
+
+                    childLoan.setIsComplete(true);
+                    childLoan.setClosedLoan(true);
+                    s.update(childLoan);
+
+                    LoanPayment childLastLoanPay = childLoan.getLoanPayments()
+                            .stream().filter(p -> p.isIsLast()).findFirst().orElse(null);
+
+                    double installWithoutPolli = FxUtilsHandler.roundNumber(childLoan.getLoanAmount() / childLoan.getNoOfRepay(), 0);
+                    if (childLastLoanPay != null) {
+                        int insts = childLastLoanPay.getInstallmentDue();
+                        int last_inst_paid = childLastLoanPay.getInstallmentNo();
+                        int no_of_repay = childLoan.getNoOfRepay();
+                        double payment_amt = installWithoutPolli * insts;
+
+                        ClosedLoan ccl = new ClosedLoan();
+                        ccl.setEndedDate(new java.util.Date());
+                        ccl.setClosedStart(++last_inst_paid);
+                        ccl.setMemberLoanId(childLoan.getId());
+                        ccl.setTotinstClosed(insts);
+                        ccl.setActualinstAmt(installWithoutPolli);
+                        ccl.setTotalPayment(insts * installWithoutPolli);
+                        s.save(ccl);
+
+                        java.util.Date[] instDates = setInstallmentDates(insts, childLastLoanPay);
+                        childLastLoanPay.setIsLast(false);
+                        s.update(childLastLoanPay);
+
+                        for (int i = 0; i < insts; i++) {
+                            LoanPayment lp = new LoanPayment();
+                            lp.setInstallmentNo(last_inst_paid);
+                            lp.setInstallmentDue(no_of_repay - last_inst_paid);
+                            lp.setPaymentDate(new java.util.Date());
+                            lp.setInstallmentDate(instDates[i]);
+                            lp.setPaymentDue(installWithoutPolli * (no_of_repay - last_inst_paid));
+                            if (i == (insts - 1)) {
+                                lp.setIsLast(true);
+                            } else {
+                                lp.setIsLast(false);
+                            }
+                            lp.setMemberLoan(childLoan);
+                            s.save(lp);
+                            lpIds.add(lp.getId());
+                            last_inst_paid++;
+                        }
+
+                        Type type = new TypeToken<List<Integer>>() {
+                        }.getType();
+                        ReceiptPay rp = new ReceiptPay();
+                        rp.setMember(childLoan.getMember());
+                        rp.setAmount(payment_amt);
+                        rp.setPayDate(new java.util.Date());
+                        rp.setPaymentType("installment");
+                        rp.setPayIds(new Gson().toJson(lpIds, type));
+                        rp.setReceiptCode("INV" + FxUtilsHandler.generateRandomNumber(7));
+                        s.save(rp);
+
+                        updateMemberLoan(childLoan, s, instDates[insts - 1]);
+
+                    }
+                    //IF PARENT LOAN SELECTED===============================================
+                } else {
+                    MemberLoan selectedLoan = row.getItem();
+
+                    selectedLoan.setIsComplete(true);
+                    selectedLoan.setClosedLoan(true);
+                    s.update(selectedLoan);
+
+                    LoanPayment selectedLoanPay = selectedLoan.getLoanPayments()
+                            .stream().filter(p -> p.isIsLast()).findFirst().orElse(null);
+
+                    double installWithoutPolli = FxUtilsHandler.roundNumber(selectedLoan.getLoanAmount() / selectedLoan.getNoOfRepay(), 0);
+                    if (selectedLoanPay != null) {
+
+                        int insts = selectedLoanPay.getInstallmentDue();
+                        int last_inst_paid = selectedLoanPay.getInstallmentNo();
+                        int no_of_repay = selectedLoan.getNoOfRepay();
+                        double payment_amt = installWithoutPolli * insts;
+
+                        ClosedLoan ccl = new ClosedLoan();
+                        ccl.setEndedDate(new java.util.Date());
+                        ccl.setClosedStart(++last_inst_paid);
+                        ccl.setMemberLoanId(selectedLoan.getId());
+                        ccl.setTotinstClosed(insts);
+                        ccl.setActualinstAmt(installWithoutPolli);
+                        ccl.setTotalPayment(insts * installWithoutPolli);
+                        s.save(ccl);
+
+                        java.util.Date[] instDates = setInstallmentDates(insts, selectedLoanPay);
+                        selectedLoanPay.setIsLast(false);
+                        s.update(selectedLoanPay);
+
+                        for (int i = 0; i < insts; i++) {
+                            LoanPayment lp = new LoanPayment();
+                            lp.setInstallmentNo(last_inst_paid);
+                            lp.setInstallmentDue(no_of_repay - last_inst_paid);
+                            lp.setPaymentDate(new java.util.Date());
+                            lp.setInstallmentDate(instDates[i]);
+                            lp.setPaymentDue(installWithoutPolli * (no_of_repay - last_inst_paid));
+                            if (i == (insts - 1)) {
+                                lp.setIsLast(true);
+                            } else {
+                                lp.setIsLast(false);
+                            }
+                            lp.setMemberLoan(selectedLoan);
+                            s.save(lp);
+                            lpIds.add(lp.getId());
+                            last_inst_paid++;
+                        }
+
+                        Type type = new TypeToken<List<Integer>>() {
+                        }.getType();
+                        ReceiptPay rp = new ReceiptPay();
+                        rp.setMember(selectedLoan.getMember());
+                        rp.setAmount(payment_amt);
+                        rp.setPayDate(new java.util.Date());
+                        rp.setPaymentType("installment");
+                        rp.setPayIds(new Gson().toJson(lpIds, type));
+                        rp.setReceiptCode("INV" + FxUtilsHandler.generateRandomNumber(7));
+                        s.save(rp);
+
+                        updateMemberLoan(selectedLoan, s, instDates[insts - 1]);
+                    }
+
+                    //GET CHILD LOAN OF SELECTED LOAN (IF HAS ANY)
+                    MemberLoan childLoan = getChildOfSelected(selectedLoan.getChildId(), s);
+                    //IF HAS CHILD LOAN AND CHILD LOAN IS NOT FINISHED
+                    if (childLoan != null && !childLoan.isIsComplete()) {
+
+                        childLoan.setIsComplete(true);
+                        childLoan.setClosedLoan(true);
+                        s.update(childLoan);
+
+                        LoanPayment childLastLoanPay = childLoan.getLoanPayments()
+                                .stream().filter(p -> p.isIsLast()).findFirst().orElse(null);
+
+                        double installWithoutPolli_2 = FxUtilsHandler.roundNumber(childLoan.getLoanAmount() / childLoan.getNoOfRepay(), 0);
+                        if (childLastLoanPay != null) {
+
+                            int insts = childLastLoanPay.getInstallmentDue();
+                            int last_inst_paid = childLastLoanPay.getInstallmentNo();
+                            int no_of_repay = childLoan.getNoOfRepay();
+                            double payment_amt = installWithoutPolli_2 * insts;
+
+                            ClosedLoan pcl = new ClosedLoan();
+                            pcl.setEndedDate(new java.util.Date());
+                            pcl.setClosedStart(++last_inst_paid);
+                            pcl.setMemberLoanId(childLoan.getId());
+                            pcl.setTotinstClosed(insts);
+                            pcl.setActualinstAmt(installWithoutPolli_2);
+                            pcl.setTotalPayment(insts * installWithoutPolli_2);
+                            s.save(pcl);
+
+                            java.util.Date[] instDates = setInstallmentDates(insts, childLastLoanPay);
+                            childLastLoanPay.setIsLast(false);
+                            s.update(childLastLoanPay);
+
+                            for (int i = 0; i < insts; i++) {
+                                LoanPayment lp = new LoanPayment();
+                                lp.setInstallmentNo(last_inst_paid);
+                                lp.setInstallmentDue(no_of_repay - last_inst_paid);
+                                lp.setPaymentDate(new java.util.Date());
+                                lp.setInstallmentDate(instDates[i]);
+                                lp.setPaymentDue(installWithoutPolli_2 * (no_of_repay - last_inst_paid));
+                                if (i == (insts - 1)) {
+                                    lp.setIsLast(true);
+                                } else {
+                                    lp.setIsLast(false);
+                                }
+                                lp.setMemberLoan(childLoan);
+                                s.save(lp);
+                                lpIds.add(lp.getId());
+                                last_inst_paid++;
+                            }
+
+                            Type type = new TypeToken<List<Integer>>() {
+                            }.getType();
+                            ReceiptPay rp = new ReceiptPay();
+                            rp.setMember(childLoan.getMember());
+                            rp.setAmount(payment_amt);
+                            rp.setPayDate(new java.util.Date());
+                            rp.setPaymentType("installment");
+                            rp.setPayIds(new Gson().toJson(lpIds, type));
+                            rp.setReceiptCode("INV" + FxUtilsHandler.generateRandomNumber(7));
+                            s.save(rp);
+
+                            updateMemberLoan(childLoan, s, instDates[insts - 1]);
+                        }
+                    }
+                }
+                s.getTransaction().commit();
+                s.close();
+
+                //END THE LOAN AND GENERATE INVOICE REPORT====================
+                Alert success = new Alert(AlertType.INFORMATION);
+                success.setTitle("Success");
+                success.setHeaderText("Loan Ended!");
+                success.setContentText("You have successfully Ended the selected loan.");
+                Optional<ButtonType> rst = success.showAndWait();
+                if (rst.get() == ButtonType.OK) {
+                    buildMemberLoanTable();
+                    genaratePaymentReport(lpIds, row.getItem().getMember().getMemberId(), "Loan End Invoice");
+                }
+                //==========================================================
+            });
             makePayment.setOnAction((ActionEvent evt) -> {
+
+                Alert conf = new Alert(AlertType.CONFIRMATION);
+                conf.setTitle("Confirmation");
+                conf.setHeaderText("Are you sure ?");
+                conf.setContentText("Are you sure you want to continue this payment process ?");
+                Optional<ButtonType> confm = conf.showAndWait();
+                if (confm.get() != ButtonType.OK) {
+                    return;
+                }
+
                 if (row.getItem().isIsComplete()) {
                     Alert success = new Alert(AlertType.INFORMATION);
                     success.setTitle("Information");
@@ -1235,12 +1548,15 @@ public class MemberfxmlController implements Initializable {
                 Optional<Pair<Integer, Double>> result = dialog.showAndWait();
 
                 result.ifPresent(payment -> {
+                    Session s = HibernateUtil.getSessionFactory().openSession();
+                    s.beginTransaction();
+
+                    List<Integer> lpIds = new ArrayList<>();
                     int insts = payment.getKey();
+                    double payment_amt = payment.getValue();
                     double instAmt = row.getItem().getLoanInstallment();
                     int last_inst_paid = lpLast != null ? lpLast.getInstallmentNo() : 0;
                     int no_of_repay = row.getItem().getNoOfRepay();
-                    Session s = HibernateUtil.getSessionFactory().openSession();
-                    s.beginTransaction();
                     last_inst_paid++;
 
                     java.util.Date[] instDates = setInstallmentDates(insts, lpLast);
@@ -1248,7 +1564,6 @@ public class MemberfxmlController implements Initializable {
                         lpLast.setIsLast(false);
                         s.update(lpLast);
                     }
-                    List<Integer> lpIds = new ArrayList<>();
                     for (int i = 0; i < insts; i++) {
                         LoanPayment lp = new LoanPayment();
                         lp.setInstallmentNo(last_inst_paid);
@@ -1273,7 +1588,7 @@ public class MemberfxmlController implements Initializable {
                     }.getType();
                     ReceiptPay rp = new ReceiptPay();
                     rp.setMember(row.getItem().getMember());
-                    rp.setAmount(payment.getValue());
+                    rp.setAmount(payment_amt);
                     rp.setPayDate(new java.util.Date());
                     rp.setPaymentType("installment");
                     rp.setPayIds(new Gson().toJson(lpIds, type));
@@ -1291,13 +1606,13 @@ public class MemberfxmlController implements Initializable {
                     Optional<ButtonType> rst = success.showAndWait();
                     if (rst.get() == ButtonType.OK) {
                         buildMemberLoanTable();
-                        genaratePaymentReport(lpIds, row.getItem().getMember().getMemberId());
+                        genaratePaymentReport(lpIds, row.getItem().getMember().getMemberId(), "Installment Pay Invoice");
                     }
 
                 });
 
             });
-            rowMenu.getItems().addAll(makePayment);
+            rowMenu.getItems().addAll(makePayment, closeLoan);
             row.contextMenuProperty().bind(
                     Bindings.when(Bindings.isNotNull(row.itemProperty()))
                             .then(rowMenu)
@@ -2518,7 +2833,7 @@ public class MemberfxmlController implements Initializable {
         return ms;
     }
 
-    private void genaratePaymentReport(List<Integer> lpIds, String mCode) {
+    private void genaratePaymentReport(List<Integer> lpIds, String mCode, String reportTitle) {
         String reportPath = "com/court/reports/InstallmentPayInvoiceReport.jasper";
         Session s = HibernateUtil.getSessionFactory().openSession();
         SessionImpl smpl = (SessionImpl) s;
@@ -2526,7 +2841,7 @@ public class MemberfxmlController implements Initializable {
         Map<String, Object> map = new HashMap<>();
         map.put("companyName", ReportHandler.COMPANY_NAME);
         map.put("companyAddress", ReportHandler.ADDRESS);
-        map.put("reportTitle", "Installment Pay Invoice");
+        map.put("reportTitle", reportTitle);
         map.put("member_code", mCode);
         map.put("lp_list", lpIds.stream().map(i -> String.valueOf(i.intValue())).collect(Collectors.joining(",")));
         ReportHandler rh = new ReportHandler(reportPath, map, null, con);
@@ -2542,5 +2857,19 @@ public class MemberfxmlController implements Initializable {
     private double subsTot(SubscriptionPay sp) {
         return sp.getAciFee() + sp.getAdmissionFee() + sp.getHoiFee()
                 + sp.getOptional() + sp.getSavingsFee() + sp.getMembershipFee();
+    }
+
+    private MemberLoan getParentOfChild(Integer id, Session s) {
+        Criteria c = s.createCriteria(MemberLoan.class);
+        MemberLoan mul = (MemberLoan) c.add(Restrictions.eq("childId", id))
+                .uniqueResult();
+        return mul != null ? mul : null;
+    }
+
+    private MemberLoan getChildOfSelected(Integer id, Session s) {
+        Criteria c = s.createCriteria(MemberLoan.class);
+        MemberLoan mul = (MemberLoan) c.add(Restrictions.eq("id", id))
+                .uniqueResult();
+        return mul != null ? mul : null;
     }
 }
