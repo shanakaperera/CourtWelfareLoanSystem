@@ -81,6 +81,21 @@ public class TextFormatHandler {
     }
 
     /**
+     * This method convert string value to double value
+     *
+     * @param value
+     * @return
+     */
+    public static Double getCurrencyFieldValue(String value) {
+        try {
+            return CURRENCY_DECIMAL_FORMAT.parse(value).doubleValue();
+        } catch (ParseException ex) {
+            Logger.getLogger(TextFormatHandler.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return 0.0;
+    }
+
+    /**
      * This method use to format a text field as a percentage field
      *
      * @return

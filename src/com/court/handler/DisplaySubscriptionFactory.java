@@ -5,23 +5,26 @@
  */
 package com.court.handler;
 
-import com.court.controller.DisplaySubscriptionFxmlController;
 import com.court.model.Member;
 import com.court.model.MemberSubscriptions;
-import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.Optional;
+import java.util.stream.Collectors;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ObservableValue;
-import javafx.fxml.FXMLLoader;
+import javafx.geometry.Insets;
 import javafx.scene.Node;
-import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonBar;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.Dialog;
+import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
+import javafx.scene.text.Font;
 import javafx.util.Callback;
 
 /**
@@ -29,6 +32,12 @@ import javafx.util.Callback;
  * @author Shanaka P
  */
 public class DisplaySubscriptionFactory implements Callback<TableColumn.CellDataFeatures<Member, Button>, ObservableValue<Button>> {
+
+    private final TableView<Member> collection_tbl;
+
+    public DisplaySubscriptionFactory(TableView<Member> collection_tbl) {
+        this.collection_tbl = collection_tbl;
+    }
 
     @Override
     public ObservableValue<Button> call(TableColumn.CellDataFeatures<Member, Button> param) {
@@ -47,11 +56,39 @@ public class DisplaySubscriptionFactory implements Callback<TableColumn.CellData
         param.getValue().setTotalSubscription(sum);
         Button button = new Button("View Info");
         button.setOnAction((evt) -> {
-            Alert alert_details = new Alert(Alert.AlertType.INFORMATION);
+            ButtonType updateBtnType = new ButtonType("Update", ButtonBar.ButtonData.OK_DONE);
+            Dialog<List<MemberSubscriptions>> alert_details = new Dialog();
             alert_details.setTitle("Subscription Information");
             alert_details.setHeaderText("Member Subscription information for each installment");
-            alert_details.getDialogPane().setContent(createContentGrid(mbrSubs, sum, flag));
-            alert_details.show();
+            alert_details.getDialogPane().getButtonTypes().addAll(updateBtnType, ButtonType.CANCEL);
+            Node grid = createContentGrid(mbrSubs, sum, flag);
+            alert_details.getDialogPane().setContent(grid);
+            alert_details.setResultConverter(dialogBtn -> {
+                if (dialogBtn == updateBtnType) {
+                    return new ArrayList<>(mbrSubs);
+                }
+                return null;
+
+            });
+            Optional<List<MemberSubscriptions>> result = alert_details.showAndWait();
+            result.ifPresent(subs -> {
+                if (grid instanceof GridPane) {
+                    List<TextField> children = ((GridPane) grid).getChildren()
+                            .stream().filter(p -> p instanceof TextField)
+                            .map(p -> (TextField) p).collect(Collectors.toList());
+                    for (int i = 0; i < subs.size(); i++) {
+                        Node c = children.get(i);
+                        if (c instanceof TextField) {
+                            if (((TextField) c).getText() != null) {
+                                subs.get(i).setAmount(TextFormatHandler.getCurrencyFieldValue(((TextField) c)));
+                            }
+                        }
+                    }
+                }
+                param.getValue().setTotalSubscription(subs.stream().mapToDouble(a -> a.getAmount()).sum());
+                collection_tbl.refresh();
+            });
+
         });
 
         return new SimpleObjectProperty<>(button);
@@ -59,44 +96,37 @@ public class DisplaySubscriptionFactory implements Callback<TableColumn.CellData
 
     private Node createContentGrid(List<MemberSubscriptions> mbrSubs, double sum, boolean flag) {
 
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/court/view/DisplaySubscriptionFxml.fxml"));
-        GridPane pane;
-        try {
-            pane = (GridPane) loader.load();
-            DisplaySubscriptionFxmlController controller = (DisplaySubscriptionFxmlController) loader.getController();
-            callByName(controller, "setValueSubs_tot", TextFormatHandler.CURRENCY_DECIMAL_FORMAT.format(sum));
+        GridPane grid = new GridPane();
+        grid.setHgap(20);
+        grid.setVgap(10);
+        grid.setPadding(new Insets(20, 20, 10, 10));
 
-            for (int i = 0; i < mbrSubs.size(); i++) {
-                int j = i + 1;
-                MemberSubscriptions get = mbrSubs.get(i);
-                callByName(controller, "setValueSub_" + j, get.getMemberSubscription().getFeeName());
-                callByName(controller, "setValueAmt_" + j, TextFormatHandler.CURRENCY_DECIMAL_FORMAT.format(get.getAmount()));
-                callByNameCheck(controller, "setValueTkn_" + j, getparamValue(flag, get));
-            }
+        Label totLabel = new Label(TextFormatHandler.CURRENCY_DECIMAL_FORMAT.format(sum));
+        totLabel.setFont(Font.font("System Bold", 21.0));
+        Label col_h_1 = new Label("Subscription");
+        col_h_1.setFont(Font.font("System Bold", 17.0));
+        Label col_h_2 = new Label("Amount");
+        col_h_2.setFont(Font.font("System Bold", 17.0));
 
-        } catch (IOException | NoSuchMethodException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
-            pane = null;
-            Logger.getLogger(DisplaySubscriptionFactory.class.getName()).log(Level.SEVERE, null, ex);
+        grid.add(col_h_1, 0, 0);
+        grid.add(col_h_2, 1, 0);
+        Label[] labels = new Label[mbrSubs.size()];
+        TextField[] fields = new TextField[mbrSubs.size()];
+        for (int i = 0; i < mbrSubs.size(); i++) {
+            MemberSubscriptions get = mbrSubs.get(i);
+            labels[i] = new Label("label");
+            fields[i] = new TextField();
+            fields[i].setTextFormatter(TextFormatHandler.currencyFormatter());
+            labels[i].setText(get.getMemberSubscription().getFeeName());
+            fields[i].setText(TextFormatHandler.CURRENCY_DECIMAL_FORMAT.format(!getparamValue(flag, get) ? 0.00 : get.getAmount()));
+            grid.add(labels[i], 0, i + 1);
+            grid.add(fields[i], 1, i + 1);
         }
-
-        return pane;
-    }
-
-    private void callByName(DisplaySubscriptionFxmlController controller, String string, String arg)
-            throws NoSuchMethodException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
-        controller.getClass().getDeclaredMethod(string, String.class).invoke(controller, arg);
-    }
-
-    private void callByNameCheck(DisplaySubscriptionFxmlController controller, String string, boolean arg)
-            throws NoSuchMethodException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
-        controller.getClass().getDeclaredMethod(string, Boolean.class).invoke(controller, arg);
+        grid.add(totLabel, 1, mbrSubs.size() + 1);
+        return grid;
     }
 
     private boolean getparamValue(boolean flag, MemberSubscriptions get) {
-        if (get.getRepaymentType().equalsIgnoreCase("Once") && !flag) {
-            return false;
-        } else {
-            return true;
-        }
+        return !(get.getRepaymentType().equalsIgnoreCase("Once") && !flag);
     }
 }

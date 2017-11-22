@@ -1507,7 +1507,7 @@ public class MemberfxmlController implements Initializable {
                 grid.setHgap(10);
                 grid.setVgap(10);
                 grid.setPadding(new Insets(20, 150, 10, 10));
-
+                
                 LoanPayment lpLast = row.getItem().getLoanPayments().stream().filter(p -> p.isIsLast()).findFirst().orElse(null);
                 int installmentDue;
                 if (lpLast != null) {

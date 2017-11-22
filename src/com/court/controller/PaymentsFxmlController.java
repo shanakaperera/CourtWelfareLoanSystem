@@ -295,11 +295,6 @@ public class PaymentsFxmlController implements Initializable {
         return null;
     }
 
-    private void callByName(DisplaySubscriptionFxmlController controller, String string, String arg)
-            throws NoSuchMethodException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
-        controller.getClass().getDeclaredMethod(string, String.class).invoke(controller, arg);
-    }
-
     private String getparamValue(boolean flag) {
         if (flag) {
             return "No";

@@ -237,7 +237,7 @@ public class CollectionSheetFxmlController implements Initializable {
                         lp.setPaymentDue(FxUtilsHandler.roundNumber(ml.getLoanInstallment() * (ml.getNoOfRepay() - (getLastPay.getInstallmentNo() + 1)), 0));
                         lp.setInstallmentNo(getLastPay.getInstallmentNo() + 1);
                         lp.setInstallmentDate(getInstallmentDate(getLastPay.getInstallmentDate()));
-             
+
                         session.save(lp);
                         updateMemberLoan(ml, session, getInstallmentDate(getLastPay.getInstallmentDate()));
 
@@ -343,8 +343,8 @@ public class CollectionSheetFxmlController implements Initializable {
             });
             return new SimpleObjectProperty<>(checkBox);
         });
-        detail_view_col.setCellValueFactory(new DisplaySubscriptionFactory());
-        rtot_pay_col.setCellValueFactory(new DisplayTotalInstallmentsFactory());
+        detail_view_col.setCellValueFactory(new DisplaySubscriptionFactory(collection_tbl));
+        rtot_pay_col.setCellValueFactory(new DisplayTotalInstallmentsFactory(collection_tbl));
         tot_inst_amt_col.setCellValueFactory((TableColumn.CellDataFeatures<Member, String> param) -> {
             Member ml = param.getValue();
             List<MemberLoan> list = ml.getMemberLoans().stream()
