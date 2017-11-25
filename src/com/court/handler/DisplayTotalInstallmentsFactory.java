@@ -15,7 +15,6 @@ import java.util.stream.Collectors;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
-import javafx.event.EventHandler;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.TableColumn;
@@ -66,13 +65,14 @@ public class DisplayTotalInstallmentsFactory implements Callback<TableColumn.Cel
         });
         return new SimpleObjectProperty<>(button);
     }
+    private Label total_n;
 
     private Node createContentGrid(List<MemberLoan> list, double sum) {
         VBox pane = new VBox();
         HBox totBox = new HBox();
         totBox.setAlignment(Pos.CENTER_RIGHT);
         Label total_t = new Label("TOTAL");
-        Label total_n = new Label("Rs00000.00");
+        total_n = new Label("Rs00000.00");
         total_n.setText(TextFormatHandler.CURRENCY_DECIMAL_FORMAT.format(sum));
         total_t.setStyle("-fx-font-size:22px;-fx-font-weight:bold;");
         total_n.setStyle("-fx-font-size:22px;-fx-font-weight:bold;");
@@ -117,11 +117,12 @@ public class DisplayTotalInstallmentsFactory implements Callback<TableColumn.Cel
         });
 
         ln_inst_col.setCellFactory(TextFieldTableCell.<MemberLoan, Double>forTableColumn(new DoubleStringConverter()));
-        
+
         ln_inst_col.setOnEditCommit((TableColumn.CellEditEvent<MemberLoan, Double> event) -> {
             event.getTableView().getItems().get(event.getTablePosition().getRow())
-                    .setLoanInstallment(event.getNewValue());
+                    .setLoanInstallment(event.getNewValue() != null ? event.getNewValue() : 0.00);
             collection_tbl.refresh();
+            total_n.setText(getTableColumnTotal(event.getTableView(), 4));
         });
 
         ln_int_col.setCellFactory(column -> {
@@ -154,6 +155,15 @@ public class DisplayTotalInstallmentsFactory implements Callback<TableColumn.Cel
         });
 
         return member_ln_tbl;
+    }
+
+    private String getTableColumnTotal(TableView<MemberLoan> table, int column) {
+        double tot = 0.0;
+        for (int i = 0; i < table.getItems().size(); i++) {
+            Double value = (Double) table.getColumns().get(column).getCellObservableValue(i).getValue();
+            tot += value;
+        }
+        return TextFormatHandler.CURRENCY_DECIMAL_FORMAT.format(tot);
     }
 
 }

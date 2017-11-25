@@ -11,8 +11,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import javafx.beans.property.ReadOnlyBooleanPropertyBase;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ObservableValue;
+import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
@@ -23,6 +25,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.text.Font;
 import javafx.util.Callback;
@@ -117,6 +120,14 @@ public class DisplaySubscriptionFactory implements Callback<TableColumn.CellData
             labels[i] = new Label("label");
             fields[i] = new TextField();
             fields[i].setTextFormatter(TextFormatHandler.currencyFormatter());
+//            fields[i].focusedProperty().addListener((ob, wasFocused, isNowFocused) -> {
+//                TextField tf = (TextField) ((ReadOnlyBooleanPropertyBase) ob).getBean();
+//                tf.selectRange(2, tf.getText().length());
+//            });
+            fields[i].setOnMouseClicked((MouseEvent event) -> {
+              //  String tf = event.;
+              //  System.out.println("TEXT - " + tf);
+            });
             labels[i].setText(get.getMemberSubscription().getFeeName());
             fields[i].setText(TextFormatHandler.CURRENCY_DECIMAL_FORMAT.format(!getparamValue(flag, get) ? 0.00 : get.getAmount()));
             grid.add(labels[i], 0, i + 1);
