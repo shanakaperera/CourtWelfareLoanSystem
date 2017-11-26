@@ -11,10 +11,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import javafx.beans.property.ReadOnlyBooleanPropertyBase;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ObservableValue;
-import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
@@ -120,13 +118,9 @@ public class DisplaySubscriptionFactory implements Callback<TableColumn.CellData
             labels[i] = new Label("label");
             fields[i] = new TextField();
             fields[i].setTextFormatter(TextFormatHandler.currencyFormatter());
-//            fields[i].focusedProperty().addListener((ob, wasFocused, isNowFocused) -> {
-//                TextField tf = (TextField) ((ReadOnlyBooleanPropertyBase) ob).getBean();
-//                tf.selectRange(2, tf.getText().length());
-//            });
             fields[i].setOnMouseClicked((MouseEvent event) -> {
-              //  String tf = event.;
-              //  System.out.println("TEXT - " + tf);
+                TextField tf = (TextField) event.getSource();
+                tf.selectRange(2, tf.getText().length());
             });
             labels[i].setText(get.getMemberSubscription().getFeeName());
             fields[i].setText(TextFormatHandler.CURRENCY_DECIMAL_FORMAT.format(!getparamValue(flag, get) ? 0.00 : get.getAmount()));
