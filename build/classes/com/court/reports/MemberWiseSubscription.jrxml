@@ -263,7 +263,7 @@ WHERE m.member_id=$P{member_code} ;]]>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{optional}]]></textFieldExpression>
 			</textField>
-			<textField pattern="yyyy/MM/dd">
+			<textField pattern="MMM-yy">
 				<reportElement x="0" y="1" width="89" height="20" uuid="97c39da4-07b4-46f9-b685-683bf02dd510"/>
 				<textElement>
 					<font size="8"/>

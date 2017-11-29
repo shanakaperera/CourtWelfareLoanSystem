@@ -32,5 +32,11 @@
         <property name="paymentDate" type="date">
             <column name="payment_date" length="10" />
         </property>
+        <property name="addedDate" type="date">
+            <column name="added_date" length="10" />
+        </property>
+        <property name="chequeNo" type="string">
+            <column name="cheque_no" length="45" />
+        </property>
     </class>
 </hibernate-mapping>

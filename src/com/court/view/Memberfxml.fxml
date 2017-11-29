@@ -513,10 +513,10 @@
                                                 </TableView>
                                                 <TableView fx:id="l_pay_tbl" prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
                                                     <columns>
-                                                        <TableColumn fx:id="p_date_col" prefWidth="75.0" text="Pay Date" />
                                           <TableColumn fx:id="instment_date_col" prefWidth="100.0" text="Installment Date" />
+                                                        <TableColumn fx:id="p_date_col" prefWidth="75.0" text="Pay Date" />
                                                         <TableColumn fx:id="ins_no_col" prefWidth="50.0" text="Ins No" />
-                                                        <TableColumn fx:id="p_due_col" prefWidth="120.0" text="Payment Due" />
+                                                        <TableColumn fx:id="p_due_col" prefWidth="120.0" text="Paid So Far" />
                                                     </columns>
                                                 </TableView>
                                                 <Label alignment="CENTER" prefHeight="30.0" prefWidth="334.0" text="LOANS TAKEN" textFill="#5fa887">

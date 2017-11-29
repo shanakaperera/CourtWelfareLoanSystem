@@ -7,7 +7,6 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
-<?import javafx.scene.control.TextField?>
 <?import javafx.scene.control.TitledPane?>
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
@@ -37,7 +36,7 @@
                         <Font size="14.0" />
                     </font>
                     <content>
-                        <GridPane fx:id="grid_pane" hgap="5.0" vgap="10.0">
+                        <GridPane fx:id="grid_pane" hgap="5.0" vgap="20.0">
                             <columnConstraints>
                                 <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="20.0" />
                                 <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="30.0" />
@@ -47,13 +46,11 @@
                             <rowConstraints>
                                 <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                                 <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                                 <RowConstraints minHeight="10.0" prefHeight="40.0" vgrow="SOMETIMES" />
                                 <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                             </rowConstraints>
                             <children>
-                                <Label text="Search By Cheque No" GridPane.rowIndex="1" />
-                                <Label text="Search By Date Duration" GridPane.rowIndex="2" />
+                                <Label text="Search By Date Duration" GridPane.rowIndex="1" />
                                 <Label text="Perform Search" underline="true" GridPane.columnSpan="2">
                                     <font>
                                         <Font size="17.0" />
@@ -64,14 +61,14 @@
                                         <Font size="17.0" />
                                     </font>
                                 </Label>
-                        <HBox alignment="BOTTOM_RIGHT" spacing="10.0" GridPane.columnIndex="1" GridPane.rowIndex="3">
+                        <HBox alignment="BOTTOM_RIGHT" spacing="10.0" GridPane.columnIndex="1" GridPane.rowIndex="2">
                            <children>
-                                      <Button mnemonicParsing="false" onAction="#onSearchBtnAction" style="-fx-text-fill: #ffff; -fx-font-size: 14;" text="Search">
-                                          <styleClass>
-                                              <String fx:value="btn" />
-                                              <String fx:value="btn-success" />
-                                          </styleClass>
-                                      </Button>
+                              <Button mnemonicParsing="false" onAction="#onSearchBtnAction" style="-fx-text-fill: #ffff; -fx-font-size: 14;" text="Search">
+                                 <styleClass>
+                                    <String fx:value="btn" />
+                                    <String fx:value="btn-success" />
+                                 </styleClass>
+                              </Button>
                               <Button layoutX="10.0" layoutY="10.0" mnemonicParsing="false" onAction="#onClearBtnAction" style="-fx-text-fill: #ffff; -fx-font-size: 14;" text="Clear All">
                                  <styleClass>
                                     <String fx:value="btn" />
@@ -80,27 +77,88 @@
                               </Button>
                            </children>
                         </HBox>
-                        <TextField fx:id="chk_no_txt" editable="false" onMouseClicked="#onSearchTxtMouseClickAction" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-                        <HBox fx:id="date_box" alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="3.0" GridPane.columnIndex="1" GridPane.rowIndex="2">
+                        <HBox fx:id="date_box" alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="3.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
                            <children>
                               <DatePicker fx:id="from_date_chosr" editable="false" onMouseClicked="#onFromDateMouseClickAction" promptText="FROM" />
-                              <Label text="TO" />
+                              <Label text="--" />
                               <DatePicker fx:id="to_date_chosr" editable="false" onMouseClicked="#onToDateMouseClickAction" promptText="TO" />
                            </children>
                         </HBox>
+                        <Label text="Installment Pay" GridPane.columnIndex="2" GridPane.rowIndex="1">
+                           <font>
+                              <Font name="System Bold" size="14.0" />
+                           </font>
+                        </Label>
+                        <Label text="Subscription Pay" GridPane.columnIndex="2" GridPane.rowIndex="2">
+                           <font>
+                              <Font name="System Bold" size="14.0" />
+                           </font>
+                        </Label>
+                        <Label text="Total" GridPane.columnIndex="2" GridPane.rowIndex="3">
+                           <font>
+                              <Font name="System Bold" size="14.0" />
+                           </font>
+                        </Label>
+                        <Label fx:id="inst_tot_label" text="Rs0.00" GridPane.columnIndex="3" GridPane.rowIndex="1">
+                           <font>
+                              <Font name="System Bold" size="14.0" />
+                           </font>
+                        </Label>
+                        <Label fx:id="subs_tot_label" text="Rs0.00" GridPane.columnIndex="3" GridPane.rowIndex="2">
+                           <font>
+                              <Font name="System Bold" size="14.0" />
+                           </font>
+                        </Label>
+                        <Label fx:id="grand_tot_label" text="Rs0.00" GridPane.columnIndex="3" GridPane.rowIndex="3">
+                           <font>
+                              <Font name="System Bold" size="14.0" />
+                           </font>
+                        </Label>
                             </children>
                         </GridPane>
                     </content>
                 </TitledPane>
-                <TableView fx:id="payment_tbl" prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS">
-                    <columns>
-                        <TableColumn fx:id="chk_no_col" prefWidth="150.0" text="Cheque No" />
-                        <TableColumn fx:id="chk_date_col" prefWidth="150.0" text="Cheque Date" />
-                  <TableColumn fx:id="chk_amt_col" prefWidth="130.0" text="Cheque Amount" />
-                  <TableColumn fx:id="action_col" prefWidth="100.0" text="Loan Payments" />
-                  <TableColumn fx:id="subs_payments_col" prefWidth="150.0" text="Subscription Payments" />
-                    </columns>
-                </TableView>
+            <HBox spacing="10.0" VBox.vgrow="ALWAYS">
+               <children>
+                  <VBox alignment="CENTER" HBox.hgrow="ALWAYS">
+                     <children>
+                        <Label text="Installment Pay">
+                           <font>
+                              <Font name="System Bold" size="14.0" />
+                           </font>
+                        </Label>
+                        <TableView fx:id="installment_tbl">
+                          <columns>
+                            <TableColumn fx:id="ins_date_col" prefWidth="120.0" text="Inst Date" />
+                            <TableColumn fx:id="ins_amt_col" prefWidth="75.0" text="Amount" />
+                              <TableColumn fx:id="ins_act_date_col" prefWidth="75.0" text="Actual Pay" />
+                              <TableColumn fx:id="ins_cheque_no_col" prefWidth="120.0" text="Cheque No" />
+                              <TableColumn fx:id="ins_loan_col" prefWidth="75.0" text="Loan" />
+                              <TableColumn fx:id="ins_mbr_col" prefWidth="120.0" text="Member" />
+                          </columns>
+                        </TableView>
+                     </children>
+                  </VBox>
+                  <VBox alignment="CENTER" HBox.hgrow="ALWAYS">
+                     <children>
+                        <Label text="Subscription Pay">
+                           <font>
+                              <Font name="System Bold" size="14.0" />
+                           </font>
+                        </Label>
+                        <TableView fx:id="subs_tbl">
+                          <columns>
+                            <TableColumn fx:id="sub_date_col" prefWidth="120.0" text="Subs Date" />
+                            <TableColumn fx:id="subcription_col" prefWidth="75.0" text="Subscription" />
+                              <TableColumn fx:id="subs_actual_pay_col" prefWidth="75.0" text="Actual Pay" />
+                              <TableColumn fx:id="subs_cheque_col" prefWidth="120.0" text="Cheque No" />
+                              <TableColumn fx:id="sub_mbr_col" prefWidth="120.0" text="Member" />
+                          </columns>
+                        </TableView>
+                     </children>
+                  </VBox>
+               </children>
+            </HBox>
             </children>
         </VBox>
     </children>

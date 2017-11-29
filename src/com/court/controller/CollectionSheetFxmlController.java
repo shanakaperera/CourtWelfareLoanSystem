@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.function.Predicate;
@@ -49,6 +50,7 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import org.controlsfx.control.textfield.AutoCompletionBinding;
@@ -108,6 +110,8 @@ public class CollectionSheetFxmlController implements Initializable {
     private TextField bank_code_txt;
     @FXML
     private DatePicker chk_of_month_chooser;
+    @FXML
+    private TextField user_enter_pay;
 
     /**
      * Initializes the controller class.
@@ -117,6 +121,7 @@ public class CollectionSheetFxmlController implements Initializable {
         validationSupport = new ValidationSupport();
         FxUtilsHandler.setDatePickerTimeFormat(chk_date_chooser, chk_of_month_chooser);
         chk_amt_txt.setTextFormatter(TextFormatHandler.currencyFormatter());
+        user_enter_pay.setTextFormatter(TextFormatHandler.currencyFormatter());
     }
 
     @FXML
@@ -206,10 +211,12 @@ public class CollectionSheetFxmlController implements Initializable {
                             sp.setOptional(mbrSub.getAmount());
                             break;
                         case "Admission Fee":
-                            sp.setAdmissionFee(0.0);
+                            sp.setAdmissionFee(mbrSub.getAmount());
                             break;
                     }
                     sp.setPaymentDate(getDayOfMonth(Date.valueOf(chk_of_month_chooser.getValue())));
+                    sp.setChequeNo(chk_no_txt.getText());
+                    sp.setAddedDate(new java.util.Date());
                     sp.setMemberSubscriptions(mbrSub);
                 }
                 session.save(sp);
@@ -231,13 +238,12 @@ public class CollectionSheetFxmlController implements Initializable {
                         LoanPayment lp = new LoanPayment();
                         lp.setChequeNo(chk_no_txt.getText());
                         lp.setMemberLoan(ml);
-                        lp.setPaymentDate(getDayOfMonth(Date.valueOf(chk_of_month_chooser.getValue())));
+                        lp.setPaymentDate(new java.util.Date());
                         lp.setIsLast(true);
                         lp.setInstallmentDue(ml.getNoOfRepay() - (getLastPay.getInstallmentNo() + 1));
-                        lp.setPaymentDue(FxUtilsHandler.roundNumber(ml.getLoanInstallment() * (ml.getNoOfRepay() - (getLastPay.getInstallmentNo() + 1)), 0));
                         lp.setInstallmentNo(getLastPay.getInstallmentNo() + 1);
                         lp.setInstallmentDate(getInstallmentDate(getLastPay.getInstallmentDate()));
-
+                        lp.setPaidAmt(ml.getLoanInstallment());
                         session.save(lp);
                         updateMemberLoan(ml, session, getInstallmentDate(getLastPay.getInstallmentDate()));
 
@@ -249,10 +255,10 @@ public class CollectionSheetFxmlController implements Initializable {
                         LoanPayment lp = new LoanPayment();
                         lp.setChequeNo(chk_no_txt.getText());
                         lp.setMemberLoan(ml);
-                        lp.setPaymentDate(getDayOfMonth(Date.valueOf(chk_of_month_chooser.getValue())));
+                        lp.setPaymentDate(new java.util.Date());
                         lp.setIsLast(true);
                         lp.setInstallmentDue(ml.getNoOfRepay() - 1);
-                        lp.setPaymentDue(FxUtilsHandler.roundNumber(ml.getLoanInstallment() * (ml.getNoOfRepay() - 1), 0));
+                        lp.setPaidAmt(ml.getLoanInstallment());
                         lp.setInstallmentNo(1);
                         lp.setInstallmentDate(getDayOfMonth(Date.valueOf(chk_of_month_chooser.getValue())));
 
@@ -266,7 +272,6 @@ public class CollectionSheetFxmlController implements Initializable {
 
             session.getTransaction().commit();
             session.close();
-
             Alert alert_error = new Alert(Alert.AlertType.INFORMATION);
             alert_error.setTitle("Information Message");
             alert_error.setHeaderText("Successfully Updated !");
@@ -468,9 +473,17 @@ public class CollectionSheetFxmlController implements Initializable {
         Predicate<String> predicate = (t) -> {
             return !getCList().contains(t);
         };
+        Predicate<String> p_cheque_tally = (t) -> {
+            return Objects.equals(TextFormatHandler.getCurrencyFieldValue(t), TextFormatHandler.getCurrencyFieldValue(chk_amt_txt));
+        };
         validationSupport.registerValidator(chk_amt_txt,
                 Validator.createEmptyValidator("This field is not optional !")
         );
+        validationSupport.registerValidator(user_enter_pay,
+                Validator.combine(
+                        Validator.createEmptyValidator("This field is not optional."),
+                        Validator.createPredicateValidator(p_cheque_tally, "Cheque amount and total payment should tally to proceed.")
+                ));
         validationSupport.registerValidator(chk_no_txt,
                 Validator.combine(Validator.createEmptyValidator("This field is not optional !"),
                         Validator.createRegexValidator("Only alphanumeric and hyphen(-) allowed !",
@@ -478,9 +491,9 @@ public class CollectionSheetFxmlController implements Initializable {
                         Validator.createPredicateValidator(predicate, "This cheque is already used !")
                 ));
         validationSupport.registerValidator(chk_date_chooser,
-                Validator.createEmptyValidator("Check realise date is required !"));
+                Validator.createEmptyValidator("Cheque realise date is required !"));
         validationSupport.registerValidator(chk_of_month_chooser,
-                Validator.createEmptyValidator("Check date is required !"));
+                Validator.createEmptyValidator("Cheque date is required !"));
         validationSupport.registerValidator(branch_txt,
                 Validator.createEmptyValidator("Branch is not optional !"));
         validationSupport.registerValidator(bank_code_txt,
@@ -529,5 +542,10 @@ public class CollectionSheetFxmlController implements Initializable {
         DateTime insDateE = new DateTime(new SimpleDateFormat("yyyy-MM-dd").format(instDate), zone);
         DateTime nowDate = insDateE.withDayOfMonth(25);
         return nowDate.toDate();
+    }
+
+    @FXML
+    private void onUserEnterChequeMouseClicked(MouseEvent event) {
+        user_enter_pay.selectRange(2, user_enter_pay.getText().length());
     }
 }

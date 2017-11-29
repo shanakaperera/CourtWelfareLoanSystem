@@ -10,6 +10,7 @@
 	<field name="chequeNo" class="java.lang.String"/>
 	<field name="paymentDate" class="java.util.Date"/>
 	<field name="memberLoan" class="com.court.model.MemberLoan"/>
+	<field name="installmentDate" class="java.util.Date"/>
 	<sortField name="installmentNo"/>
 	<background>
 		<band splitType="Stretch"/>
@@ -42,14 +43,21 @@
 				<text><![CDATA[ChequeNo]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="153" y="0" width="60" height="21" uuid="8b5e321a-d94a-4457-8a17-a2dd4ddf2948"/>
+				<reportElement x="164" y="0" width="60" height="21" uuid="8b5e321a-d94a-4457-8a17-a2dd4ddf2948"/>
 				<textElement verticalAlignment="Middle">
 					<font size="8" isBold="true"/>
 				</textElement>
 				<text><![CDATA[InstallmentAmt]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="98" y="0" width="55" height="21" uuid="9f28b4fc-43cf-42ad-bbbb-2d56377b1bd8"/>
+				<reportElement x="98" y="0" width="66" height="21" uuid="4178ff1a-b78e-4647-af97-f528feafc03c"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[installmentDate]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="224" y="0" width="55" height="21" uuid="9f28b4fc-43cf-42ad-bbbb-2d56377b1bd8"/>
 				<textElement verticalAlignment="Middle">
 					<font size="8" isBold="true"/>
 				</textElement>
@@ -74,14 +82,21 @@
 				<textFieldExpression><![CDATA[$F{chequeNo}]]></textFieldExpression>
 			</textField>
 			<textField pattern="Rs#,#00.00">
-				<reportElement x="153" y="0" width="60" height="21" uuid="f363e4cf-a61f-4de4-98ba-741f2b63ed29"/>
+				<reportElement x="164" y="0" width="60" height="21" uuid="f363e4cf-a61f-4de4-98ba-741f2b63ed29"/>
 				<textElement verticalAlignment="Middle">
 					<font size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{memberLoan}.getLoanInstallment()]]></textFieldExpression>
 			</textField>
+			<textField pattern="MMMMM-yy">
+				<reportElement x="98" y="1" width="66" height="20" uuid="a0f7cacc-98fe-4fc4-809c-42ce92435b8b"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{installmentDate}]]></textFieldExpression>
+			</textField>
 			<textField pattern="dd/MM/yyyy">
-				<reportElement x="98" y="0" width="55" height="21" uuid="ab55d411-969e-459c-8bd9-e358a4e88af1"/>
+				<reportElement x="224" y="0" width="55" height="21" uuid="ab55d411-969e-459c-8bd9-e358a4e88af1"/>
 				<textElement verticalAlignment="Middle">
 					<font size="8"/>
 				</textElement>

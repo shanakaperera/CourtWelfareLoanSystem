@@ -13,10 +13,10 @@ public class LoanPayment implements java.io.Serializable {
     private Integer installmentNo;
     private String chequeNo;
     private Integer installmentDue;
-    private Double paymentDue;
     private Date paymentDate;
     private Date installmentDate;
     private boolean isLast;
+    private Double paidAmt;
 
     public LoanPayment() {
     }
@@ -26,12 +26,11 @@ public class LoanPayment implements java.io.Serializable {
         this.isLast = isLast;
     }
 
-    public LoanPayment(MemberLoan memberLoan, Integer installmentNo, String chequeNo, Integer installmentDue, Double paymentDue, Date paymentDate, boolean isLast) {
+    public LoanPayment(MemberLoan memberLoan, Integer installmentNo, String chequeNo, Integer installmentDue, Date paymentDate, boolean isLast) {
         this.memberLoan = memberLoan;
         this.installmentNo = installmentNo;
         this.chequeNo = chequeNo;
         this.installmentDue = installmentDue;
-        this.paymentDue = paymentDue;
         this.paymentDate = paymentDate;
         this.isLast = isLast;
     }
@@ -76,14 +75,6 @@ public class LoanPayment implements java.io.Serializable {
         this.installmentDue = installmentDue;
     }
 
-    public Double getPaymentDue() {
-        return this.paymentDue;
-    }
-
-    public void setPaymentDue(Double paymentDue) {
-        this.paymentDue = paymentDue;
-    }
-
     public Date getPaymentDate() {
         return this.paymentDate;
     }
@@ -106,6 +97,14 @@ public class LoanPayment implements java.io.Serializable {
 
     public void setInstallmentDate(Date installmentDate) {
         this.installmentDate = installmentDate;
+    }
+
+    public Double getPaidAmt() {
+        return paidAmt;
+    }
+
+    public void setPaidAmt(Double paidAmt) {
+        this.paidAmt = paidAmt;
     }
 
 }

@@ -174,7 +174,7 @@
 				</graphicElement>
 			</line>
 			<componentElement>
-				<reportElement key="table 1" style="table 1" isPrintRepeatedValues="false" x="242" y="0" width="313" height="70" isPrintWhenDetailOverflows="true" uuid="40cc09bf-1746-4623-abf0-23a915e7d582">
+				<reportElement key="table 1" style="table 1" isPrintRepeatedValues="false" x="290" y="0" width="265" height="70" isPrintWhenDetailOverflows="true" uuid="40cc09bf-1746-4623-abf0-23a915e7d582">
 					<printWhenExpression><![CDATA[new java.lang.Boolean($V{REPORT_COUNT}.intValue() == 1)]]></printWhenExpression>
 				</reportElement>
 				<jr:table xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd">
@@ -201,7 +201,7 @@
 							</staticText>
 						</jr:tableFooter>
 						<jr:detailCell style="table 1_TD" height="20" rowSpan="1">
-							<textField pattern="yyyy/MM/dd">
+							<textField pattern="MMM-yy">
 								<reportElement x="0" y="0" width="52" height="20" uuid="0907f749-95e9-4d1b-bedb-19f94dd27936"/>
 								<textElement verticalAlignment="Middle">
 									<font size="8"/>

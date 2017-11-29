@@ -211,7 +211,7 @@ public class MemberfxmlController implements Initializable {
     @FXML
     private TableColumn<LoanPayment, Integer> ins_no_col;
     @FXML
-    private TableColumn<LoanPayment, Double> p_due_col;
+    private TableColumn<LoanPayment, String> p_due_col;
     @FXML
     private TableColumn<LoanPayment, Date> instment_date_col;
     @FXML
@@ -891,12 +891,13 @@ public class MemberfxmlController implements Initializable {
                         .filter(FxUtilsHandler.distinctByKey(p -> p.getInstallmentNo()))
                         .collect(Collectors.toList());
 
-                Double paymentDue = collect.stream()
-                        .filter(p -> p.isIsLast())
-                        .findFirst().get().getPaymentDue();
+                double tot_pay_lo = (ml.getLoanInstallment() * ml.getNoOfRepay());
+
+                Double paymentDue = tot_pay_lo - collect.stream()
+                        .mapToDouble(LoanPayment::getPaidAmt).sum();
 
                 // System.out.println("ESTIMATE - " + paymentDue);
-                double loanComplete = (paymentDue / (ml.getLoanInstallment() * ml.getNoOfRepay())) * 100;
+                double loanComplete = (paymentDue / tot_pay_lo) * 100;
                 ReadOnlyDoubleWrapper workDone = new ReadOnlyDoubleWrapper();
                 ProgressIndicatorBar bar = new ProgressIndicatorBar(workDone, loanComplete);
                 bar.createProgressIndicatorBar(progress_box, workDone);
@@ -1237,7 +1238,7 @@ public class MemberfxmlController implements Initializable {
                                 lp.setInstallmentDue(no_of_repay - last_inst_paid);
                                 lp.setPaymentDate(new java.util.Date());
                                 lp.setInstallmentDate(instDates[i]);
-                                lp.setPaymentDue(installWithoutPolli * (no_of_repay - last_inst_paid));
+                                lp.setPaidAmt(installWithoutPolli);
                                 if (i == (insts - 1)) {
                                     lp.setIsLast(true);
                                 } else {
@@ -1298,7 +1299,7 @@ public class MemberfxmlController implements Initializable {
                             lp.setInstallmentDue(no_of_repay - last_inst_paid);
                             lp.setPaymentDate(new java.util.Date());
                             lp.setInstallmentDate(instDates[i]);
-                            lp.setPaymentDue(installWithoutPolli * (no_of_repay - last_inst_paid));
+                            lp.setPaidAmt(installWithoutPolli);
                             if (i == (insts - 1)) {
                                 lp.setIsLast(true);
                             } else {
@@ -1362,7 +1363,7 @@ public class MemberfxmlController implements Initializable {
                             lp.setInstallmentDue(no_of_repay - last_inst_paid);
                             lp.setPaymentDate(new java.util.Date());
                             lp.setInstallmentDate(instDates[i]);
-                            lp.setPaymentDue(installWithoutPolli * (no_of_repay - last_inst_paid));
+                            lp.setPaidAmt(installWithoutPolli);
                             if (i == (insts - 1)) {
                                 lp.setIsLast(true);
                             } else {
@@ -1437,7 +1438,7 @@ public class MemberfxmlController implements Initializable {
                             lp.setInstallmentDue(no_of_repay - last_inst_paid);
                             lp.setPaymentDate(new java.util.Date());
                             lp.setInstallmentDate(instDates[i]);
-                            lp.setPaymentDue(installWithoutPolli_2 * (no_of_repay - last_inst_paid));
+                            lp.setPaidAmt(installWithoutPolli_2);
                             if (i == (insts - 1)) {
                                 lp.setIsLast(true);
                             } else {
@@ -1507,7 +1508,7 @@ public class MemberfxmlController implements Initializable {
                 grid.setHgap(10);
                 grid.setVgap(10);
                 grid.setPadding(new Insets(20, 150, 10, 10));
-                
+
                 LoanPayment lpLast = row.getItem().getLoanPayments().stream().filter(p -> p.isIsLast()).findFirst().orElse(null);
                 int installmentDue;
                 if (lpLast != null) {
@@ -1579,7 +1580,7 @@ public class MemberfxmlController implements Initializable {
                         lp.setInstallmentDue(no_of_repay - last_inst_paid);
                         lp.setPaymentDate(new java.util.Date());
                         lp.setInstallmentDate(instDates[i]);
-                        lp.setPaymentDue(instAmt * (no_of_repay - last_inst_paid));
+                        lp.setPaidAmt(instAmt);
                         if (i == (insts - 1)) {
                             lp.setIsLast(true);
                         } else {
@@ -1635,7 +1636,13 @@ public class MemberfxmlController implements Initializable {
     private void initLoanPayTable(ObservableList<LoanPayment> lPays) {
         p_date_col.setCellValueFactory(new PropertyValueFactory<>("paymentDate"));
         ins_no_col.setCellValueFactory(new PropertyValueFactory<>("installmentNo"));
-        p_due_col.setCellValueFactory(new PropertyValueFactory<>("paymentDue"));
+        p_due_col.setCellValueFactory((TableColumn.CellDataFeatures<LoanPayment, String> param) -> {
+            LoanPayment lp = param.getValue();
+            double sum = lp.getMemberLoan().getLoanPayments().stream()
+                    .mapToDouble(LoanPayment::getPaidAmt)
+                    .sum();
+            return new SimpleObjectProperty<>(TextFormatHandler.CURRENCY_DECIMAL_FORMAT.format(sum));
+        });
         instment_date_col.setCellValueFactory(new PropertyValueFactory<>("installmentDate"));
 
         p_date_col.setCellFactory(column -> {
@@ -1656,19 +1663,7 @@ public class MemberfxmlController implements Initializable {
                 protected void updateItem(Date item, boolean empty) {
                     super.updateItem(item, empty);
                     if (!isEmpty()) {
-                        setText(new SimpleDateFormat("yyyy-MM-dd").format(item));
-                    }
-                }
-            };
-        });
-
-        p_due_col.setCellFactory(column -> {
-            return new TableCell<LoanPayment, Double>() {
-                @Override
-                protected void updateItem(Double item, boolean empty) {
-                    super.updateItem(item, empty);
-                    if (!isEmpty()) {
-                        setText(TextFormatHandler.CURRENCY_DECIMAL_FORMAT.format(item));
+                        setText(new SimpleDateFormat("MMMMM, yyyy").format(item));
                     }
                 }
             };
@@ -2753,7 +2748,8 @@ public class MemberfxmlController implements Initializable {
                 sp.setOptional(TextFormatHandler.getCurrencyFieldValue(m_subs_op));
                 sp.setSavingsFee(TextFormatHandler.getCurrencyFieldValue(m_subs_sav));
                 sp.setMembershipFee(TextFormatHandler.getCurrencyFieldValue(m_subs_mf));
-                sp.setPaymentDate(Date.valueOf(m_subs_date.getValue()));
+                sp.setPaymentDate(getDayOfMonth(Date.valueOf(m_subs_date.getValue())));
+                sp.setAddedDate(new java.util.Date());
                 sp.setMemberSubscriptions(getMemberSubscriptionsFromMember(member_code_txt.getText(), s));
                 s.save(sp);
                 //adding each subids to the list======
@@ -2880,5 +2876,12 @@ public class MemberfxmlController implements Initializable {
         MemberLoan mul = (MemberLoan) c.add(Restrictions.eq("id", id))
                 .uniqueResult();
         return mul != null ? mul : null;
+    }
+
+    private java.util.Date getDayOfMonth(java.util.Date instDate) {
+        DateTimeZone zone = DateTimeZone.forID("Asia/Colombo");
+        DateTime insDateE = new DateTime(new SimpleDateFormat("yyyy-MM-dd").format(instDate), zone);
+        DateTime nowDate = insDateE.withDayOfMonth(25);
+        return nowDate.toDate();
     }
 }

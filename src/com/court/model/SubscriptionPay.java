@@ -22,6 +22,8 @@ public class SubscriptionPay implements java.io.Serializable {
     private Double membershipFee;
     private Double optional;
     private Date paymentDate;
+    private Date addedDate;
+    private String chequeNo;
 
     public SubscriptionPay() {
     }
@@ -111,6 +113,22 @@ public class SubscriptionPay implements java.io.Serializable {
 
     public void setPaymentDate(Date paymentDate) {
         this.paymentDate = paymentDate;
+    }
+
+    public Date getAddedDate() {
+        return addedDate;
+    }
+
+    public void setAddedDate(Date addedDate) {
+        this.addedDate = addedDate;
+    }
+
+    public String getChequeNo() {
+        return chequeNo;
+    }
+
+    public void setChequeNo(String chequeNo) {
+        this.chequeNo = chequeNo;
     }
 
 }
