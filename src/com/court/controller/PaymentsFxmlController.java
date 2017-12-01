@@ -11,13 +11,11 @@ import com.court.handler.TextFormatHandler;
 import com.court.model.LoanPayment;
 import com.court.model.Member;
 import com.court.model.MemberLoan;
-import com.court.model.MemberSubscriptions;
 import com.court.model.SubscriptionPay;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Optional;
 import java.util.ResourceBundle;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
@@ -29,7 +27,6 @@ import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
-import javafx.scene.control.ButtonType;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
@@ -229,7 +226,7 @@ public class PaymentsFxmlController implements Initializable {
     private void performPaymentSearchByDuration(LocalDate from, LocalDate to) {
         Session session = HibernateUtil.getSessionFactory().openSession();
         Criteria c = session.createCriteria(LoanPayment.class);
-        c.add(Restrictions.between("installmentDate",
+        c.add(Restrictions.between("paymentDate",
                 FxUtilsHandler.getDateFrom(from), FxUtilsHandler.getDateFrom(to)));
 
         List<LoanPayment> lPayList = c.list();
@@ -240,7 +237,7 @@ public class PaymentsFxmlController implements Initializable {
     private void performSubscriptionSearchByDuration(LocalDate from, LocalDate to) {
         Session session = HibernateUtil.getSessionFactory().openSession();
         Criteria c = session.createCriteria(SubscriptionPay.class);
-        c.add(Restrictions.between("paymentDate",
+        c.add(Restrictions.between("addedDate",
                 FxUtilsHandler.getDateFrom(from), FxUtilsHandler.getDateFrom(to)));
 
         List<SubscriptionPay> sPayList = c.list();
