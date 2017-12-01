@@ -401,6 +401,8 @@ public class MemberfxmlController implements Initializable {
     private Label subs_invo_warning;
     @FXML
     private Button subs_invo_btn;
+    @FXML
+    private Tab gen_details_tab;
 
     /**
      * Initializes the controller class.
@@ -1102,6 +1104,13 @@ public class MemberfxmlController implements Initializable {
         other_details_tab.setDisable(active);
         doc_tab.setDisable(active);
         mbrcon_tab.setDisable(active);
+    }
+
+    private void disableTabsExceptMbrContribution(boolean active) {
+        loan_inf_tab.setDisable(active);
+        other_details_tab.setDisable(active);
+        doc_tab.setDisable(active);
+        gen_details_tab.setDisable(active);
     }
 
     private void initMemberLoanTable(ObservableList<MemberLoan> mLoans) {
@@ -2766,6 +2775,7 @@ public class MemberfxmlController implements Initializable {
                     invo_gen_box.setVisible(true);
                     freezeAtMemberContribution(true);
                     initContributionTable(FXCollections.observableArrayList(getAllContributionsOf(member_code_txt.getText())));
+                    FxUtilsHandler.clearFields(subs_manual_grid);
                 }
             }
 
@@ -2812,6 +2822,8 @@ public class MemberfxmlController implements Initializable {
         rh.genarateReport();
         rh.viewReport();
         s.close();
+        //==================//RESET ALL FREEZED NODES========================
+        freezeAtMemberContribution(false);
     }
 
     private boolean isFormZero(GridPane subs_form) {
@@ -2857,6 +2869,14 @@ public class MemberfxmlController implements Initializable {
 
     private void freezeAtMemberContribution(boolean flag) {
 // FREAZING PROCCESS SHOULD BE IDENTIFIED IN THIS METHOD TO PREVENT USER FROM GOING WITHOUT REPORT
+        if (flag) {
+            DashBoardFxmlController.controller.disableAllButtons();
+            disableTabsExceptMbrContribution(flag);
+        } else {
+            LoggedSessionHandler ls = DashBoardFxmlController.controller.loggedSession();
+            DashBoardFxmlController.controller.disableButtonWithLoggingPrv(ls);
+            disableTabsExceptMbrContribution(flag);
+        }
     }
 
     private double subsTot(SubscriptionPay sp) {

@@ -25,6 +25,7 @@ import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.MenuButton;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.SplitPane;
 import javafx.scene.effect.Effect;
@@ -245,12 +246,12 @@ public class DashBoardFxmlController implements Initializable {
     private void guarntBtnAction(ActionEvent event) throws IOException {
         loadDataPane("/com/court/view/GuarantorsFxml.fxml");
     }
-    
+
     public Label getDashboard_header() {
         return dashboard_header;
     }
 
-    private void disableButtonWithLoggingPrv(LoggedSessionHandler ls) {
+    public void disableButtonWithLoggingPrv(LoggedSessionHandler ls) {
 
         collect_sheet_btn.setDisable(!anyChildPrivExist("105", 2, ls));
         member_btn.setDisable(!anyChildPrivExist("102", 2, ls));
@@ -260,7 +261,28 @@ public class DashBoardFxmlController implements Initializable {
         payment_btn.setDisable(!anyChildPrivExist("107", 1, ls));
         report_btn.setDisable(!anyChildPrivExist("108", 4, ls));
         usrmng_menu_item.setDisable(!anyChildPrivExist("101", 8, ls));
+        guarant_btn.setDisable(!anyChildPrivExist("109", 1, ls));
+        gen_menu_item.setDisable(!anyChildPrivExist("110", 3, ls));
 
+        //MOST COMMON BUTTONS===========
+        logout_btn.setDisable(false);
+        dashboard_btn.setDisable(false);
+
+    }
+
+    public void disableAllButtons() {
+        collect_sheet_btn.setDisable(true);
+        member_btn.setDisable(true);
+        loanmng_menu_item.setDisable(true);
+        loancal_menu_item.setDisable(true);
+        branch_btn.setDisable(true);
+        payment_btn.setDisable(true);
+        report_btn.setDisable(true);
+        usrmng_menu_item.setDisable(true);
+        guarant_btn.setDisable(true);
+        gen_menu_item.setDisable(true);
+        dashboard_btn.setDisable(true);
+        logout_btn.setDisable(true);
     }
 
     private boolean anyChildPrivExist(String part, int till, LoggedSessionHandler ls) {

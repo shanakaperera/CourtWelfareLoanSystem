@@ -11,6 +11,11 @@
         <save-r text="Save UserRoles" id="10107"/>
         <deactive-r text="Deactivate UserRoles" id="10108"/>
     </user-manage>
+    <general-settings text="General Settings" id="110">
+        <view text="View" id="11001"/>
+        <save text="Save" id="11002"/>
+        <restore-defaults text="Restore Defaults" id="11003"/>
+    </general-settings>
     <member-details text="Member Management" id="102">
         <view-m text="Search Member" id="10201"/>
         <save-m text="Save Member" id="10202"/>
@@ -22,6 +27,9 @@
         <save-docs text="Save Documents" id="10208"/>
         <remove-docs text="Remove Documents" id="10209"/>
     </member-details>
+    <guarantors text="Guarantors" id="109">
+        <view text="View" id="10901"/>
+    </guarantors>
     <loan-manage text="Loan Management" id="103">
         <view text="View" id="10301"/>
         <save text="Save" id="10302"/>

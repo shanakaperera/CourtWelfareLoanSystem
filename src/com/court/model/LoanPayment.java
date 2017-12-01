@@ -18,6 +18,9 @@ public class LoanPayment implements java.io.Serializable {
     private boolean isLast;
     private Double paidAmt;
 
+    private String groupPro;
+    private double lSum;
+
     public LoanPayment() {
     }
 
@@ -105,6 +108,22 @@ public class LoanPayment implements java.io.Serializable {
 
     public void setPaidAmt(Double paidAmt) {
         this.paidAmt = paidAmt;
+    }
+
+    public String getGroupPro() {
+        return groupPro;
+    }
+
+    public void setGroupPro(String groupPro) {
+        this.groupPro = groupPro;
+    }
+
+    public double getlSum() {
+        return lSum;
+    }
+
+    public void setlSum(double lSum) {
+        this.lSum = lSum;
     }
 
 }

@@ -38,6 +38,9 @@ public class MemberLoan implements java.io.Serializable {
     private Set<LoanPayment> loanPayments = new HashSet<>();
     private List<MemberSubscription> mbrSubs = new ArrayList<>();
 
+    private String groupPro;
+    private double lSum;
+
     public MemberLoan() {
 
     }
@@ -278,5 +281,23 @@ public class MemberLoan implements java.io.Serializable {
     public void setClosedLoan(boolean closedLoan) {
         this.closedLoan = closedLoan;
     }
+
+    public String getGroupPro() {
+        return groupPro;
+    }
+
+    public void setGroupPro(String groupPro) {
+        this.groupPro = groupPro;
+    }
+
+    public double getlSum() {
+        return lSum;
+    }
+
+    public void setlSum(double lSum) {
+        this.lSum = lSum;
+    }
+
+
 
 }

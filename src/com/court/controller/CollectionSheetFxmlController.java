@@ -220,7 +220,7 @@ public class CollectionSheetFxmlController implements Initializable {
                     sp.setMemberSubscriptions(mbrSub);
                 }
                 session.save(sp);
-                //====================================END MEMBERS SUBSCRIPTIONS SAVE==================================
+                //====================================END MEMBERS SUBSCRIPTIONS SAVE=========================
                 //====================================MEMBERS LOANS SAVE=====================================
                 List<MemberLoan> mLoanList = m.getMemberLoans().stream()
                         .sorted(Comparator.comparing(MemberLoan::getChildId).reversed())

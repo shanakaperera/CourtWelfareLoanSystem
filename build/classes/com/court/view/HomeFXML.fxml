@@ -36,17 +36,17 @@
                     <columnConstraints>
                         <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
                         <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
                   <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
                     </columnConstraints>
                     <rowConstraints>
                         <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                     </rowConstraints>
                <children>
                   <Tile skinType="TEXT" text="TOTAL MEMBERS" textSize="BIGGER" />
-                  <Tile fx:id="timeTile" skinType="CLOCK" GridPane.columnIndex="2" />
-                  <Tile skinType="SLIDER" GridPane.columnIndex="1" />
-                  <Tile skinType="TEXT" text="TOTAL COLLECTION" textSize="BIGGER" GridPane.columnIndex="3" />
+                  <Tile fx:id="timeTile" skinType="CLOCK" GridPane.columnIndex="3" />
+                  <Tile fx:id="ln_amt_total_tile" skinType="TEXT" style="-fx-font-size: 15;" GridPane.columnIndex="1" />
+                  <Tile fx:id="collection_tile" skinType="TEXT" text="TOTAL COLLECTION" textSize="BIGGER" GridPane.columnIndex="2" />
                   <Label fx:id="mbr_count_txt" text="10" textFill="WHITE">
                      <font>
                         <Font size="31.0" />
@@ -55,7 +55,7 @@
                         <Insets left="10.0" />
                      </GridPane.margin>
                   </Label>
-                  <Label fx:id="tot_col_txt" text="4500" textFill="WHITE" GridPane.columnIndex="3">
+                  <Label fx:id="tot_col_txt" text="4500" textFill="WHITE" GridPane.columnIndex="2">
                      <font>
                         <Font size="31.0" />
                      </font>
@@ -63,23 +63,28 @@
                         <Insets left="10.0" />
                      </GridPane.margin>
                   </Label>
+                  <Label fx:id="ln_amt_tot_label" text="4500" textFill="WHITE" GridPane.columnIndex="1">
+                     <font>
+                        <Font size="31.0" />
+                     </font>
+                  </Label>
                </children>
                 </GridPane>
             </content>
         </TitledPane>
-        <TitledPane prefHeight="200.0" prefWidth="200.0" text="Loans Released - Monthly">
+        <TitledPane prefHeight="200.0" prefWidth="200.0" text="Loans Released Amount Total - Monthly">
             <content>
                 <LineChart fx:id="loan_release_chart">
                     <xAxis>
                         <CategoryAxis label="Month" side="BOTTOM" />
                     </xAxis>
                     <yAxis>
-                        <NumberAxis label="Loans" side="LEFT" />
+                        <NumberAxis label="Amount Rs" side="LEFT" />
                     </yAxis>
                 </LineChart>
             </content>
         </TitledPane>
-        <TitledPane layoutX="10.0" layoutY="194.0" prefHeight="200.0" prefWidth="200.0" text="Loan Collections - Monthly">
+        <TitledPane layoutX="10.0" layoutY="194.0" prefHeight="200.0" prefWidth="200.0" text="Loan Collections Total (Installments Only) - Monthly">
             <content>
                 <LineChart fx:id="loan_collection_chart">
                     <xAxis>

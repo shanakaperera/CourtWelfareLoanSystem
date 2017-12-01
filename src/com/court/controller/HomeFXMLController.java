@@ -6,16 +6,27 @@
 package com.court.controller;
 
 import com.court.db.HibernateUtil;
+import com.court.handler.Accumlator;
 import com.court.handler.FxUtilsHandler;
 import com.court.handler.TextFormatHandler;
-import com.court.model.LoanPayCheque;
+import com.court.model.LoanPayment;
 import com.court.model.Member;
+import com.court.model.MemberLoan;
+import com.court.model.SubscriptionPay;
 import eu.hansolo.tilesfx.Tile;
 import java.net.URL;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.ResourceBundle;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.stream.Collector;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.chart.LineChart;
@@ -27,10 +38,20 @@ import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.criterion.CriteriaQuery;
 import org.hibernate.criterion.Criterion;
+import org.hibernate.criterion.Order;
+import org.hibernate.criterion.ProjectionList;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import org.hibernate.engine.spi.TypedValue;
+import org.hibernate.metadata.ClassMetadata;
+import org.hibernate.transform.Transformers;
+import org.hibernate.type.DoubleType;
 import org.hibernate.type.IntegerType;
+import org.hibernate.type.StringType;
+import org.hibernate.type.Type;
+import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
+import static java.time.temporal.TemporalAdjusters.*;
 
 /**
  * FXML Controller class
@@ -49,6 +70,12 @@ public class HomeFXMLController implements Initializable {
     private Label mbr_count_txt;
     @FXML
     private Label tot_col_txt;
+    @FXML
+    private Tile collection_tile;
+    @FXML
+    private Tile ln_amt_total_tile;
+    @FXML
+    private Label ln_amt_tot_label;
 
     /**
      * Initializes the controller class.
@@ -57,41 +84,25 @@ public class HomeFXMLController implements Initializable {
     public void initialize(URL url, ResourceBundle rb) {
 
         XYChart.Series<String, Number> series_1 = new XYChart.Series<>();
-        series_1.getData().add(new XYChart.Data<>(
-                new SimpleDateFormat("MMM").format(new GregorianCalendar(2017, 0, 30).getTime()), 2));
-        series_1.getData().add(new XYChart.Data<>(
-                new SimpleDateFormat("MMM").format(new GregorianCalendar(2017, 1, 28).getTime()), 4));
-        series_1.getData().add(new XYChart.Data<>(
-                new SimpleDateFormat("MMM").format(
-                        new GregorianCalendar(2017, 2, 30).getTime()), 6));
-        series_1.getData().add(new XYChart.Data<>(
-                new SimpleDateFormat("MMM").format(new GregorianCalendar(2017, 3, 30).getTime()), 10));
-        series_1.getData().add(new XYChart.Data<>(
-                new SimpleDateFormat("MMM").format(new GregorianCalendar(2017, 4, 30).getTime()), 4));
-        series_1.getData().add(new XYChart.Data<>(
-                new SimpleDateFormat("MMM").format(new GregorianCalendar(2017, 5, 30).getTime()), 5));
-        series_1.getData().add(new XYChart.Data<>(
-                new SimpleDateFormat("MMM").format(new GregorianCalendar(2017, 6, 30).getTime()), 2));
-        series_1.getData().add(new XYChart.Data<>(
-                new SimpleDateFormat("MMM").format(new GregorianCalendar(2017, 7, 30).getTime()), 7));
+        Map<String, Number> map = getLoanReleasedData();
+        
+        for (Map.Entry<String, Number> entry : map.entrySet()) {
+            String key = new SimpleDateFormat("MMM")
+                    .format(DateTime.parse(entry.getKey(), DateTimeFormat.forPattern("yyyy-MM-dd")).toDate());
+            Number value = entry.getValue();
+            series_1.getData().add(new XYChart.Data<>(key, value));
+        }
 
+        //================================================================================================
         XYChart.Series<String, Number> series_2 = new XYChart.Series<>();
-        series_2.getData().add(new XYChart.Data<>(
-                new SimpleDateFormat("MMM").format(new GregorianCalendar(2017, 0, 30).getTime()), 23400));
-        series_2.getData().add(new XYChart.Data<>(
-                new SimpleDateFormat("MMM").format(new GregorianCalendar(2017, 1, 28).getTime()), 24500));
-        series_2.getData().add(new XYChart.Data<>(
-                new SimpleDateFormat("MMM").format(new GregorianCalendar(2017, 2, 30).getTime()), 24900));
-        series_2.getData().add(new XYChart.Data<>(
-                new SimpleDateFormat("MMM").format(new GregorianCalendar(2017, 3, 30).getTime()), 23000));
-        series_2.getData().add(new XYChart.Data<>(
-                new SimpleDateFormat("MMM").format(new GregorianCalendar(2017, 4, 30).getTime()), 25600));
-        series_2.getData().add(new XYChart.Data<>(
-                new SimpleDateFormat("MMM").format(new GregorianCalendar(2017, 5, 30).getTime()), 24000));
-        series_2.getData().add(new XYChart.Data<>(
-                new SimpleDateFormat("MMM").format(new GregorianCalendar(2017, 6, 30).getTime()), 22670));
-        series_2.getData().add(new XYChart.Data<>(
-                new SimpleDateFormat("MMM").format(new GregorianCalendar(2017, 7, 30).getTime()), 23900));
+        Map<String, Number> map1 = getLoanCollectionData();
+        
+        for (Map.Entry<String, Number> entry : map1.entrySet()) {
+            String key = new SimpleDateFormat("MMM")
+                    .format(DateTime.parse(entry.getKey(), DateTimeFormat.forPattern("yyyy-MM-dd")).toDate());
+            Number value = entry.getValue();
+            series_2.getData().add(new XYChart.Data<>(key, value));
+        }
 
         loan_release_chart.getData().add(series_1);
         loan_collection_chart.getData().add(series_2);
@@ -99,6 +110,11 @@ public class HomeFXMLController implements Initializable {
         FxUtilsHandler.startTimeOf(timeTile);
         updateMemberCountTile(mbr_count_txt);
         updateMonthlyCollection(tot_col_txt);
+        updateLoanAmtCollectionCurrentMonth(ln_amt_tot_label);
+
+        //=========================
+        collection_tile.setText("TOTAL COLLECTION - " + new SimpleDateFormat("MMMMM").format(new Date()));
+        ln_amt_total_tile.setText("TOTAL LOAN AMOUNT GIVEN - " + new SimpleDateFormat("MMMMM").format(new Date()));
 
     }
 
@@ -112,9 +128,40 @@ public class HomeFXMLController implements Initializable {
 
     private void updateMonthlyCollection(Label label) {
         Session session = HibernateUtil.getSessionFactory().openSession();
-        Criteria c = session.createCriteria(LoanPayCheque.class);
-        c.add(new Criterion() {
-            final String propertyName = "chequeDate";
+        Criteria c = session.createCriteria(LoanPayment.class);
+        c.add(filterByMonthCriterion("paymentDate"));
+        Object ob = c.setProjection(Projections.sum("paidAmt"))
+                .uniqueResult();
+
+        Criteria c1 = session.createCriteria(SubscriptionPay.class);
+        c1.add(filterByMonthCriterion("addedDate"));
+        List<SubscriptionPay> spay = c1.list();
+
+        Accumlator sp = spay.stream()
+                .filter(p -> p != null)
+                .collect(Collector.of(Accumlator::new, Accumlator::accumlate, Accumlator::combine));
+        double spayTot = sp.getAci() + sp.getHoi() + sp.getAdmission() + sp.getMembership() + sp.getMembership() + sp.getSavings();
+        Double sum = ob != null ? (Double) ob : 0.0 + spayTot;
+        label.setText(TextFormatHandler.CURRENCY_DECIMAL_FORMAT.format(sum));
+        session.close();
+    }
+
+    private void updateLoanAmtCollectionCurrentMonth(Label label) {
+        Session session = HibernateUtil.getSessionFactory().openSession();
+        Criteria c = session.createCriteria(MemberLoan.class);
+        c.add(Restrictions.eq("status", true));
+        c.add(filterByMonthCriterion("grantedDate"));
+        Object ob = c.setProjection(Projections.sum("loanAmount"))
+                .uniqueResult();
+
+        Double sum = ob != null ? (Double) ob : 0.0;
+        label.setText(TextFormatHandler.CURRENCY_DECIMAL_FORMAT.format(sum));
+    }
+
+    private Criterion filterByMonthCriterion(final String propertyName) {
+
+        return new Criterion() {
+
             final int month = new Date().getMonth() + 1;
 
             @Override
@@ -136,11 +183,69 @@ public class HomeFXMLController implements Initializable {
                 return "month(" + propertyName + ") = " + month;
             }
 
-        });
-        Object ob = c.setProjection(Projections.sum("chequeAmount"))
-                .uniqueResult();
-        Double sum = ob != null ? (Double) ob : 0.0;
-        label.setText(TextFormatHandler.CURRENCY_DECIMAL_FORMAT.format(sum));
+        };
     }
 
+    private Map<String, Number> getLoanReleasedData() {
+        LocalDate now = LocalDate.now();
+        Map<String, Number> map = new HashMap<>();
+        Session s = HibernateUtil.getSessionFactory().openSession();
+        Criteria c = s.createCriteria(MemberLoan.class);
+
+        ProjectionList pList = Projections.projectionList();
+        ClassMetadata lpMeta = s.getSessionFactory().getClassMetadata(MemberLoan.class);
+        pList.add(Projections.property(lpMeta.getIdentifierPropertyName()));
+        for (String prop : lpMeta.getPropertyNames()) {
+            pList.add(Projections.property(prop), prop);
+        }
+        c.add(Restrictions.eq("status", true));
+        c.add(Restrictions.between("grantedDate",
+                FxUtilsHandler.getDateFrom(now.with(firstDayOfYear())),
+                FxUtilsHandler.getDateFrom(now.with(lastDayOfYear()))
+        ));
+        c.setProjection(pList
+                .add(Projections.sqlGroupProjection("DATE_FORMAT(granted_date, '%Y-%m-01') AS groupPro", "groupPro", new String[]{"groupPro"}, new Type[]{StringType.INSTANCE}))
+                .add(Projections.sqlProjection("SUM(loan_amount) AS lSum", new String[]{"lSum"}, new Type[]{DoubleType.INSTANCE}))
+        );
+
+        c.addOrder(Order.asc("grantedDate"));
+        c.setResultTransformer(Transformers.aliasToBean(MemberLoan.class));
+        List<MemberLoan> list = (List<MemberLoan>) c.list();
+        for (MemberLoan ml : list) {
+            map.put(ml.getGroupPro(), ml.getlSum());
+        }
+        s.close();
+        return map;
+    }
+
+    private Map<String, Number> getLoanCollectionData() {
+        LocalDate now = LocalDate.now();
+        Map<String, Number> map = new HashMap<>();
+        Session s = HibernateUtil.getSessionFactory().openSession();
+        Criteria c = s.createCriteria(LoanPayment.class);
+
+        ProjectionList pList = Projections.projectionList();
+        ClassMetadata lpMeta = s.getSessionFactory().getClassMetadata(LoanPayment.class);
+        pList.add(Projections.property(lpMeta.getIdentifierPropertyName()));
+        for (String prop : lpMeta.getPropertyNames()) {
+            pList.add(Projections.property(prop), prop);
+        }
+        c.add(Restrictions.between("paymentDate",
+                FxUtilsHandler.getDateFrom(now.with(firstDayOfYear())),
+                FxUtilsHandler.getDateFrom(now.with(lastDayOfYear()))
+        ));
+        c.setProjection(pList
+                .add(Projections.sqlGroupProjection("DATE_FORMAT(payment_date, '%Y-%m-01') AS groupPro", "groupPro", new String[]{"groupPro"}, new Type[]{StringType.INSTANCE}))
+                .add(Projections.sqlProjection("SUM(paid_amt) AS lSum", new String[]{"lSum"}, new Type[]{DoubleType.INSTANCE}))
+        );
+
+        c.addOrder(Order.asc("paymentDate"));
+        c.setResultTransformer(Transformers.aliasToBean(LoanPayment.class));
+        List<LoanPayment> list = (List<LoanPayment>) c.list();
+        for (LoanPayment lp : list) {
+            map.put(lp.getGroupPro(), lp.getlSum());
+        }
+        s.close();
+        return map;
+    }
 }

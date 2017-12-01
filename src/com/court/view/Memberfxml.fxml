@@ -43,7 +43,7 @@
         </HBox>
         <TabPane prefHeight="200.0" prefWidth="200.0" tabClosingPolicy="UNAVAILABLE" VBox.vgrow="ALWAYS">
             <tabs>
-                <Tab text="GENERAL DETAILS">
+                <Tab fx:id="gen_details_tab" text="GENERAL DETAILS">
                     <content>
                         <AnchorPane minHeight="0.0" minWidth="0.0" nodeOrientation="LEFT_TO_RIGHT" prefHeight="180.0" prefWidth="200.0">
                             <children>

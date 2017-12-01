@@ -81,11 +81,21 @@ WHERE  FIND_IN_SET(sp.id,$P{p_list})
 		<variable name="tot_hoi" class="java.lang.Double" calculation="Sum">
 			<variableExpression><![CDATA[$F{hoi_fee}]]></variableExpression>
 		</variable>
-		<variable name="tot_aci" class="java.lang.String"/>
-		<variable name="tot_adm" class="java.lang.String"/>
-		<variable name="tot_sav" class="java.lang.String"/>
-		<variable name="tot_mbr" class="java.lang.String"/>
-		<variable name="tot_opt" class="java.lang.String"/>
+		<variable name="tot_aci" class="java.lang.Double" calculation="Sum">
+			<variableExpression><![CDATA[$F{aci_fee}]]></variableExpression>
+		</variable>
+		<variable name="tot_adm" class="java.lang.Double" calculation="Sum">
+			<variableExpression><![CDATA[$F{admission_fee}]]></variableExpression>
+		</variable>
+		<variable name="tot_sav" class="java.lang.Double" calculation="Sum">
+			<variableExpression><![CDATA[$F{savings_fee}]]></variableExpression>
+		</variable>
+		<variable name="tot_mbr" class="java.lang.Double" calculation="Sum">
+			<variableExpression><![CDATA[$F{membership_fee}]]></variableExpression>
+		</variable>
+		<variable name="tot_opt" class="java.lang.Double" calculation="Sum">
+			<variableExpression><![CDATA[$F{optional}]]></variableExpression>
+		</variable>
 	</subDataset>
 	<parameter name="reportTitle" class="java.lang.String"/>
 	<parameter name="companyAddress" class="java.lang.String"/>
@@ -224,16 +234,19 @@ ORDER BY rp.id DESC LIMIT 1;]]>
 						</datasetParameter>
 						<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
 					</datasetRun>
-					<jr:column width="90" uuid="8a7dac02-7854-449b-82b9-bb08de846a1c">
+					<jr:column width="54" uuid="8a7dac02-7854-449b-82b9-bb08de846a1c">
 						<jr:tableHeader style="table_TH" height="30" rowSpan="1">
 							<staticText>
-								<reportElement x="0" y="0" width="90" height="30" uuid="332bc8a7-9a23-4b94-87fc-dfa1e9cc8a81"/>
+								<reportElement x="0" y="0" width="53" height="30" uuid="332bc8a7-9a23-4b94-87fc-dfa1e9cc8a81"/>
+								<textElement>
+									<font size="8"/>
+								</textElement>
 								<text><![CDATA[Payment Date]]></text>
 							</staticText>
 						</jr:tableHeader>
 						<jr:tableFooter style="table_TH" height="30" rowSpan="1">
 							<staticText>
-								<reportElement x="0" y="0" width="90" height="30" uuid="8fe54f10-d336-4110-883c-4c48ebc2beab"/>
+								<reportElement x="0" y="0" width="53" height="30" uuid="8fe54f10-d336-4110-883c-4c48ebc2beab"/>
 								<textElement>
 									<font size="12" isBold="true"/>
 								</textElement>
@@ -242,145 +255,184 @@ ORDER BY rp.id DESC LIMIT 1;]]>
 						</jr:tableFooter>
 						<jr:detailCell style="table_TD" height="30" rowSpan="1">
 							<textField pattern="yyyy/MM/dd">
-								<reportElement x="0" y="0" width="90" height="30" uuid="712a6d0e-7e84-428d-bfae-5660e153efe2"/>
+								<reportElement x="0" y="0" width="53" height="30" uuid="712a6d0e-7e84-428d-bfae-5660e153efe2"/>
+								<textElement>
+									<font size="8"/>
+								</textElement>
 								<textFieldExpression><![CDATA[$F{payment_date}]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
 					</jr:column>
-					<jr:column width="90" uuid="c87d89ee-27c5-47d7-aebc-298ac1e7f308">
+					<jr:column width="44" uuid="c87d89ee-27c5-47d7-aebc-298ac1e7f308">
 						<jr:tableHeader style="table_TH" height="30" rowSpan="1">
 							<staticText>
-								<reportElement x="0" y="0" width="90" height="30" uuid="f27cd9c0-dd7d-4269-9091-0b5e1df94904"/>
+								<reportElement x="0" y="0" width="42" height="30" uuid="f27cd9c0-dd7d-4269-9091-0b5e1df94904"/>
+								<textElement>
+									<font size="8"/>
+								</textElement>
 								<text><![CDATA[HOI]]></text>
 							</staticText>
 						</jr:tableHeader>
 						<jr:tableFooter style="table_TH" height="30" rowSpan="1">
 							<textField pattern="Rs#,##0.00">
-								<reportElement x="0" y="0" width="90" height="30" uuid="f1b68711-a12f-4810-9fa6-ba427af6dfaa"/>
+								<reportElement x="0" y="0" width="43" height="30" uuid="f1b68711-a12f-4810-9fa6-ba427af6dfaa"/>
 								<textElement>
-									<font isBold="true"/>
+									<font size="8" isBold="true"/>
 								</textElement>
 								<textFieldExpression><![CDATA[$V{tot_hoi}]]></textFieldExpression>
 							</textField>
 						</jr:tableFooter>
 						<jr:detailCell style="table_TD" height="30" rowSpan="1">
 							<textField pattern="Rs#,##0.00">
-								<reportElement x="0" y="0" width="90" height="30" uuid="ada330c9-4600-45cb-8605-72e32a415f12"/>
+								<reportElement x="0" y="0" width="42" height="30" uuid="ada330c9-4600-45cb-8605-72e32a415f12"/>
+								<textElement>
+									<font size="8"/>
+								</textElement>
 								<textFieldExpression><![CDATA[$F{hoi_fee}]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
 					</jr:column>
-					<jr:column width="90" uuid="d4cb2867-37c3-4752-9732-bf610ebc4f1a">
+					<jr:column width="52" uuid="d4cb2867-37c3-4752-9732-bf610ebc4f1a">
 						<jr:tableHeader style="table_TH" height="30" rowSpan="1">
 							<staticText>
-								<reportElement x="0" y="0" width="90" height="30" uuid="cb69d044-2666-4d95-9549-86d36ca1c619"/>
+								<reportElement x="0" y="0" width="52" height="30" uuid="cb69d044-2666-4d95-9549-86d36ca1c619"/>
+								<textElement>
+									<font size="8"/>
+								</textElement>
 								<text><![CDATA[ACI]]></text>
 							</staticText>
 						</jr:tableHeader>
 						<jr:tableFooter style="table_TH" height="30" rowSpan="1">
 							<textField pattern="Rs#,##0.00">
-								<reportElement x="0" y="0" width="90" height="30" uuid="b8dde2e3-c287-4f09-a570-a7ff63c8fbfa"/>
+								<reportElement x="0" y="0" width="52" height="30" uuid="b8dde2e3-c287-4f09-a570-a7ff63c8fbfa"/>
 								<textElement>
-									<font isBold="true"/>
+									<font size="8" isBold="true"/>
 								</textElement>
 								<textFieldExpression><![CDATA[$V{tot_aci}]]></textFieldExpression>
 							</textField>
 						</jr:tableFooter>
 						<jr:detailCell style="table_TD" height="30" rowSpan="1">
 							<textField pattern="Rs#,##0.00">
-								<reportElement x="0" y="0" width="90" height="30" uuid="542cefe5-6d8a-4b45-9008-9a50fd648e65"/>
+								<reportElement x="0" y="0" width="52" height="30" uuid="542cefe5-6d8a-4b45-9008-9a50fd648e65"/>
+								<textElement>
+									<font size="8"/>
+								</textElement>
 								<textFieldExpression><![CDATA[$F{aci_fee}]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
 					</jr:column>
-					<jr:column width="90" uuid="b40bb60b-51c3-4390-97af-cb162d2ed529">
+					<jr:column width="51" uuid="b40bb60b-51c3-4390-97af-cb162d2ed529">
 						<jr:tableHeader style="table_TH" height="30" rowSpan="1">
 							<staticText>
-								<reportElement x="0" y="0" width="90" height="30" uuid="a31afa50-88e0-4c8b-9fc6-952ac062f0e9"/>
+								<reportElement x="0" y="0" width="50" height="30" uuid="a31afa50-88e0-4c8b-9fc6-952ac062f0e9"/>
+								<textElement>
+									<font size="8"/>
+								</textElement>
 								<text><![CDATA[ADMISSION]]></text>
 							</staticText>
 						</jr:tableHeader>
 						<jr:tableFooter style="table_TH" height="30" rowSpan="1">
 							<textField pattern="Rs#,##0.00">
-								<reportElement x="0" y="0" width="90" height="30" uuid="1181d528-129a-45e0-96db-35f5581cab88"/>
+								<reportElement x="0" y="0" width="50" height="30" uuid="1181d528-129a-45e0-96db-35f5581cab88"/>
 								<textElement>
-									<font isBold="true"/>
+									<font size="8" isBold="true"/>
 								</textElement>
 								<textFieldExpression><![CDATA[$V{tot_adm}]]></textFieldExpression>
 							</textField>
 						</jr:tableFooter>
 						<jr:detailCell style="table_TD" height="30" rowSpan="1">
 							<textField pattern="Rs#,##0.00">
-								<reportElement x="0" y="0" width="90" height="30" uuid="248c4066-0435-431e-a549-3640d492625e"/>
+								<reportElement x="0" y="0" width="50" height="30" uuid="248c4066-0435-431e-a549-3640d492625e"/>
+								<textElement>
+									<font size="8"/>
+								</textElement>
 								<textFieldExpression><![CDATA[$F{admission_fee}]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
 					</jr:column>
-					<jr:column width="90" uuid="7bad79b6-38d7-474f-8559-e6259dbc2d48">
+					<jr:column width="51" uuid="7bad79b6-38d7-474f-8559-e6259dbc2d48">
 						<jr:tableHeader style="table_TH" height="30" rowSpan="1">
 							<staticText>
-								<reportElement x="0" y="0" width="90" height="30" uuid="d492679d-02b2-4c19-ab91-33dcbe3ee58a"/>
+								<reportElement x="0" y="0" width="49" height="30" uuid="d492679d-02b2-4c19-ab91-33dcbe3ee58a"/>
+								<textElement>
+									<font size="8"/>
+								</textElement>
 								<text><![CDATA[SAVINGS]]></text>
 							</staticText>
 						</jr:tableHeader>
 						<jr:tableFooter style="table_TH" height="30" rowSpan="1">
 							<textField pattern="Rs#,##0.00">
-								<reportElement x="0" y="0" width="90" height="30" uuid="dfbab9e1-19f0-4fa1-bd00-e8c4a67b8c77"/>
+								<reportElement x="0" y="0" width="49" height="30" uuid="dfbab9e1-19f0-4fa1-bd00-e8c4a67b8c77"/>
 								<textElement>
-									<font isBold="true"/>
+									<font size="8" isBold="true"/>
 								</textElement>
 								<textFieldExpression><![CDATA[$V{tot_sav}]]></textFieldExpression>
 							</textField>
 						</jr:tableFooter>
 						<jr:detailCell style="table_TD" height="30" rowSpan="1">
 							<textField pattern="Rs#,##0.00">
-								<reportElement x="0" y="0" width="90" height="30" uuid="8222838c-89a4-4bee-862e-e8050be4e46c"/>
+								<reportElement x="0" y="0" width="49" height="30" uuid="8222838c-89a4-4bee-862e-e8050be4e46c"/>
+								<textElement>
+									<font size="8"/>
+								</textElement>
 								<textFieldExpression><![CDATA[$F{savings_fee}]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
 					</jr:column>
-					<jr:column width="90" uuid="8034c1b3-8d52-4bc9-8f45-17c324f08fa9">
+					<jr:column width="50" uuid="8034c1b3-8d52-4bc9-8f45-17c324f08fa9">
 						<jr:tableHeader style="table_TH" height="30" rowSpan="1">
 							<staticText>
-								<reportElement x="0" y="0" width="90" height="30" uuid="e0807780-1cc3-4f86-8b6d-4a221d5ccbdb"/>
+								<reportElement x="0" y="0" width="49" height="30" uuid="e0807780-1cc3-4f86-8b6d-4a221d5ccbdb"/>
+								<textElement>
+									<font size="8"/>
+								</textElement>
 								<text><![CDATA[MBRSHIP]]></text>
 							</staticText>
 						</jr:tableHeader>
 						<jr:tableFooter style="table_TH" height="30" rowSpan="1">
 							<textField pattern="Rs#,##0.00">
-								<reportElement x="0" y="0" width="90" height="30" uuid="01ed81f4-1a9a-4a96-8c34-035fd4d4e9d1"/>
+								<reportElement x="0" y="0" width="49" height="30" uuid="01ed81f4-1a9a-4a96-8c34-035fd4d4e9d1"/>
 								<textElement>
-									<font isBold="true"/>
+									<font size="8" isBold="true"/>
 								</textElement>
 								<textFieldExpression><![CDATA[$V{tot_mbr}]]></textFieldExpression>
 							</textField>
 						</jr:tableFooter>
 						<jr:detailCell style="table_TD" height="30" rowSpan="1">
 							<textField pattern="Rs#,##0.00">
-								<reportElement x="0" y="0" width="90" height="30" uuid="91dcb152-bfd0-45b8-834c-1277f0a0fdd1"/>
+								<reportElement x="0" y="0" width="49" height="30" uuid="91dcb152-bfd0-45b8-834c-1277f0a0fdd1"/>
+								<textElement>
+									<font size="8"/>
+								</textElement>
 								<textFieldExpression><![CDATA[$F{membership_fee}]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
 					</jr:column>
-					<jr:column width="90" uuid="8ecc4c02-6fd8-4d2e-992d-ffe18cb29a3c">
+					<jr:column width="52" uuid="8ecc4c02-6fd8-4d2e-992d-ffe18cb29a3c">
 						<jr:tableHeader style="table_TH" height="30" rowSpan="1">
 							<staticText>
-								<reportElement x="0" y="0" width="90" height="30" uuid="07b07a83-82ae-45b9-8a5d-1b8eaf22de8d"/>
+								<reportElement x="0" y="0" width="51" height="30" uuid="07b07a83-82ae-45b9-8a5d-1b8eaf22de8d"/>
+								<textElement>
+									<font size="8"/>
+								</textElement>
 								<text><![CDATA[OPTIONAL]]></text>
 							</staticText>
 						</jr:tableHeader>
 						<jr:tableFooter style="table_TH" height="30" rowSpan="1">
 							<textField pattern="Rs#,##0.00">
-								<reportElement x="0" y="0" width="90" height="30" uuid="b21c9adf-a74e-46c8-8c42-b095c9af945e"/>
+								<reportElement x="0" y="0" width="51" height="30" uuid="b21c9adf-a74e-46c8-8c42-b095c9af945e"/>
 								<textElement>
-									<font isBold="true"/>
+									<font size="8" isBold="true"/>
 								</textElement>
 								<textFieldExpression><![CDATA[$V{tot_opt}]]></textFieldExpression>
 							</textField>
 						</jr:tableFooter>
 						<jr:detailCell style="table_TD" height="30" rowSpan="1">
 							<textField pattern="Rs#,##0.00">
-								<reportElement x="0" y="0" width="90" height="30" uuid="09ae832e-1b6e-4d86-84d9-28bcfd40b517"/>
+								<reportElement x="0" y="0" width="51" height="30" uuid="09ae832e-1b6e-4d86-84d9-28bcfd40b517"/>
+								<textElement>
+									<font size="8"/>
+								</textElement>
 								<textFieldExpression><![CDATA[$F{optional}]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
