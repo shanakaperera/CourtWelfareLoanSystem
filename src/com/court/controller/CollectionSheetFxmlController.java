@@ -211,7 +211,8 @@ public class CollectionSheetFxmlController implements Initializable {
                             sp.setOptional(mbrSub.getAmount());
                             break;
                         case "Admission Fee":
-                            sp.setAdmissionFee(mbrSub.getAmount());
+                            boolean empty = FxUtilsHandler.previousSubscriptions(m.getId(), session).isEmpty();
+                            sp.setAdmissionFee(empty ? mbrSub.getAmount() : 0.0);
                             break;
                     }
                     sp.setPaymentDate(getDayOfMonth(Date.valueOf(chk_of_month_chooser.getValue())));

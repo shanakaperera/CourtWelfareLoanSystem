@@ -8,6 +8,7 @@ package com.court.controller;
 import com.court.db.HibernateUtil;
 import com.court.handler.ReportHandler;
 import com.court.model.Branch;
+import com.court.model.LoanPayCheque;
 import com.court.model.MemberLoan;
 import com.court.model.Member;
 import com.court.model.SubscriptionPay;
@@ -25,6 +26,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonBar.ButtonData;
 import javafx.scene.control.ButtonType;
@@ -32,6 +34,7 @@ import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
+import javafx.util.Pair;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperReport;
 import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
@@ -306,9 +309,63 @@ public class ReportFormFxmlController implements Initializable {
     @FXML
     private void onBranchCollectionMadeAction(ActionEvent event) {
 
+        Dialog<Pair<String, String>> dialog = new Dialog<>();
+        dialog.setTitle("Branch Wise Cheque Payments");
+        dialog.setHeaderText("Select Cheque and Branch ");
+        ButtonType viewBtn = new ButtonType("View Report", ButtonData.OK_DONE);
+        dialog.getDialogPane().getButtonTypes().addAll(viewBtn, ButtonType.CANCEL);
+        GridPane grid = new GridPane();
+        grid.setHgap(10);
+        grid.setVgap(10);
+        grid.setPadding(new Insets(20, 150, 10, 10));
+
+        TextField bField = new TextField();
+        TextField cField = new TextField();
+        TextFields.bindAutoCompletion(bField, getBranches(false));
+        TextFields.bindAutoCompletion(cField, getCheques());
+
+        grid.add(new Label("Branch:"), 0, 0);
+        grid.add(bField, 1, 0);
+        grid.add(new Label("Cheque:"), 0, 1);
+        grid.add(cField, 1, 1);
+
+        dialog.getDialogPane().setContent(grid);
+        dialog.setResultConverter(db -> {
+            if (db == viewBtn) {
+                return new Pair<>(bField.getText().split("-")[0], cField.getText());
+            }
+            return null;
+        });
+
+        Optional<Pair<String, String>> result = dialog.showAndWait();
+        result.ifPresent(outs -> {
+            if ((outs.getKey() != null && !outs.getKey().isEmpty()) && outs.getValue() != null && !outs.getValue().isEmpty()) {
+                String reportPath = "com/court/reports/BranchWisePaymentMadeReport.jasper";
+                Session s = HibernateUtil.getSessionFactory().openSession();
+                SessionImpl smpl = (SessionImpl) s;
+                Connection con = smpl.connection();
+                Map<String, Object> map = new HashMap<>();
+                map.put("companyName", ReportHandler.COMPANY_NAME);
+                map.put("companyAddress", ReportHandler.ADDRESS);
+                map.put("reportTitle", "Branch Wise Cheque Payments");
+                map.put("br_code", outs.getKey());
+                map.put("cheque_no", outs.getValue());
+                ReportHandler rh = new ReportHandler(reportPath, map, null, con);
+                rh.genarateReport();
+                rh.viewReport();
+            } else {
+                Alert alert_error = new Alert(Alert.AlertType.ERROR);
+                alert_error.setTitle("Error");
+                alert_error.setHeaderText("Empty fields found ! ");
+                alert_error.setContentText("You have to enter both Cheque and Branch correctly to get the report.");
+                alert_error.show();
+            }
+        });
+
     }
 
     @FXML
+
     private void onBranchAction(ActionEvent event) throws JRException {
         String reportPath = "com/court/reports/BranchReport.jasper";
         String subReportPath = "com/court/reports/BranchSubReport.jasper";
@@ -400,6 +457,14 @@ public class ReportFormFxmlController implements Initializable {
         Session s = HibernateUtil.getSessionFactory().openSession();
         Criteria c = s.createCriteria(Member.class);
         List<Member> list = c.list();
+        s.close();
+        return list;
+    }
+
+    private List<LoanPayCheque> getCheques() {
+        Session s = HibernateUtil.getSessionFactory().openSession();
+        Criteria c = s.createCriteria(LoanPayCheque.class);
+        List<LoanPayCheque> list = c.list();
         s.close();
         return list;
     }

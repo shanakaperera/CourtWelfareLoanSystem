@@ -325,7 +325,7 @@
 								<textElement verticalAlignment="Middle">
 									<font size="8" isBold="true"/>
 								</textElement>
-								<text><![CDATA[Optional]]></text>
+								<text><![CDATA[CON]]></text>
 							</staticText>
 						</jr:tableHeader>
 						<jr:tableFooter style="table 1_TH" height="30" rowSpan="1">

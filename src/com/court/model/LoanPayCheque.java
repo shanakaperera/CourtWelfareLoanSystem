@@ -103,4 +103,9 @@ public class LoanPayCheque implements java.io.Serializable {
         this.chequeRealise = chequeRealise;
     }
 
+    @Override
+    public String toString() {
+        return this.chequeNo;
+    }
+
 }

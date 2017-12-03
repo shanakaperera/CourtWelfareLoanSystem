@@ -6,7 +6,6 @@
 package com.court.handler;
 
 import com.court.db.HibernateUtil;
-import com.court.model.LoanPayment;
 import com.court.model.MemberLoan;
 import com.court.model.SubscriptionPay;
 import eu.hansolo.tilesfx.Tile;
@@ -319,6 +318,15 @@ public class FxUtilsHandler {
                         .add(Restrictions.eq("m.id", memeberId))).list();
         session.close();
         System.out.println("MId - " + memeberId + " : Size - " + list.size());
+        return list;
+    }
+
+    public static List<SubscriptionPay> previousSubscriptions(int memeberId, Session session) {
+        List<SubscriptionPay> list = session.createCriteria(SubscriptionPay.class)
+                .createAlias("memberSubscriptions", "ms")
+                .createAlias("ms.member", "m")
+                .add(Restrictions.disjunction()
+                        .add(Restrictions.eq("m.id", memeberId))).list();
         return list;
     }
 
