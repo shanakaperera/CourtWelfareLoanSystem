@@ -60,7 +60,7 @@
                                 <ComboBox fx:id="search_typ_combo" onAction="#onSearchComboItemSelAction" prefWidth="150.0" promptText="-- SELECT --" GridPane.columnIndex="1" GridPane.rowIndex="1">
                                     <items>
                                         <FXCollections fx:factory="observableArrayList">
-                                            <String fx:value="By Branch Name" />
+                                            <String fx:value="By Payment Office" />
 <!--                                            <String fx:value="By Member ID" />
                                             <String fx:value="By Member Name" />-->
                                         </FXCollections>
@@ -128,6 +128,7 @@
                     <columns>
                         <TableColumn fx:id="m_id_col" prefWidth="65.0" text="Mbr ID" />
                         <TableColumn fx:id="m_name_col" prefWidth="150.0" text="Name" />
+                  <TableColumn fx:id="wrking_of_col" prefWidth="125.0" text="Working Office" />
                   <TableColumn fx:id="total_pay_col" prefWidth="150.0" text="Monthly Subscription" />
                   <TableColumn fx:id="detail_view_col" prefWidth="150.0" text="Subscription Details" />
                   <TableColumn fx:id="tot_inst_amt_col" prefWidth="150.0" text="Total Inst Amount" />

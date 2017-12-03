@@ -105,6 +105,8 @@ public class CollectionSheetFxmlController implements Initializable {
     @FXML
     private TableColumn<Member, Double> sub_tot_col;
     @FXML
+    private TableColumn<Member, String> wrking_of_col;
+    @FXML
     private TextField branch_txt;
     @FXML
     private TextField bank_code_txt;
@@ -296,7 +298,7 @@ public class CollectionSheetFxmlController implements Initializable {
     private void performSearch(ComboBox<String> search_typ_combo, TextField search_txt) {
         Session session = HibernateUtil.getSessionFactory().openSession();
         Criteria c = session.createCriteria(Member.class);
-        c.createAlias("branch", "b");
+        // c.createAlias("branch", "b");
 
 //=====================================REMOVED DUE TO UNNASSARY FILTER=================================
         //  c.createAlias("memberLoans", "ml");
@@ -310,7 +312,9 @@ public class CollectionSheetFxmlController implements Initializable {
         switch (selected) {
             case 0:
                 c.add(Restrictions.disjunction()
-                        .add(Restrictions.eq("b.branchName", search_txt.getText())));
+                        //===================SEARCH CHANGED TO PAYMENT OFFICE INSTEAD OF USER BRANCH===================
+                        // .add(Restrictions.eq("b.branchName", search_txt.getText())));
+                        .add(Restrictions.eq("paymentOfficer", search_txt.getText())));
                 break;
             case 1:
                 c.add(Restrictions.disjunction()
@@ -378,6 +382,10 @@ public class CollectionSheetFxmlController implements Initializable {
                 }
             };
         });
+        wrking_of_col.setCellValueFactory((TableColumn.CellDataFeatures<Member, String> param) -> {
+            Member ml = param.getValue();
+            return new SimpleObjectProperty<>(ml.getBranch().getBranchName());
+        });
 
         collection_tbl.setItems(mlz);
     }
@@ -389,11 +397,11 @@ public class CollectionSheetFxmlController implements Initializable {
         for (int i = 0; i < collection_tbl.getItems().size(); i++) {
             if (index == i) {
                 if (b) {
-                    Double value = (Double) collection_tbl.getColumns().get(6)
+                    Double value = (Double) collection_tbl.getColumns().get(7)
                             .getCellObservableValue(i).getValue();
                     total += value;
                 } else {
-                    Double value = (Double) collection_tbl.getColumns().get(6)
+                    Double value = (Double) collection_tbl.getColumns().get(7)
                             .getCellObservableValue(i).getValue();
                     total -= value;
                 }
@@ -405,7 +413,7 @@ public class CollectionSheetFxmlController implements Initializable {
     private void bindSubTotalTo(TextField chk_amt_txt) {
         double tot = 0.0;
         for (int i = 0; i < collection_tbl.getItems().size(); i++) {
-            Double value = (Double) collection_tbl.getColumns().get(6).getCellObservableValue(i).getValue();
+            Double value = (Double) collection_tbl.getColumns().get(7).getCellObservableValue(i).getValue();
             tot += value;
         }
         chk_amt_txt.setText(TextFormatHandler.CURRENCY_DECIMAL_FORMAT.format(tot));
@@ -427,7 +435,9 @@ public class CollectionSheetFxmlController implements Initializable {
         switch (selectedIndex) {
             case 0:
                 c.setProjection(Projections.property("b.branchName"));
+                c.add(Restrictions.eq("b.parentId", 0));
                 List<String> bNames = c.list();
+                //=== ADDED NEW RESTRICTION TO GET ONLY PAYMENT OFFICES INTO AUTO-COMPLETE==========
                 autoCompletionList(bNames);
                 break;
             case 1:

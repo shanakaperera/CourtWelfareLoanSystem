@@ -48,7 +48,7 @@ INNER JOIN
 ON
     (
         m.branch_id = br.id) 
-WHERE br.branch_code=$P{p_brcode}
+WHERE m.payment_officer=$P{p_brcode}
 GROUP BY m.member_id;]]>
 	</queryString>
 	<field name="member_id" class="java.lang.String">

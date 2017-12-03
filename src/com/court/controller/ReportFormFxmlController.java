@@ -207,7 +207,7 @@ public class ReportFormFxmlController implements Initializable {
         dialog.getDialogPane().setContent(grid);
         dialog.setResultConverter(db -> {
             if (db == viewBtn) {
-                return bField.getText().split("-")[0];
+                return bField.getText().split("-")[1];
             }
             return null;
         });
