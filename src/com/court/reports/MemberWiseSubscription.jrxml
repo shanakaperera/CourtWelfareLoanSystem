@@ -222,7 +222,7 @@ WHERE m.member_id=$P{member_code} ;]]>
 				<textElement>
 					<font size="8" isBold="true"/>
 				</textElement>
-				<text><![CDATA[OPTIONAL]]></text>
+				<text><![CDATA[CON]]></text>
 			</staticText>
 			<staticText>
 				<reportElement x="0" y="8" width="89" height="20" uuid="5c7527d8-ae37-428f-bcf8-314ac1712e92"/>
@@ -331,18 +331,18 @@ WHERE m.member_id=$P{member_code} ;]]>
 				<textFieldExpression><![CDATA[$V{savings_tot}]]></textFieldExpression>
 			</textField>
 			<textField pattern="Rs#,##0.00">
-				<reportElement x="103" y="28" width="100" height="20" uuid="a6efbc04-b786-4d43-9aa5-5403e8280c46"/>
+				<reportElement x="80" y="28" width="100" height="20" uuid="a6efbc04-b786-4d43-9aa5-5403e8280c46"/>
 				<textElement>
 					<font isBold="true"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$V{optional_tot}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement x="4" y="28" width="99" height="20" uuid="49a421bd-7f6b-4a94-95d0-204af21691fb"/>
+				<reportElement x="4" y="28" width="74" height="20" uuid="49a421bd-7f6b-4a94-95d0-204af21691fb"/>
 				<textElement>
 					<font isBold="true"/>
 				</textElement>
-				<text><![CDATA[OPTIONAL TOTAL :]]></text>
+				<text><![CDATA[CON TOTAL :]]></text>
 			</staticText>
 		</band>
 	</summary>

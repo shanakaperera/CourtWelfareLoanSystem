@@ -762,7 +762,7 @@
                                           <TableColumn fx:id="con_savings_col" prefWidth="100.0" text="Savings Fee" />
                                           <TableColumn fx:id="con_mbr_col" prefWidth="100.0" text="Membership Fee" />
                                           <TableColumn fx:id="con_adm_col" prefWidth="75.0" text="Admission " />
-                                          <TableColumn fx:id="con_optional_col" prefWidth="100.0" text="Optional Fee" />
+                                          <TableColumn fx:id="con_optional_col" prefWidth="100.0" text="Contribution" />
                                       </columns>
                                     </TableView>
                                     <GridPane fx:id="subs_manual_grid" HBox.hgrow="ALWAYS">
@@ -793,7 +793,7 @@
                                           <Label text="ACI Fee" GridPane.rowIndex="3" />
                                           <Label text="Savings Fee" GridPane.rowIndex="4" />
                                           <Label text="Membership Fee" GridPane.rowIndex="5" />
-                                          <Label text="Optional/Con Fee" GridPane.rowIndex="6" />
+                                          <Label text="Con Fee" GridPane.rowIndex="6" />
                                           <TextField fx:id="m_subs_hoi" onAction="#onConHoiAction" onMouseClicked="#onConHoiClicked" GridPane.columnIndex="1" GridPane.rowIndex="2" />
                                           <TextField fx:id="m_subs_aci" onAction="#onConAciAction" onMouseClicked="#onConAciClicked" GridPane.columnIndex="1" GridPane.rowIndex="3" />
                                           <TextField fx:id="m_subs_sav" onAction="#onConSavAction" onMouseClicked="#onConSavClicked" GridPane.columnIndex="1" GridPane.rowIndex="4" />

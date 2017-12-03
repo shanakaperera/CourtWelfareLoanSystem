@@ -8,6 +8,7 @@ package com.court.handler;
 import com.court.db.HibernateUtil;
 import com.court.model.LoanPayment;
 import com.court.model.MemberLoan;
+import com.court.model.SubscriptionPay;
 import eu.hansolo.tilesfx.Tile;
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
@@ -309,11 +310,11 @@ public class FxUtilsHandler {
         return String.valueOf(min_num > gen_num ? min_num + gen_num : gen_num);
     }
 
-    public static List<LoanPayment> previousInstallments(int memeberId) {
+    public static List<SubscriptionPay> previousSubscriptions(int memeberId) {
         Session session = HibernateUtil.getSessionFactory().openSession();
-        List<LoanPayment> list = session.createCriteria(LoanPayment.class)
-                .createAlias("memberLoan", "ml")
-                .createAlias("ml.member", "m")
+        List<SubscriptionPay> list = session.createCriteria(SubscriptionPay.class)
+                .createAlias("memberSubscriptions", "ms")
+                .createAlias("ms.member", "m")
                 .add(Restrictions.disjunction()
                         .add(Restrictions.eq("m.id", memeberId))).list();
         session.close();

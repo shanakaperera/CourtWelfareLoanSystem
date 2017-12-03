@@ -1647,7 +1647,9 @@ public class MemberfxmlController implements Initializable {
         ins_no_col.setCellValueFactory(new PropertyValueFactory<>("installmentNo"));
         p_due_col.setCellValueFactory((TableColumn.CellDataFeatures<LoanPayment, String> param) -> {
             LoanPayment lp = param.getValue();
+            int lp_installment = lp.getInstallmentNo();
             double sum = lp.getMemberLoan().getLoanPayments().stream()
+                    .filter(p -> p.getInstallmentNo() <= lp_installment)
                     .mapToDouble(LoanPayment::getPaidAmt)
                     .sum();
             return new SimpleObjectProperty<>(TextFormatHandler.CURRENCY_DECIMAL_FORMAT.format(sum));

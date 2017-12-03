@@ -415,7 +415,7 @@ ORDER BY rp.id DESC LIMIT 1;]]>
 								<textElement>
 									<font size="8"/>
 								</textElement>
-								<text><![CDATA[OPTIONAL]]></text>
+								<text><![CDATA[CON]]></text>
 							</staticText>
 						</jr:tableHeader>
 						<jr:tableFooter style="table_TH" height="30" rowSpan="1">
