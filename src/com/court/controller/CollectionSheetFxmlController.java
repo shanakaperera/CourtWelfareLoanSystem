@@ -12,6 +12,7 @@ import com.court.handler.FxUtilsHandler;
 import com.court.handler.PropHandler;
 import com.court.handler.SubscriptionValueFactory;
 import com.court.handler.TextFormatHandler;
+import com.court.model.Branch;
 import com.court.model.LoanPayCheque;
 import com.court.model.LoanPayment;
 import com.court.model.Member;
@@ -427,26 +428,27 @@ public class CollectionSheetFxmlController implements Initializable {
 
     private void figureNLoadSearchTextSuggestions(int selectedIndex) {
         Session session = HibernateUtil.getSessionFactory().openSession();
-        Criteria c = session.createCriteria(MemberLoan.class);
-        c.createAlias("member", "m")
-                .createAlias("member.branch", "b");
-        c.add(Restrictions.eq("isComplete", false));
+        Criteria c = session.createCriteria(Branch.class);
+        // c.createAlias("member", "m")
+       // c.createAlias("branch", "b");
+       // c.add(Restrictions.eq("isComplete", false));
         c.add(Restrictions.eq("status", true));
         switch (selectedIndex) {
             case 0:
-                c.setProjection(Projections.property("b.branchName"));
-                c.add(Restrictions.eq("b.parentId", 0));
+                c.setProjection(Projections.property("branchName"));
+                c.add(Restrictions.eq("parentId", 0));
                 List<String> bNames = c.list();
                 //=== ADDED NEW RESTRICTION TO GET ONLY PAYMENT OFFICES INTO AUTO-COMPLETE==========
                 autoCompletionList(bNames);
+                System.out.println("NAMES - "+bNames);
                 break;
             case 1:
-                c.setProjection(Projections.property("m.memberId"));
+                c.setProjection(Projections.property("memberId"));
                 List<String> mIds = c.list();
                 autoCompletionList(mIds);
                 break;
             case 2:
-                c.setProjection(Projections.property("m.nameWithIns"));
+                c.setProjection(Projections.property("nameWithIns"));
                 List<String> mNames = c.list();
                 autoCompletionList(mNames);
                 break;
