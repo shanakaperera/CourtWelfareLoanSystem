@@ -429,9 +429,6 @@ public class CollectionSheetFxmlController implements Initializable {
     private void figureNLoadSearchTextSuggestions(int selectedIndex) {
         Session session = HibernateUtil.getSessionFactory().openSession();
         Criteria c = session.createCriteria(Branch.class);
-        // c.createAlias("member", "m")
-       // c.createAlias("branch", "b");
-       // c.add(Restrictions.eq("isComplete", false));
         c.add(Restrictions.eq("status", true));
         switch (selectedIndex) {
             case 0:

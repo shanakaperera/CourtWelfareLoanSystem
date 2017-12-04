@@ -14,18 +14,19 @@
 		<![CDATA[SELECT
     m.member_id,
     m.full_name,
-    (SELECT sum(mbl.loan_installment) FROM court_loan.member_loan mbl WHERE mbl.paid_until IS NOT NULL AND mbl.is_complete=FALSE AND mbl.member_id=m.id GROUP BY mbl.member_id) AS loan_pay,
+    IFNULL(IFNULL((SELECT sum(mbl.loan_installment) FROM court_loan.member_loan mbl WHERE mbl.paid_until IS NOT NULL AND mbl.is_complete=FALSE AND mbl.member_id=m.id GROUP BY mbl.member_id),
+    (SELECT sum(mbl.loan_installment) FROM court_loan.member_loan mbl WHERE mbl.is_child=FALSE AND mbl.is_complete=FALSE AND mbl.member_id=m.id GROUP BY mbl.member_id)),0) AS loan_pay,
     br.branch_name,
     br.branch_code,
     m.name_with_ins,
     m.emp_id,
     m.job_title,
-    SUM( IF(ms.fee_name ='Membership Fee',mss.amount,0)) AS mbrship_fee,
-    SUM( IF(ms.fee_name ='Savings Fee',mss.amount,0)) AS sav_fee,
-    SUM( IF(ms.fee_name ='HOI Fee',mss.amount,0)) AS hoi,
-    SUM( IF(ms.fee_name ='Optional',mss.amount,0)) AS optional,
-    SUM( IF(ms.fee_name ='ACI Fee',mss.amount,0)) AS aci,
-    SUM( IF(ms.fee_name ='Admission Fee',mss.amount,0)) AS admission
+    SUM(DISTINCT IF(ms.fee_name ='Membership Fee',mss.amount,0)) AS mbrship_fee,
+    SUM(DISTINCT IF(ms.fee_name ='Savings Fee',mss.amount,0)) AS sav_fee,
+    SUM(DISTINCT IF(ms.fee_name ='HOI Fee',mss.amount,0)) AS hoi,
+    SUM(DISTINCT IF(ms.fee_name ='Optional',mss.amount,0)) AS optional,
+    SUM(DISTINCT IF(ms.fee_name ='ACI Fee',mss.amount,0)) AS aci,
+    SUM(DISTINCT IF(ms.fee_name ='Admission Fee',mss.amount,0)) AS admission
 FROM
     court_loan.member_subscription ms
 INNER JOIN
@@ -38,7 +39,7 @@ INNER JOIN
 ON
     (
         mss.member_id = m.id)
-INNER JOIN
+LEFT JOIN
     court_loan.member_loan ml
 ON
     (
