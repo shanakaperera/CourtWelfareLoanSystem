@@ -164,7 +164,7 @@ public class PaymentsFxmlController implements Initializable {
         });
         subs_cheque_col.setCellValueFactory((TableColumn.CellDataFeatures<SubscriptionPay, String> param) -> {
             SubscriptionPay sp = param.getValue();
-            return new SimpleObjectProperty<>(sp.getChequeNo() != null | !sp.getChequeNo().isEmpty() ? sp.getChequeNo() : "Not a cheque pay");
+            return new SimpleObjectProperty<>(sp.getChequeNo() != null ? sp.getChequeNo() : "Not a cheque pay");
         });
 
         subs_actual_pay_col.setCellValueFactory((TableColumn.CellDataFeatures<SubscriptionPay, String> param) -> {
