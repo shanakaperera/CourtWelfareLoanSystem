@@ -2826,6 +2826,7 @@ public class MemberfxmlController implements Initializable {
         s.close();
         //==================//RESET ALL FREEZED NODES========================
         freezeAtMemberContribution(false);
+        invo_gen_box.setVisible(false);
         initContributionTable(FXCollections.observableArrayList(getAllContributionsOf(member_code_txt.getText())));
     }
 
