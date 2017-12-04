@@ -238,8 +238,8 @@ ORDER BY rp.id DESC LIMIT 1;]]>
 						<jr:tableHeader style="table_TH" height="30" rowSpan="1">
 							<staticText>
 								<reportElement x="0" y="0" width="53" height="30" uuid="332bc8a7-9a23-4b94-87fc-dfa1e9cc8a81"/>
-								<textElement>
-									<font size="8"/>
+								<textElement verticalAlignment="Middle">
+									<font size="8" isBold="true"/>
 								</textElement>
 								<text><![CDATA[Payment Date]]></text>
 							</staticText>
@@ -247,7 +247,7 @@ ORDER BY rp.id DESC LIMIT 1;]]>
 						<jr:tableFooter style="table_TH" height="30" rowSpan="1">
 							<staticText>
 								<reportElement x="0" y="0" width="53" height="30" uuid="8fe54f10-d336-4110-883c-4c48ebc2beab"/>
-								<textElement>
+								<textElement verticalAlignment="Middle">
 									<font size="12" isBold="true"/>
 								</textElement>
 								<text><![CDATA[TOTAL]]></text>
@@ -256,7 +256,7 @@ ORDER BY rp.id DESC LIMIT 1;]]>
 						<jr:detailCell style="table_TD" height="30" rowSpan="1">
 							<textField pattern="yyyy/MM/dd">
 								<reportElement x="0" y="0" width="53" height="30" uuid="712a6d0e-7e84-428d-bfae-5660e153efe2"/>
-								<textElement>
+								<textElement verticalAlignment="Middle">
 									<font size="8"/>
 								</textElement>
 								<textFieldExpression><![CDATA[$F{payment_date}]]></textFieldExpression>
@@ -267,8 +267,8 @@ ORDER BY rp.id DESC LIMIT 1;]]>
 						<jr:tableHeader style="table_TH" height="30" rowSpan="1">
 							<staticText>
 								<reportElement x="0" y="0" width="42" height="30" uuid="f27cd9c0-dd7d-4269-9091-0b5e1df94904"/>
-								<textElement>
-									<font size="8"/>
+								<textElement verticalAlignment="Middle">
+									<font size="8" isBold="true"/>
 								</textElement>
 								<text><![CDATA[HOI]]></text>
 							</staticText>
@@ -276,7 +276,7 @@ ORDER BY rp.id DESC LIMIT 1;]]>
 						<jr:tableFooter style="table_TH" height="30" rowSpan="1">
 							<textField pattern="Rs#,##0.00">
 								<reportElement x="0" y="0" width="43" height="30" uuid="f1b68711-a12f-4810-9fa6-ba427af6dfaa"/>
-								<textElement>
+								<textElement verticalAlignment="Middle">
 									<font size="8" isBold="true"/>
 								</textElement>
 								<textFieldExpression><![CDATA[$V{tot_hoi}]]></textFieldExpression>
@@ -285,7 +285,7 @@ ORDER BY rp.id DESC LIMIT 1;]]>
 						<jr:detailCell style="table_TD" height="30" rowSpan="1">
 							<textField pattern="Rs#,##0.00">
 								<reportElement x="0" y="0" width="42" height="30" uuid="ada330c9-4600-45cb-8605-72e32a415f12"/>
-								<textElement>
+								<textElement verticalAlignment="Middle">
 									<font size="8"/>
 								</textElement>
 								<textFieldExpression><![CDATA[$F{hoi_fee}]]></textFieldExpression>
@@ -296,8 +296,8 @@ ORDER BY rp.id DESC LIMIT 1;]]>
 						<jr:tableHeader style="table_TH" height="30" rowSpan="1">
 							<staticText>
 								<reportElement x="0" y="0" width="52" height="30" uuid="cb69d044-2666-4d95-9549-86d36ca1c619"/>
-								<textElement>
-									<font size="8"/>
+								<textElement verticalAlignment="Middle">
+									<font size="8" isBold="true"/>
 								</textElement>
 								<text><![CDATA[ACI]]></text>
 							</staticText>
@@ -305,7 +305,7 @@ ORDER BY rp.id DESC LIMIT 1;]]>
 						<jr:tableFooter style="table_TH" height="30" rowSpan="1">
 							<textField pattern="Rs#,##0.00">
 								<reportElement x="0" y="0" width="52" height="30" uuid="b8dde2e3-c287-4f09-a570-a7ff63c8fbfa"/>
-								<textElement>
+								<textElement verticalAlignment="Middle">
 									<font size="8" isBold="true"/>
 								</textElement>
 								<textFieldExpression><![CDATA[$V{tot_aci}]]></textFieldExpression>
@@ -314,7 +314,7 @@ ORDER BY rp.id DESC LIMIT 1;]]>
 						<jr:detailCell style="table_TD" height="30" rowSpan="1">
 							<textField pattern="Rs#,##0.00">
 								<reportElement x="0" y="0" width="52" height="30" uuid="542cefe5-6d8a-4b45-9008-9a50fd648e65"/>
-								<textElement>
+								<textElement verticalAlignment="Middle">
 									<font size="8"/>
 								</textElement>
 								<textFieldExpression><![CDATA[$F{aci_fee}]]></textFieldExpression>
@@ -325,8 +325,8 @@ ORDER BY rp.id DESC LIMIT 1;]]>
 						<jr:tableHeader style="table_TH" height="30" rowSpan="1">
 							<staticText>
 								<reportElement x="0" y="0" width="50" height="30" uuid="a31afa50-88e0-4c8b-9fc6-952ac062f0e9"/>
-								<textElement>
-									<font size="8"/>
+								<textElement verticalAlignment="Middle">
+									<font size="8" isBold="true"/>
 								</textElement>
 								<text><![CDATA[ADMISSION]]></text>
 							</staticText>
@@ -334,7 +334,7 @@ ORDER BY rp.id DESC LIMIT 1;]]>
 						<jr:tableFooter style="table_TH" height="30" rowSpan="1">
 							<textField pattern="Rs#,##0.00">
 								<reportElement x="0" y="0" width="50" height="30" uuid="1181d528-129a-45e0-96db-35f5581cab88"/>
-								<textElement>
+								<textElement verticalAlignment="Middle">
 									<font size="8" isBold="true"/>
 								</textElement>
 								<textFieldExpression><![CDATA[$V{tot_adm}]]></textFieldExpression>
@@ -343,7 +343,7 @@ ORDER BY rp.id DESC LIMIT 1;]]>
 						<jr:detailCell style="table_TD" height="30" rowSpan="1">
 							<textField pattern="Rs#,##0.00">
 								<reportElement x="0" y="0" width="50" height="30" uuid="248c4066-0435-431e-a549-3640d492625e"/>
-								<textElement>
+								<textElement verticalAlignment="Middle">
 									<font size="8"/>
 								</textElement>
 								<textFieldExpression><![CDATA[$F{admission_fee}]]></textFieldExpression>
@@ -354,8 +354,8 @@ ORDER BY rp.id DESC LIMIT 1;]]>
 						<jr:tableHeader style="table_TH" height="30" rowSpan="1">
 							<staticText>
 								<reportElement x="0" y="0" width="49" height="30" uuid="d492679d-02b2-4c19-ab91-33dcbe3ee58a"/>
-								<textElement>
-									<font size="8"/>
+								<textElement verticalAlignment="Middle">
+									<font size="8" isBold="true"/>
 								</textElement>
 								<text><![CDATA[SAVINGS]]></text>
 							</staticText>
@@ -363,7 +363,7 @@ ORDER BY rp.id DESC LIMIT 1;]]>
 						<jr:tableFooter style="table_TH" height="30" rowSpan="1">
 							<textField pattern="Rs#,##0.00">
 								<reportElement x="0" y="0" width="49" height="30" uuid="dfbab9e1-19f0-4fa1-bd00-e8c4a67b8c77"/>
-								<textElement>
+								<textElement verticalAlignment="Middle">
 									<font size="8" isBold="true"/>
 								</textElement>
 								<textFieldExpression><![CDATA[$V{tot_sav}]]></textFieldExpression>
@@ -372,7 +372,7 @@ ORDER BY rp.id DESC LIMIT 1;]]>
 						<jr:detailCell style="table_TD" height="30" rowSpan="1">
 							<textField pattern="Rs#,##0.00">
 								<reportElement x="0" y="0" width="49" height="30" uuid="8222838c-89a4-4bee-862e-e8050be4e46c"/>
-								<textElement>
+								<textElement verticalAlignment="Middle">
 									<font size="8"/>
 								</textElement>
 								<textFieldExpression><![CDATA[$F{savings_fee}]]></textFieldExpression>
@@ -383,8 +383,8 @@ ORDER BY rp.id DESC LIMIT 1;]]>
 						<jr:tableHeader style="table_TH" height="30" rowSpan="1">
 							<staticText>
 								<reportElement x="0" y="0" width="49" height="30" uuid="e0807780-1cc3-4f86-8b6d-4a221d5ccbdb"/>
-								<textElement>
-									<font size="8"/>
+								<textElement verticalAlignment="Middle">
+									<font size="8" isBold="true"/>
 								</textElement>
 								<text><![CDATA[MBRSHIP]]></text>
 							</staticText>
@@ -392,7 +392,7 @@ ORDER BY rp.id DESC LIMIT 1;]]>
 						<jr:tableFooter style="table_TH" height="30" rowSpan="1">
 							<textField pattern="Rs#,##0.00">
 								<reportElement x="0" y="0" width="49" height="30" uuid="01ed81f4-1a9a-4a96-8c34-035fd4d4e9d1"/>
-								<textElement>
+								<textElement verticalAlignment="Middle">
 									<font size="8" isBold="true"/>
 								</textElement>
 								<textFieldExpression><![CDATA[$V{tot_mbr}]]></textFieldExpression>
@@ -401,7 +401,7 @@ ORDER BY rp.id DESC LIMIT 1;]]>
 						<jr:detailCell style="table_TD" height="30" rowSpan="1">
 							<textField pattern="Rs#,##0.00">
 								<reportElement x="0" y="0" width="49" height="30" uuid="91dcb152-bfd0-45b8-834c-1277f0a0fdd1"/>
-								<textElement>
+								<textElement verticalAlignment="Middle">
 									<font size="8"/>
 								</textElement>
 								<textFieldExpression><![CDATA[$F{membership_fee}]]></textFieldExpression>
@@ -412,8 +412,8 @@ ORDER BY rp.id DESC LIMIT 1;]]>
 						<jr:tableHeader style="table_TH" height="30" rowSpan="1">
 							<staticText>
 								<reportElement x="0" y="0" width="51" height="30" uuid="07b07a83-82ae-45b9-8a5d-1b8eaf22de8d"/>
-								<textElement>
-									<font size="8"/>
+								<textElement verticalAlignment="Middle">
+									<font size="8" isBold="true"/>
 								</textElement>
 								<text><![CDATA[CON]]></text>
 							</staticText>
@@ -421,7 +421,7 @@ ORDER BY rp.id DESC LIMIT 1;]]>
 						<jr:tableFooter style="table_TH" height="30" rowSpan="1">
 							<textField pattern="Rs#,##0.00">
 								<reportElement x="0" y="0" width="51" height="30" uuid="b21c9adf-a74e-46c8-8c42-b095c9af945e"/>
-								<textElement>
+								<textElement verticalAlignment="Middle">
 									<font size="8" isBold="true"/>
 								</textElement>
 								<textFieldExpression><![CDATA[$V{tot_opt}]]></textFieldExpression>
@@ -430,7 +430,7 @@ ORDER BY rp.id DESC LIMIT 1;]]>
 						<jr:detailCell style="table_TD" height="30" rowSpan="1">
 							<textField pattern="Rs#,##0.00">
 								<reportElement x="0" y="0" width="51" height="30" uuid="09ae832e-1b6e-4d86-84d9-28bcfd40b517"/>
-								<textElement>
+								<textElement verticalAlignment="Middle">
 									<font size="8"/>
 								</textElement>
 								<textFieldExpression><![CDATA[$F{optional}]]></textFieldExpression>
