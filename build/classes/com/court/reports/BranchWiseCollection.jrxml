@@ -26,7 +26,21 @@
     SUM(DISTINCT IF(ms.fee_name ='HOI Fee',mss.amount,0)) AS hoi,
     SUM(DISTINCT IF(ms.fee_name ='Optional',mss.amount,0)) AS optional,
     SUM(DISTINCT IF(ms.fee_name ='ACI Fee',mss.amount,0)) AS aci,
-    SUM(DISTINCT IF(ms.fee_name ='Admission Fee',mss.amount,0)) AS admission
+    SUM(DISTINCT CASE WHEN (SELECT
+			COUNT(csp.id) 
+			FROM
+			court_loan.subscription_pay csp
+			INNER JOIN
+			court_loan.member_subscriptions mbs
+			ON
+				(
+				csp.member_subscriptions_id = mbs.id)
+			INNER JOIN
+			court_loan.member mb
+			ON
+				(
+				mbs.member_id = mb.id)
+			WHERE mbs.member_id=m.id ) >0 THEN 0 ELSE (IF(ms.fee_name ='Admission Fee',mss.amount,0)) END ) AS admission
 FROM
     court_loan.member_subscription ms
 INNER JOIN
