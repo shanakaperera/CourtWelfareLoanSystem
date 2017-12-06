@@ -61,6 +61,7 @@ import org.controlsfx.validation.ValidationSupport;
 import org.controlsfx.validation.Validator;
 import org.hibernate.Criteria;
 import org.hibernate.Session;
+import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import org.joda.time.DateTime;
@@ -299,7 +300,7 @@ public class CollectionSheetFxmlController implements Initializable {
     private void performSearch(ComboBox<String> search_typ_combo, TextField search_txt) {
         Session session = HibernateUtil.getSessionFactory().openSession();
         Criteria c = session.createCriteria(Member.class);
-        // c.createAlias("branch", "b");
+        c.createAlias("branch", "b");
 
 //=====================================REMOVED DUE TO UNNASSARY FILTER=================================
         //  c.createAlias("memberLoans", "ml");
@@ -327,6 +328,9 @@ public class CollectionSheetFxmlController implements Initializable {
                 break;
         }
 
+        c.add(Restrictions.eq("status", true));
+        c.add(Restrictions.eq("b.status", true));
+        c.addOrder(Order.asc("b.branchCode"));
         List<Member> mList = c.list();
 
         List<Member> filteredList = mList.stream()
@@ -437,7 +441,7 @@ public class CollectionSheetFxmlController implements Initializable {
                 List<String> bNames = c.list();
                 //=== ADDED NEW RESTRICTION TO GET ONLY PAYMENT OFFICES INTO AUTO-COMPLETE==========
                 autoCompletionList(bNames);
-                System.out.println("NAMES - "+bNames);
+                System.out.println("NAMES - " + bNames);
                 break;
             case 1:
                 c.setProjection(Projections.property("memberId"));

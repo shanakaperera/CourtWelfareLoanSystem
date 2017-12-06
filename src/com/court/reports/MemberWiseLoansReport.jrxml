@@ -86,7 +86,7 @@
 				<text><![CDATA[Job Title]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="365" y="1" width="100" height="20" uuid="164847b8-766a-4376-932e-aaa78266ff92"/>
+				<reportElement x="365" y="1" width="148" height="20" uuid="164847b8-766a-4376-932e-aaa78266ff92"/>
 				<textElement>
 					<font size="9" isBold="true"/>
 				</textElement>
@@ -107,7 +107,7 @@
 				<reportElement x="0" y="9" width="100" height="20" uuid="3fd84910-8bb1-43ed-8072-fc3ff69d6887"/>
 				<textFieldExpression><![CDATA[$F{memberId}]]></textFieldExpression>
 			</textField>
-			<textField>
+			<textField isBlankWhenNull="true">
 				<reportElement x="100" y="9" width="65" height="20" uuid="66692838-0908-4f5c-86ad-153979044c36"/>
 				<textFieldExpression><![CDATA[$F{nic}]]></textFieldExpression>
 			</textField>
@@ -119,8 +119,8 @@
 				<reportElement x="265" y="9" width="100" height="20" uuid="d643da04-621b-49f9-9ded-414d44230e26"/>
 				<textFieldExpression><![CDATA[$F{jobTitle}]]></textFieldExpression>
 			</textField>
-			<textField>
-				<reportElement x="365" y="9" width="100" height="20" uuid="af9aefd3-0b70-4789-a4f4-2e0480bf7b50"/>
+			<textField isStretchWithOverflow="true">
+				<reportElement x="365" y="9" width="183" height="20" isPrintWhenDetailOverflows="true" uuid="af9aefd3-0b70-4789-a4f4-2e0480bf7b50"/>
 				<textFieldExpression><![CDATA[$F{branch}.getBranchName()]]></textFieldExpression>
 			</textField>
 			<subreport>

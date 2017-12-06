@@ -157,7 +157,7 @@
 		<band height="25">
 			<staticText>
 				<reportElement x="0" y="0" width="474" height="20" uuid="81517e02-9f4c-45ec-9fa2-a01496ffa24a"/>
-				<text><![CDATA[No Data Found]]></text>
+				<text><![CDATA[No Loans Found]]></text>
 			</staticText>
 		</band>
 	</noData>

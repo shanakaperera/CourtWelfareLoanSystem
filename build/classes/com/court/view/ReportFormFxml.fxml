@@ -16,12 +16,18 @@
                         <String fx:value="btn-success" />
                     </styleClass>
                 </Button>
-                <Button mnemonicParsing="false" onAction="#onMemberAction" prefHeight="54.0" style="-fx-text-fill: #ffff;" text="All Members">
+                <Button mnemonicParsing="false" onAction="#onMemberAction" prefHeight="54.0" style="-fx-text-fill: #ffff;" text="All Members By Working Office">
                     <styleClass>
                         <String fx:value="btn" />
                         <String fx:value="btn-warning" />
                     </styleClass> 
                 </Button>
+            <Button mnemonicParsing="false" onAction="#onMemberPayOfficeAction" prefHeight="54.0" style="-fx-text-fill: #ffff;" text="All Members By Payment Office">
+               <styleClass>
+                  <String fx:value="btn" />
+                  <String fx:value="btn-primary" />
+               </styleClass>
+            </Button>
             <Button mnemonicParsing="false" onAction="#onBranchAction" prefHeight="54.0" style="-fx-text-fill: #ffff;" text="All Branches">
                <styleClass>
                   <String fx:value="btn" />

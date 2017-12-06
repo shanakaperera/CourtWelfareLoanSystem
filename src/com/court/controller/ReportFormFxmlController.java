@@ -118,7 +118,7 @@ public class ReportFormFxmlController implements Initializable {
 
         Dialog<String> dialog = new Dialog<>();
         dialog.setTitle("Member List");
-        dialog.setHeaderText("Select Branch");
+        dialog.setHeaderText("Select Working Office");
         ButtonType viewBtn = new ButtonType("View Report", ButtonData.OK_DONE);
         dialog.getDialogPane().getButtonTypes().addAll(viewBtn, ButtonType.CANCEL);
         GridPane grid = new GridPane();
@@ -129,7 +129,7 @@ public class ReportFormFxmlController implements Initializable {
         TextField bField = new TextField();
         TextFields.bindAutoCompletion(bField, getBranches(true));
 
-        grid.add(new Label("Branch:"), 0, 0);
+        grid.add(new Label("Office:"), 0, 0);
         grid.add(bField, 1, 0);
         dialog.getDialogPane().setContent(grid);
         dialog.setResultConverter(db -> {
@@ -166,6 +166,10 @@ public class ReportFormFxmlController implements Initializable {
     }
 
     @FXML
+    private void onMemberPayOfficeAction(ActionEvent event) {
+    }
+
+    @FXML
     private void onMemberWiseLoanAction(ActionEvent event) throws JRException {
         String reportPath = "com/court/reports/MemberWiseLoansReport.jasper";
         String subReportPath = "com/court/reports/MemberWiseLoansSubreport.jasper";
@@ -191,7 +195,7 @@ public class ReportFormFxmlController implements Initializable {
 
         Dialog<String> dialog = new Dialog<>();
         dialog.setTitle("Branch wise Collection Due");
-        dialog.setHeaderText("Select Branch");
+        dialog.setHeaderText("Select Payment Office");
         ButtonType viewBtn = new ButtonType("View Report", ButtonData.OK_DONE);
         dialog.getDialogPane().getButtonTypes().addAll(viewBtn, ButtonType.CANCEL);
         GridPane grid = new GridPane();
@@ -200,7 +204,7 @@ public class ReportFormFxmlController implements Initializable {
         grid.setPadding(new Insets(20, 150, 10, 10));
 
         TextField bField = new TextField();
-        TextFields.bindAutoCompletion(bField, getBranches(false));
+        TextFields.bindAutoCompletion(bField, getPaymentOffice());
 
         grid.add(new Label("Branch:"), 0, 0);
         grid.add(bField, 1, 0);
@@ -444,6 +448,21 @@ public class ReportFormFxmlController implements Initializable {
         }
         Session s = HibernateUtil.getSessionFactory().openSession();
         Criteria c = s.createCriteria(Branch.class);
+        List<Branch> list = c.list();
+        bList.addAll(list);
+        s.close();
+        return bList;
+    }
+
+    /*
+    Get All Payment offices for the autocomplete textfield
+     */
+    private List<Branch> getPaymentOffice() {
+        List<Branch> bList = new ArrayList<>();
+
+        Session s = HibernateUtil.getSessionFactory().openSession();
+        Criteria c = s.createCriteria(Branch.class);
+        c.add(Restrictions.eq("parentId", 0));
         List<Branch> list = c.list();
         bList.addAll(list);
         s.close();
