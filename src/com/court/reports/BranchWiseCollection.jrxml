@@ -7,7 +7,7 @@
 	<parameter name="companyName" class="java.lang.String"/>
 	<parameter name="companyAddress" class="java.lang.String"/>
 	<parameter name="reportTitle" class="java.lang.String"/>
-	<parameter name="p_brcode" class="java.lang.String">
+	<parameter name="p_brcode" class="java.lang.Integer">
 		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
 	</parameter>
 	<queryString>
@@ -63,7 +63,7 @@ INNER JOIN
 ON
     (
         m.branch_id = br.id) 
-WHERE m.payment_officer=$P{p_brcode}
+WHERE m.pay_office_id=$P{p_brcode}
 AND
 m.status=true
 AND
@@ -257,14 +257,14 @@ ORDER BY br.branch_code;]]>
 				<text><![CDATA[Job Title]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="274" y="0" width="45" height="20" uuid="34ee1e50-13bf-4df3-804f-bf396db89208"/>
+				<reportElement x="274" y="0" width="34" height="20" uuid="34ee1e50-13bf-4df3-804f-bf396db89208"/>
 				<textElement verticalAlignment="Middle">
 					<font size="8" isBold="true"/>
 				</textElement>
 				<text><![CDATA[ADM]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="319" y="0" width="32" height="20" uuid="da2dfde6-13fd-4b3b-a45f-7ff1b1d994d0"/>
+				<reportElement x="308" y="0" width="43" height="20" uuid="da2dfde6-13fd-4b3b-a45f-7ff1b1d994d0"/>
 				<textElement verticalAlignment="Middle">
 					<font size="8" isBold="true"/>
 				</textElement>
@@ -338,14 +338,14 @@ ORDER BY br.branch_code;]]>
 				<textFieldExpression><![CDATA[$F{job_title}]]></textFieldExpression>
 			</textField>
 			<textField pattern="Rs#,##0.00">
-				<reportElement x="274" y="0" width="45" height="20" uuid="a2b2811c-2bf7-4d83-a510-f0c95a298741"/>
+				<reportElement x="274" y="0" width="34" height="20" uuid="a2b2811c-2bf7-4d83-a510-f0c95a298741"/>
 				<textElement verticalAlignment="Middle">
 					<font size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{admission}]]></textFieldExpression>
 			</textField>
 			<textField pattern="Rs#,##0.00">
-				<reportElement x="319" y="0" width="32" height="20" uuid="62957a26-69b6-418d-bebf-e095cb5363cb"/>
+				<reportElement x="308" y="0" width="43" height="20" uuid="62957a26-69b6-418d-bebf-e095cb5363cb"/>
 				<textElement verticalAlignment="Middle">
 					<font size="8"/>
 				</textElement>

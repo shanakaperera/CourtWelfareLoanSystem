@@ -404,6 +404,8 @@ public class MemberfxmlController implements Initializable {
     @FXML
     private Tab gen_details_tab;
 
+    private Branch payBranch;
+
     /**
      * Initializes the controller class.
      */
@@ -553,6 +555,9 @@ public class MemberfxmlController implements Initializable {
             member.setDescription(member_des_txt.getText().isEmpty() ? "No Description" : member_des_txt.getText());
             //  member.setImgPath(imgString == null ? "" : imgString.getImg_path().toString());
             member.setStatus(true);
+            if (payBranch != null) {
+                member.setPayOffice(payBranch);
+            }
             session.saveOrUpdate(member);
             session.getTransaction().commit();
             session.close();
@@ -716,7 +721,7 @@ public class MemberfxmlController implements Initializable {
             member_namins_txt.setText(filteredMember.getNameWithIns());
             nic_no.setText(filteredMember.getNic());
             emp_id_txt.setText(filteredMember.getEmpId());
-            payment_officer_txt.setText(filteredMember.getPaymentOfficer());
+            payment_officer_txt.setText(filteredMember.getPayOffice().getBranchName());
             job_status_combo.getSelectionModel().select(filteredMember.getJobStatus());
             member_adrs_txt.setText(filteredMember.getAddress());
             member_job_txt.setText(filteredMember.getJobTitle());
@@ -2446,12 +2451,18 @@ public class MemberfxmlController implements Initializable {
     private String getPaymentOffice(String work_place) {
         Session s = HibernateUtil.getSessionFactory().openSession();
         Criteria c = s.createCriteria(Branch.class);
-        Branch bf = (Branch) c.add(Restrictions.eq("branchName", work_place)).uniqueResult();
+        Branch bf = (Branch) c.add(Restrictions.eq("branchName", work_place))
+                .setMaxResults(1)
+                .uniqueResult();
         if (bf.getParentId() == 0) {
+            payBranch = bf;
             return bf.getBranchName();
         } else {
             Criteria cc = s.createCriteria(Branch.class);
-            Branch br = (Branch) cc.add(Restrictions.eq("id", bf.getParentId())).uniqueResult();
+            Branch br = (Branch) cc.add(Restrictions.eq("id", bf.getParentId()))
+                    .setMaxResults(1)
+                    .uniqueResult();
+            payBranch = br;
             return br.getBranchName();
         }
     }

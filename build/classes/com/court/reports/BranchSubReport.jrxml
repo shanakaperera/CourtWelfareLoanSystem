@@ -5,7 +5,7 @@
 	<property name="ireport.y" value="0"/>
 	<parameter name="p_id" class="java.lang.String"/>
 	<queryString>
-		<![CDATA[SELECT * FROM court_loan.branch WHERE parent_id=$P{p_id};]]>
+		<![CDATA[SELECT * FROM court_loan.branch b WHERE b.status=true AND b.parent_id=$P{p_id};]]>
 	</queryString>
 	<field name="id" class="java.lang.Integer">
 		<fieldDescription><![CDATA[]]></fieldDescription>

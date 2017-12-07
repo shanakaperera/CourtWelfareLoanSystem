@@ -137,6 +137,7 @@ public class CollectionSheetFxmlController implements Initializable {
     @FXML
     private void onClearBtnAction(ActionEvent event) {
         FxUtilsHandler.clearFields(collection_grid);
+        search_typ_combo.getSelectionModel().select(0);
         chk_amt_txt.setText(TextFormatHandler.CURRENCY_DECIMAL_FORMAT.format(0));
         collection_tbl.getItems().clear();
     }
@@ -301,6 +302,7 @@ public class CollectionSheetFxmlController implements Initializable {
         Session session = HibernateUtil.getSessionFactory().openSession();
         Criteria c = session.createCriteria(Member.class);
         c.createAlias("branch", "b");
+        c.createAlias("payOffice", "po");
 
 //=====================================REMOVED DUE TO UNNASSARY FILTER=================================
         //  c.createAlias("memberLoans", "ml");
@@ -316,7 +318,7 @@ public class CollectionSheetFxmlController implements Initializable {
                 c.add(Restrictions.disjunction()
                         //===================SEARCH CHANGED TO PAYMENT OFFICE INSTEAD OF USER BRANCH===================
                         // .add(Restrictions.eq("b.branchName", search_txt.getText())));
-                        .add(Restrictions.eq("paymentOfficer", search_txt.getText())));
+                        .add(Restrictions.eq("po.branchName", search_txt.getText())));
                 break;
             case 1:
                 c.add(Restrictions.disjunction()

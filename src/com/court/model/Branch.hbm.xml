@@ -38,5 +38,11 @@
             </key>
             <one-to-many class="com.court.model.Member" />
         </set>
+        <set name="mbrs" table="member" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="pay_office_id" not-null="true" />
+            </key>
+            <one-to-many class="com.court.model.Member" />
+        </set>
     </class>
 </hibernate-mapping>

@@ -157,7 +157,7 @@ public class ReportFormFxmlController implements Initializable {
             Map<String, Object> map = new HashMap<>();
             map.put("companyName", ReportHandler.COMPANY_NAME);
             map.put("companyAddress", ReportHandler.ADDRESS);
-            map.put("reportTitle", "Welfare Member List");
+            map.put("reportTitle", "Welfare Member List Of Working Office - " + b);
             ReportHandler rh = new ReportHandler(reportPath, map, memberBeanCollection);
             rh.genarateReport();
             rh.viewReport();
@@ -167,6 +167,56 @@ public class ReportFormFxmlController implements Initializable {
 
     @FXML
     private void onMemberPayOfficeAction(ActionEvent event) {
+
+        Dialog<String> dialog = new Dialog<>();
+        dialog.setTitle("Member List");
+        dialog.setHeaderText("Select Payment Office");
+        ButtonType viewBtn = new ButtonType("View Report", ButtonData.OK_DONE);
+        dialog.getDialogPane().getButtonTypes().addAll(viewBtn, ButtonType.CANCEL);
+        GridPane grid = new GridPane();
+        grid.setHgap(10);
+        grid.setVgap(10);
+        grid.setPadding(new Insets(20, 150, 10, 10));
+
+        TextField bField = new TextField();
+        TextFields.bindAutoCompletion(bField, getPaymentOffice());
+
+        grid.add(new Label("Office:"), 0, 0);
+        grid.add(bField, 1, 0);
+        dialog.getDialogPane().setContent(grid);
+        dialog.setResultConverter(db -> {
+            if (db == viewBtn) {
+                return bField.getText().split("-")[0];
+            }
+            return null;
+        });
+
+        Optional<String> result = dialog.showAndWait();
+        result.ifPresent(b -> {
+            String reportPath = "com/court/reports/MemberReport.jasper";
+
+            Session session = HibernateUtil.getSessionFactory().openSession();
+            Criteria c = session.createCriteria(Member.class, "m");
+            c.createAlias("m.payOffice", "po");
+            c.createAlias("m.branch", "b");
+            if (!b.equalsIgnoreCase("All")) {
+                c.add(Restrictions.eq("po.branchCode", b));
+            }
+            c.add(Restrictions.eq("b.status", true));
+            List<Member> list = (List<Member>) c.list();
+            List<Member> orderedList = list.stream()
+                    .sorted(Comparator.comparing(p -> p.getBranch().getBranchCode()))
+                    .collect(Collectors.toList());
+            JRBeanCollectionDataSource memberBeanCollection = new JRBeanCollectionDataSource(orderedList);
+            Map<String, Object> map = new HashMap<>();
+            map.put("companyName", ReportHandler.COMPANY_NAME);
+            map.put("companyAddress", ReportHandler.ADDRESS);
+            map.put("reportTitle", "Welfare Member List of Payment Office - " + b);
+            ReportHandler rh = new ReportHandler(reportPath, map, memberBeanCollection);
+            rh.genarateReport();
+            rh.viewReport();
+            session.close();
+        });
     }
 
     @FXML
@@ -211,7 +261,7 @@ public class ReportFormFxmlController implements Initializable {
         dialog.getDialogPane().setContent(grid);
         dialog.setResultConverter(db -> {
             if (db == viewBtn) {
-                return bField.getText().split("-")[1];
+                return getPayOfficeIdFromCode(bField.getText().split("-")[0]);
             }
             return null;
         });
@@ -226,7 +276,7 @@ public class ReportFormFxmlController implements Initializable {
             map.put("companyName", ReportHandler.COMPANY_NAME);
             map.put("companyAddress", ReportHandler.ADDRESS);
             map.put("reportTitle", "Branch Wise Collection");
-            map.put("p_brcode", b);
+            map.put("p_brcode", Integer.parseInt(b));
             ReportHandler rh = new ReportHandler(reportPath, map, null, con);
             rh.genarateReport();
             rh.viewReport();
@@ -377,6 +427,7 @@ public class ReportFormFxmlController implements Initializable {
         SessionImpl smpl = (SessionImpl) s;
         Connection con = smpl.connection();
         Criteria c = s.createCriteria(Branch.class, "b");
+        c.add(Restrictions.eq("b.status", true));
         c.add(Restrictions.eq("b.parentId", 0));
         List<Branch> list = c.list();
 
@@ -448,6 +499,7 @@ public class ReportFormFxmlController implements Initializable {
         }
         Session s = HibernateUtil.getSessionFactory().openSession();
         Criteria c = s.createCriteria(Branch.class);
+        c.add(Restrictions.eq("status", true));
         List<Branch> list = c.list();
         bList.addAll(list);
         s.close();
@@ -462,6 +514,7 @@ public class ReportFormFxmlController implements Initializable {
 
         Session s = HibernateUtil.getSessionFactory().openSession();
         Criteria c = s.createCriteria(Branch.class);
+        c.add(Restrictions.eq("status", true));
         c.add(Restrictions.eq("parentId", 0));
         List<Branch> list = c.list();
         bList.addAll(list);
@@ -486,5 +539,13 @@ public class ReportFormFxmlController implements Initializable {
         List<LoanPayCheque> list = c.list();
         s.close();
         return list;
+    }
+
+    private String getPayOfficeIdFromCode(String code) {
+        Session s = HibernateUtil.getSessionFactory().openSession();
+        Criteria c = s.createCriteria(Branch.class);
+        Branch bb = (Branch) c.add(Restrictions.eq("branchCode", code))
+                .uniqueResult();
+        return String.valueOf(bb.getId());
     }
 }

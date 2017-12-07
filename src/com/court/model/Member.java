@@ -12,6 +12,7 @@ public class Member implements java.io.Serializable {
 
     private Integer id;
     private Branch branch;
+    private Branch payOffice;
     private String memberId;
     private String empId;
     private String fullName;
@@ -361,6 +362,14 @@ public class Member implements java.io.Serializable {
 
     public void setReceiptPays(Set<ReceiptPay> receiptPays) {
         this.receiptPays = receiptPays;
+    }
+
+    public Branch getPayOffice() {
+        return payOffice;
+    }
+
+    public void setPayOffice(Branch payOffice) {
+        this.payOffice = payOffice;
     }
 
 }

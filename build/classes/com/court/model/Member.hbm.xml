@@ -11,6 +11,9 @@
         <many-to-one name="branch" class="com.court.model.Branch" fetch="select">
             <column name="branch_id" not-null="true" />
         </many-to-one>
+        <many-to-one name="payOffice" class="com.court.model.Branch" fetch="select">
+            <column name="pay_office_id" not-null="true" />
+        </many-to-one>
         <property name="memberId" type="string">
             <column name="member_id" length="45" not-null="true" unique="true" />
         </property>

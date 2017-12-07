@@ -21,6 +21,7 @@ public class Branch implements java.io.Serializable {
     private boolean status;
     private Integer parentId;
     private Set<Member> members = new HashSet<>();
+    private Set<Member> mbrs = new HashSet<>();
     private ObservableList<Branch> subBranches = FXCollections.observableArrayList();
 
     public Branch() {
@@ -143,6 +144,14 @@ public class Branch implements java.io.Serializable {
     @Override
     public String toString() {
         return this.branchCode == null ? this.branchName : this.branchCode + "-" + this.branchName;
+    }
+
+    public Set<Member> getMbrs() {
+        return mbrs;
+    }
+
+    public void setMbrs(Set<Member> mbrs) {
+        this.mbrs = mbrs;
     }
 
 }

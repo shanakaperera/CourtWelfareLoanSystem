@@ -10,7 +10,7 @@
 	<field name="memberId" class="java.lang.String"/>
 	<field name="address" class="java.lang.String"/>
 	<field name="jobTitle" class="java.lang.String"/>
-	<field name="paymentOfficer" class="java.lang.String"/>
+	<field name="payOffice" class="com.court.model.Branch"/>
 	<field name="jobStatus" class="java.lang.String"/>
 	<field name="nic" class="java.lang.String"/>
 	<field name="branch" class="com.court.model.Branch"/>
@@ -166,7 +166,7 @@
 				<textElement verticalAlignment="Middle">
 					<font size="8"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{paymentOfficer}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{payOffice}.getBranchName()]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true">
 				<reportElement x="431" y="0" width="77" height="20" isPrintWhenDetailOverflows="true" uuid="15bed6ae-ee25-49d1-bac4-b6bc95fddf5e"/>
