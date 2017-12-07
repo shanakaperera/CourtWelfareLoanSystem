@@ -542,8 +542,9 @@ public class CollectionSheetFxmlController implements Initializable {
     }
 
     private void updateMemberLoan(MemberLoan ml, Session session, java.util.Date payUntil) {
-        ml.setPaidUntil(payUntil);
-        session.update(ml);
+        MemberLoan mll = (MemberLoan) session.load(MemberLoan.class, ml.getId());
+        mll.setPaidUntil(payUntil);
+        session.update(mll);
     }
 
     private java.util.Date getInstallmentDate(java.util.Date lastInstDate) {

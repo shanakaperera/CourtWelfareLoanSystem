@@ -21,7 +21,7 @@
 			<band height="22">
 				<textField>
 					<reportElement x="0" y="0" width="555" height="22" uuid="c4cea5ed-7a83-4597-b205-c19675e486b1"/>
-					<textElement>
+					<textElement verticalAlignment="Middle">
 						<font isBold="true"/>
 					</textElement>
 					<textFieldExpression><![CDATA[$F{branch}.getBranchName()]]></textFieldExpression>
