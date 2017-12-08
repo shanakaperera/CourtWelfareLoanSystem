@@ -111,7 +111,7 @@ public class PaymentsFxmlController implements Initializable {
         });
         ins_cheque_no_col.setCellValueFactory((TableColumn.CellDataFeatures<LoanPayment, String> param) -> {
             LoanPayment lp = param.getValue();
-            return new SimpleObjectProperty<>(lp.getChequeNo() != null || !lp.getChequeNo().isEmpty() ? lp.getChequeNo() : "Not a cheque pay");
+            return new SimpleObjectProperty<>(lp.getChequeNo() != null ? lp.getChequeNo() : "Not a cheque pay");
         });
         ins_loan_col.setCellValueFactory((TableColumn.CellDataFeatures<LoanPayment, Button> param) -> {
             LoanPayment lp = param.getValue();

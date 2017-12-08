@@ -6,6 +6,7 @@
 package com.court.controller;
 
 import com.court.db.HibernateUtil;
+import com.court.handler.FxUtilsHandler;
 import com.court.handler.ReportHandler;
 import com.court.model.Branch;
 import com.court.model.LoanPayCheque;
@@ -14,6 +15,8 @@ import com.court.model.Member;
 import com.court.model.SubscriptionPay;
 import java.net.URL;
 import java.sql.Connection;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -30,6 +33,7 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonBar.ButtonData;
 import javafx.scene.control.ButtonType;
+import javafx.scene.control.DatePicker;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
@@ -65,7 +69,7 @@ public class ReportFormFxmlController implements Initializable {
     @FXML
     private void onLoanAction(ActionEvent event) {
 
-        Dialog<String> dialog = new Dialog<>();
+        Dialog<AllLoansReport> dialog = new Dialog<>();
         dialog.setTitle("Loans");
         dialog.setHeaderText("Select Branch");
         ButtonType viewBtn = new ButtonType("View Report", ButtonData.OK_DONE);
@@ -77,33 +81,48 @@ public class ReportFormFxmlController implements Initializable {
 
         TextField bField = new TextField();
         TextFields.bindAutoCompletion(bField, getBranches(true));
+        DatePicker fDate = new DatePicker();
+        DatePicker tDate = new DatePicker();
+
+        FxUtilsHandler.setDatePickerTimeFormat(fDate, tDate);
 
         grid.add(new Label("Branch:"), 0, 0);
         grid.add(bField, 1, 0);
+        grid.add(new Label("Start Date:"), 0, 1);
+        grid.add(fDate, 1, 1);
+        grid.add(new Label("End Date:"), 0, 2);
+        grid.add(tDate, 1, 2);
         dialog.getDialogPane().setContent(grid);
+        fDate.setValue(LocalDate.now());
+        tDate.setValue(LocalDate.now());
         dialog.setResultConverter(db -> {
             if (db == viewBtn) {
-                return bField.getText().split("-")[0];
+                return new AllLoansReport(bField.getText().split("-")[0], fDate.getValue(), tDate.getValue());
+
             }
             return null;
         });
 
-        Optional<String> result = dialog.showAndWait();
+        Optional<AllLoansReport> result = dialog.showAndWait();
         result.ifPresent(b -> {
             String reportPath = "com/court/reports/LoansReport.jasper";
             Session session = HibernateUtil.getSessionFactory().openSession();
             Criteria c = session.createCriteria(MemberLoan.class, "ml");
             c.createAlias("ml.member", "m");
             c.createAlias("m.branch", "b");
-            if (!b.equalsIgnoreCase("All")) {
-                c.add(Restrictions.eq("b.branchCode", b));
+            if (!b.getBranch().equalsIgnoreCase("All")) {
+                c.add(Restrictions.eq("b.branchCode", b.getBranch()));
             }
+            c.add(Restrictions.between("ml.grantedDate", FxUtilsHandler.getDateFrom(b.getFd()),
+                    FxUtilsHandler.getDateFrom(b.getTd())));
+
             List<MemberLoan> list = (List<MemberLoan>) c.list();
             JRBeanCollectionDataSource memberLoanBeanCollection = new JRBeanCollectionDataSource(list);
+            SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
             Map<String, Object> map = new HashMap<>();
             map.put("companyName", ReportHandler.COMPANY_NAME);
             map.put("companyAddress", ReportHandler.ADDRESS);
-            map.put("reportTitle", "Welfare Loan List");
+            map.put("reportTitle", "Welfare Loan List Granted From " + sdf.format(FxUtilsHandler.getDateFrom(b.getFd())) + " To " + sdf.format(FxUtilsHandler.getDateFrom(b.getTd())));
             ReportHandler rh = new ReportHandler(reportPath, map, memberLoanBeanCollection);
             rh.genarateReport();
             rh.viewReport();
@@ -545,5 +564,43 @@ public class ReportFormFxmlController implements Initializable {
         Branch bb = (Branch) c.add(Restrictions.eq("branchCode", code))
                 .uniqueResult();
         return String.valueOf(bb.getId());
+    }
+
+    class AllLoansReport {
+
+        private String branch;
+        private LocalDate fd;
+        private LocalDate td;
+
+        public AllLoansReport(String branch, LocalDate fd, LocalDate td) {
+            this.branch = branch;
+            this.fd = fd;
+            this.td = td;
+        }
+
+        public String getBranch() {
+            return branch;
+        }
+
+        public void setBranch(String branch) {
+            this.branch = branch;
+        }
+
+        public LocalDate getFd() {
+            return fd;
+        }
+
+        public void setFd(LocalDate fd) {
+            this.fd = fd;
+        }
+
+        public LocalDate getTd() {
+            return td;
+        }
+
+        public void setTd(LocalDate td) {
+            this.td = td;
+        }
+
     }
 }
