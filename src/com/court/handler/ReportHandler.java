@@ -13,9 +13,13 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.sql.Connection;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import javafx.concurrent.Task;
+import javafx.geometry.Pos;
 import javafx.scene.control.Alert;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.VBox;
+import javafx.util.Pair;
 import net.sf.jasperreports.engine.JREmptyDataSource;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperExportManager;
@@ -38,6 +42,7 @@ public class ReportHandler {
     private final JRBeanCollectionDataSource ds;
     private final String outputFile = System.getProperty("user.home") + File.separatorChar + "JasperExample.pdf";
     private Connection con;
+    private ImageView progressIndicator;
 
     public ReportHandler(String reportPath, Map<String, Object> map,
             JRBeanCollectionDataSource ds) {
@@ -55,6 +60,40 @@ public class ReportHandler {
     }
 
     public void genarateReport() {
+
+//        progressIndicator = new ImageView();
+//        progressIndicator.setImage(new Image(FileHandler.LOADING_DEFAULT_GIF));
+//        VBox v = new VBox(progressIndicator);
+//        v.setAlignment(Pos.CENTER);
+//        Alert alert_prog = new Alert(Alert.AlertType.NONE);
+//        alert_prog.setTitle("Ongoing progress");
+//        alert_prog.setHeaderText("Please wait until the report is generated. ");
+//        alert_prog.getDialogPane().setContent(v);
+//        alert_prog.showAndWait();
+//
+//        Task<Pair<JasperPrint, OutputStream>> jprintTask = new Task<Pair<JasperPrint, OutputStream>>() {
+//            {
+//                setOnSucceeded(d -> {
+//                    try {
+//                        
+//                        alert_prog.close();
+//                    } catch (JRException e) {
+//                        e.printStackTrace();
+//                    }
+//                });
+//                setOnFailed(workerStateEvent -> getException().printStackTrace());
+//            }
+//
+//            @Override
+//            protected Pair<JasperPrint, OutputStream> call() throws Exception {
+//                
+//                return new Pair<JasperPrint, OutputStream>(jp, outputStream);
+//            }
+//        };
+//
+//        Thread reportGenThread = new Thread(jprintTask, "jprint-task");
+//        reportGenThread.setDaemon(true);
+//        reportGenThread.start();
         try {
             JasperReport jr = (JasperReport) JRLoader.loadObject(
                     ClassLoader.getSystemResourceAsStream(reportPath));
@@ -69,12 +108,14 @@ public class ReportHandler {
                 jp = JasperFillManager.fillReport(jr, map, ds);
             }
             OutputStream outputStream = new FileOutputStream(new File(outputFile));
+
             JasperExportManager.exportReportToPdfStream(jp, outputStream);
             System.out.println("Successfully Generated !");
             System.out.println(outputFile);
-        } catch (JRException | FileNotFoundException ex) {
-            Logger.getLogger(ReportHandler.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (FileNotFoundException | JRException e) {
+            e.printStackTrace();
         }
+
     }
 
     public void viewReport() {

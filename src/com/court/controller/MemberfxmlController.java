@@ -872,6 +872,7 @@ public class MemberfxmlController implements Initializable {
         c.setMaxResults(1);
         MemberLoan ml = (MemberLoan) c.uniqueResult();
         if (ml != null) {
+            double prins_plus_ins = ml.getLoanInstallment() * ml.getNoOfRepay();
             gurantors_lstview.getItems().clear();
             loan_id_txt.setText(ml.getMemberLoanCode());
             g_date_txt.setText(new SimpleDateFormat("yyyy-MM-dd").format(ml.getGrantedDate()));
@@ -879,13 +880,14 @@ public class MemberfxmlController implements Initializable {
             l_amount_txt.setText(TextFormatHandler.CURRENCY_DECIMAL_FORMAT.format(ml.getLoanAmount()));
             l_int_txt.setText(TextFormatHandler.PRECENTAGE_DECIMAL_FORMAT.format(ml.getLoanInterest() / 100) + " " + ml.getInterestPer());
             l_du_txt.setText(ml.getLoanDuration() + " " + ml.getDurationPer());
-            int_pls_prin_txt.setText(TextFormatHandler.CURRENCY_DECIMAL_FORMAT.format(ml.getLoanInstallment() * ml.getNoOfRepay()));
+            int_pls_prin_txt.setText(TextFormatHandler.CURRENCY_DECIMAL_FORMAT.format(prins_plus_ins));
             loan_nm_txt.setText(ml.getLoanName());
 
             gurantors_lstview.getItems().addAll(getSignedGuarantors(ml.getGuarantors(), session));
 
+            double ins_only = prins_plus_ins - ml.getLoanAmount();
             l_repay_txt.setText(TextFormatHandler.CURRENCY_DECIMAL_FORMAT
-                    .format(ml.getLoanInstallment()));
+                    .format(ml.getLoanInstallment()) + "( " + TextFormatHandler.CURRENCY_DECIMAL_FORMAT.format((ml.getLoanInstallment() - FxUtilsHandler.roundNumber((ins_only / ml.getLoanDuration()), 0))) + " + " + TextFormatHandler.CURRENCY_DECIMAL_FORMAT.format(FxUtilsHandler.roundNumber((ins_only / ml.getLoanDuration()), 0)) + " )");
 
             Criteria cl = session.createCriteria(LoanPayment.class);
             cl.createAlias("memberLoan", "ml");
@@ -904,7 +906,7 @@ public class MemberfxmlController implements Initializable {
                         .mapToDouble(LoanPayment::getPaidAmt).sum();
 
                 // System.out.println("ESTIMATE - " + paymentDue);
-                double loanComplete = (paymentDue / tot_pay_lo) * 100;
+                double loanComplete = ml.isClosedLoan() ? 1.0 : (paymentDue / tot_pay_lo) * 100;
                 ReadOnlyDoubleWrapper workDone = new ReadOnlyDoubleWrapper();
                 ProgressIndicatorBar bar = new ProgressIndicatorBar(workDone, loanComplete);
                 bar.createProgressIndicatorBar(progress_box, workDone);

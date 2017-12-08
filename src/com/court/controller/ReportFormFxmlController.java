@@ -6,6 +6,7 @@
 package com.court.controller;
 
 import com.court.db.HibernateUtil;
+import com.court.handler.FileHandler;
 import com.court.handler.ReportHandler;
 import com.court.model.Branch;
 import com.court.model.LoanPayCheque;
@@ -33,7 +34,10 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.VBox;
 import javafx.util.Pair;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperReport;
@@ -60,7 +64,6 @@ public class ReportFormFxmlController implements Initializable {
      */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        // TODO
     }
 
     @FXML

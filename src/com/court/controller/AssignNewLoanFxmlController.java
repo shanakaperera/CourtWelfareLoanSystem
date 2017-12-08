@@ -312,11 +312,11 @@ public class AssignNewLoanFxmlController implements Initializable {
     @FXML
     private void onApplyBtnAction(ActionEvent event) throws MalformedURLException {
 
-        if (guarantor_list.getItems().size() != 2) {
+        if (!(guarantor_list.getItems().size() >= 1)) {
             Alert alert_error = new Alert(Alert.AlertType.ERROR);
             alert_error.setTitle("Error");
             alert_error.setHeaderText("Empty Fields !");
-            alert_error.setContentText("Should have at least 2 different guarantors for each loan !");
+            alert_error.setContentText("Should have at least one guarantor for each loan !");
             alert_error.show();
             return;
         }

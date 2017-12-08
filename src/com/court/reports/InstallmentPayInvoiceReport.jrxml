@@ -32,7 +32,8 @@
     lp.id AS lpay_id,
     ml.loan_installment,
     lp.installment_no,
-    lp.installment_date
+    lp.installment_date,
+    lp.paid_amt
 FROM
     court_loan.member_loan ml
 INNER JOIN
@@ -63,8 +64,11 @@ WHERE  FIND_IN_SET(lp.id,$P{params_d}) ;]]>
 		<field name="installment_date" class="java.sql.Date">
 			<fieldDescription><![CDATA[]]></fieldDescription>
 		</field>
+		<field name="paid_amt" class="java.lang.Double">
+			<fieldDescription><![CDATA[actual amount paid]]></fieldDescription>
+		</field>
 		<variable name="ins_tot" class="java.lang.Double" calculation="Sum">
-			<variableExpression><![CDATA[$F{loan_installment}]]></variableExpression>
+			<variableExpression><![CDATA[$F{paid_amt}]]></variableExpression>
 		</variable>
 	</subDataset>
 	<parameter name="companyName" class="java.lang.String"/>
@@ -210,8 +214,8 @@ ORDER BY rp.id DESC LIMIT 1;]]>
 						<jr:tableHeader style="table_TH" height="30" rowSpan="1">
 							<staticText>
 								<reportElement x="0" y="0" width="90" height="30" uuid="2561aa8f-ce89-4744-ab35-4d782bad85b8"/>
-								<textElement>
-									<font isBold="true"/>
+								<textElement verticalAlignment="Middle">
+									<font size="8" isBold="true"/>
 								</textElement>
 								<text><![CDATA[Loan Code]]></text>
 							</staticText>
@@ -220,6 +224,9 @@ ORDER BY rp.id DESC LIMIT 1;]]>
 						<jr:detailCell style="table_TD" height="30" rowSpan="1">
 							<textField>
 								<reportElement x="0" y="0" width="90" height="30" uuid="e8d46c8e-8f26-4177-803f-03f2298a7182"/>
+								<textElement verticalAlignment="Middle">
+									<font size="8"/>
+								</textElement>
 								<textFieldExpression><![CDATA[$F{member_loan_code}]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
@@ -228,8 +235,8 @@ ORDER BY rp.id DESC LIMIT 1;]]>
 						<jr:tableHeader style="table_TH" height="30" rowSpan="1">
 							<staticText>
 								<reportElement x="0" y="0" width="90" height="30" uuid="ed7d809d-9a14-40aa-b986-ee4fc382a80b"/>
-								<textElement>
-									<font isBold="true"/>
+								<textElement verticalAlignment="Middle">
+									<font size="8" isBold="true"/>
 								</textElement>
 								<text><![CDATA[Installment No]]></text>
 							</staticText>
@@ -238,7 +245,9 @@ ORDER BY rp.id DESC LIMIT 1;]]>
 						<jr:detailCell style="table_TD" height="30" rowSpan="1">
 							<textField>
 								<reportElement x="0" y="0" width="90" height="30" uuid="4e565224-da7a-420e-bcd3-5c2c86f237b1"/>
-								<textElement textAlignment="Center"/>
+								<textElement textAlignment="Center" verticalAlignment="Middle">
+									<font size="8"/>
+								</textElement>
 								<textFieldExpression><![CDATA[$F{installment_no}]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
@@ -247,8 +256,8 @@ ORDER BY rp.id DESC LIMIT 1;]]>
 						<jr:tableHeader style="table_TH" height="30" rowSpan="1">
 							<staticText>
 								<reportElement x="0" y="0" width="90" height="30" uuid="99a33ff0-8775-4497-a674-0566d018feda"/>
-								<textElement>
-									<font isBold="true"/>
+								<textElement verticalAlignment="Middle">
+									<font size="8" isBold="true"/>
 								</textElement>
 								<text><![CDATA[Installment Date]]></text>
 							</staticText>
@@ -257,7 +266,7 @@ ORDER BY rp.id DESC LIMIT 1;]]>
 							<staticText>
 								<reportElement x="0" y="0" width="90" height="30" uuid="d5aca876-ee73-4699-bf19-660367540c6d"/>
 								<textElement textAlignment="Right" verticalAlignment="Middle">
-									<font size="12" isBold="true"/>
+									<font size="10" isBold="true"/>
 								</textElement>
 								<text><![CDATA[TOTAL]]></text>
 							</staticText>
@@ -265,6 +274,9 @@ ORDER BY rp.id DESC LIMIT 1;]]>
 						<jr:detailCell style="table_TD" height="30" rowSpan="1">
 							<textField pattern="yyyy/MM/dd">
 								<reportElement x="0" y="0" width="90" height="30" uuid="10eb4a5b-241e-48a8-97fc-f30b56acdea8"/>
+								<textElement verticalAlignment="Middle">
+									<font size="8"/>
+								</textElement>
 								<textFieldExpression><![CDATA[$F{installment_date}]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
@@ -273,8 +285,8 @@ ORDER BY rp.id DESC LIMIT 1;]]>
 						<jr:tableHeader style="table_TH" height="30" rowSpan="1">
 							<staticText>
 								<reportElement x="0" y="0" width="90" height="30" uuid="c5dd0777-b06c-4cb6-85ba-a14abebe8077"/>
-								<textElement>
-									<font isBold="true"/>
+								<textElement verticalAlignment="Middle">
+									<font size="8" isBold="true"/>
 								</textElement>
 								<text><![CDATA[Installment Amt]]></text>
 							</staticText>
@@ -283,7 +295,7 @@ ORDER BY rp.id DESC LIMIT 1;]]>
 							<textField pattern="Rs#,##0.00">
 								<reportElement x="0" y="0" width="90" height="30" uuid="0a8e0d9b-3ebd-44b5-bb9b-481e07eb8b35"/>
 								<textElement textAlignment="Right" verticalAlignment="Middle">
-									<font size="12" isBold="true"/>
+									<font size="10" isBold="true"/>
 								</textElement>
 								<textFieldExpression><![CDATA[$V{ins_tot}]]></textFieldExpression>
 							</textField>
@@ -291,8 +303,10 @@ ORDER BY rp.id DESC LIMIT 1;]]>
 						<jr:detailCell style="table_TD" height="30" rowSpan="1">
 							<textField pattern="Rs#,##0.00">
 								<reportElement x="0" y="0" width="90" height="30" uuid="b249f6cd-c4c2-4e9b-9890-e96ed82b07f0"/>
-								<textElement textAlignment="Right"/>
-								<textFieldExpression><![CDATA[$F{loan_installment}]]></textFieldExpression>
+								<textElement textAlignment="Right" verticalAlignment="Middle">
+									<font size="8"/>
+								</textElement>
+								<textFieldExpression><![CDATA[$F{paid_amt}]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
 					</jr:column>
