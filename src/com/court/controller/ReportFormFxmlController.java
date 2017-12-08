@@ -6,7 +6,6 @@
 package com.court.controller;
 
 import com.court.db.HibernateUtil;
-import com.court.handler.FileHandler;
 import com.court.handler.ReportHandler;
 import com.court.model.Branch;
 import com.court.model.LoanPayCheque;
@@ -34,10 +33,7 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
-import javafx.scene.layout.VBox;
 import javafx.util.Pair;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperReport;
@@ -145,7 +141,6 @@ public class ReportFormFxmlController implements Initializable {
         Optional<String> result = dialog.showAndWait();
         result.ifPresent(b -> {
             String reportPath = "com/court/reports/MemberReport.jasper";
-
             Session session = HibernateUtil.getSessionFactory().openSession();
             Criteria c = session.createCriteria(Member.class, "m");
             c.createAlias("m.branch", "b");

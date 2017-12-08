@@ -13,13 +13,8 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.sql.Connection;
 import java.util.Map;
-import javafx.concurrent.Task;
-import javafx.geometry.Pos;
 import javafx.scene.control.Alert;
-import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.VBox;
-import javafx.util.Pair;
 import net.sf.jasperreports.engine.JREmptyDataSource;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperExportManager;
@@ -42,7 +37,6 @@ public class ReportHandler {
     private final JRBeanCollectionDataSource ds;
     private final String outputFile = System.getProperty("user.home") + File.separatorChar + "JasperExample.pdf";
     private Connection con;
-    private ImageView progressIndicator;
 
     public ReportHandler(String reportPath, Map<String, Object> map,
             JRBeanCollectionDataSource ds) {

@@ -11,6 +11,7 @@
 	<field name="paymentDate" class="java.util.Date"/>
 	<field name="memberLoan" class="com.court.model.MemberLoan"/>
 	<field name="installmentDate" class="java.util.Date"/>
+	<field name="paidAmt" class="java.lang.Double"/>
 	<sortField name="installmentNo"/>
 	<background>
 		<band splitType="Stretch"/>
@@ -86,7 +87,7 @@
 				<textElement verticalAlignment="Middle">
 					<font size="8"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{memberLoan}.getLoanInstallment()]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{paidAmt}]]></textFieldExpression>
 			</textField>
 			<textField pattern="MMMMM-yy">
 				<reportElement x="98" y="1" width="66" height="20" uuid="a0f7cacc-98fe-4fc4-809c-42ce92435b8b"/>
