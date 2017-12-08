@@ -353,7 +353,7 @@ public class Member implements java.io.Serializable {
 
     @Override
     public String toString() {
-        return (this.memberId + " - " + this.nameWithIns);
+        return (this.memberId + " - " + this.fullName);
     }
 
     public Set<ReceiptPay> getReceiptPays() {

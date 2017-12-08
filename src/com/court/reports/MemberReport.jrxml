@@ -81,42 +81,42 @@
 	<columnHeader>
 		<band height="21" splitType="Stretch">
 			<staticText>
-				<reportElement x="0" y="0" width="63" height="20" uuid="0c35ed20-ebc5-4625-a8c5-6ecb2e32d4f6"/>
+				<reportElement x="0" y="0" width="51" height="20" uuid="0c35ed20-ebc5-4625-a8c5-6ecb2e32d4f6"/>
 				<textElement verticalAlignment="Middle">
 					<font size="8" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Member ID]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="131" y="0" width="100" height="20" uuid="f4e9de97-29c0-4e26-9e93-20b71923d8cb"/>
+				<reportElement x="119" y="0" width="112" height="20" uuid="f4e9de97-29c0-4e26-9e93-20b71923d8cb"/>
 				<textElement verticalAlignment="Middle">
 					<font size="8" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Name]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="231" y="0" width="100" height="20" uuid="dcee8fb4-46cf-4dba-8cc5-0b1057fe29eb"/>
+				<reportElement x="231" y="0" width="75" height="20" uuid="dcee8fb4-46cf-4dba-8cc5-0b1057fe29eb"/>
 				<textElement verticalAlignment="Middle">
 					<font size="8" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Job Title]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="63" y="1" width="68" height="20" uuid="f55ea73e-8467-4601-8396-6db4bc215b75"/>
+				<reportElement x="51" y="1" width="68" height="20" uuid="f55ea73e-8467-4601-8396-6db4bc215b75"/>
 				<textElement verticalAlignment="Middle">
 					<font size="8" isBold="true"/>
 				</textElement>
 				<text><![CDATA[NIC]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="331" y="0" width="100" height="20" uuid="3acbbe3e-c495-4186-b051-779b82c40cbf"/>
+				<reportElement x="306" y="0" width="97" height="20" uuid="3acbbe3e-c495-4186-b051-779b82c40cbf"/>
 				<textElement verticalAlignment="Middle">
 					<font size="8" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Payment Officer]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="431" y="0" width="77" height="20" uuid="6461cb9c-b67d-4fb0-8b79-ba6cf5d8d428"/>
+				<reportElement x="403" y="0" width="105" height="20" uuid="6461cb9c-b67d-4fb0-8b79-ba6cf5d8d428"/>
 				<textElement verticalAlignment="Middle">
 					<font size="8" isBold="true"/>
 				</textElement>
@@ -134,42 +134,42 @@
 	<detail>
 		<band height="25" splitType="Stretch">
 			<textField>
-				<reportElement x="0" y="0" width="63" height="20" uuid="18a15e73-62eb-4824-bd80-29049b6db60f"/>
+				<reportElement x="0" y="0" width="51" height="20" uuid="18a15e73-62eb-4824-bd80-29049b6db60f"/>
 				<textElement verticalAlignment="Middle">
 					<font size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{memberId}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
-				<reportElement x="63" y="0" width="68" height="20" uuid="124111c1-531a-49b2-bd37-65e5d25e8897"/>
+				<reportElement x="51" y="0" width="68" height="20" uuid="124111c1-531a-49b2-bd37-65e5d25e8897"/>
 				<textElement verticalAlignment="Middle">
 					<font size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{nic}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="131" y="0" width="100" height="20" isPrintWhenDetailOverflows="true" uuid="5a947bf0-7c4a-4ff9-a29c-a845ba4218e5"/>
+				<reportElement x="119" y="0" width="112" height="20" isPrintWhenDetailOverflows="true" uuid="5a947bf0-7c4a-4ff9-a29c-a845ba4218e5"/>
 				<textElement verticalAlignment="Middle">
 					<font size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{nameWithIns}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="231" y="0" width="100" height="20" uuid="f3ee3c8e-11b6-47c9-b8cd-c66af5821e0e"/>
+				<reportElement x="231" y="0" width="75" height="20" uuid="f3ee3c8e-11b6-47c9-b8cd-c66af5821e0e"/>
 				<textElement verticalAlignment="Middle">
 					<font size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{jobTitle}]]></textFieldExpression>
 			</textField>
-			<textField isStretchWithOverflow="true">
-				<reportElement x="331" y="0" width="100" height="20" isPrintWhenDetailOverflows="true" uuid="c6b0c83c-3ad3-4661-b47f-9d8d9b0894cb"/>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement x="306" y="0" width="97" height="20" isPrintWhenDetailOverflows="true" uuid="c6b0c83c-3ad3-4661-b47f-9d8d9b0894cb"/>
 				<textElement verticalAlignment="Middle">
 					<font size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{payOffice}.getBranchName()]]></textFieldExpression>
 			</textField>
-			<textField isStretchWithOverflow="true">
-				<reportElement x="431" y="0" width="77" height="20" isPrintWhenDetailOverflows="true" uuid="15bed6ae-ee25-49d1-bac4-b6bc95fddf5e"/>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement x="403" y="0" width="105" height="20" isPrintWhenDetailOverflows="true" uuid="15bed6ae-ee25-49d1-bac4-b6bc95fddf5e"/>
 				<textElement verticalAlignment="Middle">
 					<font size="8"/>
 				</textElement>
