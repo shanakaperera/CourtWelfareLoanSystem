@@ -81,6 +81,10 @@ public class ReceiptPay implements java.io.Serializable {
         return this.paymentType;
     }
 
+    public void setPaymentType(String paymentType) {
+        this.paymentType = paymentType;
+    }    
+
     public String getReceiptCode() {
         return receiptCode;
     }
@@ -88,9 +92,5 @@ public class ReceiptPay implements java.io.Serializable {
     public void setReceiptCode(String receiptCode) {
         this.receiptCode = receiptCode;
     }
-
-    public void setPaymentType(String paymentType) {
-        this.paymentType = paymentType;
-    }    
     
 }

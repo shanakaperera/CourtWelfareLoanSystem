@@ -12,6 +12,7 @@ import com.court.model.Branch;
 import com.court.model.LoanPayCheque;
 import com.court.model.MemberLoan;
 import com.court.model.Member;
+import com.court.model.ReceiptPay;
 import com.court.model.SubscriptionPay;
 import java.net.URL;
 import java.sql.Connection;
@@ -380,7 +381,7 @@ public class ReportFormFxmlController implements Initializable {
     @FXML
     private void onBranchCollectionMadeAction(ActionEvent event) {
 
-        Dialog<Pair<String, String>> dialog = new Dialog<>();
+        Dialog<String> dialog = new Dialog<>();
         dialog.setTitle("Branch Wise Cheque Payments");
         dialog.setHeaderText("Select Cheque and Branch ");
         ButtonType viewBtn = new ButtonType("View Report", ButtonData.OK_DONE);
@@ -390,27 +391,23 @@ public class ReportFormFxmlController implements Initializable {
         grid.setVgap(10);
         grid.setPadding(new Insets(20, 150, 10, 10));
 
-        TextField bField = new TextField();
         TextField cField = new TextField();
-        TextFields.bindAutoCompletion(bField, getBranches(false));
-        TextFields.bindAutoCompletion(cField, getCheques());
+        TextFields.bindAutoCompletion(cField, getCollectionInvoice());
 
-        grid.add(new Label("Branch:"), 0, 0);
-        grid.add(bField, 1, 0);
-        grid.add(new Label("Cheque:"), 0, 1);
+        grid.add(new Label("Invoice:"), 0, 1);
         grid.add(cField, 1, 1);
 
         dialog.getDialogPane().setContent(grid);
         dialog.setResultConverter(db -> {
             if (db == viewBtn) {
-                return new Pair<>(bField.getText().split("-")[0], cField.getText());
+                return cField.getText();
             }
             return null;
         });
 
-        Optional<Pair<String, String>> result = dialog.showAndWait();
-        result.ifPresent(outs -> {
-            if ((outs.getKey() != null && !outs.getKey().isEmpty()) && outs.getValue() != null && !outs.getValue().isEmpty()) {
+        Optional<String> result = dialog.showAndWait();
+        result.ifPresent(invo -> {
+            if ((invo != null && !invo.isEmpty())) {
                 String reportPath = "com/court/reports/BranchWisePaymentMadeReport.jasper";
                 Session s = HibernateUtil.getSessionFactory().openSession();
                 SessionImpl smpl = (SessionImpl) s;
@@ -419,8 +416,7 @@ public class ReportFormFxmlController implements Initializable {
                 map.put("companyName", ReportHandler.COMPANY_NAME);
                 map.put("companyAddress", ReportHandler.ADDRESS);
                 map.put("reportTitle", "Branch Wise Cheque Payments");
-                map.put("br_code", outs.getKey());
-                map.put("cheque_no", outs.getValue());
+                map.put("invo_code", invo);
                 ReportHandler rh = new ReportHandler(reportPath, map, null, con);
                 rh.genarateReport();
                 rh.viewReport();
@@ -550,7 +546,7 @@ public class ReportFormFxmlController implements Initializable {
         return list;
     }
 
-    private List<LoanPayCheque> getCheques() {
+    private List<LoanPayCheque> getCollectionInvoice() {
         Session s = HibernateUtil.getSessionFactory().openSession();
         Criteria c = s.createCriteria(LoanPayCheque.class);
         List<LoanPayCheque> list = c.list();
@@ -564,6 +560,73 @@ public class ReportFormFxmlController implements Initializable {
         Branch bb = (Branch) c.add(Restrictions.eq("branchCode", code))
                 .uniqueResult();
         return String.valueOf(bb.getId());
+    }
+
+    @FXML
+    private void onReceiptPaymentMadeAction(ActionEvent event) {
+
+        Dialog<Pair<String, String>> dialog = new Dialog<>();
+        dialog.setTitle("Receipt Payment");
+        dialog.setHeaderText("Select Receipt No and Payment Type");
+        ButtonType viewBtn = new ButtonType("View Report", ButtonData.OK_DONE);
+        dialog.getDialogPane().getButtonTypes().addAll(viewBtn, ButtonType.CANCEL);
+        GridPane grid = new GridPane();
+        grid.setHgap(10);
+        grid.setVgap(10);
+        grid.setPadding(new Insets(20, 150, 10, 10));
+
+        TextField tfp = new TextField();
+        TextFields.bindAutoCompletion(tfp, "Subscription", "Installment");
+        TextField tfr = new TextField();
+        TextFields.bindAutoCompletion(tfr, getReceiptCodes());
+        grid.add(new Label("Payment Type:"), 0, 0);
+        grid.add(tfp, 1, 0);
+        grid.add(new Label("Receipt No:"), 0, 1);
+        grid.add(tfr, 1, 1);
+
+        dialog.getDialogPane().setContent(grid);
+        dialog.setResultConverter(db -> {
+            if (db == viewBtn) {
+                return new Pair<>(tfp.getText(), tfr.getText());
+            }
+            return null;
+        });
+
+        Optional<Pair<String, String>> result = dialog.showAndWait();
+        result.ifPresent(invo -> {
+
+            String reportPath;
+            if (tfp.getText().equalsIgnoreCase("subscription")) {
+                reportPath = "com/court/reports/SubscriptionPayDoneInvoiceReport.jasper";
+            } else {
+                reportPath = "com/court/reports/InstallmentPayDoneInvoiceReport.jasper";
+            }
+            Session s = HibernateUtil.getSessionFactory().openSession();
+            SessionImpl smpl = (SessionImpl) s;
+            Connection con = smpl.connection();
+            Map<String, Object> map = new HashMap<>();
+            map.put("companyName", ReportHandler.COMPANY_NAME);
+            map.put("companyAddress", ReportHandler.ADDRESS);
+            map.put("reportTitle", "Receipt Payments - " + tfp.getText());
+            map.put("rcpt_code", invo.getValue());
+            map.put("pay_type", invo.getKey());
+
+            ReportHandler rh = new ReportHandler(reportPath, map, null, con);
+            rh.genarateReport();
+            rh.viewReport();
+            s.close();
+        });
+    }
+
+    private List<String> getReceiptCodes() {
+
+        Session s = HibernateUtil.getSessionFactory().openSession();
+        Criteria c = s.createCriteria(ReceiptPay.class);
+        List<ReceiptPay> list = c.list();
+        List<String> collect = list.stream()
+                .map(ReceiptPay::getReceiptCode).collect(Collectors.toList());
+        return collect;
+
     }
 
     class AllLoansReport {

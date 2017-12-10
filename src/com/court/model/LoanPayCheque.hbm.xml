@@ -32,5 +32,8 @@
         <property name="bankCode" type="string">
             <column name="bank_code" length="45" />
         </property>
+        <property name="invoCode" type="string">
+            <column name="invo_code" length="45" />
+        </property>
     </class>
 </hibernate-mapping>

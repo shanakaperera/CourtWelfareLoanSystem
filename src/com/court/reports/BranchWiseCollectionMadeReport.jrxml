@@ -9,7 +9,7 @@
 	<parameter name="br_code" class="java.lang.String">
 		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
 	</parameter>
-	<parameter name="invo_code" class="java.lang.String"/>
+	<parameter name="chk_no" class="java.lang.String"/>
 	<queryString>
 		<![CDATA[SELECT
     m.member_id,
@@ -33,10 +33,10 @@
     lpc.cheque_amount,
     lpc.branch,
     lpc.bank_code,
+    lpc.invo_code,
     SUM(IFNULL(lp.paid_amt,0)) as loan_pay,
     lp.payment_date,
-    lp.cheque_no,
-    lpc.invo_code	
+    lp.cheque_no	
 FROM
     court_loan.member_loan ml
 RIGHT OUTER JOIN
@@ -69,7 +69,7 @@ LEFT OUTER JOIN
 ON
     (
         ml.id = lp.member_loan_id)
-WHERE lpc.invo_code = $P{invo_code}
+WHERE sp.cheque_no = $P{chk_no}
 GROUP BY m.member_id ;]]>
 	</queryString>
 	<field name="member_id" class="java.lang.String">
@@ -132,11 +132,11 @@ GROUP BY m.member_id ;]]>
 	<field name="bank_code" class="java.lang.String">
 		<fieldDescription><![CDATA[]]></fieldDescription>
 	</field>
-	<field name="loan_pay" class="java.lang.Double"/>
-	<field name="payment_date" class="java.sql.Date">
+	<field name="invo_code" class="java.lang.String">
 		<fieldDescription><![CDATA[]]></fieldDescription>
 	</field>
-	<field name="invo_code" class="java.lang.String">
+	<field name="loan_pay" class="java.lang.Double"/>
+	<field name="payment_date" class="java.sql.Date">
 		<fieldDescription><![CDATA[]]></fieldDescription>
 	</field>
 	<variable name="r_total" class="java.lang.Double">

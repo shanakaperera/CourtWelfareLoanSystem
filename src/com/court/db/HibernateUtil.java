@@ -5,8 +5,8 @@
  */
 package com.court.db;
 
-import org.hibernate.cfg.AnnotationConfiguration;
 import org.hibernate.SessionFactory;
+import org.hibernate.cfg.AnnotationConfiguration;
 
 /**
  * Hibernate Utility class with a convenient method to get Session Factory
@@ -17,7 +17,7 @@ import org.hibernate.SessionFactory;
 public class HibernateUtil {
 
     private static final SessionFactory sessionFactory;
-    
+
     static {
         try {
             // Create the SessionFactory from standard (hibernate.cfg.xml) 
@@ -29,7 +29,7 @@ public class HibernateUtil {
             throw new ExceptionInInitializerError(ex);
         }
     }
-    
+
     public static SessionFactory getSessionFactory() {
         return sessionFactory;
     }

@@ -1274,7 +1274,7 @@ public class MemberfxmlController implements Initializable {
                             rp.setPayDate(new java.util.Date());
                             rp.setPaymentType("installment");
                             rp.setPayIds(new Gson().toJson(lpIds, type));
-                            rp.setReceiptCode("INV" + FxUtilsHandler.generateRandomNumber(7));
+                            // rp.setReceiptCode("INV" + FxUtilsHandler.generateRandomNumber(7));
                             s.save(rp);
 
                             updateMemberLoan(parentLoan, s, instDates[insts - 1]);
@@ -1335,7 +1335,7 @@ public class MemberfxmlController implements Initializable {
                         rp.setPayDate(new java.util.Date());
                         rp.setPaymentType("installment");
                         rp.setPayIds(new Gson().toJson(lpIds, type));
-                        rp.setReceiptCode("INV" + FxUtilsHandler.generateRandomNumber(7));
+                        // rp.setReceiptCode("INV" + FxUtilsHandler.generateRandomNumber(7));
                         s.save(rp);
 
                         updateMemberLoan(childLoan, s, instDates[insts - 1]);
@@ -1399,7 +1399,7 @@ public class MemberfxmlController implements Initializable {
                         rp.setPayDate(new java.util.Date());
                         rp.setPaymentType("installment");
                         rp.setPayIds(new Gson().toJson(lpIds, type));
-                        rp.setReceiptCode("INV" + FxUtilsHandler.generateRandomNumber(7));
+                        // rp.setReceiptCode("INV" + FxUtilsHandler.generateRandomNumber(7));
                         s.save(rp);
 
                         updateMemberLoan(selectedLoan, s, instDates[insts - 1]);
@@ -1474,7 +1474,7 @@ public class MemberfxmlController implements Initializable {
                         rp.setPayDate(new java.util.Date());
                         rp.setPaymentType("installment");
                         rp.setPayIds(new Gson().toJson(lpIds, type));
-                        rp.setReceiptCode("INV" + FxUtilsHandler.generateRandomNumber(7));
+                        // rp.setReceiptCode("INV" + FxUtilsHandler.generateRandomNumber(7));
                         s.save(rp);
 
                         updateMemberLoan(childLoan, s, instDates[insts - 1]);
@@ -1618,7 +1618,7 @@ public class MemberfxmlController implements Initializable {
                     rp.setPayDate(new java.util.Date());
                     rp.setPaymentType("installment");
                     rp.setPayIds(new Gson().toJson(lpIds, type));
-                    rp.setReceiptCode("INV" + FxUtilsHandler.generateRandomNumber(7));
+                    // rp.setReceiptCode("INV" + FxUtilsHandler.generateRandomNumber(7));
                     s.save(rp);
 
                     updateMemberLoan(row.getItem(), s, instDates[insts - 1]);
@@ -2813,7 +2813,7 @@ public class MemberfxmlController implements Initializable {
         Session s = HibernateUtil.getSessionFactory().openSession();
         s.beginTransaction();
         ReceiptPay rp = new ReceiptPay();
-        rp.setReceiptCode("INV" + FxUtilsHandler.generateRandomNumber(7));
+        // rp.setReceiptCode("INV" + FxUtilsHandler.generateRandomNumber(7));
         rp.setPaymentType("subscription");
         rp.setPayDate(new java.util.Date());
         rp.setPayIds(new Gson().toJson(subIds, new TypeToken<List<Integer>>() {
@@ -2843,6 +2843,23 @@ public class MemberfxmlController implements Initializable {
         initContributionTable(FXCollections.observableArrayList(getAllContributionsOf(member_code_txt.getText())));
     }
 
+    private void genaratePaymentReport(List<Integer> lpIds, String mCode, String reportTitle) {
+        String reportPath = "com/court/reports/InstallmentPayInvoiceReport.jasper";
+        Session s = HibernateUtil.getSessionFactory().openSession();
+        SessionImpl smpl = (SessionImpl) s;
+        Connection con = smpl.connection();
+        Map<String, Object> map = new HashMap<>();
+        map.put("companyName", ReportHandler.COMPANY_NAME);
+        map.put("companyAddress", ReportHandler.ADDRESS);
+        map.put("reportTitle", reportTitle);
+        map.put("member_code", mCode);
+        map.put("lp_list", lpIds.stream().map(i -> String.valueOf(i.intValue())).collect(Collectors.joining(",")));
+        ReportHandler rh = new ReportHandler(reportPath, map, null, con);
+        rh.genarateReport();
+        rh.viewReport();
+        s.close();
+    }
+
     private boolean isFormZero(GridPane subs_form) {
         ObservableList<Node> children = subs_form.getChildren();
         double val = 0.0;
@@ -2865,23 +2882,6 @@ public class MemberfxmlController implements Initializable {
                 .setMaxResults(1);
         MemberSubscriptions ms = (MemberSubscriptions) c.uniqueResult();
         return ms;
-    }
-
-    private void genaratePaymentReport(List<Integer> lpIds, String mCode, String reportTitle) {
-        String reportPath = "com/court/reports/InstallmentPayInvoiceReport.jasper";
-        Session s = HibernateUtil.getSessionFactory().openSession();
-        SessionImpl smpl = (SessionImpl) s;
-        Connection con = smpl.connection();
-        Map<String, Object> map = new HashMap<>();
-        map.put("companyName", ReportHandler.COMPANY_NAME);
-        map.put("companyAddress", ReportHandler.ADDRESS);
-        map.put("reportTitle", reportTitle);
-        map.put("member_code", mCode);
-        map.put("lp_list", lpIds.stream().map(i -> String.valueOf(i.intValue())).collect(Collectors.joining(",")));
-        ReportHandler rh = new ReportHandler(reportPath, map, null, con);
-        rh.genarateReport();
-        rh.viewReport();
-        s.close();
     }
 
     private void freezeAtMemberContribution(boolean flag) {

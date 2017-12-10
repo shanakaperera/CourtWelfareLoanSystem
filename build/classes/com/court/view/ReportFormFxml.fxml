@@ -64,6 +64,12 @@
                   <String fx:value="btn-danger" />
                </styleClass>
             </Button>
+            <Button mnemonicParsing="false" onAction="#onReceiptPaymentMadeAction" prefHeight="54.0" style="-fx-text-fill: #ffff;" text="Receipt Payment Made">
+               <styleClass>
+                  <String fx:value="btn" />
+                  <String fx:value="btn-primary" />
+               </styleClass>
+            </Button>
             </children>
         </FlowPane>
     </children>

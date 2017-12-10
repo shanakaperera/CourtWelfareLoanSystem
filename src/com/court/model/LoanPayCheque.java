@@ -17,6 +17,7 @@ public class LoanPayCheque implements java.io.Serializable {
     private Double chequeAmount;
     private String branch;
     private String bankCode;
+    private String invoCode;
 
     public LoanPayCheque() {
     }
@@ -103,9 +104,17 @@ public class LoanPayCheque implements java.io.Serializable {
         this.chequeRealise = chequeRealise;
     }
 
+    public String getInvoCode() {
+        return invoCode;
+    }
+
+    public void setInvoCode(String invoCode) {
+        this.invoCode = invoCode;
+    }
+
     @Override
     public String toString() {
-        return this.chequeNo;
+        return this.invoCode;
     }
 
 }

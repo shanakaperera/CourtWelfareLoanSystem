@@ -10,6 +10,7 @@ import com.court.handler.DisplaySubscriptionFactory;
 import com.court.handler.DisplayTotalInstallmentsFactory;
 import com.court.handler.FxUtilsHandler;
 import com.court.handler.PropHandler;
+import com.court.handler.ReportHandler;
 import com.court.handler.SubscriptionValueFactory;
 import com.court.handler.TextFormatHandler;
 import com.court.model.Branch;
@@ -21,12 +22,15 @@ import com.court.model.MemberSubscriptions;
 import com.court.model.SubscriptionPay;
 import java.io.IOException;
 import java.net.URL;
+import java.sql.Connection;
 import java.sql.Date;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.LinkedHashSet;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.ResourceBundle;
@@ -64,6 +68,7 @@ import org.hibernate.Session;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
+import org.hibernate.internal.SessionImpl;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 
@@ -281,10 +286,12 @@ public class CollectionSheetFxmlController implements Initializable {
             Alert alert_error = new Alert(Alert.AlertType.INFORMATION);
             alert_error.setTitle("Information Message");
             alert_error.setHeaderText("Successfully Updated !");
-            alert_error.setContentText("You have successfully updated the payments of " + search_txt.getText()
+            alert_error.setContentText("You have successfully updated the payments of " + search_txt.getText().split("-")[1]
                     + " of this month.");
             Optional<ButtonType> result = alert_error.showAndWait();
             if (result.get() == ButtonType.OK) {
+                //GENERATE REPORT AFTER PAYMENT======
+                generateCollectionPaymentReport(payCheque.getChequeNo());
                 FxUtilsHandler.clearFields(collection_grid);
                 collection_tbl.getItems().clear();
             }
@@ -318,7 +325,7 @@ public class CollectionSheetFxmlController implements Initializable {
                 c.add(Restrictions.disjunction()
                         //===================SEARCH CHANGED TO PAYMENT OFFICE INSTEAD OF USER BRANCH===================
                         // .add(Restrictions.eq("b.branchName", search_txt.getText())));
-                        .add(Restrictions.eq("po.branchName", search_txt.getText())));
+                        .add(Restrictions.eq("po.branchCode", search_txt.getText().split("-")[0])));
                 break;
             case 1:
                 c.add(Restrictions.disjunction()
@@ -438,32 +445,35 @@ public class CollectionSheetFxmlController implements Initializable {
         c.add(Restrictions.eq("status", true));
         switch (selectedIndex) {
             case 0:
-                c.setProjection(Projections.property("branchName"));
+                // c.setProjection(Projections.property("branchName"));
                 c.add(Restrictions.eq("parentId", 0));
-                List<String> bNames = c.list();
+                List<Branch> bNames = c.list();
                 //=== ADDED NEW RESTRICTION TO GET ONLY PAYMENT OFFICES INTO AUTO-COMPLETE==========
                 autoCompletionList(bNames);
-                System.out.println("NAMES - " + bNames);
                 break;
             case 1:
                 c.setProjection(Projections.property("memberId"));
                 List<String> mIds = c.list();
-                autoCompletionList(mIds);
+                // autoCompletionList(mIds);
                 break;
             case 2:
                 c.setProjection(Projections.property("nameWithIns"));
                 List<String> mNames = c.list();
-                autoCompletionList(mNames);
+                // autoCompletionList(mNames);
                 break;
         }
         session.close();
     }
 
-    private void autoCompletionList(List<String> lst) {
+    private void autoCompletionList(List<Branch> lst) {
         if (bindAutoCompletion != null) {
             bindAutoCompletion.dispose();
         }
-        bindAutoCompletion = TextFields.bindAutoCompletion(search_txt, new LinkedHashSet<>(lst));
+        List<String> collect = lst.stream()
+                .map(b -> b.getBranchCode() + "-" + b.getBranchName())
+                .collect(Collectors.toList());
+        HashSet<String> set = new HashSet<>(collect);
+        bindAutoCompletion = TextFields.bindAutoCompletion(search_txt, set);
     }
 
     private void updatePreviousInstallmentsOfMemberLoan(Session session, LoanPayment lp) {
@@ -564,5 +574,21 @@ public class CollectionSheetFxmlController implements Initializable {
     @FXML
     private void onUserEnterChequeMouseClicked(MouseEvent event) {
         user_enter_pay.selectRange(2, user_enter_pay.getText().length());
+    }
+
+    private void generateCollectionPaymentReport(String chkNo) {
+        String reportPath = "com/court/reports/BranchWiseCollectionMadeReport.jasper";
+        Session s = HibernateUtil.getSessionFactory().openSession();
+        SessionImpl smpl = (SessionImpl) s;
+        Connection con = smpl.connection();
+        Map<String, Object> map = new HashMap<>();
+        map.put("companyName", ReportHandler.COMPANY_NAME);
+        map.put("companyAddress", ReportHandler.ADDRESS);
+        map.put("reportTitle", "Branch Wise Cheque Payments");
+        map.put("chk_no", chkNo);
+        ReportHandler rh = new ReportHandler(reportPath, map, null, con);
+        rh.genarateReport();
+        rh.viewReport();
+        s.close();
     }
 }

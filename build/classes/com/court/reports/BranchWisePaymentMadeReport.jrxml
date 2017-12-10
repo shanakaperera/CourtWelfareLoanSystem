@@ -9,9 +9,7 @@
 	<parameter name="br_code" class="java.lang.String">
 		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
 	</parameter>
-	<parameter name="cheque_no" class="java.lang.String">
-		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
-	</parameter>
+	<parameter name="invo_code" class="java.lang.String"/>
 	<queryString>
 		<![CDATA[SELECT
     m.member_id,
@@ -37,7 +35,8 @@
     lpc.bank_code,
     SUM(IFNULL(lp.paid_amt,0)) as loan_pay,
     lp.payment_date,
-    lp.cheque_no
+    lp.cheque_no,
+    lpc.invo_code	
 FROM
     court_loan.member_loan ml
 RIGHT OUTER JOIN
@@ -70,9 +69,7 @@ LEFT OUTER JOIN
 ON
     (
         ml.id = lp.member_loan_id)
-WHERE
-    b.branch_code = $P{br_code}
-AND sp.cheque_no = $P{cheque_no}
+WHERE lpc.invo_code = $P{invo_code}
 GROUP BY m.member_id ;]]>
 	</queryString>
 	<field name="member_id" class="java.lang.String">
@@ -139,6 +136,9 @@ GROUP BY m.member_id ;]]>
 	<field name="payment_date" class="java.sql.Date">
 		<fieldDescription><![CDATA[]]></fieldDescription>
 	</field>
+	<field name="invo_code" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
 	<variable name="r_total" class="java.lang.Double">
 		<variableExpression><![CDATA[new java.lang.Double($F{savings_fee}.doubleValue()+$F{membership_fee}.doubleValue()+$F{hoi_fee}.doubleValue()+$F{optional}.doubleValue()+$F{aci_fee}.doubleValue()+$F{admission_fee}.doubleValue()+$F{loan_pay}.doubleValue())]]></variableExpression>
 	</variable>
@@ -189,20 +189,20 @@ GROUP BY m.member_id ;]]>
 				</textElement>
 				<text><![CDATA[Report Genarated Date]]></text>
 			</staticText>
-			<textField>
-				<reportElement x="78" y="52" width="100" height="20" uuid="16d72766-0302-4bb8-ab9a-04ee5ffba3bb"/>
-				<textElement>
-					<font isBold="true"/>
-				</textElement>
-				<textFieldExpression><![CDATA[$F{cheque_no}]]></textFieldExpression>
-			</textField>
 			<staticText>
 				<reportElement x="0" y="52" width="78" height="20" uuid="f7d08c62-0dfe-4998-b7ca-5a1fb2258241"/>
 				<textElement>
 					<font isBold="true"/>
 				</textElement>
-				<text><![CDATA[CHEQUE No.]]></text>
+				<text><![CDATA[INVOICE No.]]></text>
 			</staticText>
+			<textField>
+				<reportElement x="78" y="52" width="100" height="20" uuid="757fcdac-7cb6-460e-b7d2-a842fca56c22"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{invo_code}]]></textFieldExpression>
+			</textField>
 		</band>
 	</title>
 	<pageHeader>
@@ -443,6 +443,17 @@ GROUP BY m.member_id ;]]>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{cheque_amount}]]></textFieldExpression>
 			</textField>
+			<textField>
+				<reportElement x="467" y="46" width="83" height="20" uuid="16d72766-0302-4bb8-ab9a-04ee5ffba3bb"/>
+				<textElement>
+					<font isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{cheque_no}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="396" y="46" width="71" height="20" uuid="f1a5df63-8a13-46f2-85ee-97130773baa2"/>
+				<text><![CDATA[Cheque No :]]></text>
+			</staticText>
 		</band>
 	</summary>
 </jasperReport>
