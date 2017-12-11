@@ -405,6 +405,10 @@ public class MemberfxmlController implements Initializable {
     private Tab gen_details_tab;
 
     private Branch payBranch;
+    @FXML
+    private Label bal_con_label;
+
+    private ContGive cGive;
 
     /**
      * Initializes the controller class.
@@ -1255,6 +1259,7 @@ public class MemberfxmlController implements Initializable {
                                 lp.setPaymentDate(new java.util.Date());
                                 lp.setInstallmentDate(instDates[i]);
                                 lp.setPaidAmt(installWithoutPolli);
+                                lp.setListedPay(installWithoutPolli);
                                 if (i == (insts - 1)) {
                                     lp.setIsLast(true);
                                 } else {
@@ -1316,6 +1321,7 @@ public class MemberfxmlController implements Initializable {
                             lp.setPaymentDate(new java.util.Date());
                             lp.setInstallmentDate(instDates[i]);
                             lp.setPaidAmt(installWithoutPolli);
+                            lp.setListedPay(installWithoutPolli);
                             if (i == (insts - 1)) {
                                 lp.setIsLast(true);
                             } else {
@@ -1380,6 +1386,7 @@ public class MemberfxmlController implements Initializable {
                             lp.setPaymentDate(new java.util.Date());
                             lp.setInstallmentDate(instDates[i]);
                             lp.setPaidAmt(installWithoutPolli);
+                            lp.setListedPay(installWithoutPolli);
                             if (i == (insts - 1)) {
                                 lp.setIsLast(true);
                             } else {
@@ -1455,6 +1462,7 @@ public class MemberfxmlController implements Initializable {
                             lp.setPaymentDate(new java.util.Date());
                             lp.setInstallmentDate(instDates[i]);
                             lp.setPaidAmt(installWithoutPolli_2);
+                            lp.setListedPay(installWithoutPolli_2);
                             if (i == (insts - 1)) {
                                 lp.setIsLast(true);
                             } else {
@@ -1597,6 +1605,7 @@ public class MemberfxmlController implements Initializable {
                         lp.setPaymentDate(new java.util.Date());
                         lp.setInstallmentDate(instDates[i]);
                         lp.setPaidAmt(instAmt);
+                        lp.setListedPay(instAmt);
                         if (i == (insts - 1)) {
                             lp.setIsLast(true);
                         } else {
@@ -2661,6 +2670,7 @@ public class MemberfxmlController implements Initializable {
 
         contr_tbl.setItems(subsPay);
 
+        double cBalance = getContinuingBalance(member_code_txt.getText());
         double sum_aci = subsPay.stream().mapToDouble(SubscriptionPay::getAciFee).sum();
         double sum_hoi = subsPay.stream().mapToDouble(SubscriptionPay::getHoiFee).sum();
         double sum_sav = subsPay.stream().mapToDouble(SubscriptionPay::getSavingsFee).sum();
@@ -2669,7 +2679,9 @@ public class MemberfxmlController implements Initializable {
         tot_hoi_label.setText(TextFormatHandler.CURRENCY_DECIMAL_FORMAT.format(sum_hoi));
         tot_opt_label.setText(TextFormatHandler.CURRENCY_DECIMAL_FORMAT.format(sum_opt));
         tot_sav_label.setText(TextFormatHandler.CURRENCY_DECIMAL_FORMAT.format(sum_sav));
+        bal_con_label.setText(TextFormatHandler.CURRENCY_DECIMAL_FORMAT.format(cBalance));
 
+        cGive = new ContGive(sum_hoi, sum_aci, sum_sav, sum_opt, cBalance);
     }
 
     private List<SubscriptionPay> getAllContributionsOf(String memberId) {
@@ -2920,5 +2932,100 @@ public class MemberfxmlController implements Initializable {
         DateTime insDateE = new DateTime(new SimpleDateFormat("yyyy-MM-dd").format(instDate), zone);
         DateTime nowDate = insDateE.withDayOfMonth(25);
         return nowDate.toDate();
+    }
+
+    private double getContinuingBalance(String mbrCode) {
+        Session s = HibernateUtil.getSessionFactory().openSession();
+        Criteria c = s.createCriteria(MemberLoan.class, "ml");
+        c.createAlias("ml.member", "m");
+        c.add(Restrictions.eq("m.memberId", mbrCode));
+        List<MemberLoan> list = c.list();
+        double sum = list.stream().mapToDouble(MemberLoan::getKotaLeft).sum();
+        s.close();
+        return sum;
+    }
+
+    @FXML
+    private void handoverContAction(ActionEvent event) {
+        if (cGive != null) {
+            Dialog<ContGive> dialog = new Dialog<>();
+            dialog.setTitle("Handover Contribution");
+            dialog.setHeaderText("Contribution Handover Note");
+            ButtonType viewBtn = new ButtonType("Execute Transcation", ButtonData.OK_DONE);
+            dialog.getDialogPane().getButtonTypes().addAll(viewBtn, ButtonType.CANCEL);
+            GridPane grid = new GridPane();
+            grid.setHgap(10);
+            grid.setVgap(10);
+            grid.setPadding(new Insets(20, 150, 10, 10));
+
+            grid.add(new Label("ACI :"), 0, 0);
+            grid.add(new Label(TextFormatHandler.CURRENCY_DECIMAL_FORMAT.format(cGive.getAci())), 1, 0);
+            grid.add(new Label("HOI :"), 0, 1);
+            grid.add(new Label(TextFormatHandler.CURRENCY_DECIMAL_FORMAT.format(cGive.getHoi())), 1, 1);
+            grid.add(new Label("SAVINGS :"), 0, 2);
+            grid.add(new Label(TextFormatHandler.CURRENCY_DECIMAL_FORMAT.format(cGive.getSav())), 1, 2);
+            grid.add(new Label("OPT :"), 0, 3);
+            grid.add(new Label(TextFormatHandler.CURRENCY_DECIMAL_FORMAT.format(cGive.getOpt())), 1, 3);
+            grid.add(new Label("BALANCE CONT. :"), 0, 4);
+            grid.add(new Label(TextFormatHandler.CURRENCY_DECIMAL_FORMAT.format(cGive.getBalCont())), 1, 4);
+            grid.add(new Label("GRAND TOTAL :"), 0, 5);
+            grid.add(new Label(TextFormatHandler.CURRENCY_DECIMAL_FORMAT.format(cGive.getGiveAway())), 1, 5);
+            dialog.getDialogPane().setContent(grid);
+
+            dialog.setResultConverter(db -> {
+                if (db == viewBtn) {
+                    return cGive;
+                }
+                return null;
+            });
+
+            Optional<ContGive> result = dialog.showAndWait();
+            result.ifPresent(b -> {
+                //=============REPORT GENERATE AND EXECUTION CODE GOES HERE================
+            });
+        }
+    }
+
+    class ContGive {
+
+        private double hoi;
+        private double aci;
+        private double sav;
+        private double opt;
+        private double balCont;
+
+        public ContGive(double hoi, double aci, double sav, double opt, double balCont) {
+            this.hoi = hoi;
+            this.aci = aci;
+            this.sav = sav;
+            this.opt = opt;
+            this.balCont = balCont;
+        }
+
+        public double getGiveAway() {
+            return (this.hoi + this.aci + this.sav + this.opt) - this.balCont;
+        }
+
+        ;
+        public double getHoi() {
+            return hoi;
+        }
+
+        public double getAci() {
+            return aci;
+        }
+
+        public double getSav() {
+            return sav;
+        }
+
+        public double getOpt() {
+            return opt;
+        }
+
+        public double getBalCont() {
+            return balCont;
+        }
+
     }
 }

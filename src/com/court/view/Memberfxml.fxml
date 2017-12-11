@@ -885,6 +885,33 @@
                                                 </Label>
                                              </children>
                                           </HBox>
+                                          <HBox>
+                                             <children>
+                                                <Label prefHeight="27.0" prefWidth="175.0" text="Balance Continued">
+                                                   <font>
+                                                      <Font name="System Bold" size="18.0" />
+                                                   </font>
+                                                </Label>
+                                                <Label fx:id="bal_con_label" prefHeight="27.0" prefWidth="110.0" text="Label">
+                                                   <font>
+                                                      <Font name="System Bold" size="18.0" />
+                                                   </font>
+                                                </Label>
+                                             </children>
+                                          </HBox>
+                                          <HBox prefHeight="100.0" prefWidth="200.0">
+                                             <children>
+                                                <Button mnemonicParsing="false" onAction="#handoverContAction" style="-fx-text-fill: #ffff;" text="HANDOVER CONTRIBUTION">
+                                                   <styleClass>
+                                                      <String fx:value="btn" />
+                                                      <String fx:value="btn-primary" />
+                                                   </styleClass>
+                                                </Button>
+                                             </children>
+                                             <padding>
+                                                <Insets top="20.0" />
+                                             </padding>
+                                          </HBox>
                                        </children>
                                     </VBox>
                                     <VBox fx:id="invo_gen_box" alignment="TOP_RIGHT" HBox.hgrow="ALWAYS">

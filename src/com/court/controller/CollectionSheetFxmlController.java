@@ -255,8 +255,11 @@ public class CollectionSheetFxmlController implements Initializable {
                         lp.setInstallmentNo(getLastPay.getInstallmentNo() + 1);
                         lp.setInstallmentDate(getInstallmentDate(getLastPay.getInstallmentDate()));
                         lp.setPaidAmt(ml.getLoanInstallment());
+                        lp.setListedPay(getListedPayFrom(ml, session));
                         session.save(lp);
-                        updateMemberLoan(ml, session, getInstallmentDate(getLastPay.getInstallmentDate()));
+
+                        double kota_left = (lp.getListedPay() > lp.getPaidAmt()) ? (lp.getListedPay() - lp.getPaidAmt()) : 0.0;
+                        updateMemberLoan(ml, kota_left, session, getInstallmentDate(getLastPay.getInstallmentDate()));
 
                         //end loan if the final inatallment......
                         if (ml.getNoOfRepay() == (getLastPay.getInstallmentNo() + 1)) {
@@ -270,11 +273,13 @@ public class CollectionSheetFxmlController implements Initializable {
                         lp.setIsLast(true);
                         lp.setInstallmentDue(ml.getNoOfRepay() - 1);
                         lp.setPaidAmt(ml.getLoanInstallment());
+                        lp.setListedPay(getListedPayFrom(ml, session));
                         lp.setInstallmentNo(1);
                         lp.setInstallmentDate(getDayOfMonth(Date.valueOf(chk_of_month_chooser.getValue())));
-
                         session.save(lp);
-                        updateMemberLoan(ml, session, getDayOfMonth(Date.valueOf(chk_of_month_chooser.getValue())));
+
+                        double kota_left = (lp.getListedPay() > lp.getPaidAmt()) ? (lp.getListedPay() - lp.getPaidAmt()) : 0.0;
+                        updateMemberLoan(ml, kota_left, session, getDayOfMonth(Date.valueOf(chk_of_month_chooser.getValue())));
                     }
                 });
 
@@ -551,9 +556,10 @@ public class CollectionSheetFxmlController implements Initializable {
         return collect;
     }
 
-    private void updateMemberLoan(MemberLoan ml, Session session, java.util.Date payUntil) {
+    private void updateMemberLoan(MemberLoan ml, double kota_left, Session session, java.util.Date payUntil) {
         MemberLoan mll = (MemberLoan) session.load(MemberLoan.class, ml.getId());
         mll.setPaidUntil(payUntil);
+        mll.setKotaLeft(mll.getKotaLeft() + kota_left);
         session.update(mll);
     }
 
@@ -590,5 +596,10 @@ public class CollectionSheetFxmlController implements Initializable {
         rh.genarateReport();
         rh.viewReport();
         s.close();
+    }
+
+    private Double getListedPayFrom(MemberLoan ml, Session s) {
+        MemberLoan mml = (MemberLoan) s.load(MemberLoan.class, ml.getId());
+        return mml.getLoanInstallment();
     }
 }

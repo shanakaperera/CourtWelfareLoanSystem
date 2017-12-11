@@ -26,6 +26,9 @@
         <property name="paidAmt" type="java.lang.Double">
             <column name="paid_amt" precision="22" scale="0" />
         </property>
+        <property name="listedPay" type="java.lang.Double">
+            <column name="listed_pay" precision="22" scale="0" />
+        </property>
         <property name="paymentDate" type="date">
             <column name="payment_date" length="10" />
         </property>

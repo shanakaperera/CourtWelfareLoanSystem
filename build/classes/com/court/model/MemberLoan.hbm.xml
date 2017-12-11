@@ -71,6 +71,9 @@
         <property name="closedLoan" type="boolean">
             <column name="closed_loan" not-null="true" />
         </property>
+        <property name="kotaLeft" type="java.lang.Double">
+            <column name="kota_left"  precision="22" scale="0" />
+        </property>
         <set name="loanPayments" table="loan_payment" inverse="true" lazy="true" fetch="select">
             <key>
                 <column name="member_loan_id" not-null="true" />

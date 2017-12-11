@@ -35,6 +35,7 @@ public class MemberLoan implements java.io.Serializable {
     private double totalPay;
     private String loanName;
     private boolean closedLoan;
+    private double kotaLeft;
     private Set<LoanPayment> loanPayments = new HashSet<>();
     private List<MemberSubscription> mbrSubs = new ArrayList<>();
 
@@ -298,6 +299,12 @@ public class MemberLoan implements java.io.Serializable {
         this.lSum = lSum;
     }
 
+    public double getKotaLeft() {
+        return kotaLeft;
+    }
 
+    public void setKotaLeft(double kotaLeft) {
+        this.kotaLeft = kotaLeft;
+    }
 
 }
