@@ -311,6 +311,11 @@ public class CollectionSheetFxmlController implements Initializable {
     }
 
     private void performSearch(ComboBox<String> search_typ_combo, TextField search_txt) {
+
+        if (search_txt == null) {
+            return;
+        }
+
         Session session = HibernateUtil.getSessionFactory().openSession();
         Criteria c = session.createCriteria(Member.class);
         c.createAlias("branch", "b");

@@ -103,7 +103,7 @@
 		</band>
 	</columnHeader>
 	<detail>
-		<band height="94" splitType="Stretch">
+		<band height="85" splitType="Stretch">
 			<textField>
 				<reportElement x="0" y="4" width="100" height="20" uuid="8706ef6d-79e5-4a36-9f9a-2f2297ba573a"/>
 				<textElement verticalAlignment="Middle"/>
@@ -130,7 +130,7 @@
 				<textFieldExpression><![CDATA[$F{contactNo}]]></textFieldExpression>
 			</textField>
 			<subreport>
-				<reportElement x="33" y="36" width="470" height="57" uuid="5c10f464-db41-4f44-9aeb-7c3834d307e4"/>
+				<reportElement x="33" y="28" width="470" height="57" uuid="5c10f464-db41-4f44-9aeb-7c3834d307e4"/>
 				<subreportParameter name="p_id">
 					<subreportParameterExpression><![CDATA[$F{id}]]></subreportParameterExpression>
 				</subreportParameter>

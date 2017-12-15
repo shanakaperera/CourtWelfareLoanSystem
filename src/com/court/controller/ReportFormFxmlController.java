@@ -26,6 +26,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.stream.Collectors;
+import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -34,6 +35,7 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonBar.ButtonData;
 import javafx.scene.control.ButtonType;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
@@ -46,7 +48,9 @@ import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 import net.sf.jasperreports.engine.util.JRLoader;
 import org.controlsfx.control.textfield.TextFields;
 import org.hibernate.Criteria;
+import org.hibernate.HibernateException;
 import org.hibernate.Session;
+import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import org.hibernate.internal.SessionImpl;
 
@@ -72,7 +76,7 @@ public class ReportFormFxmlController implements Initializable {
 
         Dialog<AllLoansReport> dialog = new Dialog<>();
         dialog.setTitle("Loans");
-        dialog.setHeaderText("Select Branch");
+        dialog.setHeaderText("Select Office");
         ButtonType viewBtn = new ButtonType("View Report", ButtonData.OK_DONE);
         dialog.getDialogPane().getButtonTypes().addAll(viewBtn, ButtonType.CANCEL);
         GridPane grid = new GridPane();
@@ -87,7 +91,7 @@ public class ReportFormFxmlController implements Initializable {
 
         FxUtilsHandler.setDatePickerTimeFormat(fDate, tDate);
 
-        grid.add(new Label("Branch:"), 0, 0);
+        grid.add(new Label("Office:"), 0, 0);
         grid.add(bField, 1, 0);
         grid.add(new Label("Start Date:"), 0, 1);
         grid.add(fDate, 1, 1);
@@ -116,6 +120,7 @@ public class ReportFormFxmlController implements Initializable {
             }
             c.add(Restrictions.between("ml.grantedDate", FxUtilsHandler.getDateFrom(b.getFd()),
                     FxUtilsHandler.getDateFrom(b.getTd())));
+            c.addOrder(Order.asc("b.branchName"));
 
             List<MemberLoan> list = (List<MemberLoan>) c.list();
             JRBeanCollectionDataSource memberLoanBeanCollection = new JRBeanCollectionDataSource(list);
@@ -135,7 +140,7 @@ public class ReportFormFxmlController implements Initializable {
     @FXML
     private void onMemberAction(ActionEvent event) {
 
-        Dialog<String> dialog = new Dialog<>();
+        Dialog<Pair<String, Integer>> dialog = new Dialog<>();
         dialog.setTitle("Member List");
         dialog.setHeaderText("Select Working Office");
         ButtonType viewBtn = new ButtonType("View Report", ButtonData.OK_DONE);
@@ -146,26 +151,36 @@ public class ReportFormFxmlController implements Initializable {
         grid.setPadding(new Insets(20, 150, 10, 10));
 
         TextField bField = new TextField();
+        ComboBox<String> cbox = new ComboBox<>(FXCollections.observableArrayList("All", "Active", "Deactivated"));
+        cbox.getSelectionModel().select(0);
         TextFields.bindAutoCompletion(bField, getBranches(true));
 
         grid.add(new Label("Office:"), 0, 0);
         grid.add(bField, 1, 0);
+        grid.add(new Label("Member Status:"), 0, 1);
+        grid.add(cbox, 1, 1);
         dialog.getDialogPane().setContent(grid);
         dialog.setResultConverter(db -> {
             if (db == viewBtn) {
-                return bField.getText().split("-")[0];
+                return new Pair<>(bField.getText().split("-")[0], cbox.getSelectionModel().getSelectedIndex());
             }
             return null;
         });
 
-        Optional<String> result = dialog.showAndWait();
+        Optional<Pair<String, Integer>> result = dialog.showAndWait();
         result.ifPresent(b -> {
             String reportPath = "com/court/reports/MemberReport.jasper";
             Session session = HibernateUtil.getSessionFactory().openSession();
             Criteria c = session.createCriteria(Member.class, "m");
             c.createAlias("m.branch", "b");
-            if (!b.equalsIgnoreCase("All")) {
-                c.add(Restrictions.eq("b.branchCode", b));
+            if (!b.getKey().equalsIgnoreCase("All")) {
+                c.add(Restrictions.eq("b.branchCode", b.getKey()));
+            }
+            switch (b.getValue()) {
+                case 1:
+                    c.add(Restrictions.eq("m.status", true));
+                case 2:
+                    c.add(Restrictions.eq("m.status", false));
             }
             List<Member> list = (List<Member>) c.list();
             List<Member> orderedList = list.stream()
@@ -175,7 +190,7 @@ public class ReportFormFxmlController implements Initializable {
             Map<String, Object> map = new HashMap<>();
             map.put("companyName", ReportHandler.COMPANY_NAME);
             map.put("companyAddress", ReportHandler.ADDRESS);
-            map.put("reportTitle", "Welfare Member List Of Working Office - " + b);
+            map.put("reportTitle", "Welfare Member List Of Working Office - " + b.getKey());
             ReportHandler rh = new ReportHandler(reportPath, map, memberBeanCollection);
             rh.genarateReport();
             rh.viewReport();
@@ -186,7 +201,7 @@ public class ReportFormFxmlController implements Initializable {
     @FXML
     private void onMemberPayOfficeAction(ActionEvent event) {
 
-        Dialog<String> dialog = new Dialog<>();
+        Dialog<Pair<String, Integer>> dialog = new Dialog<>();
         dialog.setTitle("Member List");
         dialog.setHeaderText("Select Payment Office");
         ButtonType viewBtn = new ButtonType("View Report", ButtonData.OK_DONE);
@@ -197,19 +212,23 @@ public class ReportFormFxmlController implements Initializable {
         grid.setPadding(new Insets(20, 150, 10, 10));
 
         TextField bField = new TextField();
+        ComboBox<String> cbox = new ComboBox<>(FXCollections.observableArrayList("All", "Active", "Deactivated"));
+        cbox.getSelectionModel().select(0);
         TextFields.bindAutoCompletion(bField, getPaymentOffice());
 
         grid.add(new Label("Office:"), 0, 0);
         grid.add(bField, 1, 0);
+        grid.add(new Label("Member Status:"), 0, 1);
+        grid.add(cbox, 1, 1);
         dialog.getDialogPane().setContent(grid);
         dialog.setResultConverter(db -> {
             if (db == viewBtn) {
-                return bField.getText().split("-")[0];
+                return new Pair<>(bField.getText().split("-")[0], cbox.getSelectionModel().getSelectedIndex());
             }
             return null;
         });
 
-        Optional<String> result = dialog.showAndWait();
+        Optional<Pair<String, Integer>> result = dialog.showAndWait();
         result.ifPresent(b -> {
             String reportPath = "com/court/reports/MemberReport.jasper";
 
@@ -217,9 +236,16 @@ public class ReportFormFxmlController implements Initializable {
             Criteria c = session.createCriteria(Member.class, "m");
             c.createAlias("m.payOffice", "po");
             c.createAlias("m.branch", "b");
-            if (!b.equalsIgnoreCase("All")) {
-                c.add(Restrictions.eq("po.branchCode", b));
+            if (!b.getKey().equalsIgnoreCase("All")) {
+                c.add(Restrictions.eq("po.branchCode", b.getKey()));
             }
+            switch (b.getValue()) {
+                case 1:
+                    c.add(Restrictions.eq("m.status", true));
+                case 2:
+                    c.add(Restrictions.eq("m.status", false));
+            }
+
             c.add(Restrictions.eq("b.status", true));
             List<Member> list = (List<Member>) c.list();
             List<Member> orderedList = list.stream()
@@ -238,24 +264,57 @@ public class ReportFormFxmlController implements Initializable {
     }
 
     @FXML
-    private void onMemberWiseLoanAction(ActionEvent event) throws JRException {
-        String reportPath = "com/court/reports/MemberWiseLoansReport.jasper";
-        String subReportPath = "com/court/reports/MemberWiseLoansSubreport.jasper";
-        Session session = HibernateUtil.getSessionFactory().openSession();
-        Criteria c = session.createCriteria(Member.class);
-        List<Member> list = (List<Member>) c.list();
-        JRBeanCollectionDataSource memberLoansBeanCollection = new JRBeanCollectionDataSource(list);
-        Map<String, Object> map = new HashMap<>();
-        map.put("companyName", ReportHandler.COMPANY_NAME);
-        map.put("companyAddress", ReportHandler.ADDRESS);
-        map.put("reportTitle", "Member wise loans List");
-        JasperReport subReport = (JasperReport) JRLoader.loadObject(
-                ClassLoader.getSystemResourceAsStream(subReportPath));
-        map.put("SUBREPORT", subReport);
-        ReportHandler rh = new ReportHandler(reportPath, map, memberLoansBeanCollection);
-        rh.genarateReport();
-        rh.viewReport();
-        session.close();
+    private void onMemberWiseLoanAction(ActionEvent event) {
+        Dialog<String> dialog = new Dialog<>();
+        dialog.setTitle("Member History");
+        dialog.setHeaderText("Select Member");
+        ButtonType viewBtn = new ButtonType("View Report", ButtonData.OK_DONE);
+        dialog.getDialogPane().getButtonTypes().addAll(viewBtn, ButtonType.CANCEL);
+        GridPane grid = new GridPane();
+        grid.setHgap(10);
+        grid.setVgap(10);
+        grid.setPadding(new Insets(20, 150, 10, 10));
+
+        TextField bField = new TextField();
+        TextFields.bindAutoCompletion(bField, getMembers(true));
+
+        grid.add(new Label("Member:"), 0, 0);
+        grid.add(bField, 1, 0);
+        dialog.getDialogPane().setContent(grid);
+        dialog.setResultConverter(db -> {
+            if (db == viewBtn) {
+                return bField.getText().split("-")[0];
+            }
+            return null;
+        });
+
+        Optional<String> result = dialog.showAndWait();
+        result.ifPresent(mId -> {
+            try {
+                String reportPath = "com/court/reports/MemberWiseLoansReport.jasper";
+                String subReportPath = "com/court/reports/MemberWiseLoansSubreport.jasper";
+                Session session = HibernateUtil.getSessionFactory().openSession();
+                Criteria c = session.createCriteria(Member.class);
+                if (!mId.equalsIgnoreCase("All")) {
+                    c.add(Restrictions.eq("memberId", mId));
+                }
+                List<Member> list = (List<Member>) c.list();
+                JRBeanCollectionDataSource memberLoansBeanCollection = new JRBeanCollectionDataSource(list);
+                Map<String, Object> map = new HashMap<>();
+                map.put("companyName", ReportHandler.COMPANY_NAME);
+                map.put("companyAddress", ReportHandler.ADDRESS);
+                map.put("reportTitle", "Member wise loans List");
+                JasperReport subReport = (JasperReport) JRLoader.loadObject(
+                        ClassLoader.getSystemResourceAsStream(subReportPath));
+                map.put("SUBREPORT", subReport);
+                ReportHandler rh = new ReportHandler(reportPath, map, memberLoansBeanCollection);
+                rh.genarateReport();
+                rh.viewReport();
+                session.close();
+            } catch (JRException | HibernateException e) {
+                e.printStackTrace();
+            }
+        });
     }
 
     @FXML
@@ -315,7 +374,7 @@ public class ReportFormFxmlController implements Initializable {
         grid.setPadding(new Insets(20, 150, 10, 10));
 
         TextField bField = new TextField();
-        TextFields.bindAutoCompletion(bField, getMembers());
+        TextFields.bindAutoCompletion(bField, getMembers(false));
 
         grid.add(new Label("Member:"), 0, 0);
         grid.add(bField, 1, 0);
@@ -415,7 +474,7 @@ public class ReportFormFxmlController implements Initializable {
                 Map<String, Object> map = new HashMap<>();
                 map.put("companyName", ReportHandler.COMPANY_NAME);
                 map.put("companyAddress", ReportHandler.ADDRESS);
-                map.put("reportTitle", "Branch Wise Cheque Payments");
+                map.put("reportTitle", "Office Wise Cheque Payments");
                 map.put("invo_code", invo);
                 ReportHandler rh = new ReportHandler(reportPath, map, null, con);
                 rh.genarateReport();
@@ -424,7 +483,7 @@ public class ReportFormFxmlController implements Initializable {
                 Alert alert_error = new Alert(Alert.AlertType.ERROR);
                 alert_error.setTitle("Error");
                 alert_error.setHeaderText("Empty fields found ! ");
-                alert_error.setContentText("You have to enter both Cheque and Branch correctly to get the report.");
+                alert_error.setContentText("You have to enter both Cheque and Office correctly to get the report.");
                 alert_error.show();
             }
         });
@@ -473,7 +532,7 @@ public class ReportFormFxmlController implements Initializable {
         grid.setPadding(new Insets(20, 150, 10, 10));
 
         TextField bField = new TextField();
-        TextFields.bindAutoCompletion(bField, getMembers());
+        TextFields.bindAutoCompletion(bField, getMembers(false));
 
         grid.add(new Label("Member:"), 0, 0);
         grid.add(bField, 1, 0);
@@ -538,10 +597,13 @@ public class ReportFormFxmlController implements Initializable {
     /*
     Get All Members for the autocomplete textfield
      */
-    private List<Member> getMembers() {
+    private List<Member> getMembers(boolean withAll) {
         Session s = HibernateUtil.getSessionFactory().openSession();
         Criteria c = s.createCriteria(Member.class);
         List<Member> list = c.list();
+        if (withAll) {
+            list.add(new Member("All"));
+        }
         s.close();
         return list;
     }
@@ -576,9 +638,13 @@ public class ReportFormFxmlController implements Initializable {
         grid.setPadding(new Insets(20, 150, 10, 10));
 
         TextField tfp = new TextField();
-        TextFields.bindAutoCompletion(tfp, "Subscription", "Installment");
         TextField tfr = new TextField();
-        TextFields.bindAutoCompletion(tfr, getReceiptCodes());
+        tfr.setDisable(true);
+        TextFields.bindAutoCompletion(tfp, "Subscription", "Installment").setOnAutoCompleted(e -> {
+            tfr.setDisable(false);
+            TextFields.bindAutoCompletion(tfr, getReceiptCodes(e.getCompletion()));
+        });
+
         grid.add(new Label("Payment Type:"), 0, 0);
         grid.add(tfp, 1, 0);
         grid.add(new Label("Receipt No:"), 0, 1);
@@ -618,15 +684,31 @@ public class ReportFormFxmlController implements Initializable {
         });
     }
 
-    private List<String> getReceiptCodes() {
+    private List<String> getReceiptCodes(String rptType) {
 
         Session s = HibernateUtil.getSessionFactory().openSession();
         Criteria c = s.createCriteria(ReceiptPay.class);
+        c.add(Restrictions.eq("paymentType", rptType));
         List<ReceiptPay> list = c.list();
         List<String> collect = list.stream()
                 .map(ReceiptPay::getReceiptCode).collect(Collectors.toList());
         return collect;
 
+    }
+
+    @FXML
+    private void onWelfareLoansAction(ActionEvent event) {
+        String reportPath = "com/court/reports/LoanManagementReport.jasper";
+        Session s = HibernateUtil.getSessionFactory().openSession();
+        SessionImpl smpl = (SessionImpl) s;
+        Connection con = smpl.connection();
+        Map<String, Object> map = new HashMap<>();
+        map.put("companyName", ReportHandler.COMPANY_NAME);
+        map.put("companyAddress", ReportHandler.ADDRESS);
+        map.put("reportTitle", "Welfare Loan List");
+        ReportHandler rh = new ReportHandler(reportPath, map, null, con);
+        rh.genarateReport();
+        rh.viewReport();
     }
 
     class AllLoansReport {

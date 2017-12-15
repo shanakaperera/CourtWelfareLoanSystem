@@ -14,7 +14,6 @@ import java.io.OutputStream;
 import java.sql.Connection;
 import java.util.Map;
 import javafx.scene.control.Alert;
-import javafx.scene.image.ImageView;
 import net.sf.jasperreports.engine.JREmptyDataSource;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperExportManager;

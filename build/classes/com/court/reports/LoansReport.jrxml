@@ -171,60 +171,67 @@
 				<text><![CDATA[Code]]></text>
 			</staticText>
 			<staticText>
-				<reportElement stretchType="RelativeToTallestObject" x="56" y="1" width="85" height="20" isPrintWhenDetailOverflows="true" uuid="1fc07b8f-eef1-479a-9009-069a7e93df68"/>
+				<reportElement stretchType="RelativeToTallestObject" x="102" y="1" width="69" height="20" isPrintWhenDetailOverflows="true" uuid="1fc07b8f-eef1-479a-9009-069a7e93df68"/>
 				<textElement>
 					<font size="8" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Loan Type]]></text>
 			</staticText>
 			<staticText>
-				<reportElement stretchType="RelativeToTallestObject" x="141" y="1" width="52" height="20" isPrintWhenDetailOverflows="true" uuid="1219375e-612d-49c5-8023-8009545b1d07"/>
+				<reportElement stretchType="RelativeToTallestObject" x="171" y="1" width="52" height="20" isPrintWhenDetailOverflows="true" uuid="1219375e-612d-49c5-8023-8009545b1d07"/>
 				<textElement>
 					<font size="8" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Granted Date]]></text>
 			</staticText>
 			<staticText>
-				<reportElement stretchType="RelativeToTallestObject" x="203" y="1" width="66" height="20" isPrintWhenDetailOverflows="true" uuid="0694ecad-04d8-4652-b758-128c287a7406"/>
+				<reportElement stretchType="RelativeToTallestObject" x="223" y="1" width="66" height="20" isPrintWhenDetailOverflows="true" uuid="0694ecad-04d8-4652-b758-128c287a7406"/>
 				<textElement>
 					<font size="8" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Loan Amount]]></text>
 			</staticText>
 			<staticText>
-				<reportElement stretchType="RelativeToTallestObject" x="269" y="1" width="48" height="20" isPrintWhenDetailOverflows="true" uuid="1d1c51c6-992f-4e14-8ee3-c2fbd09a8d21"/>
+				<reportElement stretchType="RelativeToTallestObject" x="289" y="0" width="48" height="21" isPrintWhenDetailOverflows="true" uuid="1d1c51c6-992f-4e14-8ee3-c2fbd09a8d21"/>
 				<textElement>
 					<font size="8" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Duration]]></text>
 			</staticText>
 			<staticText>
-				<reportElement stretchType="RelativeToTallestObject" x="317" y="0" width="35" height="20" isPrintWhenDetailOverflows="true" uuid="6c35ce40-a86f-4b7f-9b8f-9ef972930a33"/>
+				<reportElement stretchType="RelativeToTallestObject" x="338" y="0" width="35" height="21" isPrintWhenDetailOverflows="true" uuid="6c35ce40-a86f-4b7f-9b8f-9ef972930a33"/>
 				<textElement>
 					<font size="8" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Interest]]></text>
 			</staticText>
 			<staticText>
-				<reportElement stretchType="RelativeToTallestObject" x="352" y="0" width="59" height="21" isPrintWhenDetailOverflows="true" uuid="2ae64773-2d9a-43c2-8276-ee47b55e7240"/>
+				<reportElement stretchType="RelativeToTallestObject" x="375" y="0" width="59" height="21" isPrintWhenDetailOverflows="true" uuid="2ae64773-2d9a-43c2-8276-ee47b55e7240"/>
 				<textElement>
 					<font size="8" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Installment]]></text>
 			</staticText>
 			<staticText>
-				<reportElement stretchType="RelativeToTallestObject" x="411" y="0" width="53" height="21" isPrintWhenDetailOverflows="true" uuid="cede8d7f-7df3-4a4e-8490-f0c3c61261fb"/>
+				<reportElement stretchType="RelativeToTallestObject" x="436" y="0" width="53" height="21" isPrintWhenDetailOverflows="true" uuid="cede8d7f-7df3-4a4e-8490-f0c3c61261fb"/>
 				<textElement>
 					<font size="8" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Total Interest]]></text>
 			</staticText>
 			<staticText>
-				<reportElement stretchType="RelativeToTallestObject" x="472" y="0" width="72" height="21" isPrintWhenDetailOverflows="true" uuid="034783e7-7d86-41f1-ae08-fa2e7c245f07"/>
+				<reportElement stretchType="RelativeToTallestObject" x="491" y="0" width="63" height="21" isPrintWhenDetailOverflows="true" uuid="034783e7-7d86-41f1-ae08-fa2e7c245f07"/>
 				<textElement>
 					<font size="8" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Total Amount]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="56" y="1" width="46" height="20" uuid="96128f1b-eef0-453a-8806-f09e265e4998"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Member]]></text>
 			</staticText>
 		</band>
 	</columnHeader>
@@ -238,35 +245,35 @@
 				<textFieldExpression><![CDATA[$F{memberLoanCode}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
-				<reportElement stretchType="RelativeToTallestObject" x="56" y="0" width="85" height="20" isPrintWhenDetailOverflows="true" uuid="80cb8ab6-c302-433e-a6ac-956c199455da"/>
+				<reportElement stretchType="RelativeToTallestObject" x="102" y="0" width="69" height="20" isPrintWhenDetailOverflows="true" uuid="80cb8ab6-c302-433e-a6ac-956c199455da"/>
 				<textElement verticalAlignment="Middle">
 					<font size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{loanName}]]></textFieldExpression>
 			</textField>
 			<textField pattern="yyyy/MM/dd">
-				<reportElement x="141" y="0" width="52" height="20" uuid="2cb8a7bc-2539-4c04-afc5-ef1fa64adae4"/>
+				<reportElement x="171" y="0" width="52" height="20" uuid="2cb8a7bc-2539-4c04-afc5-ef1fa64adae4"/>
 				<textElement verticalAlignment="Middle">
 					<font size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{grantedDate}]]></textFieldExpression>
 			</textField>
 			<textField pattern="Rs#,##0.00">
-				<reportElement x="203" y="0" width="66" height="20" uuid="a681c9ef-73bd-4709-95b1-3c90d7af0553"/>
+				<reportElement x="224" y="0" width="66" height="20" uuid="a681c9ef-73bd-4709-95b1-3c90d7af0553"/>
 				<textElement verticalAlignment="Middle">
 					<font size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{loanAmount}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="269" y="0" width="10" height="20" uuid="088a2805-f6a8-46df-a7c2-c57ff7e2e972"/>
+				<reportElement x="290" y="0" width="10" height="20" uuid="088a2805-f6a8-46df-a7c2-c57ff7e2e972"/>
 				<textElement verticalAlignment="Middle">
 					<font size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{noOfRepay}]]></textFieldExpression>
 			</textField>
 			<textField pattern="#,##0.0 %">
-				<reportElement x="317" y="0" width="35" height="20" uuid="33378e87-bfa5-41f8-888e-8b828008129b"/>
+				<reportElement x="339" y="0" width="35" height="20" uuid="33378e87-bfa5-41f8-888e-8b828008129b"/>
 				<textElement verticalAlignment="Middle">
 					<font size="8"/>
 				</textElement>
@@ -276,32 +283,39 @@
 				<reportElement x="0" y="22" width="555" height="1" forecolor="#999999" uuid="119f7108-fe2b-4902-914a-194752e01609"/>
 			</line>
 			<textField>
-				<reportElement x="279" y="0" width="38" height="20" uuid="2af7e773-0790-4220-af22-d7ce0493eb82"/>
+				<reportElement x="300" y="0" width="38" height="20" uuid="2af7e773-0790-4220-af22-d7ce0493eb82"/>
 				<textElement verticalAlignment="Middle">
 					<font size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{durationPer}]]></textFieldExpression>
 			</textField>
 			<textField pattern="Rs#,##0.00">
-				<reportElement x="352" y="0" width="59" height="20" uuid="3dee5fd7-cfdc-4d74-8f1f-e3ba7043dc0d"/>
+				<reportElement x="376" y="0" width="59" height="20" uuid="3dee5fd7-cfdc-4d74-8f1f-e3ba7043dc0d"/>
 				<textElement verticalAlignment="Middle">
 					<font size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{loanInstallment}]]></textFieldExpression>
 			</textField>
 			<textField pattern="Rs#,##0.00">
-				<reportElement x="411" y="0" width="53" height="20" uuid="5dd6042c-0b4d-4271-847c-c9de2b5772c3"/>
+				<reportElement x="436" y="0" width="53" height="20" uuid="5dd6042c-0b4d-4271-847c-c9de2b5772c3"/>
 				<textElement verticalAlignment="Middle">
 					<font size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$V{totalInt}]]></textFieldExpression>
 			</textField>
 			<textField pattern="Rs#,##0.00">
-				<reportElement x="472" y="0" width="72" height="20" uuid="b522d214-b0ca-4d8d-beb2-d58caca861e4"/>
+				<reportElement x="491" y="0" width="63" height="20" uuid="b522d214-b0ca-4d8d-beb2-d58caca861e4"/>
 				<textElement verticalAlignment="Middle">
 					<font size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$V{totalPay}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="56" y="0" width="46" height="20" uuid="cc18df42-6640-46ed-b3f6-f1e458acd121"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{member}.getMemberId()]]></textFieldExpression>
 			</textField>
 		</band>
 	</detail>

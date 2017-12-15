@@ -86,6 +86,8 @@ public class DashBoardFxmlController implements Initializable {
     private Label dashboard_header;
     @FXML
     private Button guarant_btn;
+    @FXML
+    private Button old_loan_btn;
 
     public LoggedSessionHandler loggedSession() {
         return sHandler;
@@ -244,6 +246,11 @@ public class DashBoardFxmlController implements Initializable {
     @FXML
     private void guarntBtnAction(ActionEvent event) throws IOException {
         loadDataPane("/com/court/view/GuarantorsFxml.fxml");
+    }
+
+    @FXML
+    private void oldLoanBtnAction(ActionEvent event) throws IOException {
+        loadDataPane("/com/court/view/OldLoansFxml.fxml");
     }
 
     public Label getDashboard_header() {

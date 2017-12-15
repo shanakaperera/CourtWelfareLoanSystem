@@ -111,7 +111,7 @@ ORDER BY br.branch_code;]]>
 	<variable name="g_total" class="java.lang.Double" resetType="Group" resetGroup="branch_group" calculation="Sum">
 		<variableExpression><![CDATA[$V{e_total}]]></variableExpression>
 	</variable>
-	<group name="branch_group" isStartNewPage="true" keepTogether="true">
+	<group name="branch_group" isStartNewPage="true" footerPosition="ForceAtBottom" keepTogether="true">
 		<groupExpression><![CDATA[$F{branch_code}]]></groupExpression>
 		<groupHeader>
 			<band height="25">

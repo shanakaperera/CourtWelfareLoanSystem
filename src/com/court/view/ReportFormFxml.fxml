@@ -2,12 +2,23 @@
 
 <?import java.lang.String?>
 <?import javafx.geometry.Insets?>
-<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.*?>
 <?import javafx.scene.layout.FlowPane?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.text.Font?>
 
 <VBox alignment="CENTER_LEFT" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.court.controller.ReportFormFxmlController">
     <children>
+        <HBox alignment="CENTER" prefHeight="50.0" prefWidth="200.0" styleClass="VBox" VBox.vgrow="NEVER">
+            <children>
+                <Label text="REPORTS">
+                    <font>
+                        <Font size="18.0" />
+                    </font>
+                </Label>
+            </children>
+        </HBox>
         <FlowPane alignment="CENTER_LEFT" hgap="10.0" vgap="10.0" VBox.vgrow="ALWAYS">
             <children>
                 <Button fx:id="mbr_loans_btn" mnemonicParsing="false" onAction="#onLoanAction" prefHeight="54.0" style="-fx-text-fill: #ffff;" text="All Loans">
@@ -28,7 +39,7 @@
                   <String fx:value="btn-primary" />
                </styleClass>
             </Button>
-            <Button mnemonicParsing="false" onAction="#onBranchAction" prefHeight="54.0" style="-fx-text-fill: #ffff;" text="All Branches">
+            <Button mnemonicParsing="false" onAction="#onBranchAction" prefHeight="54.0" style="-fx-text-fill: #ffff;" text="All Office">
                <styleClass>
                   <String fx:value="btn" />
                   <String fx:value="btn-success" />
@@ -40,13 +51,13 @@
                         <String fx:value="btn-primary" />
                     </styleClass> 
                 </Button>
-                <Button mnemonicParsing="false" onAction="#onBranchCollectionDueAction" prefHeight="54.0" style="-fx-text-fill: #ffff;" text="Branch Wise Collection Due">
+                <Button mnemonicParsing="false" onAction="#onBranchCollectionDueAction" prefHeight="54.0" style="-fx-text-fill: #ffff;" text="Office Wise Collection Due">
                     <styleClass>
                         <String fx:value="btn" />
                         <String fx:value="btn-success" />
                     </styleClass>
                 </Button>
-                <Button mnemonicParsing="false" onAction="#onBranchCollectionMadeAction" prefHeight="54.0" style="-fx-text-fill: #ffff;" text="Branch Wise Collection Made">
+                <Button mnemonicParsing="false" onAction="#onBranchCollectionMadeAction" prefHeight="54.0" style="-fx-text-fill: #ffff;" text="Office Wise Collection Made">
                     <styleClass>
                         <String fx:value="btn" />
                         <String fx:value="btn-danger" />
@@ -68,6 +79,12 @@
                <styleClass>
                   <String fx:value="btn" />
                   <String fx:value="btn-primary" />
+               </styleClass>
+            </Button>
+            <Button mnemonicParsing="false" onAction="#onWelfareLoansAction" prefHeight="54.0" style="-fx-text-fill: #ffff;" text="Welfare Loan List">
+               <styleClass>
+                  <String fx:value="btn" />
+                  <String fx:value="btn-success" />
                </styleClass>
             </Button>
             </children>

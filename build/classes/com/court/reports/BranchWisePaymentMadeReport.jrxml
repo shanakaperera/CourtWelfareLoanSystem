@@ -33,42 +33,55 @@
     lpc.cheque_amount,
     lpc.branch,
     lpc.bank_code,
-    SUM(IFNULL(lp.paid_amt,0)) as loan_pay,
     lp.payment_date,
     lp.cheque_no,
-    lpc.invo_code	
+    lpc.invo_code,
+    IFNULL((
+                SELECT
+                    lp_2.paid_amt
+                FROM
+                    court_loan.loan_payment lp_2
+                INNER JOIN
+                    court_loan.member_loan ml_2
+                ON
+                    (
+                        lp_2.member_loan_id = ml_2.id)
+                INNER JOIN
+                    court_loan.member m_2
+                ON
+                    (
+                        ml_2.member_id = m_2.id)
+                WHERE         
+                        m_2.member_id=m.member_id
+                AND     lp_2.id=lp.id        
+        ),0) AS loan_pay
 FROM
-    court_loan.member_loan ml
-RIGHT OUTER JOIN
+    court_loan.member_subscriptions mss
+INNER JOIN
     court_loan.member m
 ON
     (
-        ml.member_id = m.id)
-INNER JOIN
-    court_loan.member_subscriptions ms
-ON
-    (
-        m.id = ms.member_id)
+        mss.member_id = m.id)
 INNER JOIN
     court_loan.subscription_pay sp
 ON
     (
-        ms.id = sp.member_subscriptions_id)
-INNER JOIN
-    court_loan.branch b
+        mss.id = sp.member_subscriptions_id)
+LEFT OUTER JOIN
+    court_loan.loan_payment lp
 ON
     (
-        m.branch_id = b.id)
+        sp.cheque_no = lp.cheque_no)
 INNER JOIN
     court_loan.loan_pay_cheque lpc
 ON
     (
         sp.cheque_no = lpc.cheque_no)
-LEFT OUTER JOIN
-    court_loan.loan_payment lp
+INNER JOIN
+    court_loan.branch b
 ON
     (
-        ml.id = lp.member_loan_id)
+        m.branch_id = b.id)
 WHERE lpc.invo_code = $P{invo_code}
 GROUP BY m.member_id ;]]>
 	</queryString>
@@ -132,13 +145,13 @@ GROUP BY m.member_id ;]]>
 	<field name="bank_code" class="java.lang.String">
 		<fieldDescription><![CDATA[]]></fieldDescription>
 	</field>
-	<field name="loan_pay" class="java.lang.Double"/>
 	<field name="payment_date" class="java.sql.Date">
 		<fieldDescription><![CDATA[]]></fieldDescription>
 	</field>
 	<field name="invo_code" class="java.lang.String">
 		<fieldDescription><![CDATA[]]></fieldDescription>
 	</field>
+	<field name="loan_pay" class="java.lang.Double"/>
 	<variable name="r_total" class="java.lang.Double">
 		<variableExpression><![CDATA[new java.lang.Double($F{savings_fee}.doubleValue()+$F{membership_fee}.doubleValue()+$F{hoi_fee}.doubleValue()+$F{optional}.doubleValue()+$F{aci_fee}.doubleValue()+$F{admission_fee}.doubleValue()+$F{loan_pay}.doubleValue())]]></variableExpression>
 	</variable>

@@ -97,6 +97,12 @@
                                         <String fx:value="btn-primary" />
                                     </styleClass>
                                 </Button>
+                        <Button fx:id="old_loan_btn" mnemonicParsing="false" onAction="#oldLoanBtnAction" prefHeight="37.0" prefWidth="171.0" style="-fx-text-fill: #ffff; -fx-font-size: 16;" text="Old Loans">
+                           <styleClass>
+                              <String fx:value="btn" />
+                              <String fx:value="btn-primary" />
+                           </styleClass>
+                        </Button>
                                 <MenuButton alignment="CENTER" mnemonicParsing="false" popupSide="RIGHT" prefHeight="37.0" prefWidth="171.0" style="-fx-text-fill: #ffff; -fx-font-size: 16;" text="Settings">
                                     <items>
                                         <MenuItem fx:id="usrmng_menu_item" mnemonicParsing="false" onAction="#usrmngBtnAction" text="User Management" />

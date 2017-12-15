@@ -50,6 +50,7 @@ public class Member implements java.io.Serializable {
     }
 
     public Member(String string) {
+        this.fullName = string;
     }
 
     public Member(Branch branch, String memberId, boolean status) {
@@ -353,7 +354,7 @@ public class Member implements java.io.Serializable {
 
     @Override
     public String toString() {
-        return (this.memberId + " - " + this.fullName);
+        return this.memberId != null ? (this.memberId + " - " + this.fullName) : this.fullName;
     }
 
     public Set<ReceiptPay> getReceiptPays() {
