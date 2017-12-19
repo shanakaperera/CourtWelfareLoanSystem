@@ -35,5 +35,11 @@
         <property name="isLast" type="boolean">
             <column name="is_last" not-null="true" />
         </property>
+        <property name="payOffice" type="int">
+            <column name="pay_office" />
+        </property>
+        <property name="workOffice" type="int">
+            <column name="work_office" />
+        </property>
     </class>
 </hibernate-mapping>

@@ -74,6 +74,15 @@
         <property name="kotaLeft" type="java.lang.Double">
             <column name="kota_left"  precision="22" scale="0" />
         </property>
+        <property name="oldLoan" type="boolean">
+            <column name="old_loan" not-null="true" />
+        </property>
+        <property name="paidSofar" type="java.lang.Double">
+            <column name="paid_sofar"  precision="22" scale="0" />
+        </property>
+        <property name="lastInstall" type="int">
+            <column name="last_install"/>
+        </property>
         <set name="loanPayments" table="loan_payment" inverse="true" lazy="true" fetch="select">
             <key>
                 <column name="member_loan_id" not-null="true" />

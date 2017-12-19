@@ -47,7 +47,9 @@ import org.controlsfx.validation.Validator;
 import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.criterion.Order;
+import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
+import org.hibernate.transform.Transformers;
 
 /**
  * FXML Controller class
@@ -192,6 +194,11 @@ public class AssignNewLoanFxmlController implements Initializable {
     private ObservableList<Loan> getAllLoans() {
         Session session = HibernateUtil.getSessionFactory().openSession();
         Criteria c = session.createCriteria(Loan.class);
+        c.setProjection(Projections.projectionList()
+                .add(Projections.property("loanId"), "loanId")
+                .add(Projections.property("loanName"), "loanName")
+        );
+        c.setResultTransformer(Transformers.aliasToBean(Loan.class));
         List<Loan> lList = c.list();
         ObservableList<Loan> loans = FXCollections.observableArrayList(lList);
         session.close();
@@ -518,6 +525,12 @@ public class AssignNewLoanFxmlController implements Initializable {
     private Set<Member> getAvailableGuarantors() {
         Session session = HibernateUtil.getSessionFactory().openSession();
         Criteria c1 = session.createCriteria(MemberLoan.class);
+        c1.setProjection(Projections.projectionList()
+                .add(Projections.property("isComplete"), "isComplete")
+                .add(Projections.property("guarantors"), "guarantors")
+                .add(Projections.property("member"), "member")
+        );
+        c1.setResultTransformer(Transformers.aliasToBean(MemberLoan.class));
         List<MemberLoan> ml = c1.list();
         //GET ALL GUARANTORS OF ONGOING LOANS
         List<String> guarantors = ml.stream().filter(p -> !p.isIsComplete())
@@ -541,6 +554,12 @@ public class AssignNewLoanFxmlController implements Initializable {
         //GET ALL MEMBERS EXCEPT THE LOAN GRANTOR
         Criteria c2 = session.createCriteria(Member.class);
         c2.add(Restrictions.ne("memberId", getMember().getMemberId()));
+        c2.add(Restrictions.eq("status", true));
+        c2.setProjection(Projections.projectionList()
+                .add(Projections.property("memberId"), "memberId")
+                .add(Projections.property("fullName"), "fullName")
+        );
+        c2.setResultTransformer(Transformers.aliasToBean(Member.class));
 
         //IF NO GURANTORS FOUND THEN ALL MEMBERS CAN GUARANT FOR THE LOAN EXCEPT THE LOAN GRANTOR
         if (getUniqueGuarantors(guarantors, 3).isEmpty()) {
@@ -584,8 +603,11 @@ public class AssignNewLoanFxmlController implements Initializable {
             }
         }
         Criteria cc2 = s.createCriteria(Member.class);
-        List<Member> list = cc2.add(Restrictions.in("memberId", ug)).list();
-        Set mbrs = new HashSet(list);
+        cc2.setProjection(Projections.property("memberId"));
+        cc2.add(Restrictions.in("memberId", ug));
+        cc2.setResultTransformer(Transformers.aliasToBean(Member.class));
+        List<Member> list = cc2.list();
+        Set<Member> mbrs = new HashSet(list);
         return mbrs;
     }
 

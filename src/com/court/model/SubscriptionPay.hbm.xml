@@ -38,5 +38,11 @@
         <property name="chequeNo" type="string">
             <column name="cheque_no" length="45" />
         </property>
+        <property name="payOffice" type="int">
+            <column name="pay_office" />
+        </property>
+        <property name="workOffice" type="int">
+            <column name="work_office" />
+        </property>
     </class>
 </hibernate-mapping>

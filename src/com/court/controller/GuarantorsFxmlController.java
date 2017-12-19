@@ -42,7 +42,9 @@ import javafx.scene.layout.VBox;
 import org.controlsfx.control.textfield.TextFields;
 import org.hibernate.Criteria;
 import org.hibernate.Session;
+import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
+import org.hibernate.transform.Transformers;
 
 /**
  * FXML Controller class
@@ -166,6 +168,12 @@ public class GuarantorsFxmlController implements Initializable {
     private List<Member> getAvailableGuarantors() {
         Session session = HibernateUtil.getSessionFactory().openSession();
         Criteria c1 = session.createCriteria(MemberLoan.class);
+         c1.setProjection(Projections.projectionList()
+                .add(Projections.property("isComplete"), "isComplete")
+                .add(Projections.property("guarantors"), "guarantors")
+                .add(Projections.property("member"), "member")
+        );
+        c1.setResultTransformer(Transformers.aliasToBean(MemberLoan.class));
         List<MemberLoan> ml = c1.list();
         List<String> guarantors = ml.stream().filter(p -> !p.isIsComplete())
                 .map(MemberLoan::getGuarantors).collect(Collectors.toList());

@@ -51,8 +51,10 @@ import org.hibernate.Criteria;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.criterion.Order;
+import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import org.hibernate.internal.SessionImpl;
+import org.hibernate.transform.Transformers;
 
 /**
  * FXML Controller class
@@ -131,7 +133,7 @@ public class ReportFormFxmlController implements Initializable {
             map.put("reportTitle", "Welfare Loan List Granted From " + sdf.format(FxUtilsHandler.getDateFrom(b.getFd())) + " To " + sdf.format(FxUtilsHandler.getDateFrom(b.getTd())));
             ReportHandler rh = new ReportHandler(reportPath, map, memberLoanBeanCollection);
             rh.genarateReport();
-            rh.viewReport();
+            //  rh.viewReport();
             session.close();
         });
 
@@ -193,7 +195,7 @@ public class ReportFormFxmlController implements Initializable {
             map.put("reportTitle", "Welfare Member List Of Working Office - " + b.getKey());
             ReportHandler rh = new ReportHandler(reportPath, map, memberBeanCollection);
             rh.genarateReport();
-            rh.viewReport();
+            // rh.viewReport();
             session.close();
         });
     }
@@ -258,7 +260,7 @@ public class ReportFormFxmlController implements Initializable {
             map.put("reportTitle", "Welfare Member List of Payment Office - " + b);
             ReportHandler rh = new ReportHandler(reportPath, map, memberBeanCollection);
             rh.genarateReport();
-            rh.viewReport();
+            // rh.viewReport();
             session.close();
         });
     }
@@ -309,7 +311,7 @@ public class ReportFormFxmlController implements Initializable {
                 map.put("SUBREPORT", subReport);
                 ReportHandler rh = new ReportHandler(reportPath, map, memberLoansBeanCollection);
                 rh.genarateReport();
-                rh.viewReport();
+                // rh.viewReport();
                 session.close();
             } catch (JRException | HibernateException e) {
                 e.printStackTrace();
@@ -356,7 +358,7 @@ public class ReportFormFxmlController implements Initializable {
             map.put("p_brcode", Integer.parseInt(b));
             ReportHandler rh = new ReportHandler(reportPath, map, null, con);
             rh.genarateReport();
-            rh.viewReport();
+            //  rh.viewReport();
         });
     }
 
@@ -428,7 +430,7 @@ public class ReportFormFxmlController implements Initializable {
                 map.put("member_subpay", subscriptionPays);
                 ReportHandler rh = new ReportHandler(reportPath, map, null);
                 rh.genarateReport();
-                rh.viewReport();
+                // rh.viewReport();
                 session.close();
             } catch (JRException e) {
                 e.printStackTrace();
@@ -478,7 +480,7 @@ public class ReportFormFxmlController implements Initializable {
                 map.put("invo_code", invo);
                 ReportHandler rh = new ReportHandler(reportPath, map, null, con);
                 rh.genarateReport();
-                rh.viewReport();
+                // rh.viewReport();
             } else {
                 Alert alert_error = new Alert(Alert.AlertType.ERROR);
                 alert_error.setTitle("Error");
@@ -515,7 +517,7 @@ public class ReportFormFxmlController implements Initializable {
         map.put("SUBREPORT", subReport);
         ReportHandler rh = new ReportHandler(reportPath, map, memberLoanBeanCollection);
         rh.genarateReport();
-        rh.viewReport();
+        // rh.viewReport();
         s.close();
     }
 
@@ -557,71 +559,8 @@ public class ReportFormFxmlController implements Initializable {
             map.put("member_code", mId);
             ReportHandler rh = new ReportHandler(reportPath, map, null, con);
             rh.genarateReport();
-            rh.viewReport();
+            // rh.viewReport();
         });
-    }
-
-    /*
-    Get All Branches for the autocomplete textfield
-     */
-    private List<Branch> getBranches(boolean withAll) {
-        List<Branch> bList = new ArrayList<>();
-        if (withAll) {
-            bList.add(new Branch(null, "All"));
-        }
-        Session s = HibernateUtil.getSessionFactory().openSession();
-        Criteria c = s.createCriteria(Branch.class);
-        c.add(Restrictions.eq("status", true));
-        List<Branch> list = c.list();
-        bList.addAll(list);
-        s.close();
-        return bList;
-    }
-
-    /*
-    Get All Payment offices for the autocomplete textfield
-     */
-    private List<Branch> getPaymentOffice() {
-        List<Branch> bList = new ArrayList<>();
-
-        Session s = HibernateUtil.getSessionFactory().openSession();
-        Criteria c = s.createCriteria(Branch.class);
-        c.add(Restrictions.eq("status", true));
-        c.add(Restrictions.eq("parentId", 0));
-        List<Branch> list = c.list();
-        bList.addAll(list);
-        s.close();
-        return bList;
-    }
-
-    /*
-    Get All Members for the autocomplete textfield
-     */
-    private List<Member> getMembers(boolean withAll) {
-        Session s = HibernateUtil.getSessionFactory().openSession();
-        Criteria c = s.createCriteria(Member.class);
-        List<Member> list = c.list();
-        if (withAll) {
-            list.add(new Member("All"));
-        }
-        s.close();
-        return list;
-    }
-
-    private List<LoanPayCheque> getCollectionInvoice() {
-        Session s = HibernateUtil.getSessionFactory().openSession();
-        Criteria c = s.createCriteria(LoanPayCheque.class);
-        List<LoanPayCheque> list = c.list();
-        s.close();
-        return list;
-    }
-
-    private String getPayOfficeIdFromCode(String code) {
-        Session s = HibernateUtil.getSessionFactory().openSession();
-        Criteria c = s.createCriteria(Branch.class);
-        Branch bb = (Branch) c.add(Restrictions.eq("branchCode", code))
-                .uniqueResult();
-        return String.valueOf(bb.getId());
     }
 
     @FXML
@@ -679,21 +618,9 @@ public class ReportFormFxmlController implements Initializable {
 
             ReportHandler rh = new ReportHandler(reportPath, map, null, con);
             rh.genarateReport();
-            rh.viewReport();
+            // rh.viewReport();
             s.close();
         });
-    }
-
-    private List<String> getReceiptCodes(String rptType) {
-
-        Session s = HibernateUtil.getSessionFactory().openSession();
-        Criteria c = s.createCriteria(ReceiptPay.class);
-        c.add(Restrictions.eq("paymentType", rptType));
-        List<ReceiptPay> list = c.list();
-        List<String> collect = list.stream()
-                .map(ReceiptPay::getReceiptCode).collect(Collectors.toList());
-        return collect;
-
     }
 
     @FXML
@@ -708,7 +635,98 @@ public class ReportFormFxmlController implements Initializable {
         map.put("reportTitle", "Welfare Loan List");
         ReportHandler rh = new ReportHandler(reportPath, map, null, con);
         rh.genarateReport();
-        rh.viewReport();
+        //  rh.viewReport();
+    }
+
+    /*
+    Get All Branches for the autocomplete textfield
+     */
+    private List<Branch> getBranches(boolean withAll) {
+        List<Branch> bList = new ArrayList<>();
+        if (withAll) {
+            bList.add(new Branch(null, "All"));
+        }
+        Session s = HibernateUtil.getSessionFactory().openSession();
+        Criteria c = s.createCriteria(Branch.class);
+        c.add(Restrictions.eq("status", true));
+        c.setProjection(Projections.projectionList()
+                .add(Projections.property("branchCode"), "branchCode")
+                .add(Projections.property("branchName"), "branchName")
+        );
+        c.setResultTransformer(Transformers.aliasToBean(Branch.class));
+        List<Branch> list = c.list();
+        bList.addAll(list);
+        s.close();
+        return bList;
+    }
+
+    /*
+    Get All Payment offices for the autocomplete textfield
+     */
+    private List<Branch> getPaymentOffice() {
+        List<Branch> bList = new ArrayList<>();
+
+        Session s = HibernateUtil.getSessionFactory().openSession();
+        Criteria c = s.createCriteria(Branch.class);
+        c.add(Restrictions.eq("status", true));
+        c.add(Restrictions.eq("parentId", 0));
+        c.setProjection(Projections.projectionList()
+                .add(Projections.property("branchCode"), "branchCode")
+                .add(Projections.property("branchName"), "branchName")
+        );
+        c.setResultTransformer(Transformers.aliasToBean(Branch.class));
+        List<Branch> list = c.list();
+        bList.addAll(list);
+        s.close();
+        return bList;
+    }
+
+    /*
+    Get All Members for the autocomplete textfield
+     */
+    private List<Member> getMembers(boolean withAll) {
+        Session s = HibernateUtil.getSessionFactory().openSession();
+        Criteria c = s.createCriteria(Member.class);
+        c.setProjection(Projections.projectionList()
+                .add(Projections.property("memberId"), "memberId")
+                .add(Projections.property("fullName"), "fullName")
+        );
+        c.setResultTransformer(Transformers.aliasToBean(Member.class));
+        List<Member> list = c.list();
+        if (withAll) {
+            list.add(new Member("All"));
+        }
+        s.close();
+        return list;
+    }
+
+    private List<LoanPayCheque> getCollectionInvoice() {
+        Session s = HibernateUtil.getSessionFactory().openSession();
+        Criteria c = s.createCriteria(LoanPayCheque.class);
+        c.setProjection(Projections.property("invoCode"));
+        c.setResultTransformer(Transformers.aliasToBean(LoanPayCheque.class));
+        List<LoanPayCheque> list = c.list();
+        s.close();
+        return list;
+    }
+
+    private String getPayOfficeIdFromCode(String code) {
+        Session s = HibernateUtil.getSessionFactory().openSession();
+        Criteria c = s.createCriteria(Branch.class);
+        Branch bb = (Branch) c.add(Restrictions.eq("branchCode", code))
+                .uniqueResult();
+        return String.valueOf(bb.getId());
+    }
+
+    private List<String> getReceiptCodes(String rptType) {
+
+        Session s = HibernateUtil.getSessionFactory().openSession();
+        Criteria c = s.createCriteria(ReceiptPay.class);
+        c.add(Restrictions.eq("paymentType", rptType));
+        c.setProjection(Projections.property("receiptCode"));
+        List<String> list = c.list();
+        return list;
+
     }
 
     class AllLoansReport {

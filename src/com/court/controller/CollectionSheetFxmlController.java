@@ -228,6 +228,8 @@ public class CollectionSheetFxmlController implements Initializable {
                     sp.setPaymentDate(getDayOfMonth(Date.valueOf(chk_of_month_chooser.getValue())));
                     sp.setChequeNo(chk_no_txt.getText());
                     sp.setAddedDate(new java.util.Date());
+                    sp.setPayOffice(m.getPayOffice().getId());
+                    sp.setWorkOffice(m.getBranch().getId());
                     sp.setMemberSubscriptions(mbrSub);
                 }
                 session.save(sp);
@@ -244,6 +246,11 @@ public class CollectionSheetFxmlController implements Initializable {
                     LoanPayment getLastPay = ml.getLoanPayments()
                             .stream().filter(p -> p.isIsLast()).findAny().orElse(null);
 
+                    //==================IF LOAN INSTALLMENT IS 0.00 THEN AVOID MEMBER LOAN FROM PAYING=======
+                    if (ml.getLoanInstallment() == 0.0) {
+                        return;
+                    }
+
                     if (getLastPay != null) {
                         updatePreviousInstallmentsOfMemberLoan(session, getLastPay);
                         LoanPayment lp = new LoanPayment();
@@ -256,26 +263,41 @@ public class CollectionSheetFxmlController implements Initializable {
                         lp.setInstallmentDate(getInstallmentDate(getLastPay.getInstallmentDate()));
                         lp.setPaidAmt(ml.getLoanInstallment());
                         lp.setListedPay(getListedPayFrom(ml, session));
+                        lp.setPayOffice(m.getPayOffice().getId());
+                        lp.setWorkOffice(m.getBranch().getId());
                         session.save(lp);
 
                         double kota_left = (lp.getListedPay() > lp.getPaidAmt()) ? (lp.getListedPay() - lp.getPaidAmt()) : 0.0;
                         updateMemberLoan(ml, kota_left, session, getInstallmentDate(getLastPay.getInstallmentDate()));
 
-                        //end loan if the final inatallment......
+                        //end loan if the final installment......
                         if (ml.getNoOfRepay() == (getLastPay.getInstallmentNo() + 1)) {
                             endLoan(session, ml);
                         }
                     } else {
+
+                        //=================IF MEMBER LOAN IS OLD LOAN THEN====================
                         LoanPayment lp = new LoanPayment();
                         lp.setChequeNo(chk_no_txt.getText());
                         lp.setMemberLoan(ml);
                         lp.setPaymentDate(new java.util.Date());
                         lp.setIsLast(true);
-                        lp.setInstallmentDue(ml.getNoOfRepay() - 1);
                         lp.setPaidAmt(ml.getLoanInstallment());
                         lp.setListedPay(getListedPayFrom(ml, session));
-                        lp.setInstallmentNo(1);
                         lp.setInstallmentDate(getDayOfMonth(Date.valueOf(chk_of_month_chooser.getValue())));
+                        if (ml.isOldLoan()) {
+
+                            lp.setInstallmentDue(ml.getNoOfRepay() - ml.getLastInstall());
+                            lp.setInstallmentNo(ml.getLastInstall() + 1);
+                            //updateOldLoan(ml, session, ml.getLoanInstallment());
+                        } else {
+
+                            lp.setInstallmentDue(ml.getNoOfRepay() - 1);
+                            lp.setInstallmentNo(1);
+                        }
+
+                        lp.setPayOffice(m.getPayOffice().getId());
+                        lp.setWorkOffice(m.getBranch().getId());
                         session.save(lp);
 
                         double kota_left = (lp.getListedPay() > lp.getPaidAmt()) ? (lp.getListedPay() - lp.getPaidAmt()) : 0.0;
@@ -606,5 +628,12 @@ public class CollectionSheetFxmlController implements Initializable {
     private Double getListedPayFrom(MemberLoan ml, Session s) {
         MemberLoan mml = (MemberLoan) s.load(MemberLoan.class, ml.getId());
         return mml.getLoanInstallment();
+    }
+
+    private void updateOldLoan(MemberLoan ml, Session s, double paidAmt) {
+        MemberLoan mml = (MemberLoan) s.load(MemberLoan.class, ml.getId());
+        mml.setPaidSofar(ml.getPaidSofar() + paidAmt);
+        mml.setLastInstall(ml.getLastInstall() + 1);
+        s.update(mml);
     }
 }

@@ -106,8 +106,10 @@ import org.controlsfx.validation.Validator;
 import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.criterion.Order;
+import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import org.hibernate.internal.SessionImpl;
+import org.hibernate.transform.Transformers;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.jpedal.PdfDecoder;
@@ -423,7 +425,7 @@ public class MemberfxmlController implements Initializable {
         fillMemberDocCodeTxt(doc_id_txt);
         invo_gen_box.setVisible(false);
         ObservableList<Member> allMembers = getAllMembers();
-        ObservableList<Branch> allBranches = getAllBranches();
+        ObservableList<String> allBranches = getAllBranches();
         List<Document> allDocs = getAllDocuments();
         List<String> memberCodes = allMembers.stream()
                 .filter(FxUtilsHandler.distinctByKey(Member::getMemberId))
@@ -433,18 +435,16 @@ public class MemberfxmlController implements Initializable {
         List<String> memberJobs = allMembers.stream()
                 .filter(FxUtilsHandler.distinctByKey(Member::getJobTitle))
                 .map(Member::getJobTitle).collect(Collectors.toList());
-        List<String> branchNames = allBranches.stream()
-                .map(Branch::getBranchName).collect(Collectors.toList());
 
         p1 = SuggestionProvider.create(memberCodes);
         p2 = SuggestionProvider.create(memberNames);
         p3 = SuggestionProvider.create(memberJobs);
-        p4 = SuggestionProvider.create(branchNames);
+        p4 = SuggestionProvider.create(allBranches);
         new AutoCompletionTextFieldBinding<>(member_code_srch_txt, p1);
         new AutoCompletionTextFieldBinding<>(member_name_srch_txt, p2);
         new AutoCompletionTextFieldBinding<>(member_job_txt, p3);
 
-        if (!branchNames.isEmpty()) {
+        if (!allBranches.isEmpty()) {
             member_brch_txt.setText("");
             member_brch_txt.setStyle("");
             member_brch_txt.setEditable(true);
@@ -829,18 +829,25 @@ public class MemberfxmlController implements Initializable {
     private ObservableList<Member> getAllMembers() {
         Session session = HibernateUtil.getSessionFactory().openSession();
         Criteria c = session.createCriteria(Member.class);
+        c.setProjection(Projections.projectionList()
+                .add(Projections.property("memberId"), "memberId")
+                .add(Projections.property("fullName"), "fullName")
+                .add(Projections.property("jobTitle"), "jobTitle")
+        );
+        c.setResultTransformer(Transformers.aliasToBean(Member.class));
         List<Member> mList = c.list();
         ObservableList<Member> members = FXCollections.observableArrayList(mList);
         session.close();
         return members;
     }
 
-    private ObservableList<Branch> getAllBranches() {
+    private ObservableList<String> getAllBranches() {
         Session session = HibernateUtil.getSessionFactory().openSession();
         Criteria c = session.createCriteria(Branch.class);
         c.add(Restrictions.eq("status", true));
-        List<Branch> bList = c.list();
-        ObservableList<Branch> branches = FXCollections.observableArrayList(bList);
+        c.setProjection(Projections.property("branchName"));
+        List<String> bList = c.list();
+        ObservableList<String> branches = FXCollections.observableArrayList(bList);
         session.close();
         return branches;
     }
@@ -1260,6 +1267,8 @@ public class MemberfxmlController implements Initializable {
                                 lp.setInstallmentDate(instDates[i]);
                                 lp.setPaidAmt(installWithoutPolli);
                                 lp.setListedPay(installWithoutPolli);
+                                lp.setPayOffice(parentLoan.getMember().getPayOffice().getId());
+                                lp.setWorkOffice(parentLoan.getMember().getBranch().getId());
                                 if (i == (insts - 1)) {
                                     lp.setIsLast(true);
                                 } else {
@@ -1279,6 +1288,8 @@ public class MemberfxmlController implements Initializable {
                             rp.setPayDate(new java.util.Date());
                             rp.setPaymentType("installment");
                             rp.setPayIds(new Gson().toJson(lpIds, type));
+                            rp.setPayOffice(parentLoan.getMember().getPayOffice().getId());
+                            rp.setWorkOffice(parentLoan.getMember().getBranch().getId());
                             // rp.setReceiptCode("INV" + FxUtilsHandler.generateRandomNumber(7));
                             s.save(rp);
 
@@ -1322,6 +1333,8 @@ public class MemberfxmlController implements Initializable {
                             lp.setInstallmentDate(instDates[i]);
                             lp.setPaidAmt(installWithoutPolli);
                             lp.setListedPay(installWithoutPolli);
+                            lp.setPayOffice(childLoan.getMember().getPayOffice().getId());
+                            lp.setWorkOffice(childLoan.getMember().getBranch().getId());
                             if (i == (insts - 1)) {
                                 lp.setIsLast(true);
                             } else {
@@ -1341,6 +1354,8 @@ public class MemberfxmlController implements Initializable {
                         rp.setPayDate(new java.util.Date());
                         rp.setPaymentType("installment");
                         rp.setPayIds(new Gson().toJson(lpIds, type));
+                        rp.setPayOffice(childLoan.getMember().getPayOffice().getId());
+                        rp.setWorkOffice(childLoan.getMember().getBranch().getId());
                         // rp.setReceiptCode("INV" + FxUtilsHandler.generateRandomNumber(7));
                         s.save(rp);
 
@@ -1387,6 +1402,8 @@ public class MemberfxmlController implements Initializable {
                             lp.setInstallmentDate(instDates[i]);
                             lp.setPaidAmt(installWithoutPolli);
                             lp.setListedPay(installWithoutPolli);
+                            lp.setPayOffice(selectedLoan.getMember().getPayOffice().getId());
+                            lp.setWorkOffice(selectedLoan.getMember().getBranch().getId());
                             if (i == (insts - 1)) {
                                 lp.setIsLast(true);
                             } else {
@@ -1406,6 +1423,8 @@ public class MemberfxmlController implements Initializable {
                         rp.setPayDate(new java.util.Date());
                         rp.setPaymentType("installment");
                         rp.setPayIds(new Gson().toJson(lpIds, type));
+                        rp.setPayOffice(selectedLoan.getMember().getPayOffice().getId());
+                        rp.setWorkOffice(selectedLoan.getMember().getBranch().getId());
                         // rp.setReceiptCode("INV" + FxUtilsHandler.generateRandomNumber(7));
                         s.save(rp);
 
@@ -1463,6 +1482,8 @@ public class MemberfxmlController implements Initializable {
                             lp.setInstallmentDate(instDates[i]);
                             lp.setPaidAmt(installWithoutPolli_2);
                             lp.setListedPay(installWithoutPolli_2);
+                            lp.setPayOffice(childLoan.getMember().getPayOffice().getId());
+                            lp.setWorkOffice(childLoan.getMember().getBranch().getId());
                             if (i == (insts - 1)) {
                                 lp.setIsLast(true);
                             } else {
@@ -1482,6 +1503,8 @@ public class MemberfxmlController implements Initializable {
                         rp.setPayDate(new java.util.Date());
                         rp.setPaymentType("installment");
                         rp.setPayIds(new Gson().toJson(lpIds, type));
+                        rp.setPayOffice(childLoan.getMember().getPayOffice().getId());
+                        rp.setWorkOffice(childLoan.getMember().getBranch().getId());
                         // rp.setReceiptCode("INV" + FxUtilsHandler.generateRandomNumber(7));
                         s.save(rp);
 
@@ -1606,6 +1629,8 @@ public class MemberfxmlController implements Initializable {
                         lp.setInstallmentDate(instDates[i]);
                         lp.setPaidAmt(instAmt);
                         lp.setListedPay(instAmt);
+                        lp.setPayOffice(row.getItem().getMember().getPayOffice().getId());
+                        lp.setWorkOffice(row.getItem().getMember().getBranch().getId());
                         if (i == (insts - 1)) {
                             lp.setIsLast(true);
                         } else {
@@ -1627,6 +1652,8 @@ public class MemberfxmlController implements Initializable {
                     rp.setPayDate(new java.util.Date());
                     rp.setPaymentType("installment");
                     rp.setPayIds(new Gson().toJson(lpIds, type));
+                    rp.setPayOffice(row.getItem().getMember().getPayOffice().getId());
+                    rp.setWorkOffice(row.getItem().getMember().getBranch().getId());
                     // rp.setReceiptCode("INV" + FxUtilsHandler.generateRandomNumber(7));
                     s.save(rp);
 
@@ -2787,6 +2814,8 @@ public class MemberfxmlController implements Initializable {
                 sp.setPaymentDate(getDayOfMonth(Date.valueOf(m_subs_date.getValue())));
                 sp.setAddedDate(new java.util.Date());
                 sp.setMemberSubscriptions(getMemberSubscriptionsFromMember(member_code_txt.getText(), s));
+                sp.setPayOffice(getMemberByCode(member_code_txt.getText(), s).getPayOffice().getId());
+                sp.setWorkOffice(getMemberByCode(member_code_txt.getText(), s).getBranch().getId());
                 s.save(sp);
                 //adding each subids to the list======
                 subIds.add(sp.getId());
@@ -2847,7 +2876,7 @@ public class MemberfxmlController implements Initializable {
         map.put("sp_list", subIds.stream().map(i -> String.valueOf(i.intValue())).collect(Collectors.joining(",")));
         ReportHandler rh = new ReportHandler(reportPath, map, null, con);
         rh.genarateReport();
-        rh.viewReport();
+        // rh.viewReport();
         s.close();
         //==================//RESET ALL FREEZED NODES========================
         freezeAtMemberContribution(false);
@@ -2868,7 +2897,7 @@ public class MemberfxmlController implements Initializable {
         map.put("lp_list", lpIds.stream().map(i -> String.valueOf(i.intValue())).collect(Collectors.joining(",")));
         ReportHandler rh = new ReportHandler(reportPath, map, null, con);
         rh.genarateReport();
-        rh.viewReport();
+        // rh.viewReport();
         s.close();
     }
 

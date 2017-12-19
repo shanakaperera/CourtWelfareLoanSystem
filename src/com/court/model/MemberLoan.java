@@ -36,6 +36,9 @@ public class MemberLoan implements java.io.Serializable {
     private String loanName;
     private boolean closedLoan;
     private double kotaLeft;
+    private double paidSofar;
+    private boolean oldLoan;
+    private int lastInstall;
     private Set<LoanPayment> loanPayments = new HashSet<>();
     private List<MemberSubscription> mbrSubs = new ArrayList<>();
 
@@ -305,6 +308,30 @@ public class MemberLoan implements java.io.Serializable {
 
     public void setKotaLeft(double kotaLeft) {
         this.kotaLeft = kotaLeft;
+    }
+
+    public double getPaidSofar() {
+        return paidSofar;
+    }
+
+    public void setPaidSofar(double paidSofar) {
+        this.paidSofar = paidSofar;
+    }
+
+    public boolean isOldLoan() {
+        return oldLoan;
+    }
+
+    public void setOldLoan(boolean oldLoan) {
+        this.oldLoan = oldLoan;
+    }
+
+    public int getLastInstall() {
+        return lastInstall;
+    }
+
+    public void setLastInstall(int lastInstall) {
+        this.lastInstall = lastInstall;
     }
 
 }

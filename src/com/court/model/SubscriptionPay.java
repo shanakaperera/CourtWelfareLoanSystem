@@ -24,6 +24,8 @@ public class SubscriptionPay implements java.io.Serializable {
     private Date paymentDate;
     private Date addedDate;
     private String chequeNo;
+    private Integer payOffice;
+    private Integer workOffice;
 
     public SubscriptionPay() {
     }
@@ -129,6 +131,22 @@ public class SubscriptionPay implements java.io.Serializable {
 
     public void setChequeNo(String chequeNo) {
         this.chequeNo = chequeNo;
+    }
+
+    public Integer getPayOffice() {
+        return payOffice;
+    }
+
+    public void setPayOffice(Integer payOffice) {
+        this.payOffice = payOffice;
+    }
+
+    public Integer getWorkOffice() {
+        return workOffice;
+    }
+
+    public void setWorkOffice(Integer workOffice) {
+        this.workOffice = workOffice;
     }
 
 }
