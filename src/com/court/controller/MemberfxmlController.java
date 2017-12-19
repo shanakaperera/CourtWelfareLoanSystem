@@ -1455,6 +1455,7 @@ public class MemberfxmlController implements Initializable {
                             last_inst_paid = childLastLoanPay.getInstallmentNo();
                             payment_amt = installWithoutPolli_2 * insts;
                         } else {
+                            // last_inst_paid = childLoan.getLastInstall();
                             insts = childLoan.getNoOfRepay();
                             payment_amt = installWithoutPolli_2 * insts;
                         }
@@ -1612,7 +1613,7 @@ public class MemberfxmlController implements Initializable {
                     int insts = payment.getKey();
                     double payment_amt = payment.getValue();
                     double instAmt = row.getItem().getLoanInstallment();
-                    int last_inst_paid = lpLast != null ? lpLast.getInstallmentNo() : 0;
+                    int last_inst_paid = lpLast != null ? lpLast.getInstallmentNo() : (row.getItem().isOldLoan() ? row.getItem().getLastInstall() : 0);
                     int no_of_repay = row.getItem().getNoOfRepay();
                     last_inst_paid++;
 
@@ -2875,8 +2876,7 @@ public class MemberfxmlController implements Initializable {
         map.put("member_code", member_code_txt.getText());
         map.put("sp_list", subIds.stream().map(i -> String.valueOf(i.intValue())).collect(Collectors.joining(",")));
         ReportHandler rh = new ReportHandler(reportPath, map, null, con);
-        rh.genarateReport();
-        rh.viewReport();
+        rh.genReport();
         rh.viewReport();
         s.close();
         //==================//RESET ALL FREEZED NODES========================
@@ -2897,8 +2897,7 @@ public class MemberfxmlController implements Initializable {
         map.put("member_code", mCode);
         map.put("lp_list", lpIds.stream().map(i -> String.valueOf(i.intValue())).collect(Collectors.joining(",")));
         ReportHandler rh = new ReportHandler(reportPath, map, null, con);
-        rh.genarateReport();
-        rh.viewReport();
+        rh.genReport();
         rh.viewReport();
         s.close();
     }

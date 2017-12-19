@@ -194,6 +194,7 @@ public class AssignNewLoanFxmlController implements Initializable {
     private ObservableList<Loan> getAllLoans() {
         Session session = HibernateUtil.getSessionFactory().openSession();
         Criteria c = session.createCriteria(Loan.class);
+        c.add(Restrictions.eq("status", true));
         c.setProjection(Projections.projectionList()
                 .add(Projections.property("loanId"), "loanId")
                 .add(Projections.property("loanName"), "loanName")
@@ -603,8 +604,8 @@ public class AssignNewLoanFxmlController implements Initializable {
             }
         }
         Criteria cc2 = s.createCriteria(Member.class);
-        cc2.setProjection(Projections.property("memberId"));
         cc2.add(Restrictions.in("memberId", ug));
+        cc2.setProjection(Projections.property("memberId"));
         cc2.setResultTransformer(Transformers.aliasToBean(Member.class));
         List<Member> list = cc2.list();
         Set<Member> mbrs = new HashSet(list);

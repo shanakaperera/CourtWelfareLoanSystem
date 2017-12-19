@@ -181,8 +181,10 @@ public class ReportFormFxmlController implements Initializable {
             switch (b.getValue()) {
                 case 1:
                     c.add(Restrictions.eq("m.status", true));
+                    break;
                 case 2:
                     c.add(Restrictions.eq("m.status", false));
+                    break;
             }
             List<Member> list = (List<Member>) c.list();
             List<Member> orderedList = list.stream()
@@ -244,8 +246,10 @@ public class ReportFormFxmlController implements Initializable {
             switch (b.getValue()) {
                 case 1:
                     c.add(Restrictions.eq("m.status", true));
+                    break;
                 case 2:
                     c.add(Restrictions.eq("m.status", false));
+                    break;
             }
 
             c.add(Restrictions.eq("b.status", true));

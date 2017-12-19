@@ -47,7 +47,9 @@
             <RowConstraints minHeight="10.0" prefHeight="40.0" vgrow="SOMETIMES" />
             <RowConstraints minHeight="10.0" prefHeight="40.0" vgrow="SOMETIMES" />
             <RowConstraints minHeight="10.0" prefHeight="40.0" vgrow="SOMETIMES" />
+            <RowConstraints minHeight="10.0" prefHeight="40.0" vgrow="SOMETIMES" />
             <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+            <RowConstraints minHeight="10.0" prefHeight="40.0" vgrow="SOMETIMES" />
             <RowConstraints minHeight="10.0" prefHeight="40.0" vgrow="SOMETIMES" />
             <RowConstraints minHeight="10.0" prefHeight="40.0" vgrow="SOMETIMES" />
             <RowConstraints minHeight="10.0" prefHeight="40.0" vgrow="SOMETIMES" />
@@ -128,7 +130,7 @@
                </padding>
             </Label>
             <TextField fx:id="floan_balance_con_txt" onAction="#onFLoanBcAction" onMouseClicked="#onFLoanBcMClicked" prefHeight="32.0" GridPane.columnIndex="3" GridPane.rowIndex="7" />
-            <CheckBox fx:id="has_child_check" mnemonicParsing="false" onAction="#onCheckboxCheckedAction" text="Has Second part with different figures" GridPane.columnIndex="2" GridPane.columnSpan="2" GridPane.rowIndex="8">
+            <CheckBox fx:id="has_child_check" mnemonicParsing="false" onAction="#onCheckboxCheckedAction" text="Has Second part with different figures" GridPane.columnIndex="2" GridPane.columnSpan="2" GridPane.rowIndex="9">
                <font>
                   <Font name="System Bold" size="12.0" />
                </font>
@@ -142,43 +144,43 @@
                   <TableColumn fx:id="ln_action_col" prefWidth="100.0" text="Action" />
               </columns>
             </TableView>
-            <Label text="Loan Id/Name" GridPane.columnIndex="2" GridPane.rowIndex="9">
+            <Label text="Loan Id/Name" GridPane.columnIndex="2" GridPane.rowIndex="10">
                <padding>
                   <Insets left="10.0" />
                </padding>
             </Label>
-            <TextField fx:id="sloan_search_txt" prefHeight="32.0" prefWidth="136.0" GridPane.columnIndex="3" GridPane.rowIndex="9" />
-            <Label text="Loan Amount" GridPane.columnIndex="2" GridPane.rowIndex="10">
+            <TextField fx:id="sloan_search_txt" prefHeight="32.0" prefWidth="136.0" GridPane.columnIndex="3" GridPane.rowIndex="10" />
+            <Label text="Loan Amount" GridPane.columnIndex="2" GridPane.rowIndex="11">
                <padding>
                   <Insets left="10.0" />
                </padding>
             </Label>
-            <Label text="Loan Interest" GridPane.columnIndex="2" GridPane.rowIndex="11">
+            <Label text="Loan Interest" GridPane.columnIndex="2" GridPane.rowIndex="12">
                <padding>
                   <Insets left="10.0" />
                </padding>
             </Label>
-            <Label text="Paid So Far" GridPane.columnIndex="2" GridPane.rowIndex="12">
+            <Label text="Paid So Far" GridPane.columnIndex="2" GridPane.rowIndex="13">
                <padding>
                   <Insets left="10.0" />
                </padding>
             </Label>
-            <Label text="Last Pay Date" GridPane.columnIndex="2" GridPane.rowIndex="13">
+            <Label text="Last Pay Date" GridPane.columnIndex="2" GridPane.rowIndex="14">
                <padding>
                   <Insets left="10.0" />
                </padding>
             </Label>
-            <DatePicker fx:id="sloan_lastpay_picker" prefHeight="32.0" GridPane.columnIndex="3" GridPane.rowIndex="13" />
-            <Label text="Balance Continued" GridPane.columnIndex="2" GridPane.rowIndex="14">
+            <DatePicker fx:id="sloan_lastpay_picker" prefHeight="32.0" GridPane.columnIndex="3" GridPane.rowIndex="14" />
+            <Label text="Balance Continued" GridPane.columnIndex="2" GridPane.rowIndex="15">
                <padding>
                   <Insets left="10.0" />
                </padding>
             </Label>
-            <TextField fx:id="sloan_balance_con_txt" prefHeight="32.0" GridPane.columnIndex="3" GridPane.rowIndex="14" />
-            <TextField fx:id="sloan_amt_txt" prefHeight="32.0" prefWidth="136.0" GridPane.columnIndex="3" GridPane.rowIndex="10" />
-            <TextField fx:id="sloan_int_txt" prefHeight="32.0" prefWidth="136.0" GridPane.columnIndex="3" GridPane.rowIndex="11" />
-            <TextField fx:id="sloan_paidfar_txt" prefHeight="32.0" prefWidth="136.0" GridPane.columnIndex="3" GridPane.rowIndex="12" />
-            <HBox alignment="CENTER_RIGHT" spacing="5.0" GridPane.columnIndex="3" GridPane.rowIndex="16">
+            <TextField fx:id="sloan_balance_con_txt" prefHeight="32.0" GridPane.columnIndex="3" GridPane.rowIndex="15" />
+            <TextField fx:id="sloan_amt_txt" prefHeight="32.0" prefWidth="136.0" GridPane.columnIndex="3" GridPane.rowIndex="11" />
+            <TextField fx:id="sloan_int_txt" prefHeight="32.0" prefWidth="136.0" GridPane.columnIndex="3" GridPane.rowIndex="12" />
+            <TextField fx:id="sloan_paidfar_txt" prefHeight="32.0" prefWidth="136.0" GridPane.columnIndex="3" GridPane.rowIndex="13" />
+            <HBox alignment="CENTER_RIGHT" spacing="5.0" GridPane.columnIndex="3" GridPane.rowIndex="18">
                <children>
                   <Button mnemonicParsing="false" onAction="#onSaveBtnAction" style="-fx-text-fill: #ffff;" text="SAVE">
                      <styleClass>
@@ -199,17 +201,29 @@
                   <Font name="System Bold" size="12.0" />
                </font>
             </Label>
-            <Label text="Guarantors" GridPane.columnIndex="2" GridPane.rowIndex="15">
+            <Label text="Guarantors" GridPane.columnIndex="2" GridPane.rowIndex="17">
                <padding>
                   <Insets left="10.0" />
                </padding>
             </Label>
-            <Button fx:id="gur_btn" disable="true" mnemonicParsing="false" onAction="#onGuarBtnAction" prefHeight="25.0" prefWidth="124.0" style="-fx-text-fill: #ffff;" text="Add Guarantors" GridPane.columnIndex="3" GridPane.rowIndex="15">
+            <Button fx:id="gur_btn" disable="true" mnemonicParsing="false" onAction="#onGuarBtnAction" prefHeight="25.0" prefWidth="124.0" style="-fx-text-fill: #ffff;" text="Add Guarantors" GridPane.columnIndex="3" GridPane.rowIndex="17">
                <styleClass>
                   <String fx:value="btn" />
                   <String fx:value="btn-primary" />
                </styleClass>
             </Button>
+            <Label text="Last Paid Installment" GridPane.columnIndex="2" GridPane.rowIndex="8">
+               <padding>
+                  <Insets left="10.0" />
+               </padding>
+            </Label>
+            <TextField fx:id="last_paid_ins" prefHeight="32.0" GridPane.columnIndex="3" GridPane.rowIndex="8" />
+            <Label text="Last Paid Installment" GridPane.columnIndex="2" GridPane.rowIndex="16">
+               <padding>
+                  <Insets left="10.0" />
+               </padding>
+            </Label>
+            <TextField fx:id="slast_paid_ins" prefHeight="32.0" GridPane.columnIndex="3" GridPane.rowIndex="16" />
          </children>
          <padding>
             <Insets left="20.0" right="20.0" />

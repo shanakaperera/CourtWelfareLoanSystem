@@ -130,6 +130,10 @@ public class OldLoansFxmlController implements Initializable {
     private Loan pLoan, cLoan;
     @FXML
     private Button gur_btn;
+    @FXML
+    private TextField last_paid_ins;
+    @FXML
+    private TextField slast_paid_ins;
 
     /**
      * Initializes the controller class.
@@ -148,6 +152,8 @@ public class OldLoansFxmlController implements Initializable {
         sloan_paidfar_txt.setTextFormatter(TextFormatHandler.currencyFormatter());
         sloan_balance_con_txt.setTextFormatter(TextFormatHandler.currencyFormatter());
         sloan_int_txt.setTextFormatter(TextFormatHandler.percentageFormatter());
+        last_paid_ins.setTextFormatter(TextFormatHandler.numbersOnlyFieldFormatter());
+        slast_paid_ins.setTextFormatter(TextFormatHandler.numbersOnlyFieldFormatter());
 
         TextFields.bindAutoCompletion(mbr_search_txt, getMembers()).setOnAutoCompleted(e -> {
             searchMbr = getSearchMember(e.getCompletion().getMemberId());
@@ -255,6 +261,7 @@ public class OldLoansFxmlController implements Initializable {
                 pLoan.getNoOfRepay(),
                 pLoan.getInterestMethod())
         );
+        ml.setLastInstall(Integer.parseInt(last_paid_ins.getText()));
         ml.setIsComplete(false);
         ml.setStatus(true);
         ml.setOldLoan(true);
@@ -299,6 +306,7 @@ public class OldLoansFxmlController implements Initializable {
                         cLoan.getNoOfRepay(),
                         cLoan.getInterestMethod())
                 );
+                ml2.setLastInstall(Integer.parseInt(slast_paid_ins.getText()));
                 ml2.setIsComplete(false);
                 ml2.setStatus(true);
                 ml2.setChildId(0);
@@ -392,7 +400,7 @@ public class OldLoansFxmlController implements Initializable {
                 setOnSucceeded(d -> {
                     alert_prog.close();
                     Set<Member> value = getValue();
-                    System.out.println("Loaded");
+                    System.out.println("Loaded" + " : Size - " + value.size());
                     TextFields.bindAutoCompletion(ges, getValue())
                             .setOnAutoCompleted(e -> {
                                 CopyOnWriteArrayList<Member> cpa = new CopyOnWriteArrayList<>(lv.getItems());
@@ -430,6 +438,7 @@ public class OldLoansFxmlController implements Initializable {
             @Override
             protected Set<Member> call() throws Exception {
                 return getAvailableGuarantors();
+                // return new HashSet(getMembers());
             }
         };
         Thread gurThread = new Thread(gTask, "g-task");
@@ -457,8 +466,8 @@ public class OldLoansFxmlController implements Initializable {
         c.setProjection(Projections.projectionList()
                 .add(Projections.property(lpMeta.getIdentifierPropertyName()))
                 .add(Projections.property("memberId"), "memberId")
-                .add(Projections.property("fullName"), "fullName"));
-
+                .add(Projections.property("fullName"), "fullName")
+        );
         c.setResultTransformer(Transformers.aliasToBean(Member.class));
         List<Member> list = c.list();
         s.close();
@@ -590,7 +599,6 @@ public class OldLoansFxmlController implements Initializable {
         }
 
         session.close();
-        System.out.println("SIZE - " + set.size());
         return set;
     }
 
@@ -605,8 +613,8 @@ public class OldLoansFxmlController implements Initializable {
             }
         }
         Criteria cc2 = s.createCriteria(Member.class);
-        cc2.setProjection(Projections.property("memberId"));
         cc2.add(Restrictions.in("memberId", ug));
+        cc2.setProjection(Projections.property("memberId"));
         cc2.setResultTransformer(Transformers.aliasToBean(Member.class));
         List<Member> list = cc2.list();
         Set<Member> mbrs = new HashSet(list);
@@ -806,9 +814,10 @@ public class OldLoansFxmlController implements Initializable {
             Button btn_d = new Button("Delete");
             btn_d.setStyle("-fx-background-color:red");
             Button btn_v = new Button("View");
-            HBox box = new HBox(btn_v, btn_v);
+            HBox box = new HBox();
             box.setAlignment(Pos.CENTER);
             box.setSpacing(2);
+            box.getChildren().addAll(btn_v, btn_v);
             btn_d.setOnAction(e -> {
                 deleteLoan(param.getValue().getId());
             });
@@ -855,9 +864,11 @@ public class OldLoansFxmlController implements Initializable {
 
     private void deleteLoan(Integer id) {
         Session s = HibernateUtil.getSessionFactory().openSession();
+        s.beginTransaction();
         MemberLoan ml = (MemberLoan) s.load(MemberLoan.class, id);
         //==================CHECK IF ANY LOAN PAYMENTS EXIST BEFORE DELETE 
         s.delete(ml);
+        s.getTransaction().commit();
         //================================================
         Criteria c = s.createCriteria(MemberLoan.class);
         c.createAlias("member", "m");
