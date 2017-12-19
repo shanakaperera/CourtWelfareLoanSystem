@@ -55,6 +55,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import org.controlsfx.control.textfield.TextFields;
@@ -103,7 +104,7 @@ public class OldLoansFxmlController implements Initializable {
     @FXML
     private TableColumn<MemberLoan, String> ln_int_col;
     @FXML
-    private TableColumn<MemberLoan, Button> ln_action_col;
+    private TableColumn<MemberLoan, HBox> ln_action_col;
     @FXML
     private TextField sloan_search_txt;
     @FXML
@@ -801,20 +802,21 @@ public class OldLoansFxmlController implements Initializable {
                     .format(param.getValue().getLoanInterest()) + " " + param.getValue().getInterestPer());
         });
 
-        ln_action_col.setCellValueFactory((TableColumn.CellDataFeatures<MemberLoan, Button> param) -> {
-            Button btn = new Button("Delete");
-            btn.setOnAction(e -> {
+        ln_action_col.setCellValueFactory((TableColumn.CellDataFeatures<MemberLoan, HBox> param) -> {
+            Button btn_d = new Button("Delete");
+            btn_d.setStyle("-fx-background-color:red");
+            Button btn_v = new Button("View");
+            HBox box = new HBox(btn_v, btn_v);
+            box.setAlignment(Pos.CENTER);
+            box.setSpacing(2);
+            btn_d.setOnAction(e -> {
+                deleteLoan(param.getValue().getId());
             });
-            return new SimpleObjectProperty<>(btn);
+            btn_v.setOnAction(e -> {
+                loadToFields(param.getValue());
+            });
+            return new SimpleObjectProperty<>(box);
         });
-
-        old_loan_tbl.getSelectionModel().selectedItemProperty()
-                .addListener((observable, oldValue, newValue) -> {
-                    if (old_loan_tbl.getSelectionModel().getSelectedItem() != null) {
-                        MemberLoan selectedLoan = old_loan_tbl.getSelectionModel().getSelectedItem();
-                        loadToFields(selectedLoan);
-                    }
-                });
 
         old_loan_tbl.setItems(FXCollections.observableArrayList(list));
     }
@@ -849,5 +851,22 @@ public class OldLoansFxmlController implements Initializable {
         elDialog.getDialogPane().setContent(grid);
         elDialog.show();
 
+    }
+
+    private void deleteLoan(Integer id) {
+        Session s = HibernateUtil.getSessionFactory().openSession();
+        MemberLoan ml = (MemberLoan) s.load(MemberLoan.class, id);
+        //==================CHECK IF ANY LOAN PAYMENTS EXIST BEFORE DELETE 
+        s.delete(ml);
+        //================================================
+        Criteria c = s.createCriteria(MemberLoan.class);
+        c.createAlias("member", "m");
+        c.add(Restrictions.eq("oldLoan", true));
+        c.add(Restrictions.eq("oldLoan", true));
+        c.add(Restrictions.eq("m.memberId", searchMbr.getMemberId()));
+        List<MemberLoan> list = c.list();
+        s.close();
+        initOldLoanTable(list);
+        //================================================
     }
 }

@@ -126,44 +126,46 @@ public class ReportHandler {
         Thread reportGenThread = new Thread(jprintTask, "jprint-task");
         reportGenThread.setDaemon(true);
         reportGenThread.start();
+    }
 
-//        try {
-//            JasperReport jr = (JasperReport) JRLoader.loadObject(
-//                    ClassLoader.getSystemResourceAsStream(reportPath));
-//            JasperPrint jp;
-//            if (ds == null) {
-//                if (con != null) {
-//                    jp = JasperFillManager.fillReport(jr, map, con);
-//                } else {
-//                    jp = JasperFillManager.fillReport(jr, map, new JREmptyDataSource());
-//                }
-//            } else {
-//                jp = JasperFillManager.fillReport(jr, map, ds);
-//            }
-//            OutputStream outputStream = new FileOutputStream(new File(outputFile));
-//
-//            JasperExportManager.exportReportToPdfStream(jp, outputStream);
-//            System.out.println("Successfully Generated !");
-//            System.out.println(outputFile);
-//        } catch (FileNotFoundException | JRException e) {
-//            e.printStackTrace();
-//        }
+    public void genReport() {
+        try {
+            JasperReport jr = (JasperReport) JRLoader.loadObject(
+                    ClassLoader.getSystemResourceAsStream(reportPath));
+            JasperPrint jp;
+            if (ds == null) {
+                if (con != null) {
+                    jp = JasperFillManager.fillReport(jr, map, con);
+                } else {
+                    jp = JasperFillManager.fillReport(jr, map, new JREmptyDataSource());
+                }
+            } else {
+                jp = JasperFillManager.fillReport(jr, map, ds);
+            }
+            OutputStream outputStream = new FileOutputStream(new File(outputFile));
+
+            JasperExportManager.exportReportToPdfStream(jp, outputStream);
+            System.out.println("Successfully Generated !");
+            System.out.println(outputFile);
+        } catch (FileNotFoundException | JRException e) {
+            e.printStackTrace();
+        }
     }
 
     public void viewReport() {
 
-//        if (Desktop.isDesktopSupported()) {
-//            try {
-//                File myFile = new File(outputFile);
-//                Desktop.getDesktop().open(myFile);
-//            } catch (IOException ex) {
-//                Alert alert_error = new Alert(Alert.AlertType.ERROR);
-//                alert_error.setTitle("Error");
-//                alert_error.setHeaderText("PDF file cannot open. ");
-//                alert_error.setContentText("No application registered for PDFs");
-//                alert_error.show();
-//            }
-//        }
+        if (Desktop.isDesktopSupported()) {
+            try {
+                File myFile = new File(outputFile);
+                Desktop.getDesktop().open(myFile);
+            } catch (IOException ex) {
+                Alert alert_error = new Alert(Alert.AlertType.ERROR);
+                alert_error.setTitle("Error");
+                alert_error.setHeaderText("PDF file cannot open. ");
+                alert_error.setContentText("No application registered for PDFs");
+                alert_error.show();
+            }
+        }
     }
 
 }

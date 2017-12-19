@@ -2876,7 +2876,8 @@ public class MemberfxmlController implements Initializable {
         map.put("sp_list", subIds.stream().map(i -> String.valueOf(i.intValue())).collect(Collectors.joining(",")));
         ReportHandler rh = new ReportHandler(reportPath, map, null, con);
         rh.genarateReport();
-        // rh.viewReport();
+        rh.viewReport();
+        rh.viewReport();
         s.close();
         //==================//RESET ALL FREEZED NODES========================
         freezeAtMemberContribution(false);
@@ -2897,7 +2898,8 @@ public class MemberfxmlController implements Initializable {
         map.put("lp_list", lpIds.stream().map(i -> String.valueOf(i.intValue())).collect(Collectors.joining(",")));
         ReportHandler rh = new ReportHandler(reportPath, map, null, con);
         rh.genarateReport();
-        // rh.viewReport();
+        rh.viewReport();
+        rh.viewReport();
         s.close();
     }
 
