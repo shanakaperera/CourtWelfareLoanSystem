@@ -28,6 +28,7 @@ import java.util.ResourceBundle;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
@@ -93,15 +94,15 @@ public class OldLoansFxmlController implements Initializable {
     @FXML
     private TableView<MemberLoan> old_loan_tbl;
     @FXML
-    private TableColumn<MemberLoan, ?> ln_id_col;
+    private TableColumn<MemberLoan, String> ln_id_col;
     @FXML
-    private TableColumn<MemberLoan, ?> ln_name_col;
+    private TableColumn<MemberLoan, String> ln_name_col;
     @FXML
-    private TableColumn<MemberLoan, ?> ln_amt_col;
+    private TableColumn<MemberLoan, String> ln_amt_col;
     @FXML
-    private TableColumn<MemberLoan, ?> ln_int_col;
+    private TableColumn<MemberLoan, String> ln_int_col;
     @FXML
-    private TableColumn<MemberLoan, ?> ln_action_col;
+    private TableColumn<MemberLoan, Button> ln_action_col;
     @FXML
     private TextField sloan_search_txt;
     @FXML
@@ -166,7 +167,15 @@ public class OldLoansFxmlController implements Initializable {
 
     @FXML
     private void onMbrSearchBtnAction(ActionEvent event) {
-
+        Session s = HibernateUtil.getSessionFactory().openSession();
+        Criteria c = s.createCriteria(MemberLoan.class);
+        c.createAlias("member", "m");
+        c.add(Restrictions.eq("oldLoan", true));
+        c.add(Restrictions.eq("oldLoan", true));
+        c.add(Restrictions.eq("m.memberId", searchMbr.getMemberId()));
+        List<MemberLoan> list = c.list();
+        s.close();
+        initOldLoanTable(list);
     }
 
     @FXML
@@ -693,8 +702,18 @@ public class OldLoansFxmlController implements Initializable {
         alert_success.setContentText("You have successfully assigned the loan to the member.");
         Optional<ButtonType> result = alert_success.showAndWait();
         if (result.get() == ButtonType.OK) {
+            //=====================================================================
             FxUtilsHandler.clearFields(main_grid);
-            // buildMemberLoanTable();
+            Session s = HibernateUtil.getSessionFactory().openSession();
+            Criteria c = s.createCriteria(MemberLoan.class);
+            c.createAlias("member", "m");
+            c.add(Restrictions.eq("oldLoan", true));
+            c.add(Restrictions.eq("oldLoan", true));
+            c.add(Restrictions.eq("m.memberId", searchMbr.getMemberId()));
+            List<MemberLoan> list = c.list();
+            s.close();
+            initOldLoanTable(list);
+            //====================================================================
             gurList = null;
             pLoan = null;
             cLoan = null;
@@ -759,5 +778,34 @@ public class OldLoansFxmlController implements Initializable {
     @FXML
     private void onFLoanBcMClicked(MouseEvent event) {
         floan_balance_con_txt.selectRange(2, floan_balance_con_txt.getText().length());
+    }
+
+    private void initOldLoanTable(List<MemberLoan> list) {
+        ln_id_col.setCellValueFactory((TableColumn.CellDataFeatures<MemberLoan, String> param) -> {
+            return new SimpleObjectProperty<>(param.getValue().getMemberLoanCode());
+        });
+
+        ln_name_col.setCellValueFactory((TableColumn.CellDataFeatures<MemberLoan, String> param) -> {
+            return new SimpleObjectProperty<>(param.getValue().getLoanName());
+        });
+
+        ln_amt_col.setCellValueFactory((TableColumn.CellDataFeatures<MemberLoan, String> param) -> {
+            return new SimpleObjectProperty<>(TextFormatHandler.CURRENCY_DECIMAL_FORMAT
+                    .format(param.getValue().getLoanAmount()));
+        });
+
+        ln_int_col.setCellValueFactory((TableColumn.CellDataFeatures<MemberLoan, String> param) -> {
+            return new SimpleObjectProperty<>(TextFormatHandler.PRECENTAGE_DECIMAL_FORMAT
+                    .format(param.getValue().getLoanInterest() + " " + param.getValue().getInterestPer()));
+        });
+
+        ln_action_col.setCellValueFactory((TableColumn.CellDataFeatures<MemberLoan, Button> param) -> {
+            Button btn = new Button("Delete");
+            btn.setOnAction(e -> {
+            });
+            return new SimpleObjectProperty<>(btn);
+        });
+
+        old_loan_tbl.setItems(FXCollections.observableArrayList(list));
     }
 }
