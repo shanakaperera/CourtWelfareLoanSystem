@@ -20,6 +20,7 @@ import com.google.gson.reflect.TypeToken;
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.net.URL;
+import java.text.SimpleDateFormat;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -781,6 +782,7 @@ public class OldLoansFxmlController implements Initializable {
     }
 
     private void initOldLoanTable(List<MemberLoan> list) {
+
         ln_id_col.setCellValueFactory((TableColumn.CellDataFeatures<MemberLoan, String> param) -> {
             return new SimpleObjectProperty<>(param.getValue().getMemberLoanCode());
         });
@@ -796,7 +798,7 @@ public class OldLoansFxmlController implements Initializable {
 
         ln_int_col.setCellValueFactory((TableColumn.CellDataFeatures<MemberLoan, String> param) -> {
             return new SimpleObjectProperty<>(TextFormatHandler.PRECENTAGE_DECIMAL_FORMAT
-                    .format(param.getValue().getLoanInterest() + " " + param.getValue().getInterestPer()));
+                    .format(param.getValue().getLoanInterest()) + " " + param.getValue().getInterestPer());
         });
 
         ln_action_col.setCellValueFactory((TableColumn.CellDataFeatures<MemberLoan, Button> param) -> {
@@ -806,6 +808,46 @@ public class OldLoansFxmlController implements Initializable {
             return new SimpleObjectProperty<>(btn);
         });
 
+        old_loan_tbl.getSelectionModel().selectedItemProperty()
+                .addListener((observable, oldValue, newValue) -> {
+                    if (old_loan_tbl.getSelectionModel().getSelectedItem() != null) {
+                        MemberLoan selectedLoan = old_loan_tbl.getSelectionModel().getSelectedItem();
+                        loadToFields(selectedLoan);
+                    }
+                });
+
         old_loan_tbl.setItems(FXCollections.observableArrayList(list));
+    }
+
+    private void loadToFields(MemberLoan ml) {
+
+        Alert elDialog = new Alert(Alert.AlertType.INFORMATION);
+        elDialog.setTitle("Old Loan Details");
+        elDialog.setHeaderText("Member Loan - " + ml.getMemberLoanCode());
+
+        GridPane grid = new GridPane();
+        grid.setHgap(10);
+        grid.setVgap(10);
+        grid.setPadding(new Insets(20, 150, 10, 10));
+
+        grid.add(new Label("Loan Code :"), 0, 0);
+        grid.add(new Label(ml.getMemberLoanCode()), 1, 0);
+        grid.add(new Label("Loan Amount :"), 0, 1);
+        grid.add(new Label(TextFormatHandler.CURRENCY_DECIMAL_FORMAT.format(ml.getLoanAmount())), 1, 1);
+        grid.add(new Label("Loan Installment :"), 0, 2);
+        grid.add(new Label(TextFormatHandler.CURRENCY_DECIMAL_FORMAT.format(ml.getLoanInstallment())), 1, 2);
+        grid.add(new Label("Loan Interest :"), 0, 3);
+        grid.add(new Label(TextFormatHandler.PRECENTAGE_DECIMAL_FORMAT.format(ml.getLoanInterest() / 100)), 1, 3);
+        grid.add(new Label("Granted Date :"), 0, 4);
+        grid.add(new Label(new SimpleDateFormat("dd-MM-yyyy").format(ml.getGrantedDate())), 1, 4);
+        grid.add(new Label("Paid So far :"), 0, 5);
+        grid.add(new Label(TextFormatHandler.CURRENCY_DECIMAL_FORMAT.format(ml.getPaidSofar())), 1, 5);
+        grid.add(new Label("Last Payment Date :"), 0, 6);
+        grid.add(new Label(new SimpleDateFormat("dd-MM-yyyy").format(ml.getPaidUntil())), 1, 6);
+        grid.add(new Label("Balance Continued :"), 0, 7);
+        grid.add(new Label(TextFormatHandler.CURRENCY_DECIMAL_FORMAT.format(ml.getKotaLeft())), 1, 7);
+        elDialog.getDialogPane().setContent(grid);
+        elDialog.show();
+
     }
 }
