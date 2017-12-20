@@ -576,6 +576,7 @@ public class OldLoansFxmlController implements Initializable {
         if (!alreadyGurantedMembers.isEmpty()) {
             Set<Member> arlm = getAlreadyGurantedMembers(alreadyGurantedMembers, session);
             set.addAll(arlm);
+
         }
 
         //GET ALL MEMBERS EXCEPT THE LOAN GRANTOR
@@ -591,7 +592,6 @@ public class OldLoansFxmlController implements Initializable {
         if (getUniqueGuarantors(guarantors, 3).isEmpty()) {
             List<Member> list = c2.list();
             set.addAll(list);
-            //
         } else {
             List<Member> list = c2.add(Restrictions.not(Restrictions.
                     in("memberId", getUniqueGuarantors(guarantors, 3)))).list();
@@ -614,7 +614,10 @@ public class OldLoansFxmlController implements Initializable {
         }
         Criteria cc2 = s.createCriteria(Member.class);
         cc2.add(Restrictions.in("memberId", ug));
-        cc2.setProjection(Projections.property("memberId"));
+        cc2.setProjection(Projections.projectionList()
+                .add(Projections.property("memberId"), "memberId")
+                .add(Projections.property("fullName"), "fullName")
+        );
         cc2.setResultTransformer(Transformers.aliasToBean(Member.class));
         List<Member> list = cc2.list();
         Set<Member> mbrs = new HashSet(list);

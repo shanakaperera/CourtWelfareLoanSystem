@@ -1214,7 +1214,7 @@ public class MemberfxmlController implements Initializable {
                     success.setHeaderText("Already completed !");
                     success.setContentText("You cannot make any payment to an already completed loan!");
                     Optional<ButtonType> rst = success.showAndWait();
-                    return;
+                    return;                    
                 }
 
                 Session s = HibernateUtil.getSessionFactory().openSession();
