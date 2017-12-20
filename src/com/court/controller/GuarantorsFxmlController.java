@@ -115,6 +115,7 @@ public class GuarantorsFxmlController implements Initializable {
                 TableColumn<MemberLoan, String> grantedDate = new TableColumn<>("DateGranted");
                 TableColumn<MemberLoan, String> loanDuration = new TableColumn<>("Duration");
                 TableColumn<MemberLoan, String> member = new TableColumn<>("MbrGranted");
+                TableColumn<MemberLoan, String> loanStatus = new TableColumn<>("LoanStatus");
 
                 lnId.setCellValueFactory((TableColumn.CellDataFeatures<MemberLoan, String> param) -> {
                     return new SimpleObjectProperty<>(param.getValue().getMemberLoanCode());
@@ -138,9 +139,12 @@ public class GuarantorsFxmlController implements Initializable {
                     return new SimpleObjectProperty<>(new SimpleDateFormat("yyyy-MM-dd")
                             .format(param.getValue().getGrantedDate()));
                 });
+                loanStatus.setCellValueFactory((TableColumn.CellDataFeatures<MemberLoan, String> param) -> {
+                    return new SimpleObjectProperty<>(param.getValue().isIsComplete() ? "Completed" : "Ongoing");
+                });
 
                 ObservableList<MemberLoan> selected_data = getLoanPaymentsOf(pr.getValue().getValue().getMemberId());
-                table.getColumns().addAll(lnId, lnAmt, grantedDate, loanInterest, loanDuration, member);
+                table.getColumns().addAll(lnId, lnAmt, grantedDate, loanInterest, loanDuration, member, loanStatus);
                 table.setItems(selected_data);
 
                 VBox vbox = new VBox(table);
@@ -168,7 +172,7 @@ public class GuarantorsFxmlController implements Initializable {
     private List<Member> getAvailableGuarantors() {
         Session session = HibernateUtil.getSessionFactory().openSession();
         Criteria c1 = session.createCriteria(MemberLoan.class);
-         c1.setProjection(Projections.projectionList()
+        c1.setProjection(Projections.projectionList()
                 .add(Projections.property("isComplete"), "isComplete")
                 .add(Projections.property("guarantors"), "guarantors")
                 .add(Projections.property("member"), "member")

@@ -122,6 +122,7 @@ public class AssignNewLoanFxmlController implements Initializable {
     SuggestionProvider<String> p1, p3;
     SuggestionProvider<Member> p2;
     private MemberfxmlController mCtr;
+    private final int UNIQUE_GUR_FRQUENCY = 2;
 
     /**
      * Initializes the controller class.
@@ -534,11 +535,13 @@ public class AssignNewLoanFxmlController implements Initializable {
         c1.setResultTransformer(Transformers.aliasToBean(MemberLoan.class));
         List<MemberLoan> ml = c1.list();
         //GET ALL GUARANTORS OF ONGOING LOANS
-        List<String> guarantors = ml.stream().filter(p -> !p.isIsComplete())
+        List<String> guarantors = ml.stream()
+                .filter(p -> !p.isIsComplete())
                 .map(MemberLoan::getGuarantors).collect(Collectors.toList());
 
         //GET ALREADY GUARANTED MEMBERS OF THE GARNTOR
-        List<String> alreadyGurantedMembers = ml.stream().filter(p -> !p.isIsComplete())
+        List<String> alreadyGurantedMembers = ml.stream()
+                .filter(p -> !p.isIsComplete())
                 .filter(p -> p.getMember().getMemberId().equalsIgnoreCase(getMember().getMemberId()))
                 .map(MemberLoan::getGuarantors).collect(Collectors.toList());
 
@@ -564,11 +567,12 @@ public class AssignNewLoanFxmlController implements Initializable {
 
         //IF NO GURANTORS FOUND THEN ALL MEMBERS CAN GUARANT FOR THE LOAN EXCEPT THE LOAN GRANTOR
         if (getUniqueGuarantors(guarantors, 3).isEmpty()) {
-            set.addAll(c2.list());
+            List<Member> list = c2.list();
+            set.addAll(list);
             //
         } else {
             List<Member> list = c2.add(Restrictions.not(Restrictions.
-                    in("memberId", getUniqueGuarantors(guarantors, 3)))).list();
+                    in("memberId", getUniqueGuarantors(guarantors, UNIQUE_GUR_FRQUENCY)))).list();
             set.addAll(list);
         }
 
@@ -585,7 +589,7 @@ public class AssignNewLoanFxmlController implements Initializable {
             List<String> yourList = new Gson().fromJson(string, type);
             for (String yl : yourList) {
                 ugc.add(yl);
-                if (Collections.frequency(ugc, yl) > frquency) {
+                if (Collections.frequency(ugc, yl) >= frquency) {
                     ug.add(yl);
                 }
             }

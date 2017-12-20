@@ -18,10 +18,8 @@ import com.court.model.MemberLoan;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import java.io.IOException;
-import java.lang.reflect.Type;
 import java.net.URL;
 import java.text.SimpleDateFormat;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
@@ -438,7 +436,7 @@ public class OldLoansFxmlController implements Initializable {
             @Override
             protected Set<Member> call() throws Exception {
                 return getAvailableGuarantors();
-                // return new HashSet(getMembers());
+                //return new HashSet(getMembers());
             }
         };
         Thread gurThread = new Thread(gTask, "g-task");
@@ -549,37 +547,8 @@ public class OldLoansFxmlController implements Initializable {
 
     private Set<Member> getAvailableGuarantors() {
         String mbrId = mbr_search_txt.getText().split("-")[0].trim();
+        //GET ALL MEMBERS EXPECT GRANTOR======
         Session session = HibernateUtil.getSessionFactory().openSession();
-        Criteria c1 = session.createCriteria(MemberLoan.class, "ml");
-
-        c1.setProjection(Projections.projectionList()
-                .add(Projections.property("isComplete"), "isComplete")
-                .add(Projections.property("guarantors"), "guarantors")
-                .add(Projections.property("member"), "member")
-        );
-        c1.setResultTransformer(Transformers.aliasToBean(MemberLoan.class));
-        List<MemberLoan> ml = c1.list();
-        //GET ALL GUARANTORS OF ONGOING LOANS
-        List<String> guarantors = ml.stream().filter(p -> !p.isIsComplete())
-                .map(MemberLoan::getGuarantors).collect(Collectors.toList());
-
-        //GET ALREADY GUARANTED MEMBERS OF THE GARNTOR
-        List<String> alreadyGurantedMembers = ml.stream().filter(p -> !p.isIsComplete())
-                .filter(p -> p.getMember().getMemberId().equalsIgnoreCase(mbrId))
-                .map(MemberLoan::getGuarantors).collect(Collectors.toList());
-
-        //========================
-        Set<Member> set = new HashSet<>();
-        //========================
-
-        //IF NO GUARANTORS AVAILABLE THEY CAN GURANT THE GRANTOR ULTIMATELY UNTIL ALL GUARANTED LOANS END
-        if (!alreadyGurantedMembers.isEmpty()) {
-            Set<Member> arlm = getAlreadyGurantedMembers(alreadyGurantedMembers, session);
-            set.addAll(arlm);
-
-        }
-
-        //GET ALL MEMBERS EXCEPT THE LOAN GRANTOR
         Criteria c2 = session.createCriteria(Member.class);
         c2.add(Restrictions.ne("memberId", mbrId));
         c2.add(Restrictions.eq("status", true));
@@ -588,57 +557,9 @@ public class OldLoansFxmlController implements Initializable {
                 .add(Projections.property("fullName"), "fullName")
         );
         c2.setResultTransformer(Transformers.aliasToBean(Member.class));
-        //IF NO GURANTORS FOUND THEN ALL MEMBERS CAN GUARANT FOR THE LOAN EXCEPT THE LOAN GRANTOR
-        if (getUniqueGuarantors(guarantors, 3).isEmpty()) {
-            List<Member> list = c2.list();
-            set.addAll(list);
-        } else {
-            List<Member> list = c2.add(Restrictions.not(Restrictions.
-                    in("memberId", getUniqueGuarantors(guarantors, 3)))).list();
-            set.addAll(list);
-        }
-
+        List<Member> list = c2.list();
         session.close();
-        return set;
-    }
-
-    private Set<Member> getAlreadyGurantedMembers(List<String> agm, Session s) {
-        Set<String> ug = new HashSet<>();
-        for (String string : agm) {
-            Type type = new TypeToken<List<String>>() {
-            }.getType();
-            List<String> yourList = new Gson().fromJson(string, type);
-            for (String yl : yourList) {
-                ug.add(yl);
-            }
-        }
-        Criteria cc2 = s.createCriteria(Member.class);
-        cc2.add(Restrictions.in("memberId", ug));
-        cc2.setProjection(Projections.projectionList()
-                .add(Projections.property("memberId"), "memberId")
-                .add(Projections.property("fullName"), "fullName")
-        );
-        cc2.setResultTransformer(Transformers.aliasToBean(Member.class));
-        List<Member> list = cc2.list();
-        Set<Member> mbrs = new HashSet(list);
-        return mbrs;
-    }
-
-    private Set<String> getUniqueGuarantors(List<String> guarantors, int frquency) {
-        Set<String> ug = new HashSet<>();
-        CopyOnWriteArrayList<String> ugc = new CopyOnWriteArrayList<>();
-        for (String string : guarantors) {
-            Type type = new TypeToken<List<String>>() {
-            }.getType();
-            List<String> yourList = new Gson().fromJson(string, type);
-            for (String yl : yourList) {
-                ugc.add(yl);
-                if (Collections.frequency(ugc, yl) > frquency) {
-                    ug.add(yl);
-                }
-            }
-        }
-        return ug;
+        return new HashSet<>(list);
     }
 
     private List<Loan> getLoans() {
