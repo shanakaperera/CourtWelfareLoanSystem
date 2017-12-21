@@ -122,7 +122,7 @@ public class AssignNewLoanFxmlController implements Initializable {
     SuggestionProvider<String> p1, p3;
     SuggestionProvider<Member> p2;
     private MemberfxmlController mCtr;
-    private final int UNIQUE_GUR_FRQUENCY = 2;
+    private final int UNIQUE_GUR_FRQUENCY = 3;
 
     /**
      * Initializes the controller class.
@@ -537,7 +537,12 @@ public class AssignNewLoanFxmlController implements Initializable {
         //GET ALL GUARANTORS OF ONGOING LOANS
         List<String> guarantors = ml.stream()
                 .filter(p -> !p.isIsComplete())
-                .map(MemberLoan::getGuarantors).collect(Collectors.toList());
+                .map(m -> m.getGuarantors() + "-" + m.getMember().getMemberId()).collect(Collectors.toList());
+
+        Set<String> lkm = new HashSet<>(guarantors);
+        List<String> guarantor_filtered = lkm.stream()
+                .map(r -> r = r.split("-")[0])
+                .collect(Collectors.toList());
 
         //GET ALREADY GUARANTED MEMBERS OF THE GARNTOR
         List<String> alreadyGurantedMembers = ml.stream()
@@ -548,12 +553,6 @@ public class AssignNewLoanFxmlController implements Initializable {
         //========================
         Set<Member> set = new HashSet<>();
         //========================
-
-        //IF NO GUARANTORS AVAILABLE THEY CAN GURANT THE GRANTOR ULTIMATELY UNTIL ALL GUARANTED LOANS END
-        if (!alreadyGurantedMembers.isEmpty()) {
-            Set<Member> arlm = getAlreadyGurantedMembers(alreadyGurantedMembers, session);
-            set.addAll(arlm);
-        }
 
         //GET ALL MEMBERS EXCEPT THE LOAN GRANTOR
         Criteria c2 = session.createCriteria(Member.class);
@@ -566,14 +565,20 @@ public class AssignNewLoanFxmlController implements Initializable {
         c2.setResultTransformer(Transformers.aliasToBean(Member.class));
 
         //IF NO GURANTORS FOUND THEN ALL MEMBERS CAN GUARANT FOR THE LOAN EXCEPT THE LOAN GRANTOR
-        if (getUniqueGuarantors(guarantors, 3).isEmpty()) {
+        if (getUniqueGuarantors(guarantor_filtered, UNIQUE_GUR_FRQUENCY).isEmpty()) {
             List<Member> list = c2.list();
             set.addAll(list);
             //
         } else {
             List<Member> list = c2.add(Restrictions.not(Restrictions.
-                    in("memberId", getUniqueGuarantors(guarantors, UNIQUE_GUR_FRQUENCY)))).list();
+                    in("memberId", getUniqueGuarantors(guarantor_filtered, UNIQUE_GUR_FRQUENCY)))).list();
             set.addAll(list);
+        }
+
+        //IF NO GUARANTORS AVAILABLE THEY CAN GURANT THE GRANTOR ULTIMATELY UNTIL ALL GUARANTED LOANS END
+        if (!alreadyGurantedMembers.isEmpty()) {
+            Set<Member> arlm = getAlreadyGurantedMembers(alreadyGurantedMembers, session);
+            set.addAll(arlm);
         }
 
         session.close();

@@ -45,10 +45,10 @@
           <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
         </rowConstraints>
          <children>
-            <Label text="Search By Guarantor Name" />
-            <Label text="Search By Guarantor ID" GridPane.rowIndex="1" />
-            <TextField fx:id="gur_name_txt" GridPane.columnIndex="1" />
-            <TextField fx:id="gur_id_txt" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+            <Label text="Search By Guarantor Name" GridPane.rowIndex="1" />
+            <Label text="Search By Guarantor ID" />
+            <TextField fx:id="gur_name_txt" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+            <TextField fx:id="gur_id_txt" GridPane.columnIndex="1" />
             <HBox alignment="CENTER_LEFT" spacing="5.0" GridPane.columnIndex="1" GridPane.rowIndex="2">
                <children>
                   <Button mnemonicParsing="false" onAction="#onSearchBtnAction" style="-fx-text-fill: #ffff;" text="Search">
