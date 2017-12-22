@@ -49,6 +49,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.Set;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import javafx.application.Platform;
@@ -412,6 +413,8 @@ public class MemberfxmlController implements Initializable {
 
     private ContGive cGive;
 
+    List<String> memberCodes;
+
     /**
      * Initializes the controller class.
      */
@@ -427,7 +430,7 @@ public class MemberfxmlController implements Initializable {
         ObservableList<Member> allMembers = getAllMembers();
         ObservableList<String> allBranches = getAllBranches();
         List<Document> allDocs = getAllDocuments();
-        List<String> memberCodes = allMembers.stream()
+        memberCodes = allMembers.stream()
                 .filter(FxUtilsHandler.distinctByKey(Member::getMemberId))
                 .map(Member::getMemberId).collect(Collectors.toList());
         List<String> memberNames = allMembers.stream()
@@ -999,9 +1002,13 @@ public class MemberfxmlController implements Initializable {
         if (!validationSupport.getRegisteredControls().isEmpty()) {
             return;
         }
+        Predicate<String> predicate = (t) -> {
+            return !memberCodes.contains(t);
+        };
         validationSupport.registerValidator(member_code_txt, Validator.combine(
                 Validator.createEmptyValidator("This field is not optional"),
-                Validator.createRegexValidator("Must be a vaild membership Id.", "\\d{4,6}[A-Z]{1}", Severity.ERROR)
+                Validator.createRegexValidator("Must be a vaild membership Id.", "\\d{4,6}[A-Z]{1}", Severity.ERROR),
+                Validator.createPredicateValidator(predicate, "This member id is already saved to the system !")
         ));
         validationSupport.registerValidator(member_full_name_txt,
                 Validator.createEmptyValidator("This field is not optional."));

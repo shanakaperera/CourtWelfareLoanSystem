@@ -6,19 +6,18 @@
 package com.court.controller;
 
 import com.court.db.HibernateUtil;
+import com.court.handler.FxUtilsHandler;
 import com.court.handler.TextFormatHandler;
+import com.court.model.Branch;
 import com.court.model.Member;
 import com.court.model.MemberLoan;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import java.lang.reflect.Type;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.ResourceBundle;
-import java.util.Set;
 import java.util.stream.Collectors;
 import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.beans.property.SimpleObjectProperty;
@@ -41,10 +40,14 @@ import javafx.scene.control.TreeTableView;
 import javafx.scene.layout.VBox;
 import org.controlsfx.control.textfield.TextFields;
 import org.hibernate.Criteria;
+import org.hibernate.SQLQuery;
 import org.hibernate.Session;
-import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
-import org.hibernate.transform.Transformers;
+import org.hibernate.type.BooleanType;
+import org.hibernate.type.DateType;
+import org.hibernate.type.DoubleType;
+import org.hibernate.type.IntegerType;
+import org.hibernate.type.StringType;
 
 /**
  * FXML Controller class
@@ -79,8 +82,10 @@ public class GuarantorsFxmlController implements Initializable {
         initGTable(ags);
 
         List<String> collect_names = ags.stream()
+                .filter(FxUtilsHandler.distinctByKey(p -> p.getFullName()))
                 .map(Member::getFullName).collect(Collectors.toList());
         List<String> collect_ids = ags.stream()
+                .filter(FxUtilsHandler.distinctByKey(p -> p.getMemberId()))
                 .map(Member::getMemberId).collect(Collectors.toList());
         TextFields.bindAutoCompletion(gur_name_txt, collect_names);
         TextFields.bindAutoCompletion(gur_id_txt, collect_ids);
@@ -103,7 +108,7 @@ public class GuarantorsFxmlController implements Initializable {
     private void initGTable(List<Member> guarantors) {
         g_id_col.setCellValueFactory(param -> new ReadOnlyStringWrapper(param.getValue().getValue().getMemberId()));
         g_name_col.setCellValueFactory(param -> new ReadOnlyStringWrapper(param.getValue().getValue().getFullName()));
-        g_payoff_col.setCellValueFactory(param -> new ReadOnlyStringWrapper(param.getValue().getValue().getPaymentOfficer()));
+        g_payoff_col.setCellValueFactory(param -> new ReadOnlyStringWrapper(param.getValue().getValue().getPayOffice().getBranchName()));
         g_workoff_col.setCellValueFactory(param -> new ReadOnlyStringWrapper(param.getValue().getValue().getBranch().getBranchName()));
         gur_action_col.setCellValueFactory(pr -> {
             Button b = new Button("View Loans");
@@ -171,40 +176,64 @@ public class GuarantorsFxmlController implements Initializable {
 
     private List<Member> getAvailableGuarantors() {
         Session session = HibernateUtil.getSessionFactory().openSession();
-        Criteria c1 = session.createCriteria(MemberLoan.class);
-        c1.setProjection(Projections.projectionList()
-                .add(Projections.property("isComplete"), "isComplete")
-                .add(Projections.property("guarantors"), "guarantors")
-                .add(Projections.property("member"), "member")
-        );
-        c1.setResultTransformer(Transformers.aliasToBean(MemberLoan.class));
-        List<MemberLoan> ml = c1.list();
-        List<String> guarantors = ml.stream().filter(p -> !p.isIsComplete())
-                .map(MemberLoan::getGuarantors).collect(Collectors.toList());
+        SQLQuery query = session.createSQLQuery("SELECT\n"
+                + "    m.member_id AS memberId,\n"
+                + "    m.full_name AS fullName,\n"
+                + "    wb.branch_name AS workingOffice,\n"
+                + "    pb.branch_name AS payingOffice,\n"
+                + "    ml.member_loan_code AS loanCode,\n"
+                + "    ml.granted_date AS grantedDate,\n"
+                + "    ml.loan_amount AS loanAmount,\n"
+                + "    ml.loan_interest AS loanInterest,\n"
+                + "    ml.interest_per AS interestPer,\n"
+                + "    ml.interest_method AS interMethod,\n"
+                + "    ml.loan_duration AS loanDuration,\n"
+                + "    ml.duration_per AS lDurationPer,\n"
+                + "    ml.is_complete AS loanComplete\n"
+                + "FROM\n"
+                + "    court_loan.branch wb\n"
+                + "INNER JOIN\n"
+                + "    court_loan.member m\n"
+                + "ON\n"
+                + "    (\n"
+                + "        wb.id = m.branch_id)\n"
+                + "INNER JOIN\n"
+                + "    court_loan.branch pb\n"
+                + "ON\n"
+                + "    (\n"
+                + "        m.pay_office_id = pb.id)\n"
+                + "LEFT OUTER JOIN\n"
+                + "    court_loan.member_loan ml\n"
+                + "ON\n"
+                + "    (\n"
+                + "        m.id = ml.member_id) ;")
+                .addScalar("memberId", new StringType())
+                .addScalar("fullName", new StringType())
+                .addScalar("workingOffice", new StringType())
+                .addScalar("payingOffice", new StringType())
+                .addScalar("loanCode", new StringType())
+                .addScalar("grantedDate", new DateType())
+                .addScalar("loanAmount", new DoubleType())
+                .addScalar("loanInterest", new DoubleType())
+                .addScalar("interestPer", new StringType())
+                .addScalar("interMethod", new StringType())
+                .addScalar("loanDuration", new IntegerType())
+                .addScalar("lDurationPer", new StringType())
+                .addScalar("loanComplete", new BooleanType());
 
-        Criteria c2 = session.createCriteria(Member.class);
-        List<Member> list;
-        if (getUniqueGuarantors(guarantors).isEmpty()) {
-            list = c2.list();
-        } else {
-            list = c2.add(Restrictions.
-                    in("memberId", getUniqueGuarantors(guarantors))).list();
+        List<Object[]> rows = query.list();
+        List<Member> list = new ArrayList<>();
+        for (Object[] row : rows) {
+            Member m = new Member();
+            m.setMemberId(row[0].toString());
+            m.setFullName(row[1].toString());
+            m.setBranch(new Branch(row[2].toString()));
+            m.setPayOffice(new Branch(row[3].toString()));
+            list.add(m);
         }
+
         session.close();
         return list;
-    }
-
-    private Set<String> getUniqueGuarantors(List<String> guarantors) {
-        Set<String> ug = new HashSet<>();
-        for (String string : guarantors) {
-            Type type = new TypeToken<List<String>>() {
-            }.getType();
-            List<String> yourList = new Gson().fromJson(string, type);
-            for (String yl : yourList) {
-                ug.add(yl);
-            }
-        }
-        return ug;
     }
 
     private ObservableList<MemberLoan> getLoanPaymentsOf(String memberId) {

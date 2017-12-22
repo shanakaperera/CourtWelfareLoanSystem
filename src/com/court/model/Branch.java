@@ -50,7 +50,7 @@ public class Branch implements java.io.Serializable {
     }
 
     public Branch(String root) {
-
+        this.branchName = root;
     }
 
     public Integer getId() {
