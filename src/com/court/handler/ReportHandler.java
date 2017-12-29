@@ -30,6 +30,7 @@ import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperReport;
 import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 import net.sf.jasperreports.engine.util.JRLoader;
+import net.sf.jasperreports.engine.util.JRProperties;
 
 /**
  *
@@ -143,6 +144,11 @@ public class ReportHandler {
                 jp = JasperFillManager.fillReport(jr, map, ds);
             }
             OutputStream outputStream = new FileOutputStream(new File(outputFile));
+
+            //////////////
+            JRProperties.setProperty("net.sf.jasperreports.awt.ignore.missing.font", "true");
+            JRProperties.setProperty("net.sf.jasperreports.default.font.name", "SansSerif");
+            /////////////
 
             JasperExportManager.exportReportToPdfStream(jp, outputStream);
             System.out.println("Successfully Generated !");
