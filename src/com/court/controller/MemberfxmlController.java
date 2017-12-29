@@ -415,6 +415,8 @@ public class MemberfxmlController implements Initializable {
 
     List<String> memberCodes;
 
+    private boolean isSearch = false;
+
     /**
      * Initializes the controller class.
      */
@@ -518,6 +520,7 @@ public class MemberfxmlController implements Initializable {
         FxUtilsHandler.activeBtnAppearanceChange(member_deactive_btn, true, true);
         deactive_label.setText("");
         disableTabs(true);
+        isSearch = false;
     }
 
     @FXML
@@ -530,6 +533,20 @@ public class MemberfxmlController implements Initializable {
             alert_error.show();
             return;
         }
+
+        Predicate<String> predicate = (t) -> {
+            return memberCodes.contains(t);
+        };
+
+        if (!isSearch && predicate.test(member_code_txt.getText())) {
+            Alert alert_error = new Alert(Alert.AlertType.ERROR);
+            alert_error.setTitle("Error");
+            alert_error.setHeaderText("Member already exist.");
+            alert_error.setContentText("You have already saved this member " + member_code_txt.getText());
+            alert_error.show();
+            return;
+        }
+
         if (validationSupport.validationResultProperty().get().getErrors().isEmpty()) {
             Session session = HibernateUtil.getSessionFactory().openSession();
             session.beginTransaction();
@@ -596,6 +613,7 @@ public class MemberfxmlController implements Initializable {
                 p3.clearSuggestions();
                 p3.addPossibleSuggestions(memberJobs);
                 identifyCodesEditable(true);
+                isSearch = false;
             }
         } else {
             Alert alert_error = new Alert(Alert.AlertType.ERROR);
@@ -649,6 +667,7 @@ public class MemberfxmlController implements Initializable {
         identifyCodesEditable(true);
         fillMemberCodeTxt(member_code_txt);
         imgString = null;
+        isSearch = false;
         member_img.setImage(new Image(getClass().getResourceAsStream(FileHandler.MEMBER_DEFAULT_IMG)));
         FxUtilsHandler.activeDeactiveChildrenControls(true,
                 main_grid_pane, date_hbox, tel_hbox);
@@ -696,6 +715,7 @@ public class MemberfxmlController implements Initializable {
         initDocTable(FXCollections.observableArrayList(getAllDocumentsOf(member_code_txt.getText())));
         initMemChildTable(getChildrenOfMember(member_code_txt.getText()));
         initContributionTable(FXCollections.observableArrayList(getAllContributionsOf(member_code_txt.getText())));
+        isSearch = true;
     }
 
     private void getMemberByCodeOrName(String mCode, String mName) throws MalformedURLException {
@@ -1002,13 +1022,14 @@ public class MemberfxmlController implements Initializable {
         if (!validationSupport.getRegisteredControls().isEmpty()) {
             return;
         }
-        Predicate<String> predicate = (t) -> {
-            return !memberCodes.contains(t);
-        };
+//        Predicate<String> predicate = (t) -> {
+//            return !memberCodes.contains(t);
+//        };
+
         validationSupport.registerValidator(member_code_txt, Validator.combine(
                 Validator.createEmptyValidator("This field is not optional"),
-                Validator.createRegexValidator("Must be a vaild membership Id.", "\\d{4,6}[A-Z]{1}", Severity.ERROR),
-                Validator.createPredicateValidator(predicate, "This member id is already saved to the system !")
+                Validator.createRegexValidator("Must be a vaild membership Id.", "\\d{4,6}[A-Z]{1}", Severity.ERROR)
+        //,Validator.createPredicateValidator(predicate, "This member id is already saved to the system !")
         ));
         validationSupport.registerValidator(member_full_name_txt,
                 Validator.createEmptyValidator("This field is not optional."));
