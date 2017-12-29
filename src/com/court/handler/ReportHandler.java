@@ -146,8 +146,8 @@ public class ReportHandler {
             OutputStream outputStream = new FileOutputStream(new File(outputFile));
 
             //////////////
-            JRProperties.setProperty("net.sf.jasperreports.awt.ignore.missing.font", "true");
-            JRProperties.setProperty("net.sf.jasperreports.default.font.name", "SansSerif");
+//            JRProperties.setProperty("net.sf.jasperreports.awt.ignore.missing.font", "true");
+//            JRProperties.setProperty("net.sf.jasperreports.default.font.name", "SansSerif");
             /////////////
 
             JasperExportManager.exportReportToPdfStream(jp, outputStream);
