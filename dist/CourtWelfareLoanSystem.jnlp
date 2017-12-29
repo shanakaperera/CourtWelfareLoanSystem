@@ -9,9 +9,13 @@
   <resources>
     <j2se version="1.6+" href="http://java.sun.com/products/autodl/j2se"/>
 <<<<<<< HEAD
+<<<<<<< HEAD
     <jar href="CourtWelfareLoanSystem.jar" size="878723" download="eager" />
 =======
     <jar href="CourtWelfareLoanSystem.jar" size="878597" download="eager" />
+>>>>>>> master
+=======
+    <jar href="CourtWelfareLoanSystem.jar" size="878430" download="eager" />
 >>>>>>> master
     <jar href="lib\Medusa-7.5.jar" size="1456743" download="eager" />
     <jar href="lib\antlr-2.7.7.jar" size="437548" download="eager" />

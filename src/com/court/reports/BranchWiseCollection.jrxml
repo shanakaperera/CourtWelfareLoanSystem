@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="report name" pageWidth="612" pageHeight="792" columnWidth="572" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="687b04e8-7552-4a35-873e-74518ddc0959">
 	<property name="ireport.zoom" value="1.5"/>
-	<property name="ireport.x" value="35"/>
-	<property name="ireport.y" value="0"/>
+	<property name="ireport.x" value="44"/>
+	<property name="ireport.y" value="163"/>
 	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="One Empty Record"/>
 	<parameter name="companyName" class="java.lang.String"/>
 	<parameter name="companyAddress" class="java.lang.String"/>
@@ -118,7 +118,7 @@ ORDER BY br.branch_code;]]>
 				<textField>
 					<reportElement x="0" y="10" width="570" height="15" uuid="ad43186a-fc67-4aba-a1d4-d055a45f0d14"/>
 					<textElement verticalAlignment="Top">
-						<font fontName="Roboto" isBold="true"/>
+						<font fontName="SansSerif" isBold="true"/>
 					</textElement>
 					<textFieldExpression><![CDATA[$F{branch_name}]]></textFieldExpression>
 				</textField>
@@ -129,35 +129,35 @@ ORDER BY br.branch_code;]]>
 				<staticText>
 					<reportElement x="0" y="41" width="209" height="20" uuid="1f09f6cf-dd43-4177-9e39-585b6b1ac8b5"/>
 					<textElement>
-						<font fontName="Roboto"/>
+						<font fontName="SansSerif"/>
 					</textElement>
 					<text><![CDATA[Created By: ______________________]]></text>
 				</staticText>
 				<staticText>
 					<reportElement x="0" y="75" width="209" height="20" uuid="e350403a-e666-4eab-9fd3-dc4425b73598"/>
 					<textElement>
-						<font fontName="Roboto"/>
+						<font fontName="SansSerif"/>
 					</textElement>
 					<text><![CDATA[Cheque No: ______________________]]></text>
 				</staticText>
 				<staticText>
 					<reportElement x="209" y="61" width="193" height="20" uuid="058eb6eb-4bf6-4b9b-ba4d-df0d52a6137a"/>
 					<textElement>
-						<font fontName="Roboto"/>
+						<font fontName="SansSerif"/>
 					</textElement>
 					<text><![CDATA[Check By: ______________________]]></text>
 				</staticText>
 				<staticText>
 					<reportElement x="379" y="114" width="193" height="20" uuid="9f6ea522-ddfa-4e2b-869b-49c07cfa4a98"/>
 					<textElement>
-						<font fontName="Roboto"/>
+						<font fontName="SansSerif"/>
 					</textElement>
 					<text><![CDATA[Return Date: ____________________]]></text>
 				</staticText>
 				<staticText>
 					<reportElement x="446" y="75" width="124" height="20" uuid="52e3d552-e12a-4f6f-a897-557a719365ff"/>
 					<textElement textAlignment="Center">
-						<font fontName="Roboto"/>
+						<font fontName="SansSerif"/>
 					</textElement>
 					<text><![CDATA[Signature]]></text>
 				</staticText>
@@ -170,14 +170,14 @@ ORDER BY br.branch_code;]]>
 				<textField pattern="#,##0">
 					<reportElement x="470" y="6" width="100" height="20" uuid="d0cddc6c-987c-4aea-bd5d-e94c5f969bc5"/>
 					<textElement textAlignment="Right">
-						<font fontName="Roboto" isBold="true"/>
+						<font fontName="SansSerif" isBold="true"/>
 					</textElement>
 					<textFieldExpression><![CDATA[$V{g_total}]]></textFieldExpression>
 				</textField>
 				<staticText>
 					<reportElement x="370" y="5" width="100" height="20" uuid="3c7cabdc-b854-4d77-a624-7d1223bc2865"/>
 					<textElement>
-						<font fontName="Roboto" isBold="true"/>
+						<font fontName="SansSerif" isBold="true"/>
 					</textElement>
 					<text><![CDATA[Total Collection :]]></text>
 				</staticText>
@@ -195,35 +195,35 @@ ORDER BY br.branch_code;]]>
 			<textField>
 				<reportElement x="-1" y="88" width="572" height="21" uuid="1103a199-189e-4ea3-8e03-dc37ed77222d"/>
 				<textElement>
-					<font fontName="Roboto" size="12" isBold="true"/>
+					<font fontName="SansSerif" size="12" isBold="true"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$P{reportTitle}]]></textFieldExpression>
 			</textField>
 			<textField pattern="MMMMM dd, yyyy">
 				<reportElement x="495" y="68" width="72" height="20" uuid="af2ddb6a-4d5e-41fb-8e01-03d4f96804df"/>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
-					<font fontName="Roboto" size="8" isBold="false"/>
+					<font fontName="SansSerif" size="8" isBold="false"/>
 				</textElement>
 				<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
 			</textField>
 			<staticText>
 				<reportElement x="409" y="68" width="86" height="20" uuid="0fb45594-00b5-4a5f-8e0b-1ddecc2fbd56"/>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
-					<font fontName="Roboto" size="8" isBold="false"/>
+					<font fontName="SansSerif" size="8" isBold="false"/>
 				</textElement>
 				<text><![CDATA[Report Genarated Date]]></text>
 			</staticText>
 			<textField>
 				<reportElement x="0" y="11" width="570" height="27" uuid="5fa1e9f5-8f70-4b0f-a481-10c7ef9f091c"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font fontName="Franklin Gothic Book" size="16" isBold="true"/>
+					<font fontName="SansSerif" size="16" isBold="true"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$P{companyName}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="0" y="40" width="570" height="19" uuid="29534688-2ce0-481b-8a9e-c43659d9744d"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font fontName="Franklin Gothic Book" size="14" isBold="true"/>
+					<font fontName="SansSerif" size="14" isBold="true"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$P{companyAddress}]]></textFieldExpression>
 			</textField>
@@ -234,84 +234,84 @@ ORDER BY br.branch_code;]]>
 			<staticText>
 				<reportElement x="51" y="0" width="92" height="20" uuid="553c884d-9844-4d3d-8985-7198edb918e4"/>
 				<textElement verticalAlignment="Middle">
-					<font fontName="Roboto" size="8" isBold="true"/>
+					<font fontName="SansSerif" size="8" isBold="true"/>
 				</textElement>
 				<text><![CDATA[NAME]]></text>
 			</staticText>
 			<staticText>
 				<reportElement x="0" y="0" width="51" height="20" uuid="69c52c94-eb5d-4735-be52-04ad9099c5de"/>
 				<textElement verticalAlignment="Middle">
-					<font fontName="Roboto" size="8" isBold="true"/>
+					<font fontName="SansSerif" size="8" isBold="true"/>
 				</textElement>
 				<text><![CDATA[MEMBER ID]]></text>
 			</staticText>
 			<staticText>
 				<reportElement x="142" y="0" width="38" height="20" uuid="e06a04ca-a4be-4f0e-b4ee-d6df6b7b9920"/>
 				<textElement verticalAlignment="Middle">
-					<font fontName="Roboto" size="8" isBold="true"/>
+					<font fontName="SansSerif" size="8" isBold="true"/>
 				</textElement>
 				<text><![CDATA[EMP.No]]></text>
 			</staticText>
 			<staticText>
 				<reportElement x="233" y="0" width="51" height="20" uuid="4d2d6320-250d-49e5-898b-aafc23ea19d5"/>
-				<textElement verticalAlignment="Middle">
-					<font fontName="Roboto" size="8" isBold="true"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="8" isBold="true"/>
 				</textElement>
 				<text><![CDATA[LOAN]]></text>
 			</staticText>
 			<staticText>
 				<reportElement x="180" y="0" width="54" height="20" uuid="be49466f-aa50-4e1e-98eb-bdb91e27246b"/>
 				<textElement verticalAlignment="Middle">
-					<font fontName="Roboto" size="8" isBold="true"/>
+					<font fontName="SansSerif" size="8" isBold="true"/>
 				</textElement>
 				<text><![CDATA[JOB TITLE]]></text>
 			</staticText>
 			<staticText>
 				<reportElement x="284" y="0" width="36" height="20" uuid="34ee1e50-13bf-4df3-804f-bf396db89208"/>
-				<textElement verticalAlignment="Middle">
-					<font fontName="Roboto" size="8" isBold="true"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="8" isBold="true"/>
 				</textElement>
 				<text><![CDATA[ADM]]></text>
 			</staticText>
 			<staticText>
 				<reportElement x="319" y="0" width="43" height="20" uuid="da2dfde6-13fd-4b3b-a45f-7ff1b1d994d0"/>
-				<textElement verticalAlignment="Middle">
-					<font fontName="Roboto" size="8" isBold="true"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="8" isBold="true"/>
 				</textElement>
 				<text><![CDATA[CON]]></text>
 			</staticText>
 			<staticText>
 				<reportElement x="361" y="0" width="40" height="20" uuid="ac00392e-5ffc-41e1-960a-4c563be0664b"/>
-				<textElement verticalAlignment="Middle">
-					<font fontName="Roboto" size="8" isBold="true"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="8" isBold="true"/>
 				</textElement>
 				<text><![CDATA[MEB]]></text>
 			</staticText>
 			<staticText>
 				<reportElement x="401" y="0" width="35" height="20" uuid="1926d827-93dd-4540-a3d9-0506a2a72d78"/>
-				<textElement verticalAlignment="Middle">
-					<font fontName="Roboto" size="8" isBold="true"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="8" isBold="true"/>
 				</textElement>
 				<text><![CDATA[SAV]]></text>
 			</staticText>
 			<staticText>
 				<reportElement x="436" y="0" width="37" height="20" uuid="a397d4a1-3ded-4689-aa34-15603e930f8b"/>
-				<textElement verticalAlignment="Middle">
-					<font fontName="Roboto" size="8" isBold="true"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="8" isBold="true"/>
 				</textElement>
 				<text><![CDATA[HOI]]></text>
 			</staticText>
 			<staticText>
 				<reportElement x="471" y="0" width="47" height="20" uuid="94502cf7-4839-4cd2-94f6-149f0a3e35cf"/>
-				<textElement verticalAlignment="Middle">
-					<font fontName="Roboto" size="8" isBold="true"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="8" isBold="true"/>
 				</textElement>
 				<text><![CDATA[ACI]]></text>
 			</staticText>
 			<staticText>
 				<reportElement x="518" y="0" width="53" height="20" uuid="c0302624-a6c9-4116-bc67-f4ea8d4b2203"/>
-				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font fontName="Roboto" size="8" isBold="true"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="8" isBold="true"/>
 				</textElement>
 				<text><![CDATA[TOTAL]]></text>
 			</staticText>
@@ -322,84 +322,84 @@ ORDER BY br.branch_code;]]>
 			<textField>
 				<reportElement x="51" y="0" width="92" height="20" uuid="b6966849-4a9e-4450-8636-a85fc13ad25d"/>
 				<textElement verticalAlignment="Middle">
-					<font fontName="Roboto" size="8"/>
+					<font fontName="SansSerif" size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{name_with_ins}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="0" y="0" width="51" height="20" uuid="18234f8e-e9e3-489e-802e-8d208f349a51"/>
 				<textElement verticalAlignment="Middle">
-					<font fontName="Roboto" size="8"/>
+					<font fontName="SansSerif" size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{member_id}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="142" y="0" width="39" height="20" uuid="d28a1549-7ea1-4b65-91d7-658c74602cf8"/>
 				<textElement verticalAlignment="Middle">
-					<font fontName="Roboto" size="8"/>
+					<font fontName="SansSerif" size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{emp_id}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="180" y="0" width="54" height="20" uuid="e03dc655-486d-4a75-8c29-98c6adb7cf35"/>
 				<textElement verticalAlignment="Middle">
-					<font fontName="Roboto" size="8"/>
+					<font fontName="SansSerif" size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{job_title}]]></textFieldExpression>
 			</textField>
 			<textField pattern="#,##0">
 				<reportElement x="284" y="0" width="36" height="20" uuid="a2b2811c-2bf7-4d83-a510-f0c95a298741"/>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
-					<font fontName="Roboto" size="8"/>
+					<font fontName="SansSerif" size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{admission}]]></textFieldExpression>
 			</textField>
 			<textField pattern="#,##0">
 				<reportElement x="319" y="0" width="43" height="20" uuid="62957a26-69b6-418d-bebf-e095cb5363cb"/>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
-					<font fontName="Roboto" size="8"/>
+					<font fontName="SansSerif" size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{optional}]]></textFieldExpression>
 			</textField>
 			<textField pattern="#,##0">
 				<reportElement x="361" y="0" width="40" height="20" uuid="a9b44fff-6025-482c-a5a4-952435d7034e"/>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
-					<font fontName="Roboto" size="8"/>
+					<font fontName="SansSerif" size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{mbrship_fee}]]></textFieldExpression>
 			</textField>
 			<textField pattern="#,##0">
 				<reportElement x="401" y="0" width="35" height="20" uuid="ccd5b188-b983-4dd0-9ad3-25f9ce947405"/>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
-					<font fontName="Roboto" size="8"/>
+					<font fontName="SansSerif" size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{sav_fee}]]></textFieldExpression>
 			</textField>
 			<textField pattern="#,##0">
 				<reportElement x="436" y="0" width="37" height="20" uuid="42d093fa-fe90-456d-a34d-93a8ddbb09c6"/>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
-					<font fontName="Roboto" size="8"/>
+					<font fontName="SansSerif" size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{hoi}]]></textFieldExpression>
 			</textField>
 			<textField pattern="#,##0">
 				<reportElement x="471" y="0" width="47" height="20" uuid="b6d0a029-c218-477e-9a06-248f58863a1d"/>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
-					<font fontName="Roboto" size="8"/>
+					<font fontName="SansSerif" size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{aci}]]></textFieldExpression>
 			</textField>
 			<textField pattern="#,##0">
 				<reportElement x="233" y="0" width="51" height="20" uuid="0a4d0e3c-3150-41dd-a014-ed5e50861e73"/>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
-					<font fontName="Roboto" size="8"/>
+					<font fontName="SansSerif" size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{loan_pay}]]></textFieldExpression>
 			</textField>
-			<textField pattern="#,##">
+			<textField pattern="#,##0">
 				<reportElement x="518" y="0" width="53" height="20" uuid="8f0fdf25-1181-4432-9b98-1a14a0ff9494"/>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
-					<font fontName="Roboto" size="8"/>
+					<font fontName="SansSerif" size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$V{e_total}]]></textFieldExpression>
 			</textField>
