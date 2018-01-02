@@ -233,7 +233,7 @@ ORDER BY FIELD(m.job_title,'JUDGE', 'REGISTAR', 'MANEGEM', 'ACCOUNT', 'ACCOUNT A
 	<columnHeader>
 		<band height="20">
 			<staticText>
-				<reportElement x="51" y="0" width="92" height="20" uuid="553c884d-9844-4d3d-8985-7198edb918e4"/>
+				<reportElement x="51" y="0" width="104" height="20" uuid="553c884d-9844-4d3d-8985-7198edb918e4"/>
 				<textElement verticalAlignment="Middle">
 					<font fontName="SansSerif" size="8" isBold="true"/>
 				</textElement>
@@ -247,21 +247,21 @@ ORDER BY FIELD(m.job_title,'JUDGE', 'REGISTAR', 'MANEGEM', 'ACCOUNT', 'ACCOUNT A
 				<text><![CDATA[MEMBER ID]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="142" y="0" width="38" height="20" uuid="e06a04ca-a4be-4f0e-b4ee-d6df6b7b9920"/>
+				<reportElement x="155" y="0" width="38" height="20" uuid="e06a04ca-a4be-4f0e-b4ee-d6df6b7b9920"/>
 				<textElement verticalAlignment="Middle">
 					<font fontName="SansSerif" size="8" isBold="true"/>
 				</textElement>
 				<text><![CDATA[EMP.No]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="233" y="0" width="51" height="20" uuid="4d2d6320-250d-49e5-898b-aafc23ea19d5"/>
+				<reportElement x="247" y="0" width="37" height="20" uuid="4d2d6320-250d-49e5-898b-aafc23ea19d5"/>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font fontName="SansSerif" size="8" isBold="true"/>
 				</textElement>
 				<text><![CDATA[LOAN]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="180" y="0" width="54" height="20" uuid="be49466f-aa50-4e1e-98eb-bdb91e27246b"/>
+				<reportElement x="193" y="0" width="54" height="20" uuid="be49466f-aa50-4e1e-98eb-bdb91e27246b"/>
 				<textElement verticalAlignment="Middle">
 					<font fontName="SansSerif" size="8" isBold="true"/>
 				</textElement>
@@ -320,12 +320,12 @@ ORDER BY FIELD(m.job_title,'JUDGE', 'REGISTAR', 'MANEGEM', 'ACCOUNT', 'ACCOUNT A
 	</columnHeader>
 	<detail>
 		<band height="20" splitType="Stretch">
-			<textField>
-				<reportElement x="51" y="0" width="92" height="20" uuid="b6966849-4a9e-4450-8636-a85fc13ad25d"/>
+			<textField isStretchWithOverflow="true">
+				<reportElement x="51" y="0" width="104" height="20" isPrintWhenDetailOverflows="true" uuid="b6966849-4a9e-4450-8636-a85fc13ad25d"/>
 				<textElement verticalAlignment="Middle">
 					<font fontName="SansSerif" size="8"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{name_with_ins}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[org.apache.commons.lang.WordUtils.capitalize($F{name_with_ins}.toLowerCase(),new char[]{'.',' '})]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="0" y="0" width="51" height="20" uuid="18234f8e-e9e3-489e-802e-8d208f349a51"/>
@@ -335,14 +335,14 @@ ORDER BY FIELD(m.job_title,'JUDGE', 'REGISTAR', 'MANEGEM', 'ACCOUNT', 'ACCOUNT A
 				<textFieldExpression><![CDATA[$F{member_id}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="142" y="0" width="39" height="20" uuid="d28a1549-7ea1-4b65-91d7-658c74602cf8"/>
+				<reportElement x="155" y="0" width="39" height="20" uuid="d28a1549-7ea1-4b65-91d7-658c74602cf8"/>
 				<textElement verticalAlignment="Middle">
 					<font fontName="SansSerif" size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{emp_id}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="180" y="0" width="54" height="20" uuid="e03dc655-486d-4a75-8c29-98c6adb7cf35"/>
+				<reportElement x="193" y="0" width="54" height="20" uuid="e03dc655-486d-4a75-8c29-98c6adb7cf35"/>
 				<textElement verticalAlignment="Middle">
 					<font fontName="SansSerif" size="8"/>
 				</textElement>
@@ -391,7 +391,7 @@ ORDER BY FIELD(m.job_title,'JUDGE', 'REGISTAR', 'MANEGEM', 'ACCOUNT', 'ACCOUNT A
 				<textFieldExpression><![CDATA[$F{aci}]]></textFieldExpression>
 			</textField>
 			<textField pattern="#,##0">
-				<reportElement x="233" y="0" width="51" height="20" uuid="0a4d0e3c-3150-41dd-a014-ed5e50861e73"/>
+				<reportElement x="247" y="0" width="37" height="20" uuid="0a4d0e3c-3150-41dd-a014-ed5e50861e73"/>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font fontName="SansSerif" size="8"/>
 				</textElement>

@@ -8,9 +8,10 @@
   </information>
   <resources>
     <j2se version="1.6+" href="http://java.sun.com/products/autodl/j2se"/>
-    <jar href="CourtWelfareLoanSystem.jar" size="880986" download="eager" />
+    <jar href="CourtWelfareLoanSystem.jar" size="881317" download="eager" />
     <jar href="lib\Medusa-7.5.jar" size="1456743" download="eager" />
     <jar href="lib\antlr-2.7.7.jar" size="437548" download="eager" />
+    <jar href="lib\apache-commons-lang.jar" size="284220" download="eager" />
     <jar href="lib\c3p0-0.9.2.1.jar" size="422423" download="eager" />
     <jar href="lib\commons-beanutils-1.9.0.jar" size="230951" download="eager" />
     <jar href="lib\commons-collections-3.2.1.jar" size="575389" download="eager" />
