@@ -443,7 +443,7 @@ public class MemberfxmlController implements Initializable {
 
         p1 = SuggestionProvider.create(memberCodes);
         p2 = SuggestionProvider.create(memberNames);
-        p3 = SuggestionProvider.create(Arrays.asList("JUDGE", "REGISTAR", "MANEGEM", "ACCOUNT", "ACCOUNT ASSISTANT", "CLERK", "TRANSLATOR", "STENO", "TYPIST", "BINDER", "PASCAL", "PROCESSS", "MATRON", "INTERPRETER", "K.K.S", "WATCHER", "LABOUR"));
+        p3 = SuggestionProvider.create(Arrays.asList("JUDGE", "REGISTAR", "MANEGEM", "ACCOUNT", "ACCOUNT ASSISTANT", "CLERK", "TRANSLATOR", "STENO", "TYPIST", "BINDER", "PASCAL", "PROCESS", "MATRON", "INTERPRETER", "K.K.S", "WATCHER", "LABOUR"));
         p4 = SuggestionProvider.create(allBranches);
         new AutoCompletionTextFieldBinding<>(member_code_srch_txt, p1);
         new AutoCompletionTextFieldBinding<>(member_name_srch_txt, p2);
