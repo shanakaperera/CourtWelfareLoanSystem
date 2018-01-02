@@ -1220,10 +1220,96 @@ public class MemberfxmlController implements Initializable {
                     }
                 });
         l_taken_tbl.setRowFactory((TableView<MemberLoan> param) -> {
+
             final TableRow<MemberLoan> row = new TableRow<>();
             final ContextMenu rowMenu = new ContextMenu();
             MenuItem makePayment = new MenuItem("Make Payment");
             MenuItem closeLoan = new MenuItem("Close Loan");
+            MenuItem hndOvrToGurants = new MenuItem("Assign to Gurantors");
+
+            hndOvrToGurants.setOnAction((ActionEvent evt) -> {
+
+                Alert conf = new Alert(AlertType.CONFIRMATION);
+                conf.setTitle("Confirmation");
+                conf.setHeaderText("Are you sure ?");
+                conf.setContentText("Are you sure you want handover the installment amount straight to gurantors ?");
+                Optional<ButtonType> confm = conf.showAndWait();
+                if (confm.get() != ButtonType.OK) {
+                    return;
+                }
+
+                if (row.getItem().isIsComplete()) {
+                    Alert success = new Alert(AlertType.INFORMATION);
+                    success.setTitle("Information");
+                    success.setHeaderText("Already completed !");
+                    success.setContentText("You cannot process this action to an already completed loan!");
+                    Optional<ButtonType> rst = success.showAndWait();
+                    return;
+                }
+
+                String gurs = row.getItem().getGuarantors();
+                Session s = HibernateUtil.getSessionFactory().openSession();
+                List<Member> mbrs = getSignedGuarantorsActive(gurs, s);
+
+                Dialog<List<Member>> dialog = new Dialog<>();
+                dialog.setTitle("Assign installment to Guarantors");
+                dialog.setHeaderText("Assign installment "
+                        + TextFormatHandler.CURRENCY_DECIMAL_FORMAT.format(row.getItem().getLoanInstallment())
+                        + " of " + row.getItem().getMemberLoanCode() + " to its guarantors.");
+
+                ButtonType savePayButtonType = new ButtonType("Assign Loan", ButtonData.OK_DONE);
+                dialog.getDialogPane().getButtonTypes().addAll(savePayButtonType, ButtonType.CANCEL);
+
+                GridPane grid = new GridPane();
+                grid.setHgap(10);
+                grid.setVgap(10);
+                grid.setPadding(new Insets(20, 150, 10, 10));
+
+                CheckBox[] cba = new CheckBox[mbrs.size()];
+                TextField[] txf = new TextField[mbrs.size()];
+
+                List<Member> figList = new ArrayList<>();
+
+                for (int i = 0; i < mbrs.size(); i++) {
+
+                    final int j = i;
+
+                    cba[i] = new CheckBox(mbrs.get(i).getFullName());
+                    txf[i] = new TextField();
+                    txf[i].setTextFormatter(TextFormatHandler.currencyFormatter());
+                    txf[i].setDisable(true);
+                    cba[i].setOnAction(e -> {
+                        if (cba[j].isSelected()) {
+                            figList.add(mbrs.get(j));
+                            txf[j].setDisable(false);
+                        } else {
+                            figList.remove(mbrs.get(j));
+                            txf[j].setDisable(true);
+                        }
+                    });
+                    grid.add(cba[i], 0, i);
+                    grid.add(txf[i], 1, i);
+                }
+
+                dialog.getDialogPane().setContent(grid);
+
+                dialog.setResultConverter(dialogButton -> {
+                    if (dialogButton == savePayButtonType) {
+                        return new ArrayList<>(figList);
+                    }
+                    return null;
+                });
+
+                Optional<List<Member>> result = dialog.showAndWait();
+
+                result.ifPresent(m -> {
+                    List<Member> mmbrs = m;
+                    mmbrs.forEach(f -> {
+                        //====================GURANTORS GOES HERE=======================
+                    });
+                });
+
+            });
 
             closeLoan.setOnAction((ActionEvent evt) -> {
 
@@ -1703,7 +1789,7 @@ public class MemberfxmlController implements Initializable {
                 });
 
             });
-            rowMenu.getItems().addAll(makePayment, closeLoan);
+            rowMenu.getItems().addAll(makePayment, closeLoan, hndOvrToGurants);
             row.contextMenuProperty().bind(
                     Bindings.when(Bindings.isNotNull(row.itemProperty()))
                             .then(rowMenu)
@@ -2424,6 +2510,17 @@ public class MemberfxmlController implements Initializable {
         }.getType());
         List<Member> grts = session.createCriteria(Member.class)
                 .add(Restrictions.in("memberId", lst)).list();
+
+        return grts;
+    }
+
+    private List<Member> getSignedGuarantorsActive(String guarantors, Session session) {
+        List<String> lst = new Gson().fromJson(guarantors, new TypeToken<List<String>>() {
+        }.getType());
+        List<Member> grts = session.createCriteria(Member.class)
+                .add(Restrictions.in("memberId", lst))
+                .add(Restrictions.eq("status", true))
+                .list();
 
         return grts;
     }
