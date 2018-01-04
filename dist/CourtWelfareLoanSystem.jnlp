@@ -8,7 +8,7 @@
   </information>
   <resources>
     <j2se version="1.6+" href="http://java.sun.com/products/autodl/j2se"/>
-    <jar href="CourtWelfareLoanSystem.jar" size="881317" download="eager" />
+    <jar href="CourtWelfareLoanSystem.jar" size="881060" download="eager" />
     <jar href="lib\Medusa-7.5.jar" size="1456743" download="eager" />
     <jar href="lib\antlr-2.7.7.jar" size="437548" download="eager" />
     <jar href="lib\apache-commons-lang.jar" size="284220" download="eager" />
@@ -22,6 +22,7 @@
     <jar href="lib\ehcache-core-2.4.3.jar" size="1007109" download="eager" />
     <jar href="lib\groovy-all-2.0.1.jar" size="6191960" download="eager" />
     <jar href="lib\gson-2.8.0.jar" size="231952" download="eager" />
+    <jar href="lib\guava-18.0.jar" size="2256213" download="eager" />
     <jar href="lib\hibernate-c3p0-4.3.1.Final.jar" size="39138" download="eager" />
     <jar href="lib\hibernate-commons-annotations-4.0.4.Final.jar" size="75740" download="eager" />
     <jar href="lib\hibernate-core-4.3.1.Final.jar" size="5188532" download="eager" />
