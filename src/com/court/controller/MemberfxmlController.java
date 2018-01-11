@@ -50,6 +50,8 @@ import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.Set;
 import java.util.function.Predicate;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import javafx.application.Platform;
@@ -1792,8 +1794,8 @@ public class MemberfxmlController implements Initializable {
             rowMenu.getItems().addAll(makePayment, closeLoan, hndOvrToGurants);
             row.contextMenuProperty().bind(
                     Bindings.when(Bindings.isNotNull(row.itemProperty()))
-                    .then(rowMenu)
-                    .otherwise((ContextMenu) null));
+                            .then(rowMenu)
+                            .otherwise((ContextMenu) null));
             return row;
 
         });
@@ -2990,7 +2992,13 @@ public class MemberfxmlController implements Initializable {
         s.save(rp);
         s.getTransaction().commit();
 
-        String reportPath = "com/court/reports/SubscriptionPayInvoiceReport.jasper";
+        // String reportPath = "com/court/reports/SubscriptionPayInvoiceReport.jasper";
+        String reportPath = null;
+        try {
+            reportPath = PropHandler.getStringProperty("report_path") + "SubscriptionPayInvoiceReport.jasper";
+        } catch (IOException ex) {
+            Logger.getLogger(MemberfxmlController.class.getName()).log(Level.SEVERE, null, ex);
+        }
 
         SessionImpl smpl = (SessionImpl) s;
         Connection con = smpl.connection();
@@ -3011,7 +3019,15 @@ public class MemberfxmlController implements Initializable {
     }
 
     private void genaratePaymentReport(List<Integer> lpIds, String mCode, String reportTitle) {
-        String reportPath = "com/court/reports/InstallmentPayInvoiceReport.jasper";
+        // String reportPath = "com/court/reports/InstallmentPayInvoiceReport.jasper";
+
+        String reportPath = null;
+        try {
+            reportPath = PropHandler.getStringProperty("report_path") + "InstallmentPayInvoiceReport.jasper";
+        } catch (IOException ex) {
+            Logger.getLogger(MemberfxmlController.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
         Session s = HibernateUtil.getSessionFactory().openSession();
         SessionImpl smpl = (SessionImpl) s;
         Connection con = smpl.connection();

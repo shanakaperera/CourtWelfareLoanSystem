@@ -45,7 +45,7 @@ Contributor(s):
     <property name="hibernate.connection.driver_class">com.mysql.jdbc.Driver</property>
     <property name="hibernate.connection.url">jdbc:mysql://localhost:3306/court_loan?zeroDateTimeBehavior=convertToNull</property>
     <property name="hibernate.connection.username">root</property>
-    <property name="hibernate.connection.password">123</property>
+    <property name="hibernate.connection.password">nbuser</property>
     <property name="show_sql">true</property>
     <property name="format_sql">true</property>
     <property name="hibernate.enable_lazy_load_no_trans">true</property>

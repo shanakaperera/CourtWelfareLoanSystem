@@ -35,6 +35,8 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.function.Predicate;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -610,7 +612,15 @@ public class CollectionSheetFxmlController implements Initializable {
     }
 
     private void generateCollectionPaymentReport(String chkNo) {
-        String reportPath = "com/court/reports/BranchWiseCollectionMadeReport.jasper";
+        // String reportPath = "com/court/reports/BranchWiseCollectionMadeReport.jasper";
+
+        String reportPath = null;
+        try {
+            reportPath = PropHandler.getStringProperty("report_path") + "BranchWiseCollectionMadeReport.jasper";
+        } catch (IOException ex) {
+            Logger.getLogger(CollectionSheetFxmlController.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
         Session s = HibernateUtil.getSessionFactory().openSession();
         SessionImpl smpl = (SessionImpl) s;
         Connection con = smpl.connection();

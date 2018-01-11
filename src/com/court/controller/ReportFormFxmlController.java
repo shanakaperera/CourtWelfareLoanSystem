@@ -7,6 +7,7 @@ package com.court.controller;
 
 import com.court.db.HibernateUtil;
 import com.court.handler.FxUtilsHandler;
+import com.court.handler.PropHandler;
 import com.court.handler.ReportHandler;
 import com.court.model.Branch;
 import com.court.model.LoanPayCheque;
@@ -14,6 +15,8 @@ import com.court.model.MemberLoan;
 import com.court.model.Member;
 import com.court.model.ReceiptPay;
 import com.court.model.SubscriptionPay;
+import java.io.File;
+import java.io.IOException;
 import java.net.URL;
 import java.sql.Connection;
 import java.text.SimpleDateFormat;
@@ -25,6 +28,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.ResourceBundle;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
@@ -43,13 +48,8 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 import javafx.util.Pair;
 import net.sf.jasperreports.engine.JRException;
-import net.sf.jasperreports.engine.JRParameter;
-import net.sf.jasperreports.engine.JRSortField;
 import net.sf.jasperreports.engine.JasperReport;
 import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
-import net.sf.jasperreports.engine.design.JRDesignSortField;
-import net.sf.jasperreports.engine.type.SortFieldTypeEnum;
-import net.sf.jasperreports.engine.type.SortOrderEnum;
 import net.sf.jasperreports.engine.util.JRLoader;
 import org.controlsfx.control.textfield.TextFields;
 import org.hibernate.Criteria;
@@ -117,7 +117,13 @@ public class ReportFormFxmlController implements Initializable {
 
         Optional<AllLoansReport> result = dialog.showAndWait();
         result.ifPresent(b -> {
-            String reportPath = "com/court/reports/LoansReport.jasper";
+            // String reportPath = "com/court/reports/LoansReport.jasper";
+            String reportPath = null;
+            try {
+                reportPath = PropHandler.getStringProperty("report_path") + "LoansReport.jasper";
+            } catch (IOException ex) {
+                Logger.getLogger(ReportFormFxmlController.class.getName()).log(Level.SEVERE, null, ex);
+            }
             Session session = HibernateUtil.getSessionFactory().openSession();
             Criteria c = session.createCriteria(MemberLoan.class, "ml");
             c.createAlias("ml.member", "m");
@@ -177,7 +183,15 @@ public class ReportFormFxmlController implements Initializable {
 
         Optional<Pair<String, Integer>> result = dialog.showAndWait();
         result.ifPresent(b -> {
-            String reportPath = "com/court/reports/MemberReport.jasper";
+            //String reportPath = "com/court/reports/MemberReport.jasper";
+
+            String reportPath = null;
+            try {
+                reportPath = PropHandler.getStringProperty("report_path") + "MemberReport.jasper";
+            } catch (IOException ex) {
+                Logger.getLogger(ReportFormFxmlController.class.getName()).log(Level.SEVERE, null, ex);
+            }
+
             Session session = HibernateUtil.getSessionFactory().openSession();
             Criteria c = session.createCriteria(Member.class, "m");
             c.createAlias("m.branch", "b");
@@ -241,7 +255,14 @@ public class ReportFormFxmlController implements Initializable {
 
         Optional<Pair<String, Integer>> result = dialog.showAndWait();
         result.ifPresent(b -> {
-            String reportPath = "com/court/reports/MemberReport.jasper";
+            //  String reportPath = "com/court/reports/MemberReport.jasper";
+
+            String reportPath = null;
+            try {
+                reportPath = PropHandler.getStringProperty("report_path") + "MemberReport.jasper";
+            } catch (IOException ex) {
+                Logger.getLogger(ReportFormFxmlController.class.getName()).log(Level.SEVERE, null, ex);
+            }
 
             Session session = HibernateUtil.getSessionFactory().openSession();
             Criteria c = session.createCriteria(Member.class, "m");
@@ -305,8 +326,17 @@ public class ReportFormFxmlController implements Initializable {
         Optional<String> result = dialog.showAndWait();
         result.ifPresent(mId -> {
             try {
-                String reportPath = "com/court/reports/MemberWiseLoansReport.jasper";
-                String subReportPath = "com/court/reports/MemberWiseLoansSubreport.jasper";
+                // String reportPath = "com/court/reports/MemberWiseLoansReport.jasper";
+                // String subReportPath = "com/court/reports/MemberWiseLoansSubreport.jasper";
+
+                String reportPath = null, subReportPath = null;
+                try {
+                    reportPath = PropHandler.getStringProperty("report_path") + "MemberWiseLoansReport.jasper";
+                    subReportPath = PropHandler.getStringProperty("report_path") + "MemberWiseLoansSubreport.jasper";
+                } catch (IOException ex) {
+                    Logger.getLogger(ReportFormFxmlController.class.getName()).log(Level.SEVERE, null, ex);
+                }
+
                 Session session = HibernateUtil.getSessionFactory().openSession();
                 Criteria c = session.createCriteria(Member.class);
                 if (!mId.equalsIgnoreCase("All")) {
@@ -318,8 +348,7 @@ public class ReportFormFxmlController implements Initializable {
                 map.put("companyName", ReportHandler.COMPANY_NAME);
                 map.put("companyAddress", ReportHandler.ADDRESS);
                 map.put("reportTitle", "Member wise loans List");
-                JasperReport subReport = (JasperReport) JRLoader.loadObject(
-                        ClassLoader.getSystemResourceAsStream(subReportPath));
+                JasperReport subReport = (JasperReport) JRLoader.loadObject(new File(subReportPath));
                 map.put("SUBREPORT", subReport);
                 ReportHandler rh = new ReportHandler(reportPath, map, memberLoansBeanCollection);
 //                rh.genarateReport();
@@ -360,7 +389,15 @@ public class ReportFormFxmlController implements Initializable {
 
         Optional<String> result = dialog.showAndWait();
         result.ifPresent(b -> {
-            String reportPath = "com/court/reports/BranchWiseCollection.jasper";
+            //String reportPath = "com/court/reports/BranchWiseCollection.jasper";
+
+            String reportPath = null;
+            try {
+                reportPath = PropHandler.getStringProperty("report_path") + "BranchWiseCollection.jasper";
+            } catch (IOException ex) {
+                Logger.getLogger(ReportFormFxmlController.class.getName()).log(Level.SEVERE, null, ex);
+            }
+
             Session s = HibernateUtil.getSessionFactory().openSession();
             SessionImpl smpl = (SessionImpl) s;
             Connection con = smpl.connection();
@@ -405,16 +442,23 @@ public class ReportFormFxmlController implements Initializable {
 
         Optional<String> result = dialog.showAndWait();
         result.ifPresent(mId -> {
-            String reportPath = "com/court/reports/MbrHistoryReport.jasper";
-            String subReportPath_1 = "com/court/reports/MbrHistorySubReport.jasper";
-            String subReportPath_2 = "com/court/reports/MbrHistorySubPaymentsReport.jasper";
+            // String reportPath = "com/court/reports/MbrHistoryReport.jasper";
+            //String subReportPath_1 = "com/court/reports/MbrHistorySubReport.jasper";
+            // String subReportPath_2 = "com/court/reports/MbrHistorySubPaymentsReport.jasper";
+
+            String reportPath = null, subReportPath_1 = null, subReportPath_2 = null;
+            try {
+                reportPath = PropHandler.getStringProperty("report_path") + "BranchWiseCollection.jasper";
+                subReportPath_1 = PropHandler.getStringProperty("report_path") + "MbrHistorySubReport.jasper";
+                subReportPath_2 = PropHandler.getStringProperty("report_path") + "MbrHistorySubPaymentsReport.jasper";
+            } catch (IOException ex) {
+                Logger.getLogger(ReportFormFxmlController.class.getName()).log(Level.SEVERE, null, ex);
+            }
 
             try {
-                JasperReport subReport_1 = (JasperReport) JRLoader.loadObject(
-                        ClassLoader.getSystemResourceAsStream(subReportPath_1));
+                JasperReport subReport_1 = (JasperReport) JRLoader.loadObject(new File(subReportPath_1));
 
-                JasperReport subReport_2 = (JasperReport) JRLoader.loadObject(
-                        ClassLoader.getSystemResourceAsStream(subReportPath_2));
+                JasperReport subReport_2 = (JasperReport) JRLoader.loadObject(new File(subReportPath_2));
 
                 Session session = HibernateUtil.getSessionFactory().openSession();
                 Criteria c = session.createCriteria(Member.class);
@@ -485,7 +529,15 @@ public class ReportFormFxmlController implements Initializable {
         Optional<String> result = dialog.showAndWait();
         result.ifPresent(invo -> {
             if ((invo != null && !invo.isEmpty())) {
-                String reportPath = "com/court/reports/BranchWisePaymentMadeReport.jasper";
+                // String reportPath = "com/court/reports/BranchWisePaymentMadeReport.jasper";
+
+                String reportPath = null;
+                try {
+                    reportPath = PropHandler.getStringProperty("report_path") + "BranchWisePaymentMadeReport.jasper";
+                } catch (IOException ex) {
+                    Logger.getLogger(ReportFormFxmlController.class.getName()).log(Level.SEVERE, null, ex);
+                }
+
                 Session s = HibernateUtil.getSessionFactory().openSession();
                 SessionImpl smpl = (SessionImpl) s;
                 Connection con = smpl.connection();
@@ -513,8 +565,17 @@ public class ReportFormFxmlController implements Initializable {
     @FXML
 
     private void onBranchAction(ActionEvent event) throws JRException {
-        String reportPath = "com/court/reports/BranchReport.jasper";
-        String subReportPath = "com/court/reports/BranchSubReport.jasper";
+        //  String reportPath = "com/court/reports/BranchReport.jasper";
+        // String subReportPath = "com/court/reports/BranchSubReport.jasper";
+
+        String reportPath = null, subReportPath = null;
+        try {
+            reportPath = PropHandler.getStringProperty("report_path") + "BranchReport.jasper";
+            subReportPath = PropHandler.getStringProperty("report_path") + "BranchSubReport.jasper";
+        } catch (IOException ex) {
+            Logger.getLogger(ReportFormFxmlController.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
         Session s = HibernateUtil.getSessionFactory().openSession();
         SessionImpl smpl = (SessionImpl) s;
         Connection con = smpl.connection();
@@ -523,8 +584,7 @@ public class ReportFormFxmlController implements Initializable {
         c.add(Restrictions.eq("b.parentId", 0));
         List<Branch> list = c.list();
 
-        JasperReport subReport = (JasperReport) JRLoader.loadObject(
-                ClassLoader.getSystemResourceAsStream(subReportPath));
+        JasperReport subReport = (JasperReport) JRLoader.loadObject(new File(subReportPath));
 
         JRBeanCollectionDataSource memberLoanBeanCollection = new JRBeanCollectionDataSource(list);
         Map<String, Object> map = new HashMap<>();
@@ -567,7 +627,15 @@ public class ReportFormFxmlController implements Initializable {
 
         Optional<String> result = dialog.showAndWait();
         result.ifPresent(mId -> {
-            String reportPath = "com/court/reports/MemberWiseSubscription.jasper";
+            //  String reportPath = "com/court/reports/MemberWiseSubscription.jasper";
+
+            String reportPath = null;
+            try {
+                reportPath = PropHandler.getStringProperty("report_path") + "MemberWiseSubscription.jasper";
+            } catch (IOException ex) {
+                Logger.getLogger(ReportFormFxmlController.class.getName()).log(Level.SEVERE, null, ex);
+            }
+
             Session s = HibernateUtil.getSessionFactory().openSession();
             SessionImpl smpl = (SessionImpl) s;
             Connection con = smpl.connection();
@@ -621,11 +689,22 @@ public class ReportFormFxmlController implements Initializable {
         Optional<Pair<String, String>> result = dialog.showAndWait();
         result.ifPresent(invo -> {
 
-            String reportPath;
+            String reportPath = null;
             if (tfp.getText().equalsIgnoreCase("subscription")) {
-                reportPath = "com/court/reports/SubscriptionPayDoneInvoiceReport.jasper";
+                // reportPath = "com/court/reports/SubscriptionPayDoneInvoiceReport.jasper";
+                try {
+                    reportPath = PropHandler.getStringProperty("report_path") + "SubscriptionPayDoneInvoiceReport.jasper";
+                } catch (IOException ex) {
+                    Logger.getLogger(ReportFormFxmlController.class.getName()).log(Level.SEVERE, null, ex);
+                }
+
             } else {
-                reportPath = "com/court/reports/InstallmentPayDoneInvoiceReport.jasper";
+                //reportPath = "com/court/reports/InstallmentPayDoneInvoiceReport.jasper";
+                try {
+                    reportPath = PropHandler.getStringProperty("report_path") + "InstallmentPayDoneInvoiceReport.jasper";
+                } catch (IOException ex) {
+                    Logger.getLogger(ReportFormFxmlController.class.getName()).log(Level.SEVERE, null, ex);
+                }
             }
             Session s = HibernateUtil.getSessionFactory().openSession();
             SessionImpl smpl = (SessionImpl) s;
@@ -647,7 +726,15 @@ public class ReportFormFxmlController implements Initializable {
 
     @FXML
     private void onWelfareLoansAction(ActionEvent event) {
-        String reportPath = "com/court/reports/LoanManagementReport.jasper";
+        // String reportPath = "com/court/reports/LoanManagementReport.jasper";
+
+        String reportPath = null;
+        try {
+            reportPath = PropHandler.getStringProperty("report_path") + "LoanManagementReport.jasper";
+        } catch (IOException ex) {
+            Logger.getLogger(ReportFormFxmlController.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
         Session s = HibernateUtil.getSessionFactory().openSession();
         SessionImpl smpl = (SessionImpl) s;
         Connection con = smpl.connection();

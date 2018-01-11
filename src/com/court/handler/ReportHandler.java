@@ -13,8 +13,6 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.sql.Connection;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javafx.concurrent.Task;
 import javafx.geometry.Pos;
 import javafx.scene.control.Alert;
@@ -30,7 +28,6 @@ import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperReport;
 import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 import net.sf.jasperreports.engine.util.JRLoader;
-import net.sf.jasperreports.engine.util.JRProperties;
 
 /**
  *
@@ -46,7 +43,7 @@ public class ReportHandler {
     private final String outputFile = System.getProperty("user.home") + File.separatorChar + "JasperExample.pdf";
     private Connection con;
     private ImageView progressIndicator;
-
+    
     public ReportHandler(String reportPath, Map<String, Object> map,
             JRBeanCollectionDataSource ds) {
         this.reportPath = reportPath;
@@ -131,8 +128,13 @@ public class ReportHandler {
 
     public void genReport() {
         try {
-            JasperReport jr = (JasperReport) JRLoader.loadObject(
-                    ClassLoader.getSystemResourceAsStream(reportPath));
+//            JasperReport jr = (JasperReport) JRLoader.loadObject(
+//                    ClassLoader.getSystemResourceAsStream(reportPath));
+
+            //======NEW CHANGE====================
+            File reportFile = new File(reportPath);
+            JasperReport jr = (JasperReport) JRLoader.loadObject(reportFile);
+            //======NEW CHANGE====================
             JasperPrint jp;
             if (ds == null) {
                 if (con != null) {
@@ -149,7 +151,6 @@ public class ReportHandler {
 //            JRProperties.setProperty("net.sf.jasperreports.awt.ignore.missing.font", "true");
 //            JRProperties.setProperty("net.sf.jasperreports.default.font.name", "SansSerif");
             /////////////
-
             JasperExportManager.exportReportToPdfStream(jp, outputStream);
             System.out.println("Successfully Generated !");
             System.out.println(outputFile);
