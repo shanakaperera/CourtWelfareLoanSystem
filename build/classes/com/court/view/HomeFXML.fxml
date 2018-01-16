@@ -15,7 +15,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<VBox alignment="CENTER" VBox.vgrow="ALWAYS" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.court.controller.HomeFXMLController">
+<VBox alignment="TOP_CENTER" VBox.vgrow="ALWAYS" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.court.controller.HomeFXMLController">
     <stylesheets>
         <URL value="@/com/court/asserts/style.css" />
     </stylesheets>
@@ -28,6 +28,9 @@
                     </font>
                 </Label>
             </children>
+         <VBox.margin>
+            <Insets bottom="5.0" />
+         </VBox.margin>
         </HBox>
        
         <TitledPane prefHeight="200.0" prefWidth="200.0" text="GENERAL INFROMATION">

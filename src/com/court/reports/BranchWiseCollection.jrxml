@@ -70,7 +70,7 @@ m.status=true
 AND
 br.status=true
 GROUP BY m.member_id
-ORDER BY br.branch_code, FIELD(m.job_title,'JUDGE', 'REGISTAR', 'MANEGEM', 'ACCOUNT', 'ACCOUNT ASSISTANT', 'CLERK', 'TRANSLATOR','STENO', 'TYPIST', 'BINDER', 'PISCAL', 'PROCESS', 'MATRON', 'INTERPRETER','FAMILY', 'K.K.S', 'WATCHER','LABOUR') ;]]>
+ORDER BY br.branch_code, FIELD(m.job_title,'JUDGE', 'REGISTAR', 'MANEGEM', 'ACCOUNT', 'ACCOUNT ASSISTANT', 'CLERK', 'TRANSLATOR','STENO', 'TYPIST', 'BINDER', 'PISCAL', 'PROCESS', 'MATRON', 'INTERPRETER','FAMILY','DEV OFFICER', 'K.K.S', 'WATCHER','LABOUR') ;]]>
 	</queryString>
 	<field name="member_id" class="java.lang.String">
 		<fieldDescription><![CDATA[]]></fieldDescription>
@@ -201,7 +201,7 @@ ORDER BY br.branch_code, FIELD(m.job_title,'JUDGE', 'REGISTAR', 'MANEGEM', 'ACCO
 				</textElement>
 				<textFieldExpression><![CDATA[$P{reportTitle}]]></textFieldExpression>
 			</textField>
-			<textField pattern="MMMMM-yy">
+			<textField pattern="yyyy MMMMM">
 				<reportElement x="495" y="68" width="72" height="20" uuid="af2ddb6a-4d5e-41fb-8e01-03d4f96804df"/>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font fontName="SansSerif" size="8" isBold="false"/>
@@ -213,7 +213,7 @@ ORDER BY br.branch_code, FIELD(m.job_title,'JUDGE', 'REGISTAR', 'MANEGEM', 'ACCO
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font fontName="SansSerif" size="8" isBold="false"/>
 				</textElement>
-				<text><![CDATA[Report Genarated Date]]></text>
+				<text><![CDATA[Report As At]]></text>
 			</staticText>
 			<textField>
 				<reportElement x="0" y="11" width="570" height="27" uuid="5fa1e9f5-8f70-4b0f-a481-10c7ef9f091c"/>

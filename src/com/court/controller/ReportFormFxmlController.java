@@ -448,7 +448,7 @@ public class ReportFormFxmlController implements Initializable {
 
             String reportPath = null, subReportPath_1 = null, subReportPath_2 = null;
             try {
-                reportPath = PropHandler.getStringProperty("report_path") + "BranchWiseCollection.jasper";
+                reportPath = PropHandler.getStringProperty("report_path") + "MbrHistoryReport.jasper";
                 subReportPath_1 = PropHandler.getStringProperty("report_path") + "MbrHistorySubReport.jasper";
                 subReportPath_2 = PropHandler.getStringProperty("report_path") + "MbrHistorySubPaymentsReport.jasper";
             } catch (IOException ex) {
