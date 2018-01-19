@@ -509,6 +509,7 @@
                                                         <TableColumn fx:id="l_type_col" prefWidth="86.0" text="Loan Type" />
                                                         <TableColumn fx:id="l_amt_col" text="Amount" />
                                                         <TableColumn fx:id="l_stat_col" prefWidth="95.0" text="Status" />
+                                          <TableColumn fx:id="remark_col" prefWidth="86.0" text="Remark" />
                                                     </columns>
                                                 </TableView>
                                                 <TableView fx:id="l_pay_tbl" prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="1">

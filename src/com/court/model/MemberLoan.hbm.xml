@@ -83,11 +83,17 @@
         <property name="lastInstall" type="int">
             <column name="last_install"/>
         </property>
+        <property name="derivedFrom" type="int">
+            <column name="derived_from"/>
+        </property>
+        <property name="assigntoGurs" type="boolean">
+            <column name="assignto_gurs" not-null="true" />
+        </property>
         <set name="loanPayments" table="loan_payment" inverse="true" lazy="true" fetch="select">
             <key>
                 <column name="member_loan_id" not-null="true" />
             </key>
             <one-to-many class="com.court.model.LoanPayment" />
-        </set>
+        </set>       
     </class>
 </hibernate-mapping>

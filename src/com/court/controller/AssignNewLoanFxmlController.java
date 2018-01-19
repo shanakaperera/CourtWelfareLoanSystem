@@ -338,8 +338,10 @@ public class AssignNewLoanFxmlController implements Initializable {
         ml.setMember(getMember());
         ml.setLoanName(PARENT);
         ml.setGrantedDate(new java.util.Date());
-        ml.setGuarantors(new Gson().toJson(guarantor_list.getItems().stream().map(Member::getMemberId).collect(Collectors.toList()), new TypeToken<List<String>>() {
-        }.getType()));
+        ml.setGuarantors(new Gson().toJson(guarantor_list.getItems().stream()
+                .map(Member::getMemberId).collect(Collectors.toList()),
+                new TypeToken<List<String>>() {
+                }.getType()));
         ml.setLoanAmount(TextFormatHandler.getCurrencyFieldValue(principal_amt_txt));
         ml.setLoanInterest(TextFormatHandler.getPercentageFieldValue(loan_int_txt));
         ml.setInterestPer(loan_int_combo.getSelectionModel().getSelectedItem());

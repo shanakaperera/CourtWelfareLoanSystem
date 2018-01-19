@@ -20,6 +20,7 @@ import com.court.handler.TextFormatHandler;
 import com.court.model.Branch;
 import com.court.model.ClosedLoan;
 import com.court.model.Document;
+import com.court.model.Loan;
 import com.court.model.LoanPayment;
 import com.court.model.MemChild;
 import com.google.gson.Gson;
@@ -108,6 +109,7 @@ import org.controlsfx.validation.ValidationSupport;
 import org.controlsfx.validation.Validator;
 import org.hibernate.Criteria;
 import org.hibernate.Session;
+import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
@@ -193,6 +195,8 @@ public class MemberfxmlController implements Initializable {
     private TableColumn<MemberLoan, Double> l_amt_col;
     @FXML
     private TableColumn<MemberLoan, Boolean> l_stat_col;
+    @FXML
+    private TableColumn<MemberLoan, String> remark_col;
     @FXML
     private TextField loan_id_txt;
     @FXML
@@ -445,7 +449,7 @@ public class MemberfxmlController implements Initializable {
 
         p1 = SuggestionProvider.create(memberCodes);
         p2 = SuggestionProvider.create(memberNames);
-        p3 = SuggestionProvider.create(Arrays.asList("JUDGE", "REGISTAR", "MANEGEM", "ACCOUNT", "ACCOUNT ASSISTANT", "CLERK", "TRANSLATOR", "STENO", "TYPIST", "BINDER", "PISCAL", "PROCESS", "MATRON", "INTERPRETER", "FAMILY","DEV OFFICER", "K.K.S", "WATCHER", "LABOUR"));
+        p3 = SuggestionProvider.create(Arrays.asList("JUDGE", "REGISTAR", "MANEGEM", "ACCOUNT", "ACCOUNT ASSISTANT", "CLERK", "TRANSLATOR", "STENO", "TYPIST", "BINDER", "PISCAL", "PROCESS", "MATRON", "INTERPRETER", "FAMILY", "DEV OFFICER", "K.K.S", "WATCHER", "LABOUR"));
         p4 = SuggestionProvider.create(allBranches);
         new AutoCompletionTextFieldBinding<>(member_code_srch_txt, p1);
         new AutoCompletionTextFieldBinding<>(member_name_srch_txt, p2);
@@ -1207,6 +1211,11 @@ public class MemberfxmlController implements Initializable {
             };
         });
 
+        remark_col.setCellValueFactory((TableColumn.CellDataFeatures<MemberLoan, String> param) -> {
+            MemberLoan vm = param.getValue();
+            return new SimpleObjectProperty(vm.isAssigntoGurs() ? "Loan assigned to its guarantors" : "No remark");
+        });
+
         l_taken_tbl.setItems(mLoans);
 
         if (!l_pay_tbl.getItems().isEmpty()) {
@@ -1249,6 +1258,15 @@ public class MemberfxmlController implements Initializable {
                     return;
                 }
 
+                if (row.getItem().isAssigntoGurs()) {
+                    Alert success = new Alert(AlertType.INFORMATION);
+                    success.setTitle("Information");
+                    success.setHeaderText("Already handover !");
+                    success.setContentText("This loan has been already transferred to the guarantors!");
+                    Optional<ButtonType> rst = success.showAndWait();
+                    return;
+                }
+
                 String gurs = row.getItem().getGuarantors();
                 Session s = HibernateUtil.getSessionFactory().openSession();
                 List<Member> mbrs = getSignedGuarantorsActive(gurs, s);
@@ -1269,8 +1287,12 @@ public class MemberfxmlController implements Initializable {
 
                 CheckBox[] cba = new CheckBox[mbrs.size()];
                 TextField[] txf = new TextField[mbrs.size()];
+                TextField[] txf_du = new TextField[mbrs.size()];
 
                 List<Member> figList = new ArrayList<>();
+
+                Button saveBtn = (Button) dialog.getDialogPane().lookupButton(savePayButtonType);
+                //.setDisable(true);
 
                 for (int i = 0; i < mbrs.size(); i++) {
 
@@ -1278,21 +1300,42 @@ public class MemberfxmlController implements Initializable {
 
                     cba[i] = new CheckBox(mbrs.get(i).getFullName());
                     txf[i] = new TextField();
+                    txf_du[i] = new TextField("0");
                     txf[i].setTextFormatter(TextFormatHandler.currencyFormatter());
+                    txf_du[i].setTextFormatter(TextFormatHandler.numbersOnlyFieldFormatter());
                     txf[i].setDisable(true);
+                    txf_du[i].setDisable(true);
                     cba[i].setOnAction(e -> {
                         if (cba[j].isSelected()) {
                             figList.add(mbrs.get(j));
                             txf[j].setDisable(false);
+                            txf_du[j].setDisable(false);
                         } else {
                             figList.remove(mbrs.get(j));
                             txf[j].setDisable(true);
+                            txf_du[j].setDisable(true);
                         }
                     });
                     grid.add(cba[i], 0, i);
-                    grid.add(txf[i], 1, i);
+                    grid.add(new Label("Installment: "), 1, i);
+                    grid.add(txf[i], 2, i);
+                    grid.add(new Label("Repayments: "), 3, i);
+                    grid.add(txf_du[i], 4, i);
                 }
 
+                saveBtn.addEventFilter(ActionEvent.ACTION, ev -> {
+                    boolean hasFakeVals = false;
+                    for (int i = 0; i < figList.size(); i++) {
+                        if (TextFormatHandler.getCurrencyFieldValue(txf[i].getText()) == 0.0 || Integer.parseInt(txf_du[i].getText()) == 0) {
+                            hasFakeVals = true;
+                        }
+                    }
+
+                    if (figList.isEmpty() || hasFakeVals) {
+                        ev.consume();
+                    }
+
+                });
                 dialog.getDialogPane().setContent(grid);
 
                 dialog.setResultConverter(dialogButton -> {
@@ -1305,12 +1348,59 @@ public class MemberfxmlController implements Initializable {
                 Optional<List<Member>> result = dialog.showAndWait();
 
                 result.ifPresent(m -> {
-                    List<Member> mmbrs = m;
-                    mmbrs.forEach(f -> {
-                        //====================GURANTORS GOES HERE=======================
-                    });
-                });
 
+                    Alert warning = new Alert(AlertType.WARNING);
+                    warning.setTitle("Warning");
+                    warning.setHeaderText("Are you sure you want to transfer the loan to guarantors ?");
+                    warning.setContentText("This will also ends the future payments connected to the loan grantor. "
+                            + "\nBe careful, this process cannot be undone.");
+
+                    warning.getDialogPane().getButtonTypes().addAll(ButtonType.CANCEL);
+
+                    Optional<ButtonType> rst = warning.showAndWait();
+
+                    if (rst.get() == ButtonType.CANCEL) {
+                        return;
+                    }
+
+                    List<Member> mmbrs = m;
+                    Session session = HibernateUtil.getSessionFactory().openSession();
+                    Loan gtLoan = getGurantorTransLoan(session);
+                    session.beginTransaction();
+                    for (int mk = 0; mk < mmbrs.size(); mk++) {
+                        //====================GURANTORS GOES HERE=======================
+
+                        MemberLoan ml = new MemberLoan();
+                        ml.setMemberLoanCode(fillMemberLoanCodeTxt());
+                        ml.setMember(mmbrs.get(mk));
+                        ml.setLoanName(gtLoan.getLoanName());
+                        ml.setGrantedDate(new java.util.Date());
+                        ml.setGuarantors("[]");
+                        ml.setLoanInterest(gtLoan.getLoanInterest());
+                        ml.setInterestPer(gtLoan.getInterestPer());
+                        ml.setInterestMethod(gtLoan.getInterestMethod());
+                        ml.setRepaymentCycle(gtLoan.getRepaymentCycle());
+                        ml.setDurationPer(gtLoan.getDurationPer());
+                        ml.setLoanDuration(Integer.parseInt(txf_du[mk].getText()));
+                        ml.setNoOfRepay(Integer.parseInt(txf_du[mk].getText()));
+                        ml.setLoanInstallment(TextFormatHandler.getCurrencyFieldValue(txf[mk].getText()));
+                        ml.setLoanAmount(TextFormatHandler.getCurrencyFieldValue(txf[mk].getText()) * Integer.parseInt(txf_du[mk].getText()));
+                        ml.setDerivedFrom(row.getItem().getId());
+                        session.save(ml);
+                    }
+                    assignToGuarantors(s, row.getItem());
+                    session.getTransaction().commit();
+                    session.close();
+
+                    Alert success = new Alert(AlertType.INFORMATION);
+                    success.setTitle("Success");
+                    success.setHeaderText("Successfully Transferred !");
+                    success.setContentText("You have successfully transferred the loan to its gurantors.");
+                    Optional<ButtonType> pp = success.showAndWait();
+                    if (pp.get() == ButtonType.OK) {
+                        buildMemberLoanTable();
+                    }
+                });
             });
 
             closeLoan.setOnAction((ActionEvent evt) -> {
@@ -2869,6 +2959,14 @@ public class MemberfxmlController implements Initializable {
         s.update(mml);
     }
 
+    private void assignToGuarantors(Session s, MemberLoan ml) {
+        int asgGurLoan = ml.getId();
+        MemberLoan mml = (MemberLoan) s.load(MemberLoan.class, asgGurLoan);
+        mml.setIsComplete(true);
+        mml.setAssigntoGurs(true);
+        s.update(mml);
+    }
+
     private void updateMemberLoan(MemberLoan ml, Session session, java.util.Date payUntil) {
         ml.setPaidUntil(payUntil);
         session.update(ml);
@@ -3155,6 +3253,32 @@ public class MemberfxmlController implements Initializable {
                 //=============REPORT GENERATE AND EXECUTION CODE GOES HERE================
             });
         }
+    }
+
+    public String fillMemberLoanCodeTxt() {
+        DocSeqHandler seqHandler = new DocSeqHandler();
+        Session session = HibernateUtil.getSessionFactory().openSession();
+        Criteria c = session.createCriteria(MemberLoan.class);
+        c.addOrder(Order.desc("id"));
+        c.setMaxResults(1);
+        MemberLoan ln = (MemberLoan) c.uniqueResult();
+        session.close();
+        if (ln != null) {
+            seqHandler.reqTable("member_loan", Integer.parseInt(ln.getMemberLoanCode().replaceAll("\\D+", "")) + 1);
+            return seqHandler.getSeq_code();
+        } else {
+            seqHandler.reqTable("member_loan", 0);
+            return seqHandler.getSeq_code();
+        }
+    }
+
+    private Loan getGurantorTransLoan(Session s) {
+        Criteria c = s.createCriteria(Loan.class);
+        c.add(Restrictions.like("loanName", "GUARANTOR", MatchMode.START));
+        c.setMaxResults(1);
+        Loan gl = (Loan) c.uniqueResult();
+        System.out.println("LOAN - " + gl.getLoanName());
+        return gl;
     }
 
     class ContGive {

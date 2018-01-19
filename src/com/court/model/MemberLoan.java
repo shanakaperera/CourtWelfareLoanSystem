@@ -39,6 +39,8 @@ public class MemberLoan implements java.io.Serializable {
     private double paidSofar;
     private boolean oldLoan;
     private int lastInstall;
+    private boolean assigntoGurs;
+    private int derivedFrom;
     private Set<LoanPayment> loanPayments = new HashSet<>();
     private List<MemberSubscription> mbrSubs = new ArrayList<>();
 
@@ -333,5 +335,22 @@ public class MemberLoan implements java.io.Serializable {
     public void setLastInstall(int lastInstall) {
         this.lastInstall = lastInstall;
     }
+
+    public boolean isAssigntoGurs() {
+        return assigntoGurs;
+    }
+
+    public void setAssigntoGurs(boolean assigntoGurs) {
+        this.assigntoGurs = assigntoGurs;
+    }
+
+    public int getDerivedFrom() {
+        return derivedFrom;
+    }
+
+    public void setDerivedFrom(int derivedFrom) {
+        this.derivedFrom = derivedFrom;
+    }
+
 
 }
