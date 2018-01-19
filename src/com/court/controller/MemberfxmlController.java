@@ -1386,6 +1386,7 @@ public class MemberfxmlController implements Initializable {
                         ml.setLoanInstallment(TextFormatHandler.getCurrencyFieldValue(txf[mk].getText()));
                         ml.setLoanAmount(TextFormatHandler.getCurrencyFieldValue(txf[mk].getText()) * Integer.parseInt(txf_du[mk].getText()));
                         ml.setDerivedFrom(row.getItem().getId());
+                        ml.setStatus(true);
                         session.save(ml);
                     }
                     assignToGuarantors(s, row.getItem());
