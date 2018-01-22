@@ -70,12 +70,15 @@ m.status=true
 AND
 br.status=true
 GROUP BY m.member_id
-ORDER BY br.branch_code, FIELD(m.job_title,'JUDGE', 'REGISTAR', 'MANEGEM', 'ACCOUNT', 'ACCOUNT ASSISTANT', 'CLERK', 'TRANSLATOR','STENO', 'TYPIST', 'BINDER', 'PISCAL', 'PROCESS', 'MATRON', 'INTERPRETER','FAMILY','DEV OFFICER', 'K.K.S', 'WATCHER','LABOUR') ;]]>
+ORDER BY br.branch_code, FIELD(m.job_title,'JUDGE', 'REGISTAR', 'MANEGEM', 'ACCOUNT', 'ACCOUNT ASSISTANT', 'CLERK', 'TRANSLATOR','STENO', 'TYPIST', 'BINDER', 'PISCAL', 'PROCESS', 'MATRON', 'INTERPRETER','FAMILY','DEV OFFICER','REPORTER', 'K.K.S','DRIVER', 'WATCHER','LABOUR') ;]]>
 	</queryString>
 	<field name="member_id" class="java.lang.String">
 		<fieldDescription><![CDATA[]]></fieldDescription>
 	</field>
 	<field name="full_name" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="sex" class="java.lang.String">
 		<fieldDescription><![CDATA[]]></fieldDescription>
 	</field>
 	<field name="loan_pay" class="java.lang.Double"/>
@@ -106,7 +109,6 @@ ORDER BY br.branch_code, FIELD(m.job_title,'JUDGE', 'REGISTAR', 'MANEGEM', 'ACCO
 		<fieldDescription><![CDATA[]]></fieldDescription>
 	</field>
 	<field name="admission" class="java.lang.Double"/>
-	<field name="sex" class="java.lang.String"/>
 	<variable name="e_total" class="java.lang.Double">
 		<variableExpression><![CDATA[new java.lang.Double($F{sav_fee}.doubleValue()+$F{mbrship_fee}.doubleValue()+$F{hoi}.doubleValue()+$F{optional}.doubleValue()+$F{aci}.doubleValue()+$F{admission}.doubleValue()+$F{loan_pay}.doubleValue())]]></variableExpression>
 	</variable>

@@ -174,10 +174,9 @@ public class OldLoansFxmlController implements Initializable {
     @FXML
     private void onMbrSearchBtnAction(ActionEvent event) {
         Session s = HibernateUtil.getSessionFactory().openSession();
-        Criteria c = s.createCriteria(MemberLoan.class);
-        c.createAlias("member", "m");
-        c.add(Restrictions.eq("oldLoan", true));
-        c.add(Restrictions.eq("oldLoan", true));
+        Criteria c = s.createCriteria(MemberLoan.class, "ml");
+        c.createAlias("ml.member", "m");
+        c.add(Restrictions.eq("ml.oldLoan", true));
         c.add(Restrictions.eq("m.memberId", searchMbr.getMemberId()));
         List<MemberLoan> list = c.list();
         s.close();
@@ -639,10 +638,9 @@ public class OldLoansFxmlController implements Initializable {
             //=====================================================================
             FxUtilsHandler.clearFields(main_grid);
             Session s = HibernateUtil.getSessionFactory().openSession();
-            Criteria c = s.createCriteria(MemberLoan.class);
-            c.createAlias("member", "m");
-            c.add(Restrictions.eq("oldLoan", true));
-            c.add(Restrictions.eq("oldLoan", true));
+            Criteria c = s.createCriteria(MemberLoan.class, "ml");
+            c.createAlias("ml.member", "m");
+            c.add(Restrictions.eq("ml.oldLoan", true));
             c.add(Restrictions.eq("m.memberId", searchMbr.getMemberId()));
             List<MemberLoan> list = c.list();
             s.close();
@@ -741,13 +739,15 @@ public class OldLoansFxmlController implements Initializable {
             HBox box = new HBox();
             box.setAlignment(Pos.CENTER);
             box.setSpacing(2);
-            box.getChildren().addAll(btn_v, btn_v);
+
             btn_d.setOnAction(e -> {
                 deleteLoan(param.getValue().getId());
             });
             btn_v.setOnAction(e -> {
                 loadToFields(param.getValue());
             });
+
+            box.getChildren().addAll(btn_v, btn_d);
             return new SimpleObjectProperty<>(box);
         });
 
@@ -787,21 +787,38 @@ public class OldLoansFxmlController implements Initializable {
     }
 
     private void deleteLoan(Integer id) {
-        Session s = HibernateUtil.getSessionFactory().openSession();
-        s.beginTransaction();
-        MemberLoan ml = (MemberLoan) s.load(MemberLoan.class, id);
-        //==================CHECK IF ANY LOAN PAYMENTS EXIST BEFORE DELETE 
-        s.delete(ml);
-        s.getTransaction().commit();
-        //================================================
-        Criteria c = s.createCriteria(MemberLoan.class);
-        c.createAlias("member", "m");
-        c.add(Restrictions.eq("oldLoan", true));
-        c.add(Restrictions.eq("oldLoan", true));
-        c.add(Restrictions.eq("m.memberId", searchMbr.getMemberId()));
-        List<MemberLoan> list = c.list();
-        s.close();
-        initOldLoanTable(list);
-        //================================================
+
+        Alert alert_confirm = new Alert(Alert.AlertType.CONFIRMATION);
+        alert_confirm.setTitle("Warning");
+        alert_confirm.setHeaderText("Confirm ?");
+        alert_confirm.setContentText("Are you sure you want to delete the selected loan ?");
+        Optional<ButtonType> rs = alert_confirm.showAndWait();
+        if (rs.get() == ButtonType.OK) {
+
+            Session s = HibernateUtil.getSessionFactory().openSession();
+            s.beginTransaction();
+            MemberLoan ml = (MemberLoan) s.load(MemberLoan.class, id);
+            //==================CHECK IF ANY LOAN PAYMENTS EXIST BEFORE DELETE 
+            if (ml.getLoanPayments().isEmpty()) {
+                s.delete(ml);
+                s.getTransaction().commit();
+                //================================================
+                Criteria c = s.createCriteria(MemberLoan.class);
+                c.createAlias("member", "m");
+                c.add(Restrictions.eq("oldLoan", true));
+                c.add(Restrictions.eq("oldLoan", true));
+                c.add(Restrictions.eq("m.memberId", searchMbr.getMemberId()));
+                List<MemberLoan> list = c.list();
+                s.close();
+                initOldLoanTable(list);
+            } else {
+                Alert error_alert = new Alert(Alert.AlertType.INFORMATION);
+                error_alert.setTitle("Error");
+                error_alert.setHeaderText("Error Occured !");
+                error_alert.setContentText("There are already assigned payments for this loan.");
+                error_alert.show();
+            }
+            //================================================
+        }
     }
 }
