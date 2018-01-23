@@ -53,6 +53,8 @@ import java.util.Set;
 import java.util.function.Predicate;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import javafx.application.Platform;
@@ -422,6 +424,8 @@ public class MemberfxmlController implements Initializable {
     List<String> memberCodes;
 
     private boolean isSearch = false;
+    @FXML
+    private TextField r_date_txt;
 
     /**
      * Initializes the controller class.
@@ -916,6 +920,7 @@ public class MemberfxmlController implements Initializable {
             gurantors_lstview.getItems().clear();
             loan_id_txt.setText(ml.getMemberLoanCode());
             g_date_txt.setText(new SimpleDateFormat("yyyy-MM-dd").format(ml.getGrantedDate()));
+            r_date_txt.setText(ml.getlRequested() != null ? new SimpleDateFormat("yyyy-MM-dd").format(ml.getlRequested()) : "");
             l_type_txt.setText(ml.getInterestMethod());
             l_amount_txt.setText(TextFormatHandler.CURRENCY_DECIMAL_FORMAT.format(ml.getLoanAmount()));
             l_int_txt.setText(TextFormatHandler.PRECENTAGE_DECIMAL_FORMAT.format(ml.getLoanInterest() / 100) + " " + ml.getInterestPer());
@@ -1140,6 +1145,7 @@ public class MemberfxmlController implements Initializable {
                     error_alert.setContentText("There are already assigned payments for this loan.");
                     error_alert.show();
                 }
+                ses.close();
             }
 
         } else {
@@ -1272,10 +1278,10 @@ public class MemberfxmlController implements Initializable {
                 List<Member> mbrs = getSignedGuarantorsActive(gurs, s);
 
                 Dialog<List<Member>> dialog = new Dialog<>();
-                dialog.setTitle("Assign installment to Guarantors");
-                dialog.setHeaderText("Assign installment "
-                        + TextFormatHandler.CURRENCY_DECIMAL_FORMAT.format(row.getItem().getLoanInstallment())
-                        + " of " + row.getItem().getMemberLoanCode() + " to its guarantors.");
+                dialog.setTitle("Assign loan to Guarantors");
+                dialog.setHeaderText("Assign loan "
+                        + row.getItem().getMemberLoanCode()
+                        + " of " + row.getItem().getMember().getFullName() + " to its guarantors.");
 
                 ButtonType savePayButtonType = new ButtonType("Assign Loan", ButtonData.OK_DONE);
                 dialog.getDialogPane().getButtonTypes().addAll(savePayButtonType, ButtonType.CANCEL);
@@ -1286,7 +1292,7 @@ public class MemberfxmlController implements Initializable {
                 grid.setPadding(new Insets(20, 150, 10, 10));
 
                 CheckBox[] cba = new CheckBox[mbrs.size()];
-                TextField[] txf = new TextField[mbrs.size()];
+                final TextField[] txf = new TextField[mbrs.size()];
                 TextField[] txf_du = new TextField[mbrs.size()];
 
                 List<Member> figList = new ArrayList<>();
@@ -1302,6 +1308,10 @@ public class MemberfxmlController implements Initializable {
                     txf[i] = new TextField();
                     txf_du[i] = new TextField("0");
                     txf[i].setTextFormatter(TextFormatHandler.currencyFormatter());
+                    txf[i].setOnMouseClicked(e -> {
+                        TextField field = (TextField) e.getSource();
+                        field.selectRange(2, field.getText().length());
+                    });
                     txf_du[i].setTextFormatter(TextFormatHandler.numbersOnlyFieldFormatter());
                     txf[i].setDisable(true);
                     txf_du[i].setDisable(true);
@@ -1317,9 +1327,9 @@ public class MemberfxmlController implements Initializable {
                         }
                     });
                     grid.add(cba[i], 0, i);
-                    grid.add(new Label("Installment: "), 1, i);
+                    grid.add(new Label("Payment Left: "), 1, i);
                     grid.add(txf[i], 2, i);
-                    grid.add(new Label("Repayments: "), 3, i);
+                    grid.add(new Label("Repayments count: "), 3, i);
                     grid.add(txf_du[i], 4, i);
                 }
 
@@ -1364,14 +1374,14 @@ public class MemberfxmlController implements Initializable {
                     }
 
                     List<Member> mmbrs = m;
-                    Session session = HibernateUtil.getSessionFactory().openSession();
-                    Loan gtLoan = getGurantorTransLoan(session);
-                    session.beginTransaction();
+                    Loan gtLoan = getGurantorTransLoan(s);
+                    s.beginTransaction();
+                    int code_int = Integer.parseInt(fillMemberLoanCodeTxt().replaceAll("\\D+", ""));
                     for (int mk = 0; mk < mmbrs.size(); mk++) {
                         //====================GURANTORS GOES HERE=======================
 
                         MemberLoan ml = new MemberLoan();
-                        ml.setMemberLoanCode(fillMemberLoanCodeTxt());
+                        ml.setMemberLoanCode(extractSeqCode("ML{7nr}", code_int));
                         ml.setMember(mmbrs.get(mk));
                         ml.setLoanName(gtLoan.getLoanName());
                         ml.setGrantedDate(new java.util.Date());
@@ -1383,15 +1393,18 @@ public class MemberfxmlController implements Initializable {
                         ml.setDurationPer(gtLoan.getDurationPer());
                         ml.setLoanDuration(Integer.parseInt(txf_du[mk].getText()));
                         ml.setNoOfRepay(Integer.parseInt(txf_du[mk].getText()));
-                        ml.setLoanInstallment(TextFormatHandler.getCurrencyFieldValue(txf[mk].getText()));
-                        ml.setLoanAmount(TextFormatHandler.getCurrencyFieldValue(txf[mk].getText()) * Integer.parseInt(txf_du[mk].getText()));
+                        ml.setLoanInstallment(FxUtilsHandler.roundNumber((TextFormatHandler.getCurrencyFieldValue(txf[mk].getText()) / Integer.parseInt(txf_du[mk].getText())), 0));
+                        ml.setLoanAmount(TextFormatHandler.getCurrencyFieldValue(txf[mk].getText()));
                         ml.setDerivedFrom(row.getItem().getId());
+                        ml.setlRequested(new java.util.Date());
                         ml.setStatus(true);
-                        session.save(ml);
+                        s.save(ml);
+                        code_int++;
+
                     }
                     assignToGuarantors(s, row.getItem());
-                    session.getTransaction().commit();
-                    session.close();
+                    s.getTransaction().commit();
+                    s.close();
 
                     Alert success = new Alert(AlertType.INFORMATION);
                     success.setTitle("Success");
@@ -2614,7 +2627,7 @@ public class MemberfxmlController implements Initializable {
                 .add(Restrictions.in("memberId", lst))
                 .add(Restrictions.eq("status", true))
                 .list();
-
+     //   session.close();
         return grts;
     }
 
@@ -2968,9 +2981,11 @@ public class MemberfxmlController implements Initializable {
         s.update(mml);
     }
 
-    private void updateMemberLoan(MemberLoan ml, Session session, java.util.Date payUntil) {
-        ml.setPaidUntil(payUntil);
-        session.update(ml);
+    private void updateMemberLoan(MemberLoan ml, Session s, java.util.Date payUntil) {
+        int getLoan = ml.getId();
+        MemberLoan mml = (MemberLoan) s.load(MemberLoan.class, getLoan);
+        mml.setPaidUntil(payUntil);
+        s.update(mml);
     }
 
     public void showSuccessAlert() throws MalformedURLException {
@@ -3280,6 +3295,18 @@ public class MemberfxmlController implements Initializable {
         Loan gl = (Loan) c.uniqueResult();
         System.out.println("LOAN - " + gl.getLoanName());
         return gl;
+    }
+
+    private String extractSeqCode(String seq_format, int start_from) {
+        String code = "";
+        Matcher m = Pattern.compile("\\{(.*?)\\}").matcher(seq_format);
+        while (m.find()) {
+            code = seq_format.replace(m.group(), "")
+                    + String.format("%0" + m.group(1).replaceAll("\\D+", "") + "d",
+                            start_from);
+        }
+
+        return code;
     }
 
     class ContGive {

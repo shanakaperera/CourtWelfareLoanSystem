@@ -250,6 +250,7 @@ public class OldLoansFxmlController implements Initializable {
         ml.setDurationPer(pLoan.getDurationPer());
         ml.setRepaymentCycle(pLoan.getRepaymentCycle());
         ml.setNoOfRepay(pLoan.getNoOfRepay());
+        ml.setlRequested(FxUtilsHandler.getDateFrom(floan_granted_picker.getValue()));
         ml.setLoanInstallment(getInstallmentAccordingToLoanType(
                 pLoan.getInterestPer(),
                 pLoan.getDurationPer(),
@@ -295,6 +296,7 @@ public class OldLoansFxmlController implements Initializable {
                 ml2.setDurationPer(cLoan.getDurationPer());
                 ml2.setRepaymentCycle(cLoan.getRepaymentCycle());
                 ml2.setNoOfRepay(cLoan.getNoOfRepay());
+                ml.setlRequested(FxUtilsHandler.getDateFrom(floan_granted_picker.getValue()));
                 ml2.setLoanInstallment(getInstallmentAccordingToLoanType(
                         cLoan.getInterestPer(),
                         cLoan.getDurationPer(),

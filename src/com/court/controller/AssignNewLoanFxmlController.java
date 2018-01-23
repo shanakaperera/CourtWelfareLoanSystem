@@ -20,6 +20,8 @@ import impl.org.controlsfx.autocompletion.SuggestionProvider;
 import java.lang.reflect.Type;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.sql.Date;
+import java.time.LocalDate;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -36,6 +38,7 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
@@ -123,6 +126,10 @@ public class AssignNewLoanFxmlController implements Initializable {
     SuggestionProvider<Member> p2;
     private MemberfxmlController mCtr;
     private final int UNIQUE_GUR_FRQUENCY = 3;
+    @FXML
+    private DatePicker l_request_c;
+    @FXML
+    private DatePicker l_request_p;
 
     /**
      * Initializes the controller class.
@@ -169,6 +176,9 @@ public class AssignNewLoanFxmlController implements Initializable {
         });
 
         FxUtilsHandler.disableFields(true, child_loan_grid);
+        FxUtilsHandler.setDatePickerTimeFormat(l_request_c, l_request_p);
+        l_request_c.setValue(LocalDate.now());
+        l_request_p.setValue(LocalDate.now());
     }
 
     public Button getCancel_btn() {
@@ -350,6 +360,7 @@ public class AssignNewLoanFxmlController implements Initializable {
         ml.setDurationPer(loan_due_combo.getSelectionModel().getSelectedItem());
         ml.setRepaymentCycle(repay_combo.getSelectionModel().getSelectedItem());
         ml.setNoOfRepay(Integer.parseInt(repay_txt.getText()));
+        ml.setlRequested(Date.valueOf(l_request_p.getValue()));
         ml.setLoanInstallment(getInstallmentAccordingToLoanType(
                 loan_int_combo.getSelectionModel().getSelectedItem(),
                 loan_due_combo.getSelectionModel().getSelectedItem(),
@@ -378,6 +389,7 @@ public class AssignNewLoanFxmlController implements Initializable {
                 ml2.setDurationPer(c_loan_due_combo.getSelectionModel().getSelectedItem());
                 ml2.setRepaymentCycle(c_repay_combo.getSelectionModel().getSelectedItem());
                 ml2.setNoOfRepay(Integer.parseInt(c_repay_txt.getText()));
+                ml2.setlRequested(Date.valueOf(l_request_c.getValue()));
                 ml2.setLoanInstallment(getInstallmentAccordingToLoanType(c_loan_int_combo.getSelectionModel().getSelectedItem(),
                         c_loan_due_combo.getSelectionModel().getSelectedItem(),
                         TextFormatHandler.getCurrencyFieldValue(c_principal_amt_txt),

@@ -543,6 +543,7 @@
                                                     <rowConstraints>
                                                         <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                                                         <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                                                         <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                                                         <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                                                         <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
@@ -556,20 +557,22 @@
                                                         <TextField fx:id="loan_id_txt" editable="false" GridPane.columnIndex="1" />
                                                         <Label text="Granted Date" GridPane.rowIndex="1" />
                                                         <TextField fx:id="g_date_txt" editable="false" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-                                                        <Label text="Gurantors" GridPane.rowIndex="8" GridPane.valignment="TOP" />
-                                                        <ListView fx:id="gurantors_lstview" prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="8" />
-                                                        <Label text="Amount" GridPane.rowIndex="3" />
-                                                        <TextField fx:id="l_amount_txt" editable="false" GridPane.columnIndex="1" GridPane.rowIndex="3" />
-                                                        <Label text="Duration" GridPane.rowIndex="6" />
-                                                        <TextField fx:id="l_du_txt" editable="false" GridPane.columnIndex="1" GridPane.rowIndex="6" />
-                                                        <TextField fx:id="l_type_txt" editable="false" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-                                                        <Label text="Loan Type" GridPane.rowIndex="2" />
-                                                        <Label text="Interest" GridPane.rowIndex="4" />
-                                                        <TextField fx:id="l_int_txt" editable="false" GridPane.columnIndex="1" GridPane.rowIndex="4" />
-                                                        <TextField fx:id="l_repay_txt" editable="false" GridPane.columnIndex="1" GridPane.rowIndex="7" />
-                                                        <Label text="Repayment" GridPane.rowIndex="7" />
-                                                        <Label text="Principal + Interest" GridPane.rowIndex="5" />
-                                                        <TextField fx:id="int_pls_prin_txt" editable="false" GridPane.columnIndex="1" GridPane.rowIndex="5" />
+                                                        <Label text="Gurantors" GridPane.rowIndex="9" GridPane.valignment="TOP" />
+                                                        <ListView fx:id="gurantors_lstview" prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="9" />
+                                                        <Label text="Amount" GridPane.rowIndex="4" />
+                                                        <TextField fx:id="l_amount_txt" editable="false" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+                                                        <Label text="Duration" GridPane.rowIndex="7" />
+                                                        <TextField fx:id="l_du_txt" editable="false" GridPane.columnIndex="1" GridPane.rowIndex="7" />
+                                                        <TextField fx:id="l_type_txt" editable="false" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+                                                        <Label text="Loan Type" GridPane.rowIndex="3" />
+                                                        <Label text="Interest" GridPane.rowIndex="5" />
+                                                        <TextField fx:id="l_int_txt" editable="false" GridPane.columnIndex="1" GridPane.rowIndex="5" />
+                                                        <TextField fx:id="l_repay_txt" editable="false" GridPane.columnIndex="1" GridPane.rowIndex="8" />
+                                                        <Label text="Repayment" GridPane.rowIndex="8" />
+                                                        <Label text="Principal + Interest" GridPane.rowIndex="6" />
+                                                        <TextField fx:id="int_pls_prin_txt" editable="false" GridPane.columnIndex="1" GridPane.rowIndex="6" />
+                                          <Label text="Req. Date" GridPane.rowIndex="2" />
+                                          <TextField fx:id="r_date_txt" editable="false" GridPane.columnIndex="1" GridPane.rowIndex="2" />
                                                     </children>
                                                     <GridPane.margin>
                                                         <Insets left="5.0" right="5.0" />

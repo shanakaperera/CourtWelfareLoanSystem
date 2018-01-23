@@ -56,6 +56,9 @@
         <property name="paidUntil" type="date">
             <column name="paid_until" />
         </property>
+        <property name="lRequested" type="date">
+            <column name="l_requested" />
+        </property>
         <property name="status" type="boolean">
             <column name="status" not-null="true" />
         </property>

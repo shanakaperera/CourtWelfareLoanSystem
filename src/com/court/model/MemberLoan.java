@@ -41,6 +41,7 @@ public class MemberLoan implements java.io.Serializable {
     private int lastInstall;
     private boolean assigntoGurs;
     private int derivedFrom;
+    private Date lRequested;
     private Set<LoanPayment> loanPayments = new HashSet<>();
     private List<MemberSubscription> mbrSubs = new ArrayList<>();
 
@@ -352,5 +353,12 @@ public class MemberLoan implements java.io.Serializable {
         this.derivedFrom = derivedFrom;
     }
 
+    public Date getlRequested() {
+        return lRequested;
+    }
+
+    public void setlRequested(Date lRequested) {
+        this.lRequested = lRequested;
+    }
 
 }
