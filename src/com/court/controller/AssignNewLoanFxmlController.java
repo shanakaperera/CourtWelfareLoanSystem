@@ -125,7 +125,7 @@ public class AssignNewLoanFxmlController implements Initializable {
     SuggestionProvider<String> p1, p3;
     SuggestionProvider<Member> p2;
     private MemberfxmlController mCtr;
-    private final int UNIQUE_GUR_FRQUENCY = 3;
+    private final int UNIQUE_GUR_FRQUENCY = 5;
     @FXML
     private DatePicker l_request_c;
     @FXML
