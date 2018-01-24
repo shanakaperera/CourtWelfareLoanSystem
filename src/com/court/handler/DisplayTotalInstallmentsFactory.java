@@ -24,6 +24,7 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableView;
+import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.layout.HBox;
@@ -37,9 +38,13 @@ import javafx.util.converter.DoubleStringConverter;
 public class DisplayTotalInstallmentsFactory implements Callback<TableColumn.CellDataFeatures<Member, Button>, ObservableValue<Button>> {
 
     private final TableView<Member> collection_tbl;
+    private double total;
+    private final TextField chk_amt_txt;
 
-    public DisplayTotalInstallmentsFactory(TableView<Member> collection_tbl) {
+    public DisplayTotalInstallmentsFactory(TableView<Member> collection_tbl, double total, TextField chk_amt_txt) {
         this.collection_tbl = collection_tbl;
+        this.total = total;
+        this.chk_amt_txt = chk_amt_txt;
     }
 
     @Override
@@ -119,10 +124,13 @@ public class DisplayTotalInstallmentsFactory implements Callback<TableColumn.Cel
         ln_inst_col.setCellFactory(TextFieldTableCell.<MemberLoan, Double>forTableColumn(new DoubleStringConverter()));
 
         ln_inst_col.setOnEditCommit((TableColumn.CellEditEvent<MemberLoan, Double> event) -> {
+            double diff = event.getNewValue() - event.getOldValue();
             event.getTableView().getItems().get(event.getTablePosition().getRow())
                     .setLoanInstallment(event.getNewValue() != null ? event.getNewValue() : 0.00);
             collection_tbl.refresh();
             total_n.setText(getTableColumnTotal(event.getTableView(), 4));
+            total = total + diff;
+            chk_amt_txt.setText(TextFormatHandler.CURRENCY_DECIMAL_FORMAT.format(total));
         });
 
         ln_int_col.setCellFactory(column -> {
@@ -160,7 +168,8 @@ public class DisplayTotalInstallmentsFactory implements Callback<TableColumn.Cel
     private String getTableColumnTotal(TableView<MemberLoan> table, int column) {
         double tot = 0.0;
         for (int i = 0; i < table.getItems().size(); i++) {
-            Double value = (Double) table.getColumns().get(column).getCellObservableValue(i).getValue();
+            Double value = (Double) table.getColumns().get(column)
+                    .getCellObservableValue(i).getValue();
             tot += value;
         }
         return TextFormatHandler.CURRENCY_DECIMAL_FORMAT.format(tot);

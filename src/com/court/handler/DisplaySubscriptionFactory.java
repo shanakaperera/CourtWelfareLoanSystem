@@ -35,9 +35,13 @@ import javafx.util.Callback;
 public class DisplaySubscriptionFactory implements Callback<TableColumn.CellDataFeatures<Member, Button>, ObservableValue<Button>> {
 
     private final TableView<Member> collection_tbl;
+    private double total;
+    private final TextField chk_amt_txt;
 
-    public DisplaySubscriptionFactory(TableView<Member> collection_tbl) {
+    public DisplaySubscriptionFactory(TableView<Member> collection_tbl, double total, TextField chk_amt_txt) {
         this.collection_tbl = collection_tbl;
+        this.total = total;
+        this.chk_amt_txt = chk_amt_txt;
     }
 
     @Override
@@ -86,8 +90,12 @@ public class DisplaySubscriptionFactory implements Callback<TableColumn.CellData
                         }
                     }
                 }
-                param.getValue().setTotalSubscription(subs.stream().mapToDouble(a -> a.getAmount()).sum());
+                double newValue = subs.stream().mapToDouble(a -> a.getAmount()).sum();
+                param.getValue().setTotalSubscription(newValue);
                 collection_tbl.refresh();
+                double diff = newValue - sum;
+                total = total + diff;
+                chk_amt_txt.setText(TextFormatHandler.CURRENCY_DECIMAL_FORMAT.format(total));
             });
 
         });

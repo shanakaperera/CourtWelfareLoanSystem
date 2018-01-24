@@ -16,15 +16,23 @@ import com.court.model.Loan;
 import com.court.model.Member;
 import com.court.model.MemberLoan;
 import com.google.gson.Gson;
+import com.mysql.jdbc.DatabaseMetaData;
+import java.io.File;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URL;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Properties;
 import java.util.ResourceBundle;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -39,12 +47,17 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
+import javafx.stage.DirectoryChooser;
+import javafx.stage.FileChooser;
 import org.controlsfx.validation.Severity;
 import org.controlsfx.validation.ValidationSupport;
 import org.controlsfx.validation.Validator;
 import org.hibernate.Criteria;
 import org.hibernate.Session;
+import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Restrictions;
+import org.hibernate.engine.jdbc.connections.spi.ConnectionProvider;
+import org.hibernate.internal.SessionFactoryImpl;
 
 /**
  * FXML Controller class
@@ -380,5 +393,120 @@ public class GeneralSettingsFxmlController implements Initializable {
                 session.update(dse);
                 break;
         }
+    }
+
+    @FXML
+    private void onDbBacupAction(ActionEvent event) throws MalformedURLException, IOException, InterruptedException, SQLException {
+        SessionFactory sessionFactory = HibernateUtil.getSessionFactory();
+        SessionFactoryImpl sfi = (SessionFactoryImpl) sessionFactory;
+        Properties p = sfi.getProperties();
+        String db_user = p.getProperty("hibernate.connection.username");
+        String db_pass = p.getProperty("hibernate.connection.password");
+        String db_url = p.getProperty("hibernate.connection.url").replace("jdbc:mysql:", "http:");
+
+        String server_v = getMysqlServerV(sessionFactory);
+
+        URL aURL = new URL(db_url);
+
+        String db_host = aURL.getHost();
+        String db_port = String.valueOf(aURL.getPort());
+        String db_name = "court_loan";
+        DirectoryChooser chooser = new DirectoryChooser();
+        chooser.setTitle("Select backup directory");
+        File defaultDirectory = new File(System.getProperty("user.home"));
+        chooser.setInitialDirectory(defaultDirectory);
+        File file = chooser.showDialog(null);
+
+        if (file != null) {
+            String path = file.getAbsolutePath() + "\\courtbackup_" + new SimpleDateFormat("yyyyMMdd").format(new Date()) + ".sql";
+
+            //System.out.println("PATH - " + path);
+            Runtime r = Runtime.getRuntime();
+            String command = System.getenv("ProgramFiles") + "\\MYSQL\\MySQL Server " + server_v + "\\bin\\mysqldump.exe"
+                    + " --user=" + db_user
+                    + " --password=" + db_pass
+                    + " --host=" + db_host
+                    + " --protocol=tcp"
+                    + " --port=" + db_port
+                    + " --default-character-set=utf8 --routines --events"
+                    + " --result-file=\"" + path + "\""
+                    + " --databases " + db_name;
+            //System.out.println("COMMAND - " + command);
+            Process pr = r.exec(command);
+            int pComplete = pr.waitFor();
+            if (pComplete == 0) {
+                Alert alert_success = new Alert(Alert.AlertType.INFORMATION);
+                alert_success.setTitle("Success");
+                alert_success.setHeaderText("Backup created successfully !");
+                alert_success.show();
+
+            } else {
+                Alert alert_error = new Alert(Alert.AlertType.ERROR);
+                alert_error.setTitle("Error");
+                alert_error.setHeaderText("Backup create failure !");
+                alert_error.show();
+            }
+
+        }
+        // sessionFactory.close();
+
+    }
+
+    @FXML
+    private void onDbRestoreAction(ActionEvent event) throws IOException, InterruptedException, SQLException {
+
+        SessionFactory sessionFactory = HibernateUtil.getSessionFactory();
+        SessionFactoryImpl sfi = (SessionFactoryImpl) sessionFactory;
+        Properties p = sfi.getProperties();
+        String db_user = p.getProperty("hibernate.connection.username");
+        String db_pass = p.getProperty("hibernate.connection.password");
+
+        String server_v = getMysqlServerV(sessionFactory);
+
+        FileChooser chooser = new FileChooser();
+        FileChooser.ExtensionFilter extFilter
+                = new FileChooser.ExtensionFilter("SQL files (*.sql)", "*.txt");
+        chooser.getExtensionFilters().add(extFilter);
+        File file = chooser.showOpenDialog(null);
+        if (file != null) {
+            String path = file.getAbsolutePath();
+            Runtime r = Runtime.getRuntime();
+            String command = System.getenv("ProgramFiles") + "\\MYSQL\\MySQL Server " + server_v + "\\bin\\mysql.exe"
+                    + " --user=" + db_user
+                    + " --password=" + db_pass
+                    + " -e source " + path;
+            Process pr = r.exec(command);
+            int pComplete = pr.waitFor();
+            if (pComplete == 0) {
+                Alert alert_success = new Alert(Alert.AlertType.INFORMATION);
+                alert_success.setTitle("Success");
+                alert_success.setHeaderText("Database restored successfully !");
+                alert_success.show();
+            } else {
+                Alert alert_error = new Alert(Alert.AlertType.ERROR);
+                alert_error.setTitle("Error");
+                alert_error.setHeaderText("Database restore failure !");
+                alert_error.show();
+            }
+
+        } else {
+            Alert alert_error = new Alert(Alert.AlertType.ERROR);
+            alert_error.setTitle("Error");
+            alert_error.setHeaderText("File selection failed or invalid file !");
+            alert_error.show();
+        }
+
+        // sessionFactory.close();
+    }
+
+    private String getMysqlServerV(SessionFactory sessionFactory) throws SQLException {
+        Connection con = sessionFactory.
+                getSessionFactoryOptions().getServiceRegistry().
+                getService(ConnectionProvider.class).getConnection();
+
+        String server_v = con.getMetaData().getDatabaseProductVersion()
+                .substring(0, con.getMetaData().getDatabaseProductVersion().lastIndexOf("."));
+        con.close();
+        return server_v;
     }
 }

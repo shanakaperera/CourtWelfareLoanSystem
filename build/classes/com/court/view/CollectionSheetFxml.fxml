@@ -7,10 +7,10 @@
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.DatePicker?>
 <?import javafx.scene.control.Label?>
-<?import javafx.scene.control.TableColumn?>
-<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.Pagination?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.control.TitledPane?>
+<?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.HBox?>
@@ -34,7 +34,7 @@
         </HBox>
         <VBox prefHeight="200.0" prefWidth="100.0" VBox.vgrow="ALWAYS">
             <children>
-                <TitledPane prefHeight="200.0" prefWidth="200.0" text="SEARCH CRITERIA">
+                <TitledPane minHeight="200.0" prefHeight="200.0" prefWidth="200.0" text="SEARCH CRITERIA">
                     <font>
                         <Font size="14.0" />
                     </font>
@@ -124,19 +124,11 @@
                         </GridPane>
                     </content>
                 </TitledPane>
-                <TableView fx:id="collection_tbl" prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS">
-                    <columns>
-                        <TableColumn fx:id="m_id_col" prefWidth="65.0" text="Mbr ID" />
-                        <TableColumn fx:id="m_name_col" prefWidth="150.0" text="Name" />
-                  <TableColumn fx:id="wrking_of_col" prefWidth="125.0" text="Working Office" />
-                  <TableColumn fx:id="total_pay_col" prefWidth="150.0" text="Monthly Subscription" />
-                  <TableColumn fx:id="detail_view_col" prefWidth="150.0" text="Subscription Details" />
-                  <TableColumn fx:id="tot_inst_amt_col" prefWidth="150.0" text="Total Inst Amount" />
-                  <TableColumn fx:id="rtot_pay_col" prefWidth="150.0" text="Installments Details" />
-                  <TableColumn fx:id="sub_tot_col" prefWidth="100.0" text="SubTotal" />
-                        <TableColumn fx:id="colection_stat_col" prefWidth="75.0" text="Collected" />  
-                    </columns>
-                </TableView>
+            <BorderPane fx:id="table_bpane" VBox.vgrow="ALWAYS">
+               <center>
+                  <Pagination fx:id="pagination" pageCount="0" />
+               </center>
+            </BorderPane>
             </children>
         </VBox>
     </children>

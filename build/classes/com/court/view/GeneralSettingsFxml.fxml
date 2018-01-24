@@ -44,6 +44,10 @@
                         <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                         <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                         <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                     </rowConstraints>
                     <children>
                         <Label text="Display Settings" GridPane.columnSpan="2">
@@ -164,6 +168,25 @@
                                 </Button>
                             </children>
                         </HBox>
+                  <Button mnemonicParsing="false" onAction="#onDbBacupAction" style="-fx-text-fill: #ffff; -fx-font-size: 14;" text="DB BACKUP" GridPane.columnIndex="1" GridPane.rowIndex="13">
+                     <styleClass>
+                        <String fx:value="btn" />
+                        <String fx:value="btn-warning" />
+                     </styleClass>
+                  </Button>
+                  <Label text="Backup and Restore" GridPane.rowIndex="12">
+                     <font>
+                        <Font name="System Bold" size="15.0" />
+                     </font>
+                  </Label>
+                  <Label text="Backup Your Database" GridPane.rowIndex="13" />
+                  <Label text="Restore Database to your System" GridPane.rowIndex="14" />
+                  <Button mnemonicParsing="false" onAction="#onDbRestoreAction" style="-fx-text-fill: #ffff; -fx-font-size: 14;" text="RESTORE FILE" GridPane.columnIndex="1" GridPane.rowIndex="14">
+                     <styleClass>
+                        <String fx:value="btn" />
+                        <String fx:value="btn-warning" />
+                     </styleClass>
+                  </Button>
                     </children>
                     <VBox.margin>
                         <Insets bottom="10.0" left="100.0" right="100.0" top="10.0" />

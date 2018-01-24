@@ -8,6 +8,7 @@ package com.court.controller;
 import com.court.db.HibernateUtil;
 import com.court.handler.DisplaySubscriptionFactory;
 import com.court.handler.DisplayTotalInstallmentsFactory;
+import com.court.handler.FileHandler;
 import com.court.handler.FxUtilsHandler;
 import com.court.handler.PropHandler;
 import com.court.handler.ReportHandler;
@@ -20,6 +21,7 @@ import com.court.model.Member;
 import com.court.model.MemberLoan;
 import com.court.model.MemberSubscriptions;
 import com.court.model.SubscriptionPay;
+import com.google.common.util.concurrent.AtomicDouble;
 import java.io.IOException;
 import java.net.URL;
 import java.sql.Connection;
@@ -42,9 +44,11 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
@@ -52,14 +56,19 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.DatePicker;
+import javafx.scene.control.Pagination;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.VBox;
 import org.controlsfx.control.textfield.AutoCompletionBinding;
 import org.controlsfx.control.textfield.TextFields;
 import org.controlsfx.validation.Severity;
@@ -88,14 +97,6 @@ public class CollectionSheetFxmlController implements Initializable {
     @FXML
     private TextField search_txt;
     @FXML
-    private TableView<Member> collection_tbl;
-    @FXML
-    private TableColumn<Member, String> m_id_col;
-    @FXML
-    private TableColumn<Member, String> m_name_col;
-    @FXML
-    private TableColumn<Member, CheckBox> colection_stat_col;
-    @FXML
     private TextField chk_no_txt;
     @FXML
     private DatePicker chk_date_chooser;
@@ -103,18 +104,18 @@ public class CollectionSheetFxmlController implements Initializable {
     private TextField chk_amt_txt;
     @FXML
     private GridPane collection_grid;
-    @FXML
+
+    private TableView<Member> collection_tbl;
+    private TableColumn<Member, String> m_id_col;
+    private TableColumn<Member, String> m_name_col;
+    private TableColumn<Member, CheckBox> colection_stat_col;
     private TableColumn<Member, String> total_pay_col;
-    @FXML
     private TableColumn<Member, Button> detail_view_col;
-    @FXML
     private TableColumn<Member, Button> rtot_pay_col;
-    @FXML
     private TableColumn<Member, String> tot_inst_amt_col;
-    @FXML
     private TableColumn<Member, Double> sub_tot_col;
-    @FXML
     private TableColumn<Member, String> wrking_of_col;
+
     @FXML
     private TextField branch_txt;
     @FXML
@@ -123,6 +124,14 @@ public class CollectionSheetFxmlController implements Initializable {
     private DatePicker chk_of_month_chooser;
     @FXML
     private TextField user_enter_pay;
+
+    private int rowsPerPage = 10;
+    @FXML
+    private Pagination pagination;
+    @FXML
+    private BorderPane table_bpane;
+
+    double total = 0.0;
 
     /**
      * Initializes the controller class.
@@ -133,6 +142,8 @@ public class CollectionSheetFxmlController implements Initializable {
         FxUtilsHandler.setDatePickerTimeFormat(chk_date_chooser, chk_of_month_chooser);
         chk_amt_txt.setTextFormatter(TextFormatHandler.currencyFormatter());
         user_enter_pay.setTextFormatter(TextFormatHandler.currencyFormatter());
+        createTable();
+        pagination.setVisible(false);
     }
 
     @FXML
@@ -234,7 +245,17 @@ public class CollectionSheetFxmlController implements Initializable {
                     sp.setWorkOffice(m.getBranch().getId());
                     sp.setMemberSubscriptions(mbrSub);
                 }
-                session.save(sp);
+                try {
+                    session.save(sp);
+                } catch (Exception e) {
+                    Alert alert_error = new Alert(Alert.AlertType.ERROR);
+                    alert_error.setTitle("Error");
+                    alert_error.setHeaderText("Some member subscription details are not correctly updated !");
+                    alert_error.setContentText("You have some partially updated members in this list. Please complete thier details and try again.");
+                    alert_error.show();
+                    throw e;
+                }
+
                 //====================================END MEMBERS SUBSCRIPTIONS SAVE=========================
                 //====================================MEMBERS LOANS SAVE=====================================
                 List<MemberLoan> mLoanList = m.getMemberLoans().stream()
@@ -340,19 +361,72 @@ public class CollectionSheetFxmlController implements Initializable {
             return;
         }
 
+        ImageView progressIndicator = new ImageView();
+        progressIndicator.setImage(new Image(FileHandler.LOADING_DEFAULT_GIF));
+        VBox v = new VBox(progressIndicator);
+        v.setAlignment(Pos.CENTER);
+        table_bpane.setCenter(v);
+
+        Task<List<Member>> mTask = new Task<List<Member>>() {
+
+            {
+                setOnSucceeded(d -> {
+                    AtomicDouble ins_total = new AtomicDouble(0.0);
+                    AtomicDouble sub_total = new AtomicDouble(0.0);
+                    List<Member> mList = getValue();
+
+                    mList.stream().forEach(m -> {
+                        ins_total.addAndGet(m.getMemberLoans().stream().mapToDouble(MemberLoan::getLoanInstallment).sum());
+
+                        List<MemberSubscriptions> mbrSubs = new ArrayList<>(m.getMemberSubscriptions());
+
+                        boolean flag = FxUtilsHandler.previousSubscriptions(m.getId()).isEmpty();
+                        if (flag) {
+                            sub_total.addAndGet(mbrSubs.stream().mapToDouble(a -> a.getAmount()).sum());
+                        } else {
+                            sub_total.addAndGet(mbrSubs.stream().filter(s -> !s.getRepaymentType()
+                                    .equalsIgnoreCase("Once")).mapToDouble(a -> a.getAmount()).sum());
+                        }
+
+                    });
+                    total = ins_total.doubleValue() + sub_total.doubleValue();
+                    chk_amt_txt.setText(TextFormatHandler.CURRENCY_DECIMAL_FORMAT.format(total));
+
+                    Pagination paginationTable = initCollectionTable(mList);
+                    table_bpane.getChildren().remove(0);
+                    table_bpane.setCenter(paginationTable);
+                });
+
+                setOnFailed(workerStateEvent -> getException().printStackTrace());
+            }
+
+            @Override
+            protected List<Member> call() throws Exception {
+                return memberList();
+            }
+
+        };
+
+        Thread mThread = new Thread(mTask, "m-task");
+        mThread.setDaemon(true);
+        mThread.start();
+    }
+
+    private List<Member> memberList() {
+
         Session session = HibernateUtil.getSessionFactory().openSession();
         Criteria c = session.createCriteria(Member.class);
         c.createAlias("branch", "b");
         c.createAlias("payOffice", "po");
 
-//=====================================REMOVED DUE TO UNNASSARY FILTER=================================
+        //=====================================REMOVED DUE TO UNNASSARY FILTER=================================
         //  c.createAlias("memberLoans", "ml");
         //  c.add(Restrictions.eq("ml.isComplete", false));
-//        c.add(Restrictions.disjunction()
-//                .add(Restrictions.le("ml.paidUntil", new java.util.Date()))
-//                .add(Restrictions.isNull("ml.paidUntil"))
-//        );
-//=====================================REMOVED DUE TO UNNASSARY FILTER==================================
+        //        c.add(Restrictions.disjunction()
+        //                .add(Restrictions.le("ml.paidUntil", new java.util.Date()))
+        //                .add(Restrictions.isNull("ml.paidUntil"))
+        //        );
+        //=====================================REMOVED DUE TO UNNASSARY FILTER==================================
         int selected = search_typ_combo.getSelectionModel().getSelectedIndex();
         switch (selected) {
             case 0:
@@ -380,29 +454,30 @@ public class CollectionSheetFxmlController implements Initializable {
                 .filter(FxUtilsHandler.distinctByKey(p -> p.getMemberId()))
                 .collect(Collectors.toList());
 
-        initCollectionTable(filteredList);
         session.close();
+        return filteredList;
     }
 
-    private void initCollectionTable(List<Member> mList) {
+    private Node createPage(int pageIndex, List<Member> mList) {
+        int fromIndex = pageIndex * rowsPerPage;
+        int toIndex = Math.min(fromIndex + rowsPerPage, mList.size());
 
-        ObservableList<Member> mlz = FXCollections.observableArrayList(mList);
         m_id_col.setCellValueFactory(new PropertyValueFactory<>("memberId"));
         m_name_col.setCellValueFactory(new PropertyValueFactory<>("nameWithIns"));
         total_pay_col.setCellValueFactory(new SubscriptionValueFactory());
+        sub_tot_col.setCellValueFactory(new SubTotalValueFactory());
         colection_stat_col.setCellValueFactory((TableColumn.CellDataFeatures<Member, CheckBox> param) -> {
             Member ml = param.getValue();
             CheckBox checkBox = new CheckBox();
             checkBox.selectedProperty().setValue(true);
             checkBox.selectedProperty().addListener((ov, old_val, new_val) -> {
-                param.getTableView().getSelectionModel().select(ml);
-                int row = param.getTableView().getSelectionModel().selectedIndexProperty().get();
-                bindSubTotalTo(chk_amt_txt, row, new_val);
+                double selectedRowTot = ml.getTotalSubscription() + ml.getTotalPayment();
+                bindSubTotalTo(chk_amt_txt, selectedRowTot, new_val);
             });
             return new SimpleObjectProperty<>(checkBox);
         });
-        detail_view_col.setCellValueFactory(new DisplaySubscriptionFactory(collection_tbl));
-        rtot_pay_col.setCellValueFactory(new DisplayTotalInstallmentsFactory(collection_tbl));
+        detail_view_col.setCellValueFactory(new DisplaySubscriptionFactory(collection_tbl, total, chk_amt_txt));
+        rtot_pay_col.setCellValueFactory(new DisplayTotalInstallmentsFactory(collection_tbl, total, chk_amt_txt));
         tot_inst_amt_col.setCellValueFactory((TableColumn.CellDataFeatures<Member, String> param) -> {
             Member ml = param.getValue();
             List<MemberLoan> list = ml.getMemberLoans().stream()
@@ -416,14 +491,12 @@ public class CollectionSheetFxmlController implements Initializable {
             double sum = list.stream().mapToDouble(p -> p.getLoanInstallment()).sum();
             return new SimpleStringProperty(TextFormatHandler.CURRENCY_DECIMAL_FORMAT.format(sum));
         });
-        sub_tot_col.setCellValueFactory(new SubTotalValueFactory());
         sub_tot_col.setCellFactory(col -> {
             return new TableCell<Member, Double>() {
                 @Override
                 protected void updateItem(Double item, boolean empty) {
                     super.updateItem(item, empty);
                     if (!isEmpty()) {
-                        bindSubTotalTo(chk_amt_txt);
                         setStyle("-fx-font-weight: bold;-fx-font-size: 15px;");
                         setText(TextFormatHandler.CURRENCY_DECIMAL_FORMAT.format(item));
                     }
@@ -435,37 +508,55 @@ public class CollectionSheetFxmlController implements Initializable {
             return new SimpleObjectProperty<>(ml.getBranch().getBranchName());
         });
 
+        ObservableList<Member> mlz = FXCollections.observableArrayList(mList.subList(fromIndex, toIndex));
         collection_tbl.setItems(mlz);
+        return new BorderPane(collection_tbl);
     }
 
-    double total = 0.0;
+    private Pagination initCollectionTable(List<Member> mList) {
 
-    private void bindSubTotalTo(TextField chk_amt_txt, int index, boolean b) {
+        pagination.setVisible(true);
+        pagination.setPageCount(mList.size() / rowsPerPage + 1);
+        pagination.setCurrentPageIndex(0);
+        pagination.setPageFactory((Integer param) -> createPage(param, mList));
+        return pagination;
+    }
 
-        for (int i = 0; i < collection_tbl.getItems().size(); i++) {
-            if (index == i) {
-                if (b) {
-                    Double value = (Double) collection_tbl.getColumns().get(7)
-                            .getCellObservableValue(i).getValue();
-                    total += value;
-                } else {
-                    Double value = (Double) collection_tbl.getColumns().get(7)
-                            .getCellObservableValue(i).getValue();
-                    total -= value;
-                }
-            }
+    private void bindSubTotalTo(TextField chk_amt_txt, double value, boolean b) {
+
+        if (b) {
+
+            total += value;
+        } else {
+
+            total -= value;
         }
+
         chk_amt_txt.setText(TextFormatHandler.CURRENCY_DECIMAL_FORMAT.format(total));
     }
 
     private void bindSubTotalTo(TextField chk_amt_txt) {
-        double tot = 0.0;
-        for (int i = 0; i < collection_tbl.getItems().size(); i++) {
-            Double value = (Double) collection_tbl.getColumns().get(7).getCellObservableValue(i).getValue();
-            tot += value;
-        }
-        chk_amt_txt.setText(TextFormatHandler.CURRENCY_DECIMAL_FORMAT.format(tot));
-        total = tot;
+
+        AtomicDouble ins_total = new AtomicDouble(0.0);
+        AtomicDouble sub_total = new AtomicDouble(0.0);
+        List<Member> mList = collection_tbl.getItems();
+
+        mList.stream().forEach(m -> {
+            ins_total.addAndGet(m.getMemberLoans().stream().mapToDouble(MemberLoan::getLoanInstallment).sum());
+
+            List<MemberSubscriptions> mbrSubs = new ArrayList<>(m.getMemberSubscriptions());
+
+            boolean flag = FxUtilsHandler.previousSubscriptions(m.getId()).isEmpty();
+            if (flag) {
+                sub_total.addAndGet(mbrSubs.stream().mapToDouble(a -> a.getAmount()).sum());
+            } else {
+                sub_total.addAndGet(mbrSubs.stream().filter(s -> !s.getRepaymentType()
+                        .equalsIgnoreCase("Once")).mapToDouble(a -> a.getAmount()).sum());
+            }
+
+        });
+        total = ins_total.doubleValue() + sub_total.doubleValue();
+        chk_amt_txt.setText(TextFormatHandler.CURRENCY_DECIMAL_FORMAT.format(total));
     }
 
     private void performSearchTextActive(boolean b) {
@@ -645,5 +736,32 @@ public class CollectionSheetFxmlController implements Initializable {
         mml.setPaidSofar(ml.getPaidSofar() + paidAmt);
         mml.setLastInstall(ml.getLastInstall() + 1);
         s.update(mml);
+    }
+
+    private void createTable() {
+
+        collection_tbl = new TableView<>();
+        m_id_col = new TableColumn<>("Mbr ID");
+        m_id_col.setPrefWidth(65);
+        m_name_col = new TableColumn<>("Name");
+        m_name_col.setPrefWidth(150);
+        colection_stat_col = new TableColumn<>("Collected");
+        colection_stat_col.setPrefWidth(65);
+        total_pay_col = new TableColumn<>("Monthly Subscription");
+        total_pay_col.setPrefWidth(120);
+        detail_view_col = new TableColumn<>("Subscription Details");
+        detail_view_col.setPrefWidth(100);
+        rtot_pay_col = new TableColumn<>("Installments Details");
+        rtot_pay_col.setPrefWidth(100);
+        tot_inst_amt_col = new TableColumn<>("Total Inst Amount");
+        tot_inst_amt_col.setPrefWidth(120);
+        sub_tot_col = new TableColumn<>("SubTotal");
+        sub_tot_col.setPrefWidth(120);
+        wrking_of_col = new TableColumn<>("Working Office");
+        wrking_of_col.setPrefWidth(250);
+
+        collection_tbl.getColumns().addAll(m_id_col, m_name_col,
+                wrking_of_col, total_pay_col, detail_view_col, tot_inst_amt_col,
+                rtot_pay_col, sub_tot_col, colection_stat_col);
     }
 }
