@@ -469,8 +469,9 @@ public class CollectionSheetFxmlController implements Initializable {
         colection_stat_col.setCellValueFactory((TableColumn.CellDataFeatures<Member, CheckBox> param) -> {
             Member ml = param.getValue();
             CheckBox checkBox = new CheckBox();
-            checkBox.selectedProperty().setValue(true);
+            checkBox.selectedProperty().setValue(ml.isCollected());
             checkBox.selectedProperty().addListener((ov, old_val, new_val) -> {
+                ml.setCollected(new_val);
                 double selectedRowTot = ml.getTotalSubscription() + ml.getTotalPayment();
                 bindSubTotalTo(chk_amt_txt, selectedRowTot, new_val);
             });

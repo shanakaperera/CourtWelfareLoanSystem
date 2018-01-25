@@ -46,6 +46,7 @@ public class Member implements java.io.Serializable {
     private Set<ReceiptPay> receiptPays = new HashSet<>();
     private double totalPayment;
     private double totalSubscription;
+    private boolean collected = true;
 
     public Member() {
     }
@@ -372,6 +373,14 @@ public class Member implements java.io.Serializable {
 
     public void setPayOffice(Branch payOffice) {
         this.payOffice = payOffice;
+    }
+
+    public boolean isCollected() {
+        return collected;
+    }
+
+    public void setCollected(boolean collected) {
+        this.collected = collected;
     }
 
     @Override
