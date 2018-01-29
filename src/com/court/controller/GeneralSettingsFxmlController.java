@@ -16,7 +16,6 @@ import com.court.model.Loan;
 import com.court.model.Member;
 import com.court.model.MemberLoan;
 import com.google.gson.Gson;
-import com.mysql.jdbc.DatabaseMetaData;
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -464,9 +463,9 @@ public class GeneralSettingsFxmlController implements Initializable {
         String server_v = getMysqlServerV(sessionFactory);
 
         FileChooser chooser = new FileChooser();
-        FileChooser.ExtensionFilter extFilter
-                = new FileChooser.ExtensionFilter("SQL files (*.sql)", "*.txt");
-        chooser.getExtensionFilters().add(extFilter);
+        FileChooser.ExtensionFilter sqlFilter
+                = new FileChooser.ExtensionFilter("SQL files", "*.sql");
+        chooser.getExtensionFilters().addAll(sqlFilter);
         File file = chooser.showOpenDialog(null);
         if (file != null) {
             String path = file.getAbsolutePath();
@@ -500,13 +499,13 @@ public class GeneralSettingsFxmlController implements Initializable {
     }
 
     private String getMysqlServerV(SessionFactory sessionFactory) throws SQLException {
-        Connection con = sessionFactory.
+        String server_v;
+        try (Connection con = sessionFactory.
                 getSessionFactoryOptions().getServiceRegistry().
-                getService(ConnectionProvider.class).getConnection();
-
-        String server_v = con.getMetaData().getDatabaseProductVersion()
-                .substring(0, con.getMetaData().getDatabaseProductVersion().lastIndexOf("."));
-        con.close();
+                getService(ConnectionProvider.class).getConnection()) {
+            server_v = con.getMetaData().getDatabaseProductVersion()
+                    .substring(0, con.getMetaData().getDatabaseProductVersion().lastIndexOf("."));
+        }
         return server_v;
     }
 }
