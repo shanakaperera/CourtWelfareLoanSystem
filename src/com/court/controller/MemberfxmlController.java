@@ -66,6 +66,7 @@ import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.ReadOnlyDoubleWrapper;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -444,7 +445,7 @@ public class MemberfxmlController implements Initializable {
     @FXML
     private TableColumn<MemberLoan, String> co_loan_id_col;
     @FXML
-    private TableColumn<MemberLoan, Double> co_arrears_amt_col;
+    private TableColumn<MemberLoan, String> co_arrears_amt_col;
     @FXML
     private TableColumn<MemberLoan, CheckBox> co_select_col;
     @FXML
@@ -3360,6 +3361,8 @@ public class MemberfxmlController implements Initializable {
     private void onSettleArrearsBtnAction(ActionEvent event) {
     }
 
+    double arrears_tot = 0.0;
+
     private void initArreasTable(List<MemberLoan> loans) {
 
         List<MemberLoan> arrearsLoans = loans.stream()
@@ -3367,11 +3370,19 @@ public class MemberfxmlController implements Initializable {
 
         if (!arrearsLoans.isEmpty()) {
             co_loan_id_col.setCellValueFactory(new PropertyValueFactory<>("memberLoanCode"));
-            co_arrears_amt_col.setCellValueFactory(new PropertyValueFactory<>("kotaLeft"));
+            co_arrears_amt_col.setCellValueFactory((TableColumn.CellDataFeatures<MemberLoan, String> param) -> {
+                return new SimpleStringProperty(TextFormatHandler.CURRENCY_DECIMAL_FORMAT.format(param.getValue().getKotaLeft()));
+            });
             co_select_col.setCellValueFactory((TableColumn.CellDataFeatures<MemberLoan, CheckBox> param) -> {
                 CheckBox cb = new CheckBox();
                 cb.selectedProperty().addListener((ov, old_val, new_val) -> {
-                    
+                    if (new_val) {
+                        arrears_tot += param.getValue().getKotaLeft();
+
+                    } else {
+                        arrears_tot -= param.getValue().getKotaLeft();
+                    }
+                    tot_arrears_sel_txt.setText(TextFormatHandler.CURRENCY_DECIMAL_FORMAT.format(arrears_tot));
                 });
                 return new SimpleObjectProperty<>(cb);
             });
