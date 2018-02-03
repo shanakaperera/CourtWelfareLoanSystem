@@ -20,7 +20,9 @@ public class LoanPayment implements java.io.Serializable {
     private Double listedPay;
     private Integer payOffice;
     private Integer workOffice;
-
+    private Double debtorDefault;
+    private String remark;
+    
     private String groupPro;
     private double lSum;
 
@@ -152,6 +154,21 @@ public class LoanPayment implements java.io.Serializable {
     public void setWorkOffice(Integer workOffice) {
         this.workOffice = workOffice;
     }
-    
-    
+
+    public Double getDebtorDefault() {
+        return debtorDefault;
+    }
+
+    public void setDebtorDefault(Double debtorDefault) {
+        this.debtorDefault = debtorDefault;
+    }
+
+    public String getRemark() {
+        return remark;
+    }
+
+    public void setRemark(String remark) {
+        this.remark = remark;
+    }
+
 }

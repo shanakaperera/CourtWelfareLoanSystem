@@ -17,6 +17,7 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
+<?import org.controlsfx.control.textfield.CustomTextField?>
 
 <VBox alignment="TOP_CENTER" prefHeight="445.0" prefWidth="546.0" spacing="10.0" VBox.vgrow="ALWAYS" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.court.controller.CollectionSheetFxmlController">
     <stylesheets>
@@ -120,6 +121,8 @@
                            <font>
                               <Font name="System Bold" size="14.0" />
                            </font></TextField>
+                        <CustomTextField fx:id="tbl_filter_txt" onKeyReleased="#filterTableKeyRel" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+                        <Label text="Filter By MemberID" GridPane.rowIndex="4" />
                             </children>
                         </GridPane>
                     </content>

@@ -5,9 +5,11 @@
  */
 package com.court.controller;
 
+import com.court.handler.TextFormatHandler;
 import com.court.model.Member;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ObservableValue;
+import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.util.Callback;
 
@@ -15,14 +17,15 @@ import javafx.util.Callback;
  *
  * @author Shanaka P
  */
-public class SubTotalValueFactory implements Callback<TableColumn.CellDataFeatures<Member, Double>, ObservableValue<Double>> {
-
+public class SubTotalValueFactory implements Callback<TableColumn.CellDataFeatures<Member, Label>, ObservableValue<Label>> {
 
     @Override
-    public ObservableValue<Double> call(TableColumn.CellDataFeatures<Member, Double> param) {
+    public ObservableValue<Label> call(TableColumn.CellDataFeatures<Member, Label> param) {
         Member m = param.getValue();
         double tot = m.getTotalSubscription() + m.getTotalPayment();
-        return new SimpleObjectProperty<>(tot);
+        Label label = new Label(TextFormatHandler.CURRENCY_DECIMAL_FORMAT.format(tot));
+        label.setStyle("-fx-font-weight: bold;-fx-font-size: 15px;");
+        return new SimpleObjectProperty<>(label);
     }
 
 }

@@ -214,7 +214,7 @@
                                                     <items>
                                                         <FXCollections fx:factory="observableArrayList">
                                                             <String fx:value="Permanent" />
-                                                            <String fx:value="Temporary" />
+                                                            <String fx:value="Casual" />
                                                         </FXCollections>
                                                     </items>
                                                 </ComboBox>
@@ -508,6 +508,7 @@
                                                         <TableColumn fx:id="g_date_col" prefWidth="94.0" text="Granted Date" />
                                                         <TableColumn fx:id="l_type_col" prefWidth="86.0" text="Loan Type" />
                                                         <TableColumn fx:id="l_amt_col" text="Amount" />
+                                          <TableColumn fx:id="l_bal_con" prefWidth="75.0" text="Bal. Cont" />
                                                         <TableColumn fx:id="l_stat_col" prefWidth="95.0" text="Status" />
                                           <TableColumn fx:id="remark_col" prefWidth="86.0" text="Remark" />
                                                     </columns>
@@ -550,6 +551,7 @@
                                                         <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                                                         <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                                                         <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                                                         <RowConstraints minHeight="10.0" prefHeight="100.0" vgrow="SOMETIMES" />
                                                     </rowConstraints>
                                                     <children>
@@ -557,8 +559,8 @@
                                                         <TextField fx:id="loan_id_txt" editable="false" GridPane.columnIndex="1" />
                                                         <Label text="Granted Date" GridPane.rowIndex="1" />
                                                         <TextField fx:id="g_date_txt" editable="false" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-                                                        <Label text="Gurantors" GridPane.rowIndex="9" GridPane.valignment="TOP" />
-                                                        <ListView fx:id="gurantors_lstview" prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="9" />
+                                                        <Label text="Gurantors" GridPane.rowIndex="10" GridPane.valignment="TOP" />
+                                                        <ListView fx:id="gurantors_lstview" prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="10" />
                                                         <Label text="Amount" GridPane.rowIndex="4" />
                                                         <TextField fx:id="l_amount_txt" editable="false" GridPane.columnIndex="1" GridPane.rowIndex="4" />
                                                         <Label text="Duration" GridPane.rowIndex="7" />
@@ -573,6 +575,8 @@
                                                         <TextField fx:id="int_pls_prin_txt" editable="false" GridPane.columnIndex="1" GridPane.rowIndex="6" />
                                           <Label text="Req. Date" GridPane.rowIndex="2" />
                                           <TextField fx:id="r_date_txt" editable="false" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                                          <TextField fx:id="bal_cont_txt" editable="false" GridPane.columnIndex="1" GridPane.rowIndex="9" />
+                                          <Label text="Bal. Continued" GridPane.rowIndex="9" />
                                                     </children>
                                                     <GridPane.margin>
                                                         <Insets left="5.0" right="5.0" />
@@ -626,6 +630,7 @@
                                     </children>
                                 </VBox>
                         <Label layoutX="10.0" layoutY="466.0" prefHeight="17.0" prefWidth="360.0" text="* Right click on each member loan to make an individual payment." />
+                        <Label layoutX="10.0" layoutY="483.0" prefHeight="17.0" prefWidth="360.0" text="* Red colored rows represent the loans with continued balance." textFill="#da1d1d" />
                             </children>
                         </AnchorPane>
                     </content>
@@ -939,6 +944,28 @@
                               </HBox>
                            </children>
                         </VBox>
+                     </children>
+                  </AnchorPane>
+              </content>
+            </Tab>
+            <Tab fx:id="cash_out_tab" text="DAY-TO-DAY CASH OUT">
+              <content>
+                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                     <children>
+                        <HBox alignment="CENTER" layoutX="68.0" layoutY="26.0" spacing="20.0" AnchorPane.leftAnchor="215.0" AnchorPane.rightAnchor="215.0">
+                           <children>
+                              <Label text="CUSTOMER CREDIT BALANCE">
+                                 <font>
+                                    <Font name="System Bold" size="18.0" />
+                                 </font>
+                              </Label>
+                              <Label fx:id="credit_bal_txt" layoutX="10.0" layoutY="10.0" text="Rs0.00">
+                                 <font>
+                                    <Font name="System Bold" size="18.0" />
+                                 </font>
+                              </Label>
+                           </children>
+                        </HBox>
                      </children>
                   </AnchorPane>
               </content>

@@ -41,5 +41,11 @@
         <property name="workOffice" type="int">
             <column name="work_office" />
         </property>
+        <property name="debtorDefault" type="java.lang.Double">
+            <column name="debtor_default" precision="22" scale="0" />
+        </property>
+        <property name="remark" type="string">
+            <column name="remark" length="200" />
+        </property>
     </class>
 </hibernate-mapping>

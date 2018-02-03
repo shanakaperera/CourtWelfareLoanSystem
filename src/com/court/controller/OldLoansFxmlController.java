@@ -19,7 +19,9 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import java.io.IOException;
 import java.net.URL;
+import java.sql.Date;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
@@ -56,6 +58,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import org.controlsfx.control.textfield.TextFields;
 import org.controlsfx.validation.ValidationSupport;
 import org.controlsfx.validation.Validator;
@@ -66,6 +69,7 @@ import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import org.hibernate.metadata.ClassMetadata;
 import org.hibernate.transform.Transformers;
+import org.joda.time.DateTime;
 
 /**
  * FXML Controller class
@@ -84,12 +88,6 @@ public class OldLoansFxmlController implements Initializable {
     @FXML
     private DatePicker floan_granted_picker;
     @FXML
-    private TextField floan_paidfar_txt;
-    @FXML
-    private DatePicker floan_lastpay_picker;
-    @FXML
-    private TextField floan_balance_con_txt;
-    @FXML
     private CheckBox has_child_check;
     @FXML
     private TableView<MemberLoan> old_loan_tbl;
@@ -106,15 +104,9 @@ public class OldLoansFxmlController implements Initializable {
     @FXML
     private TextField sloan_search_txt;
     @FXML
-    private DatePicker sloan_lastpay_picker;
-    @FXML
-    private TextField sloan_balance_con_txt;
-    @FXML
     private TextField sloan_amt_txt;
     @FXML
     private TextField sloan_int_txt;
-    @FXML
-    private TextField sloan_paidfar_txt;
     @FXML
     private TextField mbr_search_txt;
 
@@ -132,6 +124,12 @@ public class OldLoansFxmlController implements Initializable {
     private TextField last_paid_ins;
     @FXML
     private TextField slast_paid_ins;
+    @FXML
+    private TextField pl_bal_contxt;
+    @FXML
+    private TextField cl_bal_contxt;
+    @FXML
+    private Label gur_notice_txt;
 
     /**
      * Initializes the controller class.
@@ -142,37 +140,43 @@ public class OldLoansFxmlController implements Initializable {
         va2 = new ValidationSupport();
 
         floan_amt_txt.setTextFormatter(TextFormatHandler.currencyFormatter());
-        floan_paidfar_txt.setTextFormatter(TextFormatHandler.currencyFormatter());
-        floan_balance_con_txt.setTextFormatter(TextFormatHandler.currencyFormatter());
         floan_int_txt.setTextFormatter(TextFormatHandler.percentageFormatter());
 
-        sloan_amt_txt.setTextFormatter(TextFormatHandler.currencyFormatter());
-        sloan_paidfar_txt.setTextFormatter(TextFormatHandler.currencyFormatter());
-        sloan_balance_con_txt.setTextFormatter(TextFormatHandler.currencyFormatter());
-        sloan_int_txt.setTextFormatter(TextFormatHandler.percentageFormatter());
+        pl_bal_contxt.setTextFormatter(TextFormatHandler.currencyFormatter());
+        cl_bal_contxt.setTextFormatter(TextFormatHandler.currencyFormatter());
+
         last_paid_ins.setTextFormatter(TextFormatHandler.numbersOnlyFieldFormatter());
         slast_paid_ins.setTextFormatter(TextFormatHandler.numbersOnlyFieldFormatter());
+        last_paid_ins.setText("0");
+        slast_paid_ins.setText("0");
 
-        TextFields.bindAutoCompletion(mbr_search_txt, getMembers()).setOnAutoCompleted(e -> {
-            searchMbr = getSearchMember(e.getCompletion().getMemberId());
-            gur_btn.setDisable(false);
-        });
+        sloan_amt_txt.setTextFormatter(TextFormatHandler.currencyFormatter());
+        sloan_int_txt.setTextFormatter(TextFormatHandler.percentageFormatter());
+        gur_notice_txt.setText("");
 
-        TextFields.bindAutoCompletion(floan_search_txt, getLoans()).setOnAutoCompleted(e -> {
-            Loan loan = e.getCompletion();
-            pLoan = loan;
-            floan_int_txt.setText(TextFormatHandler.PRECENTAGE_DECIMAL_FORMAT
-                    .format(loan.getLoanInterest() / 100));
-        });
+        TextFields.bindAutoCompletion(mbr_search_txt, getMembers())
+                .setOnAutoCompleted(e -> {
+                    searchMbr = getSearchMember(e.getCompletion().getMemberId());
+                    gur_btn.setDisable(false);
+                    mbr_search_txt.setEditable(false);
+                    loadOldLoans();
+                });
 
-        FxUtilsHandler.setDatePickerTimeFormat(floan_granted_picker, floan_lastpay_picker, sloan_lastpay_picker);
+        TextFields.bindAutoCompletion(floan_search_txt, getLoans())
+                .setOnAutoCompleted(e -> {
+                    Loan loan = e.getCompletion();
+                    pLoan = loan;
+                    floan_int_txt.setText(TextFormatHandler.PRECENTAGE_DECIMAL_FORMAT
+                            .format(loan.getLoanInterest() / 100));
+                });
+
+        FxUtilsHandler.setDatePickerTimeFormat(floan_granted_picker);
 
         bindValidationOnPaneControlFocus(main_grid);
         disableFields(true);
     }
 
-    @FXML
-    private void onMbrSearchBtnAction(ActionEvent event) {
+    public void loadOldLoans() {
         Session s = HibernateUtil.getSessionFactory().openSession();
         Criteria c = s.createCriteria(MemberLoan.class, "ml");
         c.createAlias("ml.member", "m");
@@ -191,6 +195,10 @@ public class OldLoansFxmlController implements Initializable {
         gur_btn.setDisable(true);
         searchMbr = null;
         FxUtilsHandler.clearFields(main_grid);
+        mbr_search_txt.setEditable(true);
+        gur_notice_txt.setText("");
+        last_paid_ins.setText("0");
+        slast_paid_ins.setText("0");
     }
 
     @FXML
@@ -231,6 +239,17 @@ public class OldLoansFxmlController implements Initializable {
             return;
         }
 
+        boolean isValid = validateGDateWithInstallments(floan_granted_picker.getValue(), last_paid_ins);
+
+        if (!isValid) {
+            Alert alert_error = new Alert(Alert.AlertType.ERROR);
+            alert_error.setTitle("Error");
+            alert_error.setHeaderText("Ambiguous granted date or installments !");
+            alert_error.setContentText("Installments number provided as paid is not match with the granted date. ");
+            alert_error.show();
+            return;
+        }
+
         Session session = HibernateUtil.getSessionFactory().openSession();
         session.beginTransaction();
 
@@ -240,7 +259,8 @@ public class OldLoansFxmlController implements Initializable {
         ml.setMember(searchMbr);
         ml.setLoanName(PARENT.split("-")[1].trim());
         ml.setGrantedDate(FxUtilsHandler.getDateFrom(floan_granted_picker.getValue()));
-        ml.setGuarantors(new Gson().toJson(gurList.stream().map(Member::getMemberId).collect(Collectors.toList()), new TypeToken<List<String>>() {
+        ml.setGuarantors(new Gson().toJson(gurList.stream().map(Member::getMemberId)
+                .collect(Collectors.toList()), new TypeToken<List<String>>() {
         }.getType()));
         ml.setLoanAmount(TextFormatHandler.getCurrencyFieldValue(floan_amt_txt));
         ml.setLoanInterest(TextFormatHandler.getPercentageFieldValue(floan_int_txt));
@@ -251,21 +271,33 @@ public class OldLoansFxmlController implements Initializable {
         ml.setRepaymentCycle(pLoan.getRepaymentCycle());
         ml.setNoOfRepay(pLoan.getNoOfRepay());
         ml.setlRequested(FxUtilsHandler.getDateFrom(floan_granted_picker.getValue()));
-        ml.setLoanInstallment(getInstallmentAccordingToLoanType(
+
+        double installmentAccordingToLoanType = FxUtilsHandler.roundNumber(getInstallmentAccordingToLoanType(
                 pLoan.getInterestPer(),
                 pLoan.getDurationPer(),
                 TextFormatHandler.getCurrencyFieldValue(floan_amt_txt),
                 TextFormatHandler.getPercentageFieldValue(floan_int_txt),
                 pLoan.getNoOfRepay(),
-                pLoan.getInterestMethod())
+                pLoan.getInterestMethod()), 0);
+
+        ml.setLoanInstallment(installmentAccordingToLoanType);
+        ml.setIsComplete(
+                (pLoan.getLoanDuration() == Integer.parseInt(last_paid_ins.getText()))
+                && (TextFormatHandler.getCurrencyFieldValue(cl_bal_contxt) == 0)
         );
-        ml.setLastInstall(Integer.parseInt(last_paid_ins.getText()));
-        ml.setIsComplete(false);
         ml.setStatus(true);
         ml.setOldLoan(true);
-        ml.setPaidSofar(TextFormatHandler.getCurrencyFieldValue(floan_paidfar_txt));
-        ml.setPaidUntil(FxUtilsHandler.getDateFrom(floan_lastpay_picker.getValue()));
-        ml.setKotaLeft(TextFormatHandler.getCurrencyFieldValue(floan_balance_con_txt));
+
+        DateTime finalPay = new DateTime(
+                Date.valueOf(floan_granted_picker.getValue()).getTime())
+                .plusMonths(Integer.parseInt(last_paid_ins.getText()));
+
+        ml.setLastInstall(Integer.parseInt(last_paid_ins.getText()));
+        ml.setPaidSofar(
+                installmentAccordingToLoanType * Integer.parseInt(last_paid_ins.getText())
+        );
+        ml.setPaidUntil(finalPay.toDate());
+        ml.setKotaLeft(TextFormatHandler.getCurrencyFieldValue(pl_bal_contxt));
 
         if (has_child_check.isSelected()) {
 
@@ -297,15 +329,27 @@ public class OldLoansFxmlController implements Initializable {
                 ml2.setRepaymentCycle(cLoan.getRepaymentCycle());
                 ml2.setNoOfRepay(cLoan.getNoOfRepay());
                 ml.setlRequested(FxUtilsHandler.getDateFrom(floan_granted_picker.getValue()));
-                ml2.setLoanInstallment(getInstallmentAccordingToLoanType(
+
+                double cInstallmentAccordingToLoanType = FxUtilsHandler.roundNumber(getInstallmentAccordingToLoanType(
                         cLoan.getInterestPer(),
                         cLoan.getDurationPer(),
                         TextFormatHandler.getCurrencyFieldValue(sloan_amt_txt),
                         TextFormatHandler.getPercentageFieldValue(sloan_int_txt),
                         cLoan.getNoOfRepay(),
-                        cLoan.getInterestMethod())
-                );
+                        cLoan.getInterestMethod()), 0);
+
+                ml2.setLoanInstallment(cInstallmentAccordingToLoanType);
+
+                DateTime finalPay2 = new DateTime(
+                        Date.valueOf(floan_granted_picker.getValue()).getTime())
+                        .plusMonths(Integer.parseInt(slast_paid_ins.getText()));
+
+                //==================================================
                 ml2.setLastInstall(Integer.parseInt(slast_paid_ins.getText()));
+                ml2.setPaidSofar(cInstallmentAccordingToLoanType * Integer.parseInt(slast_paid_ins.getText()));
+                ml2.setPaidUntil(ml.isIsComplete() ? finalPay2.toDate() : null);
+                ml2.setKotaLeft(TextFormatHandler.getCurrencyFieldValue(cl_bal_contxt));
+                //======================================================
                 ml2.setIsComplete(false);
                 ml2.setStatus(true);
                 ml2.setChildId(0);
@@ -428,6 +472,13 @@ public class OldLoansFxmlController implements Initializable {
                     Optional<ObservableList<Member>> result = dialog.showAndWait();
                     result.ifPresent(op -> {
                         gurList = FXCollections.observableArrayList(op);
+                        if (!gurList.isEmpty()) {
+                            gur_notice_txt.setText("Guarantors added successfully !");
+                            gur_notice_txt.setTextFill(Color.web("#4fcc60"));
+                        } else {
+                            gur_notice_txt.setText("No any gurantors selected !");
+                            gur_notice_txt.setTextFill(Color.web("#cc2828"));
+                        }
                     });
 
                 });
@@ -495,11 +546,7 @@ public class OldLoansFxmlController implements Initializable {
                 Validator.createEmptyValidator("This field is not optional."));
         va.registerValidator(floan_granted_picker,
                 Validator.createEmptyValidator("This field is not optional."));
-        va.registerValidator(floan_paidfar_txt,
-                Validator.createEmptyValidator("This field is not optional."));
-        va.registerValidator(floan_lastpay_picker,
-                Validator.createEmptyValidator("This field is not optional."));
-        va.registerValidator(floan_balance_con_txt,
+        va.registerValidator(pl_bal_contxt,
                 Validator.createEmptyValidator("This field is not optional."));
     }
 
@@ -513,11 +560,7 @@ public class OldLoansFxmlController implements Initializable {
                 Validator.createEmptyValidator("This field is not optional."));
         va2.registerValidator(sloan_int_txt,
                 Validator.createEmptyValidator("This field is not optional."));
-        va2.registerValidator(sloan_paidfar_txt,
-                Validator.createEmptyValidator("This field is not optional."));
-        va2.registerValidator(sloan_lastpay_picker,
-                Validator.createEmptyValidator("This field is not optional."));
-        va2.registerValidator(sloan_balance_con_txt,
+        va.registerValidator(cl_bal_contxt,
                 Validator.createEmptyValidator("This field is not optional."));
     }
 
@@ -537,9 +580,8 @@ public class OldLoansFxmlController implements Initializable {
         sloan_search_txt.setDisable(b);
         sloan_amt_txt.setDisable(b);
         sloan_int_txt.setDisable(b);
-        sloan_paidfar_txt.setDisable(b);
-        sloan_lastpay_picker.setDisable(b);
-        sloan_balance_con_txt.setDisable(b);
+        cl_bal_contxt.setDisable(b);
+        slast_paid_ins.setDisable(b);
     }
 
     private boolean isValidationEmpty(ValidationSupport vs) {
@@ -638,15 +680,15 @@ public class OldLoansFxmlController implements Initializable {
         Optional<ButtonType> result = alert_success.showAndWait();
         if (result.get() == ButtonType.OK) {
             //=====================================================================
-            FxUtilsHandler.clearFields(main_grid);
-            Session s = HibernateUtil.getSessionFactory().openSession();
-            Criteria c = s.createCriteria(MemberLoan.class, "ml");
-            c.createAlias("ml.member", "m");
-            c.add(Restrictions.eq("ml.oldLoan", true));
-            c.add(Restrictions.eq("m.memberId", searchMbr.getMemberId()));
-            List<MemberLoan> list = c.list();
-            s.close();
-            initOldLoanTable(list);
+//            FxUtilsHandler.clearFields(main_grid);
+//            Session s = HibernateUtil.getSessionFactory().openSession();
+//            Criteria c = s.createCriteria(MemberLoan.class, "ml");
+//            c.createAlias("ml.member", "m");
+//            c.add(Restrictions.eq("ml.oldLoan", true));
+//            c.add(Restrictions.eq("m.memberId", searchMbr.getMemberId()));
+//            List<MemberLoan> list = c.list();
+//            s.close();
+//            initOldLoanTable(list);
             //====================================================================
             gurList = null;
             pLoan = null;
@@ -674,27 +716,6 @@ public class OldLoansFxmlController implements Initializable {
     }
 
     @FXML
-    private void onFLoanGntAction(ActionEvent event) {
-        floan_paidfar_txt.requestFocus();
-        floan_paidfar_txt.selectRange(2, floan_paidfar_txt.getText().length());
-    }
-
-    @FXML
-    private void onFLoanPsAction(ActionEvent event) {
-        floan_lastpay_picker.requestFocus();
-    }
-
-    @FXML
-    private void onFLoanLpAction(ActionEvent event) {
-        floan_balance_con_txt.requestFocus();
-    }
-
-    @FXML
-    private void onFLoanBcAction(ActionEvent event) {
-
-    }
-
-    @FXML
     private void onFLoanIntMClicked(MouseEvent event) {
         floan_int_txt.selectRange(0, floan_int_txt.getText().length() - 1);
     }
@@ -702,16 +723,6 @@ public class OldLoansFxmlController implements Initializable {
     @FXML
     private void onFLoanAmtMClicked(MouseEvent event) {
         floan_amt_txt.selectRange(2, floan_amt_txt.getText().length());
-    }
-
-    @FXML
-    private void onFLoanPsMClicked(MouseEvent event) {
-        floan_paidfar_txt.selectRange(2, floan_paidfar_txt.getText().length());
-    }
-
-    @FXML
-    private void onFLoanBcMClicked(MouseEvent event) {
-        floan_balance_con_txt.selectRange(2, floan_balance_con_txt.getText().length());
     }
 
     private void initOldLoanTable(List<MemberLoan> list) {
@@ -822,5 +833,23 @@ public class OldLoansFxmlController implements Initializable {
             }
             //================================================
         }
+    }
+
+    @FXML
+    private void onFLoanGntAction(ActionEvent event) {
+    }
+
+    private boolean validateGDateWithInstallments(LocalDate value, TextField last_paid_ins) {
+
+        int installments = Integer.parseInt(last_paid_ins.getText());
+        Date gDate = Date.valueOf(value);
+
+        DateTime calculatedDate = new DateTime(gDate.getTime()).plusMonths(installments);
+        DateTime now = new DateTime();
+        long diff = calculatedDate.getMillis() - now.getMillis();
+        System.out.println("calculatedDate - " + calculatedDate);
+        System.out.println("nowDate - " + now);
+        System.out.println("difference - " + diff);
+        return diff <= 0;
     }
 }

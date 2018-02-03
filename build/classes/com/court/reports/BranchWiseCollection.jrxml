@@ -15,8 +15,8 @@
     m.member_id,
     m.full_name,
     m.sex,
-    IFNULL(IFNULL((SELECT sum(mbl.loan_installment) FROM court_loan.member_loan mbl WHERE mbl.paid_until IS NOT NULL AND mbl.is_complete=FALSE AND mbl.member_id=m.id GROUP BY mbl.member_id),
-    (SELECT sum(mbl.loan_installment) FROM court_loan.member_loan mbl WHERE mbl.is_child=FALSE AND mbl.is_complete=FALSE AND mbl.member_id=m.id GROUP BY mbl.member_id)),0) AS loan_pay,
+    IFNULL(IFNULL((SELECT sum(CASE WHEN (mbl.loan_duration<=(mbl.last_install+1)) THEN mbl.kota_left ELSE mbl.loan_installment END) FROM court_loan.member_loan mbl WHERE mbl.paid_until IS NOT NULL AND mbl.is_complete=FALSE AND mbl.member_id=m.id GROUP BY mbl.member_id),
+    (SELECT sum(CASE WHEN (mbl.loan_duration<=(mbl.last_install+1)) THEN mbl.kota_left ELSE mbl.loan_installment END) FROM court_loan.member_loan mbl WHERE mbl.is_child=FALSE AND mbl.is_complete=FALSE AND mbl.member_id=m.id GROUP BY mbl.member_id)),0) AS loan_pay,
     br.branch_name,
     br.branch_code,
     m.name_with_ins,
@@ -70,7 +70,7 @@ m.status=true
 AND
 br.status=true
 GROUP BY m.member_id
-ORDER BY br.branch_code, FIELD(m.job_title,'JUDGE', 'REGISTAR', 'MANEGEM', 'ACCOUNT', 'ACCOUNT ASSISTANT', 'CLERK', 'TRANSLATOR','STENO', 'TYPIST', 'BINDER', 'PISCAL', 'PROCESS', 'MATRON', 'INTERPRETER','FAMILY','DEV OFFICER','REPORTER', 'K.K.S','DRIVER', 'WATCHER','LABOUR') ;]]>
+ORDER BY br.branch_code, FIELD(m.job_title,'JUDGE', 'REGISTAR','IN:OFFICER','MANEGEM', 'ACCOUNT', 'ACCOUNT ASSISTANT','ADD:OFFICER', 'CLERK', 'TRANSLATOR','STENO', 'TYPIST', 'BINDER', 'PISCAL', 'PROCESS', 'MATRON', 'INTERPRETER','FAMILY','DEV OFFICER','REPORTER', 'K.K.S','DRIVER', 'WATCHER','LABOUR') ;]]>
 	</queryString>
 	<field name="member_id" class="java.lang.String">
 		<fieldDescription><![CDATA[]]></fieldDescription>

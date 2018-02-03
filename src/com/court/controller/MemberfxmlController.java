@@ -2,6 +2,11 @@
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
+
+========================================================
+kota gewanne kohomada mass payment akak karaddi ???
+========================================================
+
  */
 package com.court.controller;
 
@@ -199,6 +204,8 @@ public class MemberfxmlController implements Initializable {
     private TableColumn<MemberLoan, Boolean> l_stat_col;
     @FXML
     private TableColumn<MemberLoan, String> remark_col;
+    @FXML
+    private TableColumn<MemberLoan, Double> l_bal_con;
     @FXML
     private TextField loan_id_txt;
     @FXML
@@ -426,6 +433,12 @@ public class MemberfxmlController implements Initializable {
     private boolean isSearch = false;
     @FXML
     private TextField r_date_txt;
+    @FXML
+    private TextField bal_cont_txt;
+    @FXML
+    private Tab cash_out_tab;
+    @FXML
+    private Label credit_bal_txt;
 
     /**
      * Initializes the controller class.
@@ -453,7 +466,7 @@ public class MemberfxmlController implements Initializable {
 
         p1 = SuggestionProvider.create(memberCodes);
         p2 = SuggestionProvider.create(memberNames);
-        p3 = SuggestionProvider.create(Arrays.asList("JUDGE", "REGISTAR", "MANEGEM", "ACCOUNT", "ACCOUNT ASSISTANT", "CLERK", "TRANSLATOR", "STENO", "TYPIST", "BINDER", "PISCAL", "PROCESS", "MATRON", "INTERPRETER", "FAMILY", "DEV OFFICER", "REPORTER", "K.K.S", "DRIVER", "WATCHER", "LABOUR"));
+        p3 = SuggestionProvider.create(Arrays.asList("JUDGE", "REGISTAR", "IN:OFFICER", "MANEGEM", "ACCOUNT", "ACCOUNT ASSISTANT", "ADD:OFFICER", "CLERK", "TRANSLATOR", "STENO", "TYPIST", "BINDER", "PISCAL", "PROCESS", "MATRON", "INTERPRETER", "FAMILY", "DEV OFFICER", "REPORTER", "K.K.S", "DRIVER", "WATCHER", "LABOUR"));
         p4 = SuggestionProvider.create(allBranches);
         new AutoCompletionTextFieldBinding<>(member_code_srch_txt, p1);
         new AutoCompletionTextFieldBinding<>(member_name_srch_txt, p2);
@@ -583,9 +596,9 @@ public class MemberfxmlController implements Initializable {
             member.setEmail(member_email_txt.getText());
             member.setSex(member_sex_combo.getSelectionModel().getSelectedItem());
             member.setMaritalStatus(member_maritial_combo.getSelectionModel().getSelectedItem());
-            member.setDob(Date.valueOf(member_bday_chooser.getValue()));
+            member.setDob(FxUtilsHandler.getDateFrom(member_bday_chooser.getValue()));
             member.setAppintedDate(Date.valueOf(member_apo_chooser.getValue()));
-            member.setJoinedDate(Date.valueOf(member_join_chooser.getValue()));
+            member.setJoinedDate(FxUtilsHandler.getDateFrom(member_join_chooser.getValue()));
             member.setDescription(member_des_txt.getText().isEmpty() ? "No Description" : member_des_txt.getText());
             //  member.setImgPath(imgString == null ? "" : imgString.getImg_path().toString());
             member.setStatus(true);
@@ -769,9 +782,10 @@ public class MemberfxmlController implements Initializable {
             member_sex_combo.getSelectionModel().select(filteredMember.getSex());
             member_maritial_combo.getSelectionModel().select(filteredMember.getMaritalStatus());
             member_bday_chooser.setValue(FxUtilsHandler.getLocalDateFrom(filteredMember.getDob()));
-            member_join_chooser.setValue(FxUtilsHandler.getLocalDateFrom(filteredMember.getAppintedDate()));
-            member_apo_chooser.setValue(FxUtilsHandler.getLocalDateFrom(filteredMember.getJoinedDate()));
+            member_join_chooser.setValue(FxUtilsHandler.getLocalDateFrom(filteredMember.getJoinedDate()));
+            member_apo_chooser.setValue(FxUtilsHandler.getLocalDateFrom(filteredMember.getAppintedDate()));
             member_des_txt.setText(filteredMember.getDescription());
+            credit_bal_txt.setText(TextFormatHandler.CURRENCY_DECIMAL_FORMAT.format(filteredMember.getOverpay()));
             if (filteredMember.getImgPath() != null && !filteredMember.getImgPath().trim().isEmpty()) {
                 imgString.setImg_path(new File(filteredMember.getImgPath()).toPath());
                 member_img.setImage(new Image(new File(filteredMember.getImgPath()).toURI().toURL().toString()));
@@ -926,6 +940,7 @@ public class MemberfxmlController implements Initializable {
             l_int_txt.setText(TextFormatHandler.PRECENTAGE_DECIMAL_FORMAT.format(ml.getLoanInterest() / 100) + " " + ml.getInterestPer());
             l_du_txt.setText(ml.getLoanDuration() + " " + ml.getDurationPer());
             int_pls_prin_txt.setText(TextFormatHandler.CURRENCY_DECIMAL_FORMAT.format(prins_plus_ins));
+            bal_cont_txt.setText(TextFormatHandler.CURRENCY_DECIMAL_FORMAT.format(ml.getKotaLeft()));
             loan_nm_txt.setText(ml.getLoanName());
 
             gurantors_lstview.getItems().addAll(getSignedGuarantors(ml.getGuarantors(), session));
@@ -1161,6 +1176,7 @@ public class MemberfxmlController implements Initializable {
         loan_inf_tab.setDisable(active);
         other_details_tab.setDisable(active);
         doc_tab.setDisable(active);
+        cash_out_tab.setDisable(active);
         mbrcon_tab.setDisable(active);
     }
 
@@ -1168,6 +1184,7 @@ public class MemberfxmlController implements Initializable {
         loan_inf_tab.setDisable(active);
         other_details_tab.setDisable(active);
         doc_tab.setDisable(active);
+        cash_out_tab.setDisable(active);
         gen_details_tab.setDisable(active);
     }
 
@@ -1177,6 +1194,7 @@ public class MemberfxmlController implements Initializable {
         l_type_col.setCellValueFactory(new PropertyValueFactory<>("interestMethod"));
         l_amt_col.setCellValueFactory(new PropertyValueFactory<>("loanAmount"));
         l_stat_col.setCellValueFactory(new PropertyValueFactory<>("isComplete"));
+        l_bal_con.setCellValueFactory(new PropertyValueFactory<>("kotaLeft"));
 
         g_date_col.setCellFactory(column -> {
             return new TableCell<MemberLoan, Date>() {
@@ -1220,6 +1238,21 @@ public class MemberfxmlController implements Initializable {
         remark_col.setCellValueFactory((TableColumn.CellDataFeatures<MemberLoan, String> param) -> {
             MemberLoan vm = param.getValue();
             return new SimpleObjectProperty(vm.isAssigntoGurs() ? "Loan assigned to its guarantors" : "No remark");
+        });
+
+        l_bal_con.setCellFactory(column -> {
+            return new TableCell<MemberLoan, Double>() {
+                @Override
+                protected void updateItem(Double item, boolean empty) {
+                    super.updateItem(item, empty);
+                    TableRow<Boolean> currentRow = getTableRow();
+                    if (!isEmpty()) {
+                        setText(TextFormatHandler.CURRENCY_DECIMAL_FORMAT.format(item));
+                        currentRow.setStyle(item > 0 ? "-fx-background-color:#d9534f" : "");
+                    }
+                }
+
+            };
         });
 
         l_taken_tbl.setItems(mLoans);
@@ -1512,9 +1545,7 @@ public class MemberfxmlController implements Initializable {
                             rp.setWorkOffice(parentLoan.getMember().getBranch().getId());
                             // rp.setReceiptCode("INV" + FxUtilsHandler.generateRandomNumber(7));
                             s.save(rp);
-
-                            updateMemberLoan(parentLoan, s, instDates[insts - 1]);
-
+                            updateMemberLoan(parentLoan, insts, s, instDates[insts - 1]);
                         }
                     }
 
@@ -1579,7 +1610,7 @@ public class MemberfxmlController implements Initializable {
                         // rp.setReceiptCode("INV" + FxUtilsHandler.generateRandomNumber(7));
                         s.save(rp);
 
-                        updateMemberLoan(childLoan, s, instDates[insts - 1]);
+                        updateMemberLoan(childLoan, insts, s, instDates[insts - 1]);
 
                     }
                     //IF PARENT LOAN SELECTED===============================================
@@ -1648,7 +1679,7 @@ public class MemberfxmlController implements Initializable {
                         // rp.setReceiptCode("INV" + FxUtilsHandler.generateRandomNumber(7));
                         s.save(rp);
 
-                        updateMemberLoan(selectedLoan, s, instDates[insts - 1]);
+                        updateMemberLoan(selectedLoan, insts, s, instDates[insts - 1]);
                     }
 
                     //GET CHILD LOAN OF SELECTED LOAN (IF HAS ANY)
@@ -1729,7 +1760,7 @@ public class MemberfxmlController implements Initializable {
                         // rp.setReceiptCode("INV" + FxUtilsHandler.generateRandomNumber(7));
                         s.save(rp);
 
-                        updateMemberLoan(childLoan, s, instDates[insts - 1]);
+                        updateMemberLoan(childLoan, insts, s, instDates[insts - 1]);
                     }
                 }
                 s.getTransaction().commit();
@@ -1878,7 +1909,7 @@ public class MemberfxmlController implements Initializable {
                     // rp.setReceiptCode("INV" + FxUtilsHandler.generateRandomNumber(7));
                     s.save(rp);
 
-                    updateMemberLoan(row.getItem(), s, instDates[insts - 1]);
+                    updateMemberLoan(row.getItem(), insts, s, instDates[insts - 1]);
                     s.getTransaction().commit();
                     s.close();
 
@@ -2023,7 +2054,7 @@ public class MemberfxmlController implements Initializable {
         doc.setDocName(doc_desc_txt.getText());
         doc.setDocCode(doc_id_txt.getText());
         doc.setDocType(doc_typ_txt.getText());
-        doc.setDocDate(Date.valueOf(doc_date_chooser.getValue()));
+        doc.setDocDate(FxUtilsHandler.getDateFrom(doc_date_chooser.getValue()));
         doc.setAttachPath(pdf_path);
         doc.setMember(getMemberByCode(member_code_txt.getText()));
         if (mbr_ln_chk.isSelected()) {
@@ -2492,14 +2523,14 @@ public class MemberfxmlController implements Initializable {
                     mchild.setHoi(hoi_chk.isSelected());
                     mchild.setName(cname_txt.getText());
                     mchild.setSex(sex_box.getSelectionModel().getSelectedItem());
-                    mchild.setDob(Date.valueOf(dob_p.getValue()));
+                    mchild.setDob(FxUtilsHandler.getDateFrom(dob_p.getValue()));
                 } else {
                     mchild = new MemChild();
                     mchild.setAci(aci_chk.isSelected());
                     mchild.setHoi(hoi_chk.isSelected());
                     mchild.setName(cname_txt.getText());
                     mchild.setSex(sex_box.getSelectionModel().getSelectedItem());
-                    mchild.setDob(Date.valueOf(dob_p.getValue()));
+                    mchild.setDob(FxUtilsHandler.getDateFrom(dob_p.getValue()));
                     mchild.setMember(getMemberByCode(member_code_txt.getText()));
                 }
                 Session session = HibernateUtil.getSessionFactory().openSession();
@@ -2627,7 +2658,7 @@ public class MemberfxmlController implements Initializable {
                 .add(Restrictions.in("memberId", lst))
                 .add(Restrictions.eq("status", true))
                 .list();
-     //   session.close();
+        //   session.close();
         return grts;
     }
 
@@ -2969,7 +3000,7 @@ public class MemberfxmlController implements Initializable {
     private void endLoan(Session s, MemberLoan ml) {
         int getEndingLoan = ml.getId();
         MemberLoan mml = (MemberLoan) s.load(MemberLoan.class, getEndingLoan);
-        mml.setIsComplete(true);
+        mml.setIsComplete((mml.getKotaLeft() <= 0));
         s.update(mml);
     }
 
@@ -2981,10 +3012,11 @@ public class MemberfxmlController implements Initializable {
         s.update(mml);
     }
 
-    private void updateMemberLoan(MemberLoan ml, Session s, java.util.Date payUntil) {
+    private void updateMemberLoan(MemberLoan ml, int inst_count, Session s, java.util.Date payUntil) {
         int getLoan = ml.getId();
         MemberLoan mml = (MemberLoan) s.load(MemberLoan.class, getLoan);
         mml.setPaidUntil(payUntil);
+        mml.setLastInstall(mml.getLastInstall() + inst_count);
         s.update(mml);
     }
 
@@ -3053,7 +3085,7 @@ public class MemberfxmlController implements Initializable {
                 sp.setOptional(TextFormatHandler.getCurrencyFieldValue(m_subs_op));
                 sp.setSavingsFee(TextFormatHandler.getCurrencyFieldValue(m_subs_sav));
                 sp.setMembershipFee(TextFormatHandler.getCurrencyFieldValue(m_subs_mf));
-                sp.setPaymentDate(getDayOfMonth(Date.valueOf(m_subs_date.getValue())));
+                sp.setPaymentDate(getDayOfMonth(FxUtilsHandler.getDateFrom(m_subs_date.getValue())));
                 sp.setAddedDate(new java.util.Date());
                 sp.setMemberSubscriptions(getMemberSubscriptionsFromMember(member_code_txt.getText(), s));
                 sp.setPayOffice(getMemberByCode(member_code_txt.getText(), s).getPayOffice().getId());

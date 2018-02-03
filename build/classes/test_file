@@ -50,17 +50,63 @@ Session session = HibernateUtil.getSessionFactory().openSession();
 
 ============================================================================================================
 
-    private void initCollectionTable(ObservableList<Member> mList) {
+ if (getLastPay != null) {
+                        updatePreviousInstallmentsOfMemberLoan(session, getLastPay);
+                        LoanPayment lp = new LoanPayment();
+                        lp.setChequeNo(chk_no_txt.getText());
+                        lp.setMemberLoan(ml);
+                        lp.setPaymentDate(new java.util.Date());
+                        lp.setIsLast(true);
+                        lp.setInstallmentDue(
+                                ml.getLoanInstallment() > 0 ? ((ml.getNoOfRepay() - (getLastPay.getInstallmentNo() + 1)) >= 0 ? (ml.getNoOfRepay() - (getLastPay.getInstallmentNo() + 1)) : 0) : ml.getNoOfRepay()
+                        );
+                        lp.setInstallmentNo(getLastPay.getInstallmentNo() + 1);
+                        lp.setInstallmentDate(getInstallmentDate(getLastPay.getInstallmentDate()));
+                        lp.setPaidAmt(ml.getLoanInstallment());
+                        lp.setListedPay(getListedPayFrom(ml, session));
+                        lp.setPayOffice(m.getPayOffice().getId());
+                        lp.setWorkOffice(m.getBranch().getId());
+                        session.save(lp);
 
-        ...
+                        //========================Kota left checks if amount paying less than the installment, then assign to kotaya===============================
+                        double kota_left = ((lp.getListedPay() > lp.getPaidAmt()) && lp.getPaidAmt() != 0 && lp.getPaidAmt() > 0) ? (lp.getListedPay() - lp.getPaidAmt()) : 0.0;
+                        updateMemberLoan(ml, kota_left, lp.getPaidAmt() > 0, session, getInstallmentDate(getLastPay.getInstallmentDate()));
 
-        total_pay_col.setCellValueFactory(new SubscriptionValueFactory());
-        detail_view_col.setCellValueFactory(new DisplaySubscriptionFactory());
-        
-        ...
-        
-        collection_tbl.setItems(mlz);
-    }
+                        //end loan if required installment......
+                        if (ml.getNoOfRepay() <= (getLastPay.getInstallmentNo() + 1)) {
+                            endLoan(session, ml, ml.getNoOfRepay() < (getLastPay.getInstallmentNo() + 1));
+                        }
+                    } else {
+
+                        LoanPayment lp = new LoanPayment();
+                        lp.setChequeNo(chk_no_txt.getText());
+                        lp.setMemberLoan(ml);
+                        lp.setPaymentDate(new java.util.Date());
+                        lp.setIsLast(true);
+                        lp.setPaidAmt(ml.getLoanInstallment());
+                        lp.setListedPay(getListedPayFrom(ml, session));
+                        lp.setInstallmentDate(getDayOfMonth(Date.valueOf(chk_of_month_chooser.getValue())));
+
+                        //=================IF MEMBER LOAN IS OLD LOAN THEN====================
+                        if (ml.isOldLoan()) {
+
+                            lp.setInstallmentDue(ml.getLoanInstallment() > 0 ? (ml.getNoOfRepay() - ml.getLastInstall()) : ml.getNoOfRepay());
+                            lp.setInstallmentNo(ml.getLoanInstallment() > 0 ? (ml.getLastInstall() + 1) : ml.getLastInstall());
+                            //updateOldLoan(ml, session, ml.getLoanInstallment());
+                        } else {
+
+                            lp.setInstallmentDue(ml.getLoanInstallment() > 0 ? (ml.getNoOfRepay() - 1) : ml.getNoOfRepay());
+                            lp.setInstallmentNo(1);
+                        }
+
+                        lp.setPayOffice(m.getPayOffice().getId());
+                        lp.setWorkOffice(m.getBranch().getId());
+                        session.save(lp);
+
+                        //========================Kota left checks if amount paying less than the installment, then assign to kotaya===============================
+                        double kota_left = ((lp.getListedPay() > lp.getPaidAmt()) && lp.getPaidAmt() != 0 && lp.getPaidAmt() > 0) ? (lp.getListedPay() - lp.getPaidAmt()) : 0.0;
+                        updateMemberLoan(ml, kota_left, lp.getPaidAmt() > 0, session, getDayOfMonth(Date.valueOf(chk_of_month_chooser.getValue())));
+                    }
 
 
 

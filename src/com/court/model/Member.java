@@ -39,11 +39,13 @@ public class Member implements java.io.Serializable {
     private String paymentOfficer;
     private String jobStatus;
     private String nic;
+    private Double overpay;
     private Set<MemberLoan> memberLoans = new HashSet<>();
     private Set<MemChild> memChilds = new HashSet<>();
     private Set<Document> documents = new HashSet<>();
     private Set<MemberSubscriptions> memberSubscriptions = new HashSet<>();
     private Set<ReceiptPay> receiptPays = new HashSet<>();
+
     private double totalPayment;
     private double totalSubscription;
     private boolean collected = true;
@@ -354,6 +356,14 @@ public class Member implements java.io.Serializable {
         this.empId = empId;
     }
 
+    public Double getOverpay() {
+        return overpay;
+    }
+
+    public void setOverpay(Double overpay) {
+        this.overpay = overpay;
+    }
+    
     @Override
     public String toString() {
         return this.memberId != null ? (this.memberId + " - " + this.fullName) : this.fullName;

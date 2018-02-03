@@ -6,6 +6,7 @@
 package com.court.controller;
 
 import com.court.db.HibernateUtil;
+import com.court.handler.CustomDoubleStringConverter;
 import com.court.handler.DisplaySubscriptionFactory;
 import com.court.handler.DisplayTotalInstallmentsFactory;
 import com.court.handler.FileHandler;
@@ -44,6 +45,7 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.collections.transformation.FilteredList;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -56,20 +58,24 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.DatePicker;
+import javafx.scene.control.Label;
 import javafx.scene.control.Pagination;
-import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
+import javafx.util.converter.DoubleStringConverter;
 import org.controlsfx.control.textfield.AutoCompletionBinding;
+import org.controlsfx.control.textfield.CustomTextField;
 import org.controlsfx.control.textfield.TextFields;
 import org.controlsfx.validation.Severity;
 import org.controlsfx.validation.ValidationSupport;
@@ -113,8 +119,9 @@ public class CollectionSheetFxmlController implements Initializable {
     private TableColumn<Member, Button> detail_view_col;
     private TableColumn<Member, Button> rtot_pay_col;
     private TableColumn<Member, String> tot_inst_amt_col;
-    private TableColumn<Member, Double> sub_tot_col;
+    private TableColumn<Member, Label> sub_tot_col;
     private TableColumn<Member, String> wrking_of_col;
+    private TableColumn<Member, Double> overpay_col;
 
     @FXML
     private TextField branch_txt;
@@ -125,13 +132,18 @@ public class CollectionSheetFxmlController implements Initializable {
     @FXML
     private TextField user_enter_pay;
 
-    private int rowsPerPage = 10;
+    private int rowsPerPage = 10000;
     @FXML
     private Pagination pagination;
     @FXML
     private BorderPane table_bpane;
 
     double total = 0.0;
+    @FXML
+    private CustomTextField tbl_filter_txt;
+    private Button filterTxtClear;
+    private FilteredList<Member> fList;
+    // private boolean branchSearch = true;
 
     /**
      * Initializes the controller class.
@@ -144,6 +156,12 @@ public class CollectionSheetFxmlController implements Initializable {
         user_enter_pay.setTextFormatter(TextFormatHandler.currencyFormatter());
         createTable();
         pagination.setVisible(false);
+        filterTxtClear = new Button("X");
+        filterTxtClear.setOnAction(evt -> {
+            tbl_filter_txt.setText("");
+            fList.setPredicate(null);
+        });
+        tbl_filter_txt.setRight(filterTxtClear);
     }
 
     @FXML
@@ -157,7 +175,7 @@ public class CollectionSheetFxmlController implements Initializable {
         FxUtilsHandler.clearFields(collection_grid);
         search_typ_combo.getSelectionModel().select(0);
         chk_amt_txt.setText(TextFormatHandler.CURRENCY_DECIMAL_FORMAT.format(0));
-        collection_tbl.getItems().clear();
+        // collection_tbl.getItems().clear();
     }
 
     @FXML
@@ -246,6 +264,7 @@ public class CollectionSheetFxmlController implements Initializable {
                     sp.setMemberSubscriptions(mbrSub);
                 }
                 try {
+                    updateMemberOverPay(m, session);
                     session.save(sp);
                 } catch (Exception e) {
                     Alert alert_error = new Alert(Alert.AlertType.ERROR);
@@ -269,10 +288,11 @@ public class CollectionSheetFxmlController implements Initializable {
                     LoanPayment getLastPay = ml.getLoanPayments()
                             .stream().filter(p -> p.isIsLast()).findAny().orElse(null);
 
-                    //==================IF LOAN INSTALLMENT IS 0.00 THEN AVOID MEMBER LOAN FROM PAYING=======
-                    if (ml.getLoanInstallment() == 0.0) {
+                    //==================IF LOAN INSTALLMENT IS 0.00 OR LESS THEN AVOID MEMBER LOAN FROM PAYING=======
+                    if (ml.getLoanInstallment() <= 0.0) {
                         return;
                     }
+                    //==================IF LOAN INSTALLMENT IS 0.00 OR LESS THEN AVOID MEMBER LOAN FROM PAYING=======
 
                     if (getLastPay != null) {
                         updatePreviousInstallmentsOfMemberLoan(session, getLastPay);
@@ -281,33 +301,36 @@ public class CollectionSheetFxmlController implements Initializable {
                         lp.setMemberLoan(ml);
                         lp.setPaymentDate(new java.util.Date());
                         lp.setIsLast(true);
-                        lp.setInstallmentDue(ml.getNoOfRepay() - (getLastPay.getInstallmentNo() + 1));
+                        lp.setInstallmentDue((ml.getNoOfRepay() - (getLastPay.getInstallmentNo() + 1)) >= 0 ? (ml.getNoOfRepay() - (getLastPay.getInstallmentNo() + 1)) : 0);
                         lp.setInstallmentNo(getLastPay.getInstallmentNo() + 1);
                         lp.setInstallmentDate(getInstallmentDate(getLastPay.getInstallmentDate()));
                         lp.setPaidAmt(ml.getLoanInstallment());
-                        lp.setListedPay(getListedPayFrom(ml, session));
+                        lp.setListedPay(getListedPayFrom(ml, session, lp.getInstallmentDue() == 0));
                         lp.setPayOffice(m.getPayOffice().getId());
                         lp.setWorkOffice(m.getBranch().getId());
+                        lp.setRemark(lp.getInstallmentDue() == 0 ? "Arrears Pay" : "Installment Pay");
                         session.save(lp);
 
+                        //========================Kota left checks if amount paying less than the installment, then assign to kotaya===============================
                         double kota_left = (lp.getListedPay() > lp.getPaidAmt()) ? (lp.getListedPay() - lp.getPaidAmt()) : 0.0;
-                        updateMemberLoan(ml, kota_left, session, getInstallmentDate(getLastPay.getInstallmentDate()));
+                        double kotaTotNow = updateMemberLoan(ml, kota_left, session, (lp.getInstallmentDue() == 0 && (lp.getPaidAmt() == lp.getListedPay())), getInstallmentDate(getLastPay.getInstallmentDate()));
 
-                        //end loan if the final installment......
-                        if (ml.getNoOfRepay() == (getLastPay.getInstallmentNo() + 1)) {
+                        //end loan if installments completed and no kota left......
+                        if (lp.getInstallmentDue() == 0 && kotaTotNow == 0) {
                             endLoan(session, ml);
                         }
                     } else {
 
-                        //=================IF MEMBER LOAN IS OLD LOAN THEN====================
                         LoanPayment lp = new LoanPayment();
                         lp.setChequeNo(chk_no_txt.getText());
                         lp.setMemberLoan(ml);
                         lp.setPaymentDate(new java.util.Date());
                         lp.setIsLast(true);
                         lp.setPaidAmt(ml.getLoanInstallment());
-                        lp.setListedPay(getListedPayFrom(ml, session));
+                        lp.setListedPay(getListedPayFrom(ml, session, false));
                         lp.setInstallmentDate(getDayOfMonth(Date.valueOf(chk_of_month_chooser.getValue())));
+
+                        //=================IF MEMBER LOAN IS OLD LOAN THEN====================
                         if (ml.isOldLoan()) {
 
                             lp.setInstallmentDue(ml.getNoOfRepay() - ml.getLastInstall());
@@ -321,10 +344,12 @@ public class CollectionSheetFxmlController implements Initializable {
 
                         lp.setPayOffice(m.getPayOffice().getId());
                         lp.setWorkOffice(m.getBranch().getId());
+                        lp.setRemark("Installment Pay");
                         session.save(lp);
 
+                        //========================Kota left checks if amount paying less than the installment, then assign to kotaya===============================
                         double kota_left = (lp.getListedPay() > lp.getPaidAmt()) ? (lp.getListedPay() - lp.getPaidAmt()) : 0.0;
-                        updateMemberLoan(ml, kota_left, session, getDayOfMonth(Date.valueOf(chk_of_month_chooser.getValue())));
+                        updateMemberLoan(ml, kota_left, session, false, getDayOfMonth(Date.valueOf(chk_of_month_chooser.getValue())));
                     }
                 });
 
@@ -343,7 +368,7 @@ public class CollectionSheetFxmlController implements Initializable {
                 //GENERATE REPORT AFTER PAYMENT======
                 generateCollectionPaymentReport(payCheque.getChequeNo());
                 FxUtilsHandler.clearFields(collection_grid);
-                collection_tbl.getItems().clear();
+                //  collection_tbl.getItems().clear();
             }
         } else {
             Alert alert_error = new Alert(Alert.AlertType.ERROR);
@@ -357,59 +382,57 @@ public class CollectionSheetFxmlController implements Initializable {
 
     private void performSearch(ComboBox<String> search_typ_combo, TextField search_txt) {
 
-        if (search_txt == null) {
-            return;
-        }
+        if (search_txt.getText() != null && !search_txt.getText().isEmpty()) {
+            ImageView progressIndicator = new ImageView();
+            progressIndicator.setImage(new Image(FileHandler.LOADING_DEFAULT_GIF));
+            VBox v = new VBox(progressIndicator);
+            v.setAlignment(Pos.CENTER);
+            table_bpane.setCenter(v);
 
-        ImageView progressIndicator = new ImageView();
-        progressIndicator.setImage(new Image(FileHandler.LOADING_DEFAULT_GIF));
-        VBox v = new VBox(progressIndicator);
-        v.setAlignment(Pos.CENTER);
-        table_bpane.setCenter(v);
+            Task<List<Member>> mTask = new Task<List<Member>>() {
 
-        Task<List<Member>> mTask = new Task<List<Member>>() {
+                {
+                    setOnSucceeded(d -> {
+                        AtomicDouble ins_total = new AtomicDouble(0.0);
+                        AtomicDouble sub_total = new AtomicDouble(0.0);
+                        List<Member> mList = getValue();
 
-            {
-                setOnSucceeded(d -> {
-                    AtomicDouble ins_total = new AtomicDouble(0.0);
-                    AtomicDouble sub_total = new AtomicDouble(0.0);
-                    List<Member> mList = getValue();
+                        mList.stream().forEach(m -> {
+                            ins_total.addAndGet(m.getMemberLoans().stream().mapToDouble(MemberLoan::getLoanInstallment).sum());
 
-                    mList.stream().forEach(m -> {
-                        ins_total.addAndGet(m.getMemberLoans().stream().mapToDouble(MemberLoan::getLoanInstallment).sum());
+                            List<MemberSubscriptions> mbrSubs = new ArrayList<>(m.getMemberSubscriptions());
 
-                        List<MemberSubscriptions> mbrSubs = new ArrayList<>(m.getMemberSubscriptions());
+                            boolean flag = FxUtilsHandler.previousSubscriptions(m.getId()).isEmpty();
+                            if (flag) {
+                                sub_total.addAndGet(mbrSubs.stream().mapToDouble(a -> a.getAmount()).sum());
+                            } else {
+                                sub_total.addAndGet(mbrSubs.stream().filter(s -> !s.getRepaymentType()
+                                        .equalsIgnoreCase("Once")).mapToDouble(a -> a.getAmount()).sum());
+                            }
 
-                        boolean flag = FxUtilsHandler.previousSubscriptions(m.getId()).isEmpty();
-                        if (flag) {
-                            sub_total.addAndGet(mbrSubs.stream().mapToDouble(a -> a.getAmount()).sum());
-                        } else {
-                            sub_total.addAndGet(mbrSubs.stream().filter(s -> !s.getRepaymentType()
-                                    .equalsIgnoreCase("Once")).mapToDouble(a -> a.getAmount()).sum());
-                        }
+                        });
+                        total = ins_total.doubleValue() + sub_total.doubleValue();
+                        chk_amt_txt.setText(TextFormatHandler.CURRENCY_DECIMAL_FORMAT.format(total));
 
+                        Pagination paginationTable = initCollectionTable(mList);
+                        table_bpane.getChildren().remove(0);
+                        table_bpane.setCenter(paginationTable);
                     });
-                    total = ins_total.doubleValue() + sub_total.doubleValue();
-                    chk_amt_txt.setText(TextFormatHandler.CURRENCY_DECIMAL_FORMAT.format(total));
 
-                    Pagination paginationTable = initCollectionTable(mList);
-                    table_bpane.getChildren().remove(0);
-                    table_bpane.setCenter(paginationTable);
-                });
+                    setOnFailed(workerStateEvent -> getException().printStackTrace());
+                }
 
-                setOnFailed(workerStateEvent -> getException().printStackTrace());
-            }
+                @Override
+                protected List<Member> call() throws Exception {
+                    return memberList();
+                }
 
-            @Override
-            protected List<Member> call() throws Exception {
-                return memberList();
-            }
+            };
 
-        };
-
-        Thread mThread = new Thread(mTask, "m-task");
-        mThread.setDaemon(true);
-        mThread.start();
+            Thread mThread = new Thread(mTask, "m-task");
+            mThread.setDaemon(true);
+            mThread.start();
+        }
     }
 
     private List<Member> memberList() {
@@ -464,6 +487,9 @@ public class CollectionSheetFxmlController implements Initializable {
 
         m_id_col.setCellValueFactory(new PropertyValueFactory<>("memberId"));
         m_name_col.setCellValueFactory(new PropertyValueFactory<>("nameWithIns"));
+        overpay_col.setCellValueFactory((TableColumn.CellDataFeatures<Member, Double> param) -> {
+            return new SimpleObjectProperty(param.getValue().getOverpay());
+        });
         total_pay_col.setCellValueFactory(new SubscriptionValueFactory());
         sub_tot_col.setCellValueFactory(new SubTotalValueFactory());
         colection_stat_col.setCellValueFactory((TableColumn.CellDataFeatures<Member, CheckBox> param) -> {
@@ -481,36 +507,57 @@ public class CollectionSheetFxmlController implements Initializable {
         rtot_pay_col.setCellValueFactory(new DisplayTotalInstallmentsFactory(collection_tbl, total, chk_amt_txt));
         tot_inst_amt_col.setCellValueFactory((TableColumn.CellDataFeatures<Member, String> param) -> {
             Member ml = param.getValue();
-            List<MemberLoan> list = ml.getMemberLoans().stream()
+            List<MemberLoan> instOnly = ml.getMemberLoans().stream()
                     .sorted(Comparator.comparing(MemberLoan::getChildId).reversed())
                     .filter(p -> !p.isIsComplete())
                     // .filter(FxUtilsHandler.checkIfLastPaidDateWithinCurrentMonth(p -> p.getPaidUntil()))
                     .filter(p -> p.isStatus())
+                    .filter(p -> (p.getLastInstall() + 1) < p.getLoanDuration())
                     .filter(FxUtilsHandler.distinctByKey(p -> p.getMemberLoanCode()))
                     .collect(Collectors.toList());
 
-            double sum = list.stream().mapToDouble(p -> p.getLoanInstallment()).sum();
+            //===================installments finished, but kotaonly loans================
+            List<MemberLoan> kotaOnly = ml.getMemberLoans().stream()
+                    .sorted(Comparator.comparing(MemberLoan::getChildId).reversed())
+                    .filter(p -> !p.isIsComplete())
+                    // .filter(FxUtilsHandler.checkIfLastPaidDateWithinCurrentMonth(p -> p.getPaidUntil()))
+                    .filter(p -> p.isStatus())
+                    .filter(p -> (p.getLastInstall() + 1) >= p.getLoanDuration())
+                    .filter(FxUtilsHandler.distinctByKey(p -> p.getMemberLoanCode()))
+                    .collect(Collectors.toList());
+
+            double sum = instOnly.stream().mapToDouble(p -> p.getLoanInstallment()).sum()
+                    + kotaOnly.stream().mapToDouble(p -> p.getKotaLeft()).sum();
+
             return new SimpleStringProperty(TextFormatHandler.CURRENCY_DECIMAL_FORMAT.format(sum));
         });
-        sub_tot_col.setCellFactory(col -> {
-            return new TableCell<Member, Double>() {
-                @Override
-                protected void updateItem(Double item, boolean empty) {
-                    super.updateItem(item, empty);
-                    if (!isEmpty()) {
-                        setStyle("-fx-font-weight: bold;-fx-font-size: 15px;");
-                        setText(TextFormatHandler.CURRENCY_DECIMAL_FORMAT.format(item));
-                    }
-                }
-            };
-        });
+
         wrking_of_col.setCellValueFactory((TableColumn.CellDataFeatures<Member, String> param) -> {
             Member ml = param.getValue();
             return new SimpleObjectProperty<>(ml.getBranch().getBranchName());
         });
 
+        overpay_col.setCellFactory(TextFieldTableCell.<Member, Double>forTableColumn(new CustomDoubleStringConverter()));
+
+        overpay_col.setOnEditCommit((TableColumn.CellEditEvent<Member, Double> event) -> {
+            if (event.getNewValue() != null) {
+
+                double diff = event.getNewValue() - event.getOldValue();
+
+                event.getTableView().getItems().get(event.getTablePosition().getRow())
+                        .setOverpay(event.getNewValue());
+
+                total = total + diff;
+                chk_amt_txt.setText(TextFormatHandler.CURRENCY_DECIMAL_FORMAT.format(total));
+            } else {
+                overpay_col.getTableView().refresh();
+            }
+
+        });
+
         ObservableList<Member> mlz = FXCollections.observableArrayList(mList.subList(fromIndex, toIndex));
-        collection_tbl.setItems(mlz);
+        fList = new FilteredList<>(mlz, p -> true);
+        collection_tbl.setItems(fList);
         return new BorderPane(collection_tbl);
     }
 
@@ -677,11 +724,15 @@ public class CollectionSheetFxmlController implements Initializable {
         return collect;
     }
 
-    private void updateMemberLoan(MemberLoan ml, double kota_left, Session session, java.util.Date payUntil) {
+    private double updateMemberLoan(MemberLoan ml, double kota_left, Session session, boolean isKotaPay, java.util.Date payUntil) {
+        boolean kotaKotaPay = (kota_left == 0) && isKotaPay;
         MemberLoan mll = (MemberLoan) session.load(MemberLoan.class, ml.getId());
         mll.setPaidUntil(payUntil);
-        mll.setKotaLeft(mll.getKotaLeft() + kota_left);
+        mll.setKotaLeft(kotaKotaPay ? 0.0 : (mll.getKotaLeft() + kota_left));
+        mll.setLastInstall(mll.getLastInstall() + 1);
         session.update(mll);
+//Return Current kota amount=====================
+        return mll.getKotaLeft();
     }
 
     private java.util.Date getInstallmentDate(java.util.Date lastInstDate) {
@@ -727,9 +778,9 @@ public class CollectionSheetFxmlController implements Initializable {
         s.close();
     }
 
-    private Double getListedPayFrom(MemberLoan ml, Session s) {
+    private Double getListedPayFrom(MemberLoan ml, Session s, boolean isKotaPay) {
         MemberLoan mml = (MemberLoan) s.load(MemberLoan.class, ml.getId());
-        return mml.getLoanInstallment();
+        return isKotaPay ? mml.getKotaLeft() : mml.getLoanInstallment();
     }
 
     private void updateOldLoan(MemberLoan ml, Session s, double paidAmt) {
@@ -760,9 +811,27 @@ public class CollectionSheetFxmlController implements Initializable {
         sub_tot_col.setPrefWidth(120);
         wrking_of_col = new TableColumn<>("Working Office");
         wrking_of_col.setPrefWidth(250);
+        overpay_col = new TableColumn<>("OverPay(Rs)");
+        overpay_col.setPrefWidth(100);
 
         collection_tbl.getColumns().addAll(m_id_col, m_name_col,
                 wrking_of_col, total_pay_col, detail_view_col, tot_inst_amt_col,
-                rtot_pay_col, sub_tot_col, colection_stat_col);
+                rtot_pay_col, sub_tot_col, overpay_col, colection_stat_col);
+        collection_tbl.setEditable(true);
+    }
+
+    @FXML
+    private void filterTableKeyRel(KeyEvent event) {
+        if (fList != null) {
+            fList.setPredicate(p -> p.getMemberId().toLowerCase()
+                    .contains(tbl_filter_txt.getText().toLowerCase().trim()));
+        }
+    }
+
+    private void updateMemberOverPay(Member m, Session session) {
+        Member mm = (Member) session.load(Member.class, m.getId());
+        //   mm.setOverpay(mm.getOverpay() + m.getOverpay());
+        mm.setOverpay(m.getOverpay());
+        session.update(mm);
     }
 }

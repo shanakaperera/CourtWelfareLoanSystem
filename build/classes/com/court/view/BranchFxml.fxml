@@ -130,6 +130,7 @@
                                                     <String fx:value="High Court" />
                                                     <String fx:value="District Court" />
                                                     <String fx:value="Magistrate Court" />
+                                                    <String fx:value="Department" />
                                                 </FXCollections>
                                             </items>
                                         </ComboBox>

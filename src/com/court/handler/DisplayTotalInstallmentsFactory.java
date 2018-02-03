@@ -50,22 +50,40 @@ public class DisplayTotalInstallmentsFactory implements Callback<TableColumn.Cel
     @Override
     public ObservableValue<Button> call(TableColumn.CellDataFeatures<Member, Button> param) {
         Member ml = param.getValue();
-        List<MemberLoan> list = ml.getMemberLoans().stream()
+        List<MemberLoan> instOnly = ml.getMemberLoans().stream()
                 .sorted(Comparator.comparing(MemberLoan::getChildId).reversed())
                 .filter(p -> !p.isIsComplete())
                 //  .filter(FxUtilsHandler.checkIfLastPaidDateWithinCurrentMonth(p -> p.getPaidUntil()))
                 .filter(p -> p.isStatus())
+                .filter(p -> (p.getLastInstall() + 1) < p.getLoanDuration())
                 .filter(FxUtilsHandler.distinctByKey(p -> p.getMemberLoanCode()))
                 .collect(Collectors.toList());
 
-        double sum = list.stream().mapToDouble(p -> p.getLoanInstallment()).sum();
+        //===================installments finished, but kotaonly loans================
+        List<MemberLoan> kotaOnly = ml.getMemberLoans().stream()
+                .sorted(Comparator.comparing(MemberLoan::getChildId).reversed())
+                .filter(p -> !p.isIsComplete())
+                // .filter(FxUtilsHandler.checkIfLastPaidDateWithinCurrentMonth(p -> p.getPaidUntil()))
+                .filter(p -> p.isStatus())
+                .filter(p -> (p.getLastInstall() + 1) >= p.getLoanDuration())
+                .filter(FxUtilsHandler.distinctByKey(p -> p.getMemberLoanCode()))
+                .collect(Collectors.toList());
+
+        //======= Set kota amount as the installment of each kota only loans
+        kotaOnly.forEach(p -> p.setLoanInstallment(p.getKotaLeft()));
+
+        //================Combine both lists====================
+        instOnly.addAll(kotaOnly);
+
+        double sum = instOnly.stream().mapToDouble(p -> p.getLoanInstallment()).sum();
+
         param.getValue().setTotalPayment(sum);
         Button button = new Button("View Info");
         button.setOnAction((evt) -> {
             Alert alert_details = new Alert(Alert.AlertType.INFORMATION);
             alert_details.setTitle("Loan Information");
             alert_details.setHeaderText("Member installment information for each loan");
-            alert_details.getDialogPane().setContent(createContentGrid(list, sum));
+            alert_details.getDialogPane().setContent(createContentGrid(instOnly, sum));
             alert_details.show();
         });
         return new SimpleObjectProperty<>(button);
@@ -121,16 +139,32 @@ public class DisplayTotalInstallmentsFactory implements Callback<TableColumn.Cel
             };
         });
 
-        ln_inst_col.setCellFactory(TextFieldTableCell.<MemberLoan, Double>forTableColumn(new DoubleStringConverter()));
+        ln_inst_col.setCellFactory(TextFieldTableCell.<MemberLoan, Double>forTableColumn(new CustomDoubleStringConverter()));
 
         ln_inst_col.setOnEditCommit((TableColumn.CellEditEvent<MemberLoan, Double> event) -> {
-            double diff = event.getNewValue() - event.getOldValue();
-            event.getTableView().getItems().get(event.getTablePosition().getRow())
-                    .setLoanInstallment(event.getNewValue() != null ? event.getNewValue() : 0.00);
-            collection_tbl.refresh();
-            total_n.setText(getTableColumnTotal(event.getTableView(), 4));
-            total = total + diff;
-            chk_amt_txt.setText(TextFormatHandler.CURRENCY_DECIMAL_FORMAT.format(total));
+
+            if (event.getNewValue() != null) {
+
+                double diff = event.getNewValue() - event.getOldValue();
+
+                event.getTableView().getItems().get(event.getTablePosition().getRow())
+                        .setLoanInstallment(event.getNewValue());
+
+                collection_tbl.refresh();
+                total_n.setText(getTableColumnTotal(event.getTableView(), 4));
+                total = total + diff;
+                chk_amt_txt.setText(TextFormatHandler.CURRENCY_DECIMAL_FORMAT.format(total));
+            } else {
+                ln_inst_col.getTableView().refresh();
+            }
+
+//            double diff = event.getNewValue() - event.getOldValue();
+//            event.getTableView().getItems().get(event.getTablePosition().getRow())
+//                    .setLoanInstallment(event.getNewValue() != null ? event.getNewValue() : 0.00);
+//            collection_tbl.refresh();
+//            total_n.setText(getTableColumnTotal(event.getTableView(), 4));
+//            total = total + diff;
+//            chk_amt_txt.setText(TextFormatHandler.CURRENCY_DECIMAL_FORMAT.format(total));
         });
 
         ln_int_col.setCellFactory(column -> {
