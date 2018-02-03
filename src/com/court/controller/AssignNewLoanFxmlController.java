@@ -310,7 +310,7 @@ public class AssignNewLoanFxmlController implements Initializable {
         if (child_loan_checkbox.isSelected()) {
             FxUtilsHandler.disableFields(false, child_loan_grid);
             FxUtilsHandler.clearFields(child_loan_grid);
-            bindChildLoans(c_loan_id_txt);
+            bindChildLoans(c_loan_id_txt, c_loan_name_txt);
             registerSecondPartValidation();
         } else {
             unregisterSeconPartValidation();
@@ -319,12 +319,18 @@ public class AssignNewLoanFxmlController implements Initializable {
         }
     }
 
-    private void bindChildLoans(TextField c_loan_id_txt) {
+    private void bindChildLoans(TextField c_loan_id_txt, TextField c_loan_name_txt) {
 
         List<String> loanCodes = allLoans.stream().filter((p -> !p.getLoanId().equalsIgnoreCase(loan_id_txt.getText())))
                 .map(Loan::getLoanId).collect(Collectors.toList());
         TextFields.bindAutoCompletion(c_loan_id_txt, loanCodes).setOnAutoCompleted(e -> {
             getChildLoanByCode(c_loan_id_txt.getText());
+        });
+
+        List<String> loanNames = allLoans.stream().filter((p -> !p.getLoanId().equalsIgnoreCase(loan_id_txt.getText())))
+                .map(Loan::getLoanName).collect(Collectors.toList());
+        TextFields.bindAutoCompletion(c_loan_name_txt, loanNames).setOnAutoCompleted(e -> {
+            getChildLoanByName(c_loan_name_txt.getText());
         });
     }
 
@@ -536,6 +542,24 @@ public class AssignNewLoanFxmlController implements Initializable {
         loan_due_combo.getSelectionModel().select(filteredLoan.getDurationPer());
         loan_int_combo.getSelectionModel().select(filteredLoan.getInterestPer());
         int_method_combo.getSelectionModel().select(filteredLoan.getInterestMethod());
+    }
+
+    private void getChildLoanByName(String loanName) {
+        Session session = HibernateUtil.getSessionFactory().openSession();
+        Criteria c = session.createCriteria(Loan.class);
+        c.add(Restrictions.eq("loanName", loanName));
+        Loan filteredLoan = (Loan) c.uniqueResult();
+        session.close();
+        c_loan_id_txt.setText(filteredLoan.getLoanId());
+        c_loan_name_txt.setText(filteredLoan.getLoanName());
+        c_loan_int_txt.setText(TextFormatHandler.PRECENTAGE_DECIMAL_FORMAT.
+                format(filteredLoan.getLoanInterest() / 100d));
+        c_loan_due_txt.setText(String.valueOf(filteredLoan.getLoanDuration()));
+        c_repay_txt.setText(String.valueOf(filteredLoan.getNoOfRepay()));
+        c_repay_combo.getSelectionModel().select(filteredLoan.getRepaymentCycle());
+        c_loan_due_combo.getSelectionModel().select(filteredLoan.getDurationPer());
+        c_loan_int_combo.getSelectionModel().select(filteredLoan.getInterestPer());
+        c_int_method_combo.getSelectionModel().select(filteredLoan.getInterestMethod());
     }
 
     private Set<Member> getAvailableGuarantors() {

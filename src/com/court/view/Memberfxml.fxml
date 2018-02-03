@@ -966,6 +966,38 @@
                               </Label>
                            </children>
                         </HBox>
+                        <HBox layoutX="9.0" layoutY="82.0" prefHeight="443.0" prefWidth="717.0" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="20.0">
+                           <children>
+                              <TitledPane animated="false" text="Settle Arrears" HBox.hgrow="ALWAYS">
+                                <content>
+                                  <AnchorPane minHeight="0.0" minWidth="0.0">
+                                       <children>
+                                          <GridPane alignment="CENTER" layoutX="-11.0" layoutY="-35.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
+                                            <columnConstraints>
+                                              <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                                              <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                                            </columnConstraints>
+                                            <rowConstraints>
+                                              <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                              <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                              <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                            </rowConstraints>
+                                             <children>
+                                                <Label text="Total Arrears" GridPane.rowIndex="1" />
+                                             </children>
+                                          </GridPane>
+                                       </children>
+                                    </AnchorPane>
+                                </content>
+                              </TitledPane>
+                              <TitledPane animated="false" text="Hand-Over to Customer" HBox.hgrow="ALWAYS">
+                                <content>
+                                  <AnchorPane minHeight="0.0" minWidth="0.0" />
+                                </content>
+                              </TitledPane>
+                           </children>
+                        </HBox>
                      </children>
                   </AnchorPane>
               </content>
