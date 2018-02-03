@@ -439,6 +439,16 @@ public class MemberfxmlController implements Initializable {
     private Tab cash_out_tab;
     @FXML
     private Label credit_bal_txt;
+    @FXML
+    private TableView<MemberLoan> arrears_tbl;
+    @FXML
+    private TableColumn<MemberLoan, String> co_loan_id_col;
+    @FXML
+    private TableColumn<MemberLoan, Double> co_arrears_amt_col;
+    @FXML
+    private TableColumn<MemberLoan, CheckBox> co_select_col;
+    @FXML
+    private Label tot_arrears_sel_txt;
 
     /**
      * Initializes the controller class.
@@ -715,6 +725,7 @@ public class MemberfxmlController implements Initializable {
     }
 
     public void buildMemberLoanTable() {
+
         List<MemberLoan> allMemberLoans = getAllMemberLoans(member_code_txt.getText());
 
         p5.clearSuggestions();
@@ -726,6 +737,10 @@ public class MemberfxmlController implements Initializable {
                 .filter(FxUtilsHandler.distinctByKey(p -> p.getId()))
                 .collect(Collectors.toList());
         initMemberLoanTable(FXCollections.observableArrayList(filteredCollection));
+
+        ///==============BUILD ARREARS TABLE===================
+        initArreasTable(allMemberLoans);
+
     }
 
     @FXML
@@ -3339,6 +3354,30 @@ public class MemberfxmlController implements Initializable {
         }
 
         return code;
+    }
+
+    @FXML
+    private void onSettleArrearsBtnAction(ActionEvent event) {
+    }
+
+    private void initArreasTable(List<MemberLoan> loans) {
+
+        List<MemberLoan> arrearsLoans = loans.stream()
+                .filter(a -> a.getKotaLeft() > 0).collect(Collectors.toList());
+
+        if (!arrearsLoans.isEmpty()) {
+            co_loan_id_col.setCellValueFactory(new PropertyValueFactory<>("memberLoanCode"));
+            co_arrears_amt_col.setCellValueFactory(new PropertyValueFactory<>("kotaLeft"));
+            co_select_col.setCellValueFactory((TableColumn.CellDataFeatures<MemberLoan, CheckBox> param) -> {
+                CheckBox cb = new CheckBox();
+                cb.selectedProperty().addListener((ov, old_val, new_val) -> {
+                    
+                });
+                return new SimpleObjectProperty<>(cb);
+            });
+
+            arrears_tbl.setItems(FXCollections.observableArrayList(arrearsLoans));
+        }
     }
 
     class ContGive {

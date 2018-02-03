@@ -966,27 +966,52 @@
                               </Label>
                            </children>
                         </HBox>
-                        <HBox layoutX="9.0" layoutY="82.0" prefHeight="443.0" prefWidth="717.0" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="20.0">
+                        <HBox layoutX="9.0" layoutY="82.0" prefHeight="443.0" prefWidth="717.0" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="72.0">
                            <children>
                               <TitledPane animated="false" text="Settle Arrears" HBox.hgrow="ALWAYS">
                                 <content>
                                   <AnchorPane minHeight="0.0" minWidth="0.0">
                                        <children>
-                                          <GridPane alignment="CENTER" layoutX="-11.0" layoutY="-35.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
-                                            <columnConstraints>
-                                              <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-                                              <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-                                            </columnConstraints>
-                                            <rowConstraints>
-                                              <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                                              <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                                              <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                                                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                                            </rowConstraints>
+                                          <VBox layoutX="14.600000381469727" layoutY="14.600000381469727" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="5.0">
                                              <children>
-                                                <Label text="Total Arrears" GridPane.rowIndex="1" />
+                                                <TableView fx:id="arrears_tbl" prefHeight="200.0" prefWidth="200.0">
+                                                  <columns>
+                                                    <TableColumn fx:id="co_loan_id_col" prefWidth="100.0" text="Loan ID" />
+                                                    <TableColumn fx:id="co_arrears_amt_col" prefWidth="150.0" text="Arrears Amount" />
+                                                      <TableColumn fx:id="co_select_col" prefWidth="75.0" text="Select" />
+                                                  </columns>
+                                                </TableView>
+                                                <GridPane>
+                                                  <columnConstraints>
+                                                    <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="30.0" prefWidth="100.0" />
+                                                    <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                                                  </columnConstraints>
+                                                  <rowConstraints>
+                                                    <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                                    <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                                    <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                                  </rowConstraints>
+                                                   <children>
+                                                      <Label text="Total Arrears">
+                                                         <font>
+                                                            <Font size="14.0" />
+                                                         </font>
+                                                      </Label>
+                                                      <Label fx:id="tot_arrears_sel_txt" text="Rs0.00" GridPane.columnIndex="1">
+                                                         <font>
+                                                            <Font name="System Bold" size="14.0" />
+                                                         </font>
+                                                      </Label>
+                                                      <Button mnemonicParsing="false" onAction="#onSettleArrearsBtnAction" style="-fx-text-fill: #ffff;" text="PROCEED" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                                                         <styleClass>
+                                                            <String fx:value="btn" />
+                                                            <String fx:value="btn-primary" />
+                                                         </styleClass>
+                                                      </Button>
+                                                   </children>
+                                                </GridPane>
                                              </children>
-                                          </GridPane>
+                                          </VBox>
                                        </children>
                                     </AnchorPane>
                                 </content>

@@ -176,7 +176,7 @@ public class ReportFormFxmlController implements Initializable {
         dialog.getDialogPane().setContent(grid);
         dialog.setResultConverter(db -> {
             if (db == viewBtn) {
-                return new Pair<>(bField.getText().split("-")[0], cbox.getSelectionModel().getSelectedIndex());
+                return new Pair<>(bField.getText(), cbox.getSelectionModel().getSelectedIndex());
             }
             return null;
         });
@@ -196,7 +196,7 @@ public class ReportFormFxmlController implements Initializable {
             Criteria c = session.createCriteria(Member.class, "m");
             c.createAlias("m.branch", "b");
             if (!b.getKey().equalsIgnoreCase("All")) {
-                c.add(Restrictions.eq("b.branchCode", b.getKey()));
+                c.add(Restrictions.eq("b.branchCode", b.getKey().split("-")[0]));
             }
             switch (b.getValue()) {
                 case 1:
@@ -214,7 +214,7 @@ public class ReportFormFxmlController implements Initializable {
             Map<String, Object> map = new HashMap<>();
             map.put("companyName", ReportHandler.COMPANY_NAME);
             map.put("companyAddress", ReportHandler.ADDRESS);
-            map.put("reportTitle", "Welfare Member List Of Working Office - " + b.getKey());
+            map.put("reportTitle", "Welfare Member List Of Working Office - " + b.getKey().split("-")[1]);
             ReportHandler rh = new ReportHandler(reportPath, map, memberBeanCollection);
 //            rh.genarateReport();
             rh.genReport();
@@ -248,7 +248,7 @@ public class ReportFormFxmlController implements Initializable {
         dialog.getDialogPane().setContent(grid);
         dialog.setResultConverter(db -> {
             if (db == viewBtn) {
-                return new Pair<>(bField.getText().split("-")[0], cbox.getSelectionModel().getSelectedIndex());
+                return new Pair<>(bField.getText(), cbox.getSelectionModel().getSelectedIndex());
             }
             return null;
         });
@@ -269,7 +269,7 @@ public class ReportFormFxmlController implements Initializable {
             c.createAlias("m.payOffice", "po");
             c.createAlias("m.branch", "b");
             if (!b.getKey().equalsIgnoreCase("All")) {
-                c.add(Restrictions.eq("po.branchCode", b.getKey()));
+                c.add(Restrictions.eq("po.branchCode", b.getKey().split("-")[0]));
             }
             switch (b.getValue()) {
                 case 1:
@@ -289,7 +289,7 @@ public class ReportFormFxmlController implements Initializable {
             Map<String, Object> map = new HashMap<>();
             map.put("companyName", ReportHandler.COMPANY_NAME);
             map.put("companyAddress", ReportHandler.ADDRESS);
-            map.put("reportTitle", "Welfare Member List of Payment Office - " + b);
+            map.put("reportTitle", "Welfare Member List of Payment Office - " + b.getKey().split("-")[1]);
             ReportHandler rh = new ReportHandler(reportPath, map, memberBeanCollection);
 //            rh.genarateReport();
             rh.genReport();
