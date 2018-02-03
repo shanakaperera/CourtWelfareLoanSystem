@@ -234,6 +234,8 @@ public class MemberfxmlController implements Initializable {
     @FXML
     private TableColumn<LoanPayment, Date> instment_date_col;
     @FXML
+    private TableColumn<LoanPayment, String> ins_remark_col;
+    @FXML
     private VBox progress_box;
     @FXML
     private TextField int_pls_prin_txt;
@@ -1956,6 +1958,7 @@ public class MemberfxmlController implements Initializable {
     private void initLoanPayTable(ObservableList<LoanPayment> lPays) {
         p_date_col.setCellValueFactory(new PropertyValueFactory<>("paymentDate"));
         ins_no_col.setCellValueFactory(new PropertyValueFactory<>("installmentNo"));
+        ins_remark_col.setCellValueFactory(new PropertyValueFactory<>("remark"));
         p_due_col.setCellValueFactory((TableColumn.CellDataFeatures<LoanPayment, String> param) -> {
             LoanPayment lp = param.getValue();
             int lp_installment = lp.getInstallmentNo();
@@ -1986,6 +1989,17 @@ public class MemberfxmlController implements Initializable {
                     super.updateItem(item, empty);
                     if (!isEmpty()) {
                         setText(new SimpleDateFormat("MMMMM, yyyy").format(item));
+                    }
+                }
+            };
+        });
+        ins_remark_col.setCellFactory(column -> {
+            return new TableCell<LoanPayment, String>() {
+                @Override
+                protected void updateItem(String item, boolean empty) {
+                    super.updateItem(item, empty);
+                    if (!isEmpty()) {
+                        setText(item);
                     }
                 }
             };
