@@ -30,7 +30,7 @@ public class CustomDoubleStringConverter extends StringConverter<Double> {
             return null;
         }
 
-        if (Math.signum(Double.valueOf(value)) <= 0) {
+        if (Math.signum(Double.valueOf(value)) < 0) {
             return null;
         }
 

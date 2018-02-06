@@ -280,7 +280,7 @@ public class PaymentsFxmlController implements Initializable {
         grid.add(new Label("Job Title : "), 0, 1);
         grid.add(new Label(mbr.getJobTitle()), 1, 1);
         grid.add(new Label("Payment Officer : "), 0, 2);
-        grid.add(new Label(mbr.getPaymentOfficer()), 1, 2);
+        grid.add(new Label(mbr.getPayOffice().getBranchName()), 1, 2);
         grid.add(new Label("Working Court : "), 0, 3);
         grid.add(new Label(mbr.getBranch().getBranchName()), 1, 3);
 

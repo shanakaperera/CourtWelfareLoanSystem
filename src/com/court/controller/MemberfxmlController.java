@@ -116,6 +116,7 @@ import org.controlsfx.validation.Severity;
 import org.controlsfx.validation.ValidationSupport;
 import org.controlsfx.validation.Validator;
 import org.hibernate.Criteria;
+import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
@@ -452,6 +453,8 @@ public class MemberfxmlController implements Initializable {
     private TableColumn<MemberLoan, CheckBox> co_select_col;
     @FXML
     private Label tot_arrears_sel_txt;
+    @FXML
+    private TextField hnd_ovr_amt_txt;
 
     /**
      * Initializes the controller class.
@@ -521,6 +524,8 @@ public class MemberfxmlController implements Initializable {
         m_subs_mf.setTextFormatter(TextFormatHandler.currencyFormatter());
         m_subs_op.setTextFormatter(TextFormatHandler.currencyFormatter());
         m_subs_adm.setTextFormatter(TextFormatHandler.currencyFormatter());
+
+        hnd_ovr_amt_txt.setTextFormatter(TextFormatHandler.currencyFormatter());
 
         //================== Disable Tabs============================
         disableTabs(true);
@@ -598,7 +603,7 @@ public class MemberfxmlController implements Initializable {
 
             member.setEmpId(emp_id_txt.getText());
             member.setJobStatus(job_status_combo.getSelectionModel().getSelectedItem());
-            member.setPaymentOfficer(payment_officer_txt.getText());
+            //member.setPaymentOfficer(payment_officer_txt.getText());
             member.setFullName(member_full_name_txt.getText());
             member.setNameWithIns(member_namins_txt.getText());
             member.setAddress(member_adrs_txt.getText());
@@ -612,6 +617,7 @@ public class MemberfxmlController implements Initializable {
             member.setDob(FxUtilsHandler.getDateFrom(member_bday_chooser.getValue()));
             member.setAppintedDate(Date.valueOf(member_apo_chooser.getValue()));
             member.setJoinedDate(FxUtilsHandler.getDateFrom(member_join_chooser.getValue()));
+            member.setOverpay(0.0);
             member.setDescription(member_des_txt.getText().isEmpty() ? "No Description" : member_des_txt.getText());
             //  member.setImgPath(imgString == null ? "" : imgString.getImg_path().toString());
             member.setStatus(true);
@@ -960,8 +966,10 @@ public class MemberfxmlController implements Initializable {
             int_pls_prin_txt.setText(TextFormatHandler.CURRENCY_DECIMAL_FORMAT.format(prins_plus_ins));
             bal_cont_txt.setText(TextFormatHandler.CURRENCY_DECIMAL_FORMAT.format(ml.getKotaLeft()));
             loan_nm_txt.setText(ml.getLoanName());
-
-            gurantors_lstview.getItems().addAll(getSignedGuarantors(ml.getGuarantors(), session));
+            List<Member> signedGuarantors = getSignedGuarantors(ml.getGuarantors(), session);
+            if (signedGuarantors != null) {
+                gurantors_lstview.getItems().addAll(signedGuarantors);
+            }
 
             double ins_only = prins_plus_ins - ml.getLoanAmount();
             l_repay_txt.setText(TextFormatHandler.CURRENCY_DECIMAL_FORMAT
@@ -1502,10 +1510,6 @@ public class MemberfxmlController implements Initializable {
                     //IF PARENT LOAN IS NOT COMPLETED
                     if (!parentLoan.isIsComplete()) {
 
-                        parentLoan.setIsComplete(true);
-                        parentLoan.setClosedLoan(true);
-                        s.update(parentLoan);
-
                         LoanPayment parentLastLoanPay = parentLoan.getLoanPayments()
                                 .stream().filter(p -> p.isIsLast()).findFirst().orElse(null);
 
@@ -1538,6 +1542,7 @@ public class MemberfxmlController implements Initializable {
                                 lp.setInstallmentDate(instDates[i]);
                                 lp.setPaidAmt(installWithoutPolli);
                                 lp.setListedPay(installWithoutPolli);
+                                lp.setRemark("Installment Pay");
                                 lp.setPayOffice(parentLoan.getMember().getPayOffice().getId());
                                 lp.setWorkOffice(parentLoan.getMember().getBranch().getId());
                                 if (i == (insts - 1)) {
@@ -1551,6 +1556,36 @@ public class MemberfxmlController implements Initializable {
                                 last_inst_paid++;
                             }
 
+                            //==================IF HAS KOTA LEFT THEN PAY IT ALSO==========
+                            if (parentLoan.getKotaLeft() > 0) {
+
+                                LoanPayment lp = new LoanPayment();
+                                lp.setInstallmentNo(last_inst_paid);
+                                lp.setInstallmentDue(0);
+                                lp.setPaymentDate(new java.util.Date());
+                                lp.setInstallmentDate(instDates[instDates.length - 1]);
+                                lp.setPaidAmt(parentLoan.getKotaLeft());
+                                lp.setListedPay(parentLoan.getKotaLeft());
+                                lp.setPayOffice(parentLoan.getMember().getPayOffice().getId());
+                                lp.setWorkOffice(parentLoan.getMember().getBranch().getId());
+                                lp.setIsLast(true);
+                                lp.setRemark("Arrears Pay");
+                                lp.setMemberLoan(parentLoan);
+                                s.save(lp);
+                                lpIds.add(lp.getId());
+
+                                //====ADD KOTA AMOUNT ALSO TO TOTAL PAYMENT===========
+                                payment_amt += parentLoan.getKotaLeft();
+                            }
+                            //==================IF HAS KOTA LEFT THEN PAY IT ALSO==========
+
+                            //=============END PARENT LOAN================
+                            parentLoan.setIsComplete(true);
+                            parentLoan.setClosedLoan(true);
+                            parentLoan.setKotaLeft(0.0);
+                            s.update(parentLoan);
+                            //==============END PARENT LOAN===============
+
                             Type type = new TypeToken<List<Integer>>() {
                             }.getType();
                             ReceiptPay rp = new ReceiptPay();
@@ -1563,13 +1598,10 @@ public class MemberfxmlController implements Initializable {
                             rp.setWorkOffice(parentLoan.getMember().getBranch().getId());
                             // rp.setReceiptCode("INV" + FxUtilsHandler.generateRandomNumber(7));
                             s.save(rp);
+
                             updateMemberLoan(parentLoan, insts, s, instDates[insts - 1]);
                         }
                     }
-
-                    childLoan.setIsComplete(true);
-                    childLoan.setClosedLoan(true);
-                    s.update(childLoan);
 
                     LoanPayment childLastLoanPay = childLoan.getLoanPayments()
                             .stream().filter(p -> p.isIsLast()).findFirst().orElse(null);
@@ -1615,6 +1647,28 @@ public class MemberfxmlController implements Initializable {
                             last_inst_paid++;
                         }
 
+                        //==================IF HAS KOTA LEFT THEN PAY IT ALSO==========
+                        if (childLoan.getKotaLeft() > 0) {
+
+                            LoanPayment lp = new LoanPayment();
+                            lp.setInstallmentNo(last_inst_paid);
+                            lp.setInstallmentDue(0);
+                            lp.setPaymentDate(new java.util.Date());
+                            lp.setInstallmentDate(instDates[instDates.length - 1]);
+                            lp.setPaidAmt(childLoan.getKotaLeft());
+                            lp.setListedPay(childLoan.getKotaLeft());
+                            lp.setPayOffice(childLoan.getMember().getPayOffice().getId());
+                            lp.setWorkOffice(childLoan.getMember().getBranch().getId());
+                            lp.setIsLast(true);
+                            lp.setRemark("Arrears Pay");
+                            lp.setMemberLoan(childLoan);
+                            s.save(lp);
+                            lpIds.add(lp.getId());
+
+                            //====ADD KOTA AMOUNT ALSO TO TOTAL PAYMENT===========
+                            payment_amt += childLoan.getKotaLeft();
+                        }
+
                         Type type = new TypeToken<List<Integer>>() {
                         }.getType();
                         ReceiptPay rp = new ReceiptPay();
@@ -1628,16 +1682,17 @@ public class MemberfxmlController implements Initializable {
                         // rp.setReceiptCode("INV" + FxUtilsHandler.generateRandomNumber(7));
                         s.save(rp);
 
+                        childLoan.setIsComplete(true);
+                        childLoan.setClosedLoan(true);
+                        childLoan.setKotaLeft(0.0);
+                        s.update(childLoan);
+
                         updateMemberLoan(childLoan, insts, s, instDates[insts - 1]);
 
                     }
                     //IF PARENT LOAN SELECTED===============================================
                 } else {
                     MemberLoan selectedLoan = row.getItem();
-
-                    selectedLoan.setIsComplete(true);
-                    selectedLoan.setClosedLoan(true);
-                    s.update(selectedLoan);
 
                     LoanPayment selectedLoanPay = selectedLoan.getLoanPayments()
                             .stream().filter(p -> p.isIsLast()).findFirst().orElse(null);
@@ -1684,6 +1739,33 @@ public class MemberfxmlController implements Initializable {
                             last_inst_paid++;
                         }
 
+                        //==================IF HAS KOTA LEFT THEN PAY IT ALSO==========
+                        if (selectedLoan.getKotaLeft() > 0) {
+
+                            LoanPayment lp = new LoanPayment();
+                            lp.setInstallmentNo(last_inst_paid);
+                            lp.setInstallmentDue(0);
+                            lp.setPaymentDate(new java.util.Date());
+                            lp.setInstallmentDate(instDates[instDates.length - 1]);
+                            lp.setPaidAmt(selectedLoan.getKotaLeft());
+                            lp.setListedPay(selectedLoan.getKotaLeft());
+                            lp.setPayOffice(selectedLoan.getMember().getPayOffice().getId());
+                            lp.setWorkOffice(selectedLoan.getMember().getBranch().getId());
+                            lp.setIsLast(true);
+                            lp.setRemark("Arrears Pay");
+                            lp.setMemberLoan(selectedLoan);
+                            s.save(lp);
+                            lpIds.add(lp.getId());
+
+                            //====ADD KOTA AMOUNT ALSO TO TOTAL PAYMENT===========
+                            payment_amt += selectedLoan.getKotaLeft();
+                        }
+
+                        selectedLoan.setIsComplete(true);
+                        selectedLoan.setKotaLeft(0.0);
+                        selectedLoan.setClosedLoan(true);
+                        s.update(selectedLoan);
+
                         Type type = new TypeToken<List<Integer>>() {
                         }.getType();
                         ReceiptPay rp = new ReceiptPay();
@@ -1704,10 +1786,6 @@ public class MemberfxmlController implements Initializable {
                     MemberLoan childLoan = getChildOfSelected(selectedLoan.getChildId(), s);
                     //IF HAS CHILD LOAN AND CHILD LOAN IS NOT FINISHED
                     if (childLoan != null && !childLoan.isIsComplete()) {
-
-                        childLoan.setIsComplete(true);
-                        childLoan.setClosedLoan(true);
-                        s.update(childLoan);
 
                         LoanPayment childLastLoanPay = childLoan.getLoanPayments()
                                 .stream().filter(p -> p.isIsLast()).findFirst().orElse(null);
@@ -1764,6 +1842,33 @@ public class MemberfxmlController implements Initializable {
                             lpIds.add(lp.getId());
                             last_inst_paid++;
                         }
+
+                        //==================IF HAS KOTA LEFT THEN PAY IT ALSO==========
+                        if (childLoan.getKotaLeft() > 0) {
+
+                            LoanPayment lp = new LoanPayment();
+                            lp.setInstallmentNo(last_inst_paid);
+                            lp.setInstallmentDue(0);
+                            lp.setPaymentDate(new java.util.Date());
+                            lp.setInstallmentDate(instDates[instDates.length - 1]);
+                            lp.setPaidAmt(childLoan.getKotaLeft());
+                            lp.setListedPay(childLoan.getKotaLeft());
+                            lp.setPayOffice(childLoan.getMember().getPayOffice().getId());
+                            lp.setWorkOffice(childLoan.getMember().getBranch().getId());
+                            lp.setIsLast(true);
+                            lp.setRemark("Arrears Pay");
+                            lp.setMemberLoan(childLoan);
+                            s.save(lp);
+                            lpIds.add(lp.getId());
+
+                            //====ADD KOTA AMOUNT ALSO TO TOTAL PAYMENT===========
+                            payment_amt += childLoan.getKotaLeft();
+                        }
+
+                        childLoan.setIsComplete(true);
+                        childLoan.setKotaLeft(0.0);
+                        childLoan.setClosedLoan(true);
+                        s.update(childLoan);
 
                         Type type = new TypeToken<List<Integer>>() {
                         }.getType();
@@ -1833,7 +1938,8 @@ public class MemberfxmlController implements Initializable {
                 } else {
                     installmentDue = row.getItem().getNoOfRepay();
                 }
-                List<Integer> collect = Arrays.stream(IntStream.rangeClosed(1, installmentDue).toArray()).boxed().collect(Collectors.toList());
+                List<Integer> collect = Arrays.stream(IntStream.rangeClosed(1, installmentDue)
+                        .toArray()).boxed().collect(Collectors.toList());
                 ObservableList<Integer> clist = FXCollections.observableArrayList(collect);
                 ComboBox<Integer> installments = new ComboBox(clist);
                 installments.getSelectionModel().select(0);
@@ -2675,10 +2781,16 @@ public class MemberfxmlController implements Initializable {
     private List<Member> getSignedGuarantors(String guarantors, Session session) {
         List<String> lst = new Gson().fromJson(guarantors, new TypeToken<List<String>>() {
         }.getType());
-        List<Member> grts = session.createCriteria(Member.class)
-                .add(Restrictions.in("memberId", lst)).list();
 
-        return grts;
+        if (!lst.isEmpty()) {
+            List<Member> grts = session.createCriteria(Member.class)
+                    .add(Restrictions.in("memberId", lst)).list();
+
+            return grts;
+        }
+
+        return null;
+
     }
 
     private List<Member> getSignedGuarantorsActive(String guarantors, Session session) {
@@ -3373,9 +3485,52 @@ public class MemberfxmlController implements Initializable {
 
     @FXML
     private void onSettleArrearsBtnAction(ActionEvent event) {
+
+        double total_selected = TextFormatHandler.getCurrencyFieldValue(tot_arrears_sel_txt.getText());
+        double credit_balance = TextFormatHandler.getCurrencyFieldValue(credit_bal_txt.getText());
+
+        if (total_selected == 0) {
+            Alert alert_error = new Alert(Alert.AlertType.ERROR);
+            alert_error.setTitle("Error");
+            alert_error.setHeaderText("Arreas amount is zero !.");
+            alert_error.setContentText("Arreas amount cannot be zero to complete the payment .");
+            alert_error.show();
+            return;
+        }
+
+        if (total_selected > credit_balance) {
+            Alert alert_error = new Alert(Alert.AlertType.ERROR);
+            alert_error.setTitle("Error");
+            alert_error.setHeaderText("Insufficient credit balance !.");
+            alert_error.setContentText("Credit balance is not enough to pay the arrears amount .");
+            alert_error.show();
+            return;
+        }
+
+        Alert conf = new Alert(AlertType.CONFIRMATION);
+        conf.setTitle("Confirmation");
+        conf.setHeaderText("Are you sure ?");
+        conf.setContentText("Are you sure you want to Settle " + tot_arrears_sel_txt.getText() + " with credit balance ?");
+        Optional<ButtonType> confm = conf.showAndWait();
+
+        if (confm.get() == ButtonType.OK) {
+            Session s = HibernateUtil.getSessionFactory().openSession();
+            s.beginTransaction();
+            Criteria c = s.createCriteria(Member.class);
+            c.add(Restrictions.eq("memberId", member_code_txt.getText()));
+            Member ar_m = (Member) c.uniqueResult();
+            ar_m.setOverpay(ar_m.getOverpay() - arrears_tot);
+            s.update(ar_m);
+            updateKotaLeftOfLoans(s, mbrLoan_codes);
+            credit_bal_txt.setText(TextFormatHandler.CURRENCY_DECIMAL_FORMAT.format(ar_m.getOverpay()));
+            s.getTransaction().commit();
+            s.close();
+        }
+
     }
 
     double arrears_tot = 0.0;
+    List<Integer> mbrLoan_codes = new ArrayList();
 
     private void initArreasTable(List<MemberLoan> loans) {
 
@@ -3392,9 +3547,14 @@ public class MemberfxmlController implements Initializable {
                 cb.selectedProperty().addListener((ov, old_val, new_val) -> {
                     if (new_val) {
                         arrears_tot += param.getValue().getKotaLeft();
+                        mbrLoan_codes.add(param.getValue().getId());
 
+                        System.out.println(mbrLoan_codes.toString());
                     } else {
                         arrears_tot -= param.getValue().getKotaLeft();
+                        mbrLoan_codes.remove(param.getValue().getId());
+
+                        System.out.println(mbrLoan_codes.toString());
                     }
                     tot_arrears_sel_txt.setText(TextFormatHandler.CURRENCY_DECIMAL_FORMAT.format(arrears_tot));
                 });
@@ -3403,6 +3563,51 @@ public class MemberfxmlController implements Initializable {
 
             arrears_tbl.setItems(FXCollections.observableArrayList(arrearsLoans));
         }
+    }
+
+    @FXML
+    private void onHndOverBtnAction(ActionEvent event) {
+        double handover = TextFormatHandler.getCurrencyFieldValue(hnd_ovr_amt_txt);
+        double credit_balance = TextFormatHandler.getCurrencyFieldValue(credit_bal_txt.getText());
+
+        if (handover == 0) {
+            Alert alert_error = new Alert(Alert.AlertType.ERROR);
+            alert_error.setTitle("Error");
+            alert_error.setHeaderText("Handover amount is zero !.");
+            alert_error.setContentText("Handover amount cannot be zero to complete the transaction .");
+            alert_error.show();
+            return;
+        }
+
+        if (handover > credit_balance) {
+            Alert alert_error = new Alert(Alert.AlertType.ERROR);
+            alert_error.setTitle("Error");
+            alert_error.setHeaderText("Insufficient credit balance !.");
+            alert_error.setContentText("Credit balance is not enough to complete the transaction .");
+            alert_error.show();
+            return;
+        }
+
+        Session s = HibernateUtil.getSessionFactory().openSession();
+        s.beginTransaction();
+        Criteria c = s.createCriteria(Member.class);
+        c.add(Restrictions.eq("memberId", member_code_txt.getText()));
+        Member ar_m = (Member) c.uniqueResult();
+        ar_m.setOverpay(ar_m.getOverpay() - handover);
+        s.update(ar_m);
+        credit_bal_txt.setText(TextFormatHandler.CURRENCY_DECIMAL_FORMAT.format(ar_m.getOverpay()));
+        s.getTransaction().commit();
+        s.close();
+    }
+
+    private boolean updateKotaLeftOfLoans(Session s, List<Integer> mbrLoan_codes) {
+
+        Query query = s.createSQLQuery(
+                "UPDATE member_loan ml SET ml.kota_left= 0.0 WHERE ml.id in (:ml_ids) ;")
+                .setParameterList("ml_ids", mbrLoan_codes);
+        query.executeUpdate();
+
+        return true;
     }
 
     class ContGive {

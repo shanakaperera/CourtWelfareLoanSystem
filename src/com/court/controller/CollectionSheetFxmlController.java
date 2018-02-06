@@ -783,13 +783,6 @@ public class CollectionSheetFxmlController implements Initializable {
         return isKotaPay ? mml.getKotaLeft() : mml.getLoanInstallment();
     }
 
-    private void updateOldLoan(MemberLoan ml, Session s, double paidAmt) {
-        MemberLoan mml = (MemberLoan) s.load(MemberLoan.class, ml.getId());
-        mml.setPaidSofar(ml.getPaidSofar() + paidAmt);
-        mml.setLastInstall(ml.getLastInstall() + 1);
-        s.update(mml);
-    }
-
     private void createTable() {
 
         collection_tbl = new TableView<>();

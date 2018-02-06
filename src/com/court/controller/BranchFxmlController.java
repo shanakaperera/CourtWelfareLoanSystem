@@ -55,6 +55,7 @@ import org.controlsfx.validation.Severity;
 import org.controlsfx.validation.ValidationSupport;
 import org.controlsfx.validation.Validator;
 import org.hibernate.Criteria;
+import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
@@ -591,7 +592,19 @@ public class BranchFxmlController implements Initializable {
         Branch movingBranch = (Branch) session.load(Branch.class, draggedIndex);
         movingBranch.setParentId(dropIndex);
         session.update(movingBranch);
+        updateMbrPayOfficeOfWorkOffice(draggedIndex, dropIndex == 0 ? draggedIndex : dropIndex, session);
         session.getTransaction().commit();
         session.close();
+    }
+
+    //Me method aken memberslage payment offices change wenawa if members 
+    //la inne change karana branch ake nam 
+    private void updateMbrPayOfficeOfWorkOffice(int branchId, int payOffId, Session s) {
+
+        Query query = s.createSQLQuery(
+                "UPDATE member m SET m.pay_office_id= :pay_off WHERE m.branch_id= :work_off ;")
+                .setParameter("pay_off", payOffId)
+                .setParameter("work_off", branchId);
+        query.executeUpdate();
     }
 }
