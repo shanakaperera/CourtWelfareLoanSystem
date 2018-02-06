@@ -70,6 +70,7 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -1136,20 +1137,48 @@ public class MemberfxmlController implements Initializable {
         VBox node = (VBox) loader.load();
         AssignNewLoanFxmlController controller = (AssignNewLoanFxmlController) loader.getController();
         controller.setMember(getMemberByCode(member_code_txt.getText()));
-        controller.initFunction(this);
-        // System.out.println("C Member = " + controller.getMember());
-        alert_custom = new Alert(Alert.AlertType.NONE);
-        alert_custom.setTitle("Assign New Loan");
-        alert_custom.setHeaderText("Member Loan Code - " + controller.fillMemberLoanCodeTxt());
-        alert_custom.getDialogPane().setContent(node);
-        ButtonType buttonTypeCancel = new ButtonType("", ButtonData.CANCEL_CLOSE);
-        alert_custom.getButtonTypes().add(buttonTypeCancel);
-        alert_custom.getDialogPane().lookupButton(buttonTypeCancel).setVisible(false);
-        alert_custom.show();
-        controller.registerDialogInputValidation();
-        controller.getCancel_btn().setOnAction(e -> {
-            alert_custom.hide();
-        });
+
+        ImageView progressIndicator = new ImageView();
+        progressIndicator.setImage(new Image(FileHandler.LOADING_DEFAULT_GIF));
+        VBox v = new VBox(progressIndicator);
+        v.setAlignment(Pos.CENTER);
+        Dialog alert_prog = new Alert(Alert.AlertType.NONE);
+        alert_prog.setTitle("Ongoing progress");
+        alert_prog.setHeaderText("Please wait until the loan window is loaded. ");
+        alert_prog.getDialogPane().setContent(v);
+        alert_prog.setResult(Boolean.TRUE);
+        alert_prog.show();
+
+        Task<Boolean> lTask = new Task<Boolean>() {
+            {
+                setOnSucceeded(d -> {
+                    alert_prog.hide();
+                    alert_custom = new Alert(Alert.AlertType.NONE);
+                    alert_custom.setTitle("Assign New Loan");
+                    alert_custom.setHeaderText("Member Loan Code - " + controller.fillMemberLoanCodeTxt());
+                    alert_custom.getDialogPane().setContent(node);
+                    ButtonType buttonTypeCancel = new ButtonType("", ButtonData.CANCEL_CLOSE);
+                    alert_custom.getButtonTypes().add(buttonTypeCancel);
+                    alert_custom.getDialogPane().lookupButton(buttonTypeCancel).setVisible(false);
+                    alert_custom.show();
+                    controller.registerDialogInputValidation();
+                    controller.getCancel_btn().setOnAction(e -> {
+                        alert_custom.hide();
+                    });
+
+                });
+                setOnFailed(workerStateEvent -> getException().printStackTrace());
+            }
+
+            @Override
+            protected Boolean call() throws Exception {
+                return controller.initFunction(MemberfxmlController.this);
+            }
+        };
+
+        Thread gurThread = new Thread(lTask, "l-task");
+        gurThread.setDaemon(true);
+        gurThread.start();
     }
 
     @FXML

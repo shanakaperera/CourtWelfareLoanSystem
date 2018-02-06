@@ -139,7 +139,7 @@ public class AssignNewLoanFxmlController implements Initializable {
 
     }
 
-    public void initFunction(MemberfxmlController m_ctr) {
+    public boolean initFunction(MemberfxmlController m_ctr) {
         this.mCtr = m_ctr;
         allLoans = getAllLoans();
         List<String> loanCodes = allLoans.stream()
@@ -179,6 +179,8 @@ public class AssignNewLoanFxmlController implements Initializable {
         FxUtilsHandler.setDatePickerTimeFormat(l_request_c, l_request_p);
         l_request_c.setValue(LocalDate.now());
         l_request_p.setValue(LocalDate.now());
+
+        return true;
     }
 
     public Button getCancel_btn() {
@@ -471,6 +473,11 @@ public class AssignNewLoanFxmlController implements Initializable {
 
     public void registerDialogInputValidation() {
         va = new ValidationSupport();
+        va.registerValidator(l_request_p,
+                Validator.createEmptyValidator("Requested date cannot be empty !"));
+        va.registerValidator(l_request_c,
+                Validator.createEmptyValidator("Requested date cannot be empty !")
+        );
         va.registerValidator(int_method_combo,
                 Validator.createEmptyValidator("Interest method Selection required !"));
         va.registerValidator(loan_name_txt,
