@@ -773,8 +773,10 @@ public class CollectionSheetFxmlController implements Initializable {
         map.put("reportTitle", "Branch Wise Cheque Payments");
         map.put("chk_no", chkNo);
         ReportHandler rh = new ReportHandler(reportPath, map, null, con);
-        rh.genReport();
-        rh.viewReport();
+        boolean blah = rh.genReport();
+        if (blah) {
+            rh.viewReport();
+        }
         s.close();
     }
 

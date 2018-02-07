@@ -12,6 +12,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.sql.Connection;
+import java.util.List;
 import java.util.Map;
 import javafx.concurrent.Task;
 import javafx.geometry.Pos;
@@ -22,6 +23,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
 import net.sf.jasperreports.engine.JREmptyDataSource;
 import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JRPrintPage;
 import net.sf.jasperreports.engine.JasperExportManager;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
@@ -43,7 +45,7 @@ public class ReportHandler {
     private final String outputFile = System.getProperty("user.home") + File.separatorChar + "JasperExample.pdf";
     private Connection con;
     private ImageView progressIndicator;
-    
+
     public ReportHandler(String reportPath, Map<String, Object> map,
             JRBeanCollectionDataSource ds) {
         this.reportPath = reportPath;
@@ -105,19 +107,31 @@ public class ReportHandler {
                 } else {
                     jp = JasperFillManager.fillReport(jr, map, ds);
                 }
-                OutputStream outputStream = new FileOutputStream(new File(outputFile));
 
-                JasperExportManager.exportReportToPdfStream(jp, outputStream);
-                System.out.println("Successfully Generated !");
-                System.out.println(outputFile);
+                List<JRPrintPage> pages = jp.getPages();
+                System.out.println("PAGES - " + pages.size());
+                if (pages.size() == 0) {
+                    Alert alert_inf = new Alert(Alert.AlertType.INFORMATION);
+                    alert_inf.setTitle("Information");
+                    alert_inf.setHeaderText("No data found!");
+                    alert_inf.setContentText("The report you have requested is empty or no has no pages.");
+                    alert_inf.show();
+                    throw new Exception("Empty Report !");
+                } else {
+                    OutputStream outputStream = new FileOutputStream(new File(outputFile));
 
-                File myFile = null;
-                if (Desktop.isDesktopSupported()) {
-                    myFile = new File(outputFile);
-                    Desktop.getDesktop().open(myFile);
+                    JasperExportManager.exportReportToPdfStream(jp, outputStream);
+                    System.out.println("Successfully Generated !");
+                    System.out.println(outputFile);
+
+                    File myFile = null;
+                    if (Desktop.isDesktopSupported()) {
+                        myFile = new File(outputFile);
+                        Desktop.getDesktop().open(myFile);
+                    }
+
+                    return myFile;
                 }
-
-                return myFile;
             }
         };
 
@@ -126,7 +140,8 @@ public class ReportHandler {
         reportGenThread.start();
     }
 
-    public void genReport() {
+    public boolean genReport() {
+        boolean flag = false;
         try {
 //            JasperReport jr = (JasperReport) JRLoader.loadObject(
 //                    ClassLoader.getSystemResourceAsStream(reportPath));
@@ -145,18 +160,28 @@ public class ReportHandler {
             } else {
                 jp = JasperFillManager.fillReport(jr, map, ds);
             }
-            OutputStream outputStream = new FileOutputStream(new File(outputFile));
 
-            //////////////
-//            JRProperties.setProperty("net.sf.jasperreports.awt.ignore.missing.font", "true");
-//            JRProperties.setProperty("net.sf.jasperreports.default.font.name", "SansSerif");
-            /////////////
-            JasperExportManager.exportReportToPdfStream(jp, outputStream);
-            System.out.println("Successfully Generated !");
-            System.out.println(outputFile);
+            List<JRPrintPage> pages = jp.getPages();
+            System.out.println("PAGES - " + pages.size());
+            if (pages.isEmpty()) {
+                Alert alert_inf = new Alert(Alert.AlertType.INFORMATION);
+                alert_inf.setTitle("Information");
+                alert_inf.setHeaderText("No data found!");
+                alert_inf.setContentText("The report you have requested is empty or has no pages.");
+                alert_inf.show();
+                flag = false;
+            } else {
+                OutputStream outputStream = new FileOutputStream(new File(outputFile));
+                JasperExportManager.exportReportToPdfStream(jp, outputStream);
+                System.out.println("Successfully Generated !");
+                System.out.println(outputFile);
+                flag = true;
+            }
+
         } catch (FileNotFoundException | JRException e) {
             e.printStackTrace();
         }
+        return flag;
     }
 
     public void viewReport() {

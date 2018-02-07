@@ -36,6 +36,7 @@ public class Member implements java.io.Serializable {
     private String accBenifits;
     private String imgPath;
     private boolean status;
+    private String curStatus;
     private String paymentOfficer;
     private String jobStatus;
     private String nic;
@@ -352,6 +353,14 @@ public class Member implements java.io.Serializable {
         return empId;
     }
 
+    public String getCurStatus() {
+        return curStatus;
+    }
+
+    public void setCurStatus(String curStatus) {
+        this.curStatus = curStatus;
+    }
+    
     public void setEmpId(String empId) {
         this.empId = empId;
     }

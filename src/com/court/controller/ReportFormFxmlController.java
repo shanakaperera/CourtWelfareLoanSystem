@@ -144,8 +144,10 @@ public class ReportFormFxmlController implements Initializable {
             map.put("reportTitle", "Welfare Loan List Granted From " + sdf.format(FxUtilsHandler.getDateFrom(b.getFd())) + " To " + sdf.format(FxUtilsHandler.getDateFrom(b.getTd())));
             ReportHandler rh = new ReportHandler(reportPath, map, memberLoanBeanCollection);
 //            rh.genarateReport();
-            rh.genReport();
-            rh.viewReport();
+            boolean blah = rh.genReport();
+            if (blah) {
+                rh.viewReport();
+            }
             session.close();
         });
 
@@ -217,8 +219,10 @@ public class ReportFormFxmlController implements Initializable {
             map.put("reportTitle", "Welfare Member List Of Working Office - " + b.getKey().split("-")[1]);
             ReportHandler rh = new ReportHandler(reportPath, map, memberBeanCollection);
 //            rh.genarateReport();
-            rh.genReport();
-            rh.viewReport();
+            boolean blah = rh.genReport();
+            if (blah) {
+                rh.viewReport();
+            }
             session.close();
         });
     }
@@ -292,8 +296,10 @@ public class ReportFormFxmlController implements Initializable {
             map.put("reportTitle", "Welfare Member List of Payment Office - " + b.getKey().split("-")[1]);
             ReportHandler rh = new ReportHandler(reportPath, map, memberBeanCollection);
 //            rh.genarateReport();
-            rh.genReport();
-            rh.viewReport();
+            boolean blah = rh.genReport();
+            if (blah) {
+                rh.viewReport();
+            }
             session.close();
         });
     }
@@ -352,8 +358,10 @@ public class ReportFormFxmlController implements Initializable {
                 map.put("SUBREPORT", subReport);
                 ReportHandler rh = new ReportHandler(reportPath, map, memberLoansBeanCollection);
 //                rh.genarateReport();
-                rh.genReport();
-                rh.viewReport();
+                boolean blah = rh.genReport();
+                if (blah) {
+                    rh.viewReport();
+                }
                 session.close();
             } catch (JRException | HibernateException e) {
                 e.printStackTrace();
@@ -364,7 +372,7 @@ public class ReportFormFxmlController implements Initializable {
     @FXML
     private void onBranchCollectionDueAction(ActionEvent event) throws JRException {
 
-        Dialog<String> dialog = new Dialog<>();
+        Dialog<Pair<String, String>> dialog = new Dialog<>();
         dialog.setTitle("Branch wise Collection Due");
         dialog.setHeaderText("Select Payment Office");
         ButtonType viewBtn = new ButtonType("View Report", ButtonData.OK_DONE);
@@ -375,19 +383,27 @@ public class ReportFormFxmlController implements Initializable {
         grid.setPadding(new Insets(20, 150, 10, 10));
 
         TextField bField = new TextField();
+        ComboBox<String> cbox = new ComboBox<>(FXCollections.observableArrayList("Permanent", "Casual"));
+        cbox.getSelectionModel().selectFirst();
         TextFields.bindAutoCompletion(bField, getPaymentOffice());
 
         grid.add(new Label("Branch:"), 0, 0);
         grid.add(bField, 1, 0);
+        grid.add(new Label("Job Status:"), 0, 1);
+        grid.add(cbox, 1, 1);
         dialog.getDialogPane().setContent(grid);
         dialog.setResultConverter(db -> {
             if (db == viewBtn) {
-                return getPayOfficeIdFromCode(bField.getText().split("-")[0]);
+                if (bField.getText().isEmpty()) {
+                    return null;
+                } else {
+                    return new Pair<>(getPayOfficeIdFromCode(bField.getText().split("-")[0]), cbox.getSelectionModel().getSelectedItem());
+                }
             }
             return null;
         });
 
-        Optional<String> result = dialog.showAndWait();
+        Optional<Pair<String, String>> result = dialog.showAndWait();
         result.ifPresent(b -> {
             //String reportPath = "com/court/reports/BranchWiseCollection.jasper";
 
@@ -405,11 +421,15 @@ public class ReportFormFxmlController implements Initializable {
             map.put("companyName", ReportHandler.COMPANY_NAME);
             map.put("companyAddress", ReportHandler.ADDRESS);
             map.put("reportTitle", "Branch Wise Collection");
-            map.put("p_brcode", Integer.parseInt(b));
+            map.put("p_brcode", Integer.parseInt(b.getKey()));
+            map.put("job_stat", b.getValue());
+            System.out.println("JOB - " + b.getValue());
             ReportHandler rh = new ReportHandler(reportPath, map, null, con);
 //            rh.genarateReport();
-            rh.genReport();
-            rh.viewReport();
+            boolean blah = rh.genReport();
+            if (blah) {
+                rh.viewReport();
+            }
             s.close();
         });
     }
@@ -489,8 +509,10 @@ public class ReportFormFxmlController implements Initializable {
                 map.put("member_subpay", subscriptionPays);
                 ReportHandler rh = new ReportHandler(reportPath, map, null);
 //                rh.genarateReport();
-                rh.genReport();
-                rh.viewReport();
+                boolean blah = rh.genReport();
+                if (blah) {
+                    rh.viewReport();
+                }
                 session.close();
             } catch (JRException e) {
                 e.printStackTrace();
@@ -548,8 +570,10 @@ public class ReportFormFxmlController implements Initializable {
                 map.put("invo_code", invo);
                 ReportHandler rh = new ReportHandler(reportPath, map, null, con);
 //                rh.genarateReport();
-                rh.genReport();
-                rh.viewReport();
+                boolean blah = rh.genReport();
+                if (blah) {
+                    rh.viewReport();
+                }
                 s.close();
             } else {
                 Alert alert_error = new Alert(Alert.AlertType.ERROR);
@@ -595,8 +619,10 @@ public class ReportFormFxmlController implements Initializable {
         map.put("SUBREPORT", subReport);
         ReportHandler rh = new ReportHandler(reportPath, map, memberLoanBeanCollection);
 //        rh.genarateReport();
-        rh.genReport();
-        rh.viewReport();
+        boolean blah = rh.genReport();
+        if (blah) {
+            rh.viewReport();
+        }
         s.close();
     }
 
@@ -646,8 +672,10 @@ public class ReportFormFxmlController implements Initializable {
             map.put("member_code", mId);
             ReportHandler rh = new ReportHandler(reportPath, map, null, con);
 //            rh.genarateReport();
-            rh.genReport();
-            rh.viewReport();
+            boolean blah = rh.genReport();
+            if (blah) {
+                rh.viewReport();
+            }
             s.close();
         });
     }
@@ -718,8 +746,10 @@ public class ReportFormFxmlController implements Initializable {
 
             ReportHandler rh = new ReportHandler(reportPath, map, null, con);
 //            rh.genarateReport();
-            rh.genReport();
-            rh.viewReport();
+            boolean blah = rh.genReport();
+            if (blah) {
+                rh.viewReport();
+            }
             s.close();
         });
     }
@@ -744,8 +774,10 @@ public class ReportFormFxmlController implements Initializable {
         map.put("reportTitle", "Welfare Loan List");
         ReportHandler rh = new ReportHandler(reportPath, map, null, con);
 //        rh.genarateReport();
-        rh.genReport();
-        rh.viewReport();
+        boolean blah = rh.genReport();
+        if (blah) {
+            rh.viewReport();
+        }
         s.close();
     }
 

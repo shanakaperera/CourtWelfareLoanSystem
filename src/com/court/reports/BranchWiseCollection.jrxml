@@ -10,6 +10,7 @@
 	<parameter name="p_brcode" class="java.lang.Integer">
 		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
 	</parameter>
+	<parameter name="job_stat" class="java.lang.String"/>
 	<queryString>
 		<![CDATA[SELECT
     m.member_id,
@@ -69,6 +70,8 @@ AND
 m.status=true
 AND
 br.status=true
+AND
+m.job_status=$P{job_stat}
 GROUP BY m.member_id
 ORDER BY br.branch_code, FIELD(m.job_title,'JUDGE', 'REGISTAR','IN:OFFICER','MANEGEM', 'ACCOUNT', 'ACCOUNT ASSISTANT','ADD:OFFICER', 'CLERK', 'TRANSLATOR','STENO', 'TYPIST', 'BINDER', 'PISCAL', 'PROCESS', 'MATRON', 'INTERPRETER','FAMILY','DEV OFFICER','REPORTER', 'K.K.S','DRIVER', 'WATCHER','LABOUR') ;]]>
 	</queryString>
@@ -197,11 +200,11 @@ ORDER BY br.branch_code, FIELD(m.job_title,'JUDGE', 'REGISTAR','IN:OFFICER','MAN
 				<reportElement x="456" y="68" width="114" height="20" uuid="97d537d6-b033-4e83-9294-6d080add78f8"/>
 			</rectangle>
 			<textField>
-				<reportElement x="-1" y="88" width="572" height="21" uuid="1103a199-189e-4ea3-8e03-dc37ed77222d"/>
+				<reportElement x="-1" y="88" width="568" height="21" uuid="1103a199-189e-4ea3-8e03-dc37ed77222d"/>
 				<textElement>
 					<font fontName="SansSerif" size="12" isBold="true"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$P{reportTitle}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$P{reportTitle}+" - "+$P{job_stat}]]></textFieldExpression>
 			</textField>
 			<textField pattern="yyyy MMMMM">
 				<reportElement x="456" y="68" width="111" height="20" uuid="af2ddb6a-4d5e-41fb-8e01-03d4f96804df"/>

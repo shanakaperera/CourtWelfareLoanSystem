@@ -154,7 +154,7 @@ public class BranchFxmlController implements Initializable {
             }
 
             branch.setBranchCode(br_id_txt.getText().trim());
-            branch.setBranchName(branch_name_txt.getText());
+            branch.setBranchName(branch_name_txt.getText().trim());
             branch.setAddress(branch_adrs_txt.getText());
             branch.setBranchType(branch_type_combo.getSelectionModel().getSelectedItem());
             branch.setContactNo(branch_tel_txt.getText());

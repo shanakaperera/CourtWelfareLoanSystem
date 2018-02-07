@@ -2,11 +2,6 @@
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
-
-========================================================
-kota gewanne kohomada mass payment akak karaddi ???
-========================================================
-
  */
 package com.court.controller;
 
@@ -456,6 +451,8 @@ public class MemberfxmlController implements Initializable {
     private Label tot_arrears_sel_txt;
     @FXML
     private TextField hnd_ovr_amt_txt;
+    @FXML
+    private ComboBox<String> member_status_combo;
 
     /**
      * Initializes the controller class.
@@ -614,14 +611,16 @@ public class MemberfxmlController implements Initializable {
             member.setTel2(member_tel2_txt.getText());
             member.setEmail(member_email_txt.getText());
             member.setSex(member_sex_combo.getSelectionModel().getSelectedItem());
+            member.setCurStatus(member_status_combo.getSelectionModel().getSelectedItem());
             member.setMaritalStatus(member_maritial_combo.getSelectionModel().getSelectedItem());
             member.setDob(FxUtilsHandler.getDateFrom(member_bday_chooser.getValue()));
             member.setAppintedDate(Date.valueOf(member_apo_chooser.getValue()));
             member.setJoinedDate(FxUtilsHandler.getDateFrom(member_join_chooser.getValue()));
             member.setOverpay(0.0);
+            member.setStatus(member.getCurStatus().equalsIgnoreCase("Active"));
             member.setDescription(member_des_txt.getText().isEmpty() ? "No Description" : member_des_txt.getText());
             //  member.setImgPath(imgString == null ? "" : imgString.getImg_path().toString());
-            member.setStatus(true);
+            //   member.setStatus(true);
             if (payBranch != null) {
                 member.setPayOffice(payBranch);
             }
@@ -657,6 +656,11 @@ public class MemberfxmlController implements Initializable {
                 p3.addPossibleSuggestions(memberJobs);
                 identifyCodesEditable(true);
                 isSearch = false;
+                disableTabs(true);
+                FxUtilsHandler.activeDeactiveChildrenControls(true, main_grid_pane, date_hbox, tel_hbox);
+                FxUtilsHandler.activeBtnAppearanceChange(member_deactive_btn, true, true);
+                deactive_label.setText("");
+
             }
         } else {
             Alert alert_error = new Alert(Alert.AlertType.ERROR);
@@ -683,7 +687,11 @@ public class MemberfxmlController implements Initializable {
             Member prfm_action = (Member) session.load(Member.class,
                     getIdByMemberCode(session, member_code_txt.getText()));
             boolean set_status = !prfm_action.isStatus();
+            boolean cur_job_stat = !prfm_action.getCurStatus().equalsIgnoreCase("Active");
             prfm_action.setStatus(set_status);
+            if (set_status && cur_job_stat) {
+                prfm_action.setCurStatus("Active");
+            }
             session.update(prfm_action);
             session.getTransaction().commit();
             session.close();
@@ -699,7 +707,17 @@ public class MemberfxmlController implements Initializable {
                 //deactivation proccess----------
                 FxUtilsHandler.activeDeactiveChildrenControls(set_status, main_grid_pane, date_hbox, tel_hbox);
                 FxUtilsHandler.activeBtnAppearanceChange(member_deactive_btn, set_status, true);
-                deactive_label.setText(set_status ? "" : "Member Deactivated .");
+                if (set_status && cur_job_stat) {
+                    member_status_combo.getSelectionModel().select("Active");
+                    deactive_label.setText("");
+                }
+                if (!set_status) {
+                    deactive_label.setText("Member Deactivated .");
+                }
+                if (set_status && !member_status_combo.getSelectionModel().getSelectedItem().equalsIgnoreCase("Active")) {
+                    deactive_label.setText("Member " + member_status_combo.getSelectionModel().getSelectedItem() + " .");
+                }
+
             }
         }
     }
@@ -805,6 +823,7 @@ public class MemberfxmlController implements Initializable {
             member_tel2_txt.setText(filteredMember.getTel2());
             member_email_txt.setText(filteredMember.getEmail());
             member_sex_combo.getSelectionModel().select(filteredMember.getSex());
+            member_status_combo.getSelectionModel().select(filteredMember.getCurStatus());
             member_maritial_combo.getSelectionModel().select(filteredMember.getMaritalStatus());
             member_bday_chooser.setValue(FxUtilsHandler.getLocalDateFrom(filteredMember.getDob()));
             member_join_chooser.setValue(FxUtilsHandler.getLocalDateFrom(filteredMember.getJoinedDate()));
@@ -843,6 +862,10 @@ public class MemberfxmlController implements Initializable {
             }
 
             deactive_label.setText(filteredMember.isStatus() ? "" : "Member Deactivated .");
+
+            if (!filteredMember.isStatus() && !filteredMember.getCurStatus().equalsIgnoreCase("Active")) {
+                deactive_label.setText("Member " + filteredMember.getCurStatus() + " .");
+            }
 
             Set<MemberSubscriptions> ms = filteredMember.getMemberSubscriptions();
 
@@ -1103,6 +1126,8 @@ public class MemberfxmlController implements Initializable {
 //                        + "[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$", Severity.ERROR));
         validationSupport.registerValidator(member_sex_combo,
                 Validator.createEmptyValidator("Sex selection required."));
+        validationSupport.registerValidator(member_status_combo,
+                Validator.createEmptyValidator("Member current status selection required."));
         validationSupport.registerValidator(job_status_combo,
                 Validator.createEmptyValidator("Select current job status."));
         validationSupport.registerValidator(member_maritial_combo,
@@ -1670,6 +1695,7 @@ public class MemberfxmlController implements Initializable {
                             } else {
                                 lp.setIsLast(false);
                             }
+                            lp.setRemark("Installment Pay");
                             lp.setMemberLoan(childLoan);
                             s.save(lp);
                             lpIds.add(lp.getId());
@@ -1755,6 +1781,7 @@ public class MemberfxmlController implements Initializable {
                             lp.setInstallmentDate(instDates[i]);
                             lp.setPaidAmt(installWithoutPolli);
                             lp.setListedPay(installWithoutPolli);
+                            lp.setRemark("Installment Pay");
                             lp.setPayOffice(selectedLoan.getMember().getPayOffice().getId());
                             lp.setWorkOffice(selectedLoan.getMember().getBranch().getId());
                             if (i == (insts - 1)) {
@@ -1859,6 +1886,7 @@ public class MemberfxmlController implements Initializable {
                             lp.setInstallmentDate(instDates[i]);
                             lp.setPaidAmt(installWithoutPolli_2);
                             lp.setListedPay(installWithoutPolli_2);
+                            lp.setRemark("Installment Pay");
                             lp.setPayOffice(childLoan.getMember().getPayOffice().getId());
                             lp.setWorkOffice(childLoan.getMember().getBranch().getId());
                             if (i == (insts - 1)) {
@@ -2034,6 +2062,7 @@ public class MemberfxmlController implements Initializable {
                         lp.setInstallmentDate(instDates[i]);
                         lp.setPaidAmt(instAmt);
                         lp.setListedPay(instAmt);
+                        lp.setRemark("Installment Pay");
                         lp.setPayOffice(row.getItem().getMember().getPayOffice().getId());
                         lp.setWorkOffice(row.getItem().getMember().getBranch().getId());
                         if (i == (insts - 1)) {
@@ -2901,6 +2930,11 @@ public class MemberfxmlController implements Initializable {
 
     @FXML
     private void onSexAction(ActionEvent event) {
+        member_status_combo.requestFocus();
+    }
+
+    @FXML
+    private void onMbrStatusAction(ActionEvent event) {
         member_maritial_combo.requestFocus();
     }
 
@@ -3326,8 +3360,10 @@ public class MemberfxmlController implements Initializable {
         map.put("member_code", member_code_txt.getText());
         map.put("sp_list", subIds.stream().map(i -> String.valueOf(i.intValue())).collect(Collectors.joining(",")));
         ReportHandler rh = new ReportHandler(reportPath, map, null, con);
-        rh.genReport();
-        rh.viewReport();
+        boolean blah = rh.genReport();
+        if (blah) {
+            rh.viewReport();
+        }
         s.close();
         //==================//RESET ALL FREEZED NODES========================
         freezeAtMemberContribution(false);
@@ -3355,8 +3391,10 @@ public class MemberfxmlController implements Initializable {
         map.put("member_code", mCode);
         map.put("lp_list", lpIds.stream().map(i -> String.valueOf(i.intValue())).collect(Collectors.joining(",")));
         ReportHandler rh = new ReportHandler(reportPath, map, null, con);
-        rh.genReport();
-        rh.viewReport();
+        boolean blah = rh.genReport();
+        if (blah) {
+            rh.viewReport();
+        }
         s.close();
     }
 

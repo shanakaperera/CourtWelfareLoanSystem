@@ -112,6 +112,18 @@
                                                         </FXCollections>
                                                     </items>
                                                 </ComboBox>
+                                                <ComboBox fx:id="member_status_combo" onAction="#onMbrStatusAction" prefWidth="150.0" promptText="STATUS">
+                                                    <items>
+                                                        <FXCollections fx:factory="observableArrayList">
+                                                            <String fx:value="Active" />
+                                                            <String fx:value="Resign" />
+                                                            <String fx:value="Suspend" />
+                                                            <String fx:value="Pension" />
+                                                        </FXCollections>
+                                                    </items>
+                                                </ComboBox>
+                                                
+                                                
                                                 <ComboBox fx:id="member_maritial_combo" onAction="#onMartStatAction" prefWidth="150.0" promptText="Marital Status">
                                                     <items>
                                                         <FXCollections fx:factory="observableArrayList">
@@ -508,18 +520,18 @@
                                                         <TableColumn fx:id="g_date_col" prefWidth="94.0" text="Granted Date" />
                                                         <TableColumn fx:id="l_type_col" prefWidth="86.0" text="Loan Type" />
                                                         <TableColumn fx:id="l_amt_col" text="Amount" />
-                                          <TableColumn fx:id="l_bal_con" prefWidth="75.0" text="Bal. Cont" />
+                                                        <TableColumn fx:id="l_bal_con" prefWidth="75.0" text="Bal. Cont" />
                                                         <TableColumn fx:id="l_stat_col" prefWidth="95.0" text="Status" />
-                                          <TableColumn fx:id="remark_col" prefWidth="86.0" text="Remark" />
+                                                        <TableColumn fx:id="remark_col" prefWidth="86.0" text="Remark" />
                                                     </columns>
                                                 </TableView>
                                                 <TableView fx:id="l_pay_tbl" prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
                                                     <columns>
-                                          <TableColumn fx:id="instment_date_col" prefWidth="100.0" text="Installment Date" />
+                                                        <TableColumn fx:id="instment_date_col" prefWidth="100.0" text="Installment Date" />
                                                         <TableColumn fx:id="p_date_col" prefWidth="75.0" text="Pay Date" />
                                                         <TableColumn fx:id="ins_no_col" prefWidth="50.0" text="Ins No" />
                                                         <TableColumn fx:id="p_due_col" prefWidth="120.0" text="Paid So Far" />
-                                          <TableColumn fx:id="ins_remark_col" prefWidth="100.0" text="Remark" />
+                                                        <TableColumn fx:id="ins_remark_col" prefWidth="100.0" text="Remark" />
                                                     </columns>
                                                 </TableView>
                                                 <Label alignment="CENTER" prefHeight="30.0" prefWidth="334.0" text="LOANS TAKEN" textFill="#5fa887">
@@ -545,14 +557,14 @@
                                                     <rowConstraints>
                                                         <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                                                         <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                                          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                                                         <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                                                         <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                                                         <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                                                         <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                                                         <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                                                         <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                                          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                                                         <RowConstraints minHeight="10.0" prefHeight="100.0" vgrow="SOMETIMES" />
                                                     </rowConstraints>
                                                     <children>
@@ -574,10 +586,10 @@
                                                         <Label text="Repayment" GridPane.rowIndex="8" />
                                                         <Label text="Principal + Interest" GridPane.rowIndex="6" />
                                                         <TextField fx:id="int_pls_prin_txt" editable="false" GridPane.columnIndex="1" GridPane.rowIndex="6" />
-                                          <Label text="Req. Date" GridPane.rowIndex="2" />
-                                          <TextField fx:id="r_date_txt" editable="false" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-                                          <TextField fx:id="bal_cont_txt" editable="false" GridPane.columnIndex="1" GridPane.rowIndex="9" />
-                                          <Label text="Bal. Continued" GridPane.rowIndex="9" />
+                                                        <Label text="Req. Date" GridPane.rowIndex="2" />
+                                                        <TextField fx:id="r_date_txt" editable="false" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                                                        <TextField fx:id="bal_cont_txt" editable="false" GridPane.columnIndex="1" GridPane.rowIndex="9" />
+                                                        <Label text="Bal. Continued" GridPane.rowIndex="9" />
                                                     </children>
                                                     <GridPane.margin>
                                                         <Insets left="5.0" right="5.0" />
@@ -630,8 +642,8 @@
                                         </GridPane>
                                     </children>
                                 </VBox>
-                        <Label layoutX="10.0" layoutY="466.0" prefHeight="17.0" prefWidth="360.0" text="* Right click on each member loan to make an individual payment." />
-                        <Label layoutX="10.0" layoutY="483.0" prefHeight="17.0" prefWidth="360.0" text="* Red colored rows represent the loans with continued balance." textFill="#da1d1d" />
+                                <Label layoutX="10.0" layoutY="466.0" prefHeight="17.0" prefWidth="360.0" text="* Right click on each member loan to make an individual payment." />
+                                <Label layoutX="10.0" layoutY="483.0" prefHeight="17.0" prefWidth="360.0" text="* Red colored rows represent the loans with continued balance." textFill="#da1d1d" />
                             </children>
                         </AnchorPane>
                     </content>
@@ -756,302 +768,303 @@
                         </AnchorPane>
                     </content>
                 </Tab>
-            <Tab fx:id="mbrcon_tab" text="MEMBER CONTRIBUTION">
-              <content>
-                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
-                     <children>
-                        <VBox layoutX="14.0" layoutY="6.0" prefHeight="525.0" prefWidth="757.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-                           <children>
-                              <HBox>
-                                 <children>
-                                    <TableView fx:id="contr_tbl">
-                                      <columns>
-                                        <TableColumn fx:id="con_paydate_col" prefWidth="100.0" text="Payment Date" />
-                                        <TableColumn fx:id="con_hoi_col" prefWidth="100.0" text="HOI Fee" />
-                                          <TableColumn fx:id="con_acI_col" prefWidth="100.0" text="ACI Fee" />
-                                          <TableColumn fx:id="con_savings_col" prefWidth="100.0" text="Savings Fee" />
-                                          <TableColumn fx:id="con_mbr_col" prefWidth="100.0" text="Membership Fee" />
-                                          <TableColumn fx:id="con_adm_col" prefWidth="75.0" text="Admission " />
-                                          <TableColumn fx:id="con_optional_col" prefWidth="100.0" text="Contribution" />
-                                      </columns>
-                                    </TableView>
-                                    <GridPane fx:id="subs_manual_grid" HBox.hgrow="ALWAYS">
-                                      <columnConstraints>
-                                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-                                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-                                      </columnConstraints>
-                                      <rowConstraints>
-                                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                                          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                                          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                                          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                                          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                                          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                                          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                                      </rowConstraints>
-                                       <children>
-                                          <Label alignment="CENTER" text="Subscription Manual Adjustment" underline="true" GridPane.columnSpan="2" GridPane.halignment="CENTER" GridPane.hgrow="ALWAYS">
-                                             <font>
-                                                <Font name="System Bold" size="14.0" />
-                                             </font>
-                                          </Label>
-                                          <Label text="Payment Date" GridPane.rowIndex="1" />
-                                          <DatePicker fx:id="m_subs_date" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-                                          <Label text="HOI Fee" GridPane.rowIndex="2" />
-                                          <Label text="ACI Fee" GridPane.rowIndex="3" />
-                                          <Label text="Savings Fee" GridPane.rowIndex="4" />
-                                          <Label text="Membership Fee" GridPane.rowIndex="5" />
-                                          <Label text="Con Fee" GridPane.rowIndex="6" />
-                                          <TextField fx:id="m_subs_hoi" onAction="#onConHoiAction" onMouseClicked="#onConHoiClicked" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-                                          <TextField fx:id="m_subs_aci" onAction="#onConAciAction" onMouseClicked="#onConAciClicked" GridPane.columnIndex="1" GridPane.rowIndex="3" />
-                                          <TextField fx:id="m_subs_sav" onAction="#onConSavAction" onMouseClicked="#onConSavClicked" GridPane.columnIndex="1" GridPane.rowIndex="4" />
-                                          <TextField fx:id="m_subs_mf" onAction="#onConMbrAction" onMouseClicked="#onConMFClicked" GridPane.columnIndex="1" GridPane.rowIndex="5" />
-                                          <TextField fx:id="m_subs_op" onAction="#onConOptAction" onMouseClicked="#onConOptClicked" GridPane.columnIndex="1" GridPane.rowIndex="6" />
-                                          <HBox alignment="TOP_RIGHT" spacing="3.0" GridPane.columnIndex="1" GridPane.rowIndex="8">
-                                             <children>
-                                                <Button mnemonicParsing="false" onAction="#onMbrSubManualAction" text="Add Payment">
-                                                   <styleClass>
-                                                      <String fx:value="btn" />
-                                                      <String fx:value="btn-primary" />
-                                                   </styleClass>
-                                                </Button>
-                                                <Button mnemonicParsing="false" onAction="#onMbrSubCancelAction" text="Cancel">
-                                                   <styleClass>
-                                                      <String fx:value="btn" />
-                                                      <String fx:value="btn-danger" />
-                                                   </styleClass>
-                                                </Button>
-                                             </children>
-                                          </HBox>
-                                          <Label text="Admission" GridPane.rowIndex="7" />
-                                          <TextField fx:id="m_subs_adm" onMouseClicked="#onConAdmClicked" GridPane.columnIndex="1" GridPane.rowIndex="7" />
-                                       </children>
-                                       <HBox.margin>
-                                          <Insets />
-                                       </HBox.margin>
-                                       <padding>
-                                          <Insets left="50.0" right="40.0" />
-                                       </padding>
-                                    </GridPane>
-                                 </children>
-                              </HBox>
-                              <HBox>
-                                 <children>
-                                    <VBox>
-                                       <children>
-                                          <HBox>
-                                             <children>
-                                                <Label prefHeight="27.0" prefWidth="102.0" text="Total HOI ">
-                                                   <font>
-                                                      <Font name="System Bold" size="18.0" />
-                                                   </font>
-                                                </Label>
-                                                <Label fx:id="tot_hoi_label" text="Label">
-                                                   <font>
-                                                      <Font name="System Bold" size="18.0" />
-                                                   </font>
-                                                </Label>
-                                                <Label prefHeight="27.0" prefWidth="304.0" text="Total Savings ">
-                                                   <font>
-                                                      <Font name="System Bold" size="18.0" />
-                                                   </font>
-                                                   <padding>
-                                                      <Insets left="115.0" />
-                                                   </padding>
-                                                </Label>
-                                                <Label fx:id="tot_sav_label" text="Label">
-                                                   <font>
-                                                      <Font name="System Bold" size="18.0" />
-                                                   </font>
-                                                </Label>
-                                             </children>
-                                          </HBox>
-                                          <HBox>
-                                             <children>
-                                                <Label prefHeight="27.0" prefWidth="102.0" text="Total ACI ">
-                                                   <font>
-                                                      <Font name="System Bold" size="18.0" />
-                                                   </font>
-                                                </Label>
-                                                <Label fx:id="tot_aci_label" text="Label">
-                                                   <font>
-                                                      <Font name="System Bold" size="18.0" />
-                                                   </font>
-                                                </Label>
-                                                <Label prefHeight="27.0" prefWidth="304.0" text="Total Optional/Con">
-                                                   <font>
-                                                      <Font name="System Bold" size="18.0" />
-                                                   </font>
-                                                   <padding>
-                                                      <Insets left="100.0" />
-                                                   </padding>
-                                                </Label>
-                                                <Label fx:id="tot_opt_label" text="Label">
-                                                   <font>
-                                                      <Font name="System Bold" size="18.0" />
-                                                   </font>
-                                                </Label>
-                                             </children>
-                                          </HBox>
-                                          <HBox>
-                                             <children>
-                                                <Label prefHeight="27.0" prefWidth="175.0" text="Balance Continued">
-                                                   <font>
-                                                      <Font name="System Bold" size="18.0" />
-                                                   </font>
-                                                </Label>
-                                                <Label fx:id="bal_con_label" prefHeight="27.0" prefWidth="110.0" text="Label">
-                                                   <font>
-                                                      <Font name="System Bold" size="18.0" />
-                                                   </font>
-                                                </Label>
-                                             </children>
-                                          </HBox>
-                                          <HBox prefHeight="100.0" prefWidth="200.0">
-                                             <children>
-                                                <Button mnemonicParsing="false" onAction="#handoverContAction" style="-fx-text-fill: #ffff;" text="HANDOVER CONTRIBUTION">
-                                                   <styleClass>
-                                                      <String fx:value="btn" />
-                                                      <String fx:value="btn-primary" />
-                                                   </styleClass>
-                                                </Button>
-                                             </children>
-                                             <padding>
-                                                <Insets top="20.0" />
-                                             </padding>
-                                          </HBox>
-                                       </children>
-                                    </VBox>
-                                    <VBox fx:id="invo_gen_box" alignment="TOP_RIGHT" HBox.hgrow="ALWAYS">
-                                       <children>
-                                          <Label fx:id="subs_invo_warning" text="* Make sure to generate the invoice slip for handover to  the member" textFill="#d04141" VBox.vgrow="ALWAYS" />
-                                          <Button fx:id="subs_invo_btn" mnemonicParsing="false" onAction="#onGenerateSubsInvoAction" style="-fx-text-fill: #ffff;" text="GENERATE INVOICE">
-                                             <styleClass>
-                                                <String fx:value="btn" />
-                                                <String fx:value="btn-warning" />
-                                             </styleClass>
-                                             <font>
-                                                <Font size="14.0" />
-                                             </font>
-                                          </Button>
-                                       </children>
-                                       <padding>
-                                          <Insets left="20.0" right="10.0" />
-                                       </padding>
-                                    </VBox>
-                                 </children>
-                              </HBox>
-                           </children>
-                        </VBox>
-                     </children>
-                  </AnchorPane>
-              </content>
-            </Tab>
-            <Tab fx:id="cash_out_tab" text="DAY-TO-DAY CASH OUT">
-              <content>
-                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
-                     <children>
-                        <HBox alignment="CENTER" layoutX="68.0" layoutY="26.0" spacing="20.0" AnchorPane.leftAnchor="215.0" AnchorPane.rightAnchor="215.0">
-                           <children>
-                              <Label text="CUSTOMER CREDIT BALANCE">
-                                 <font>
-                                    <Font name="System Bold" size="18.0" />
-                                 </font>
-                              </Label>
-                              <Label fx:id="credit_bal_txt" layoutX="10.0" layoutY="10.0" text="Rs0.00">
-                                 <font>
-                                    <Font name="System Bold" size="18.0" />
-                                 </font>
-                              </Label>
-                           </children>
-                        </HBox>
-                        <HBox layoutX="9.0" layoutY="82.0" prefHeight="443.0" prefWidth="717.0" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="72.0">
-                           <children>
-                              <TitledPane animated="false" text="Settle Arrears" HBox.hgrow="ALWAYS">
-                                <content>
-                                  <AnchorPane minHeight="0.0" minWidth="0.0">
-                                       <children>
-                                          <VBox layoutX="14.600000381469727" layoutY="14.600000381469727" prefHeight="320.0" prefWidth="401.0">
-                                             <children>
-                                                <TableView fx:id="arrears_tbl" prefHeight="200.0" prefWidth="200.0">
-                                                  <columns>
-                                                    <TableColumn fx:id="co_loan_id_col" prefWidth="100.0" text="Loan ID" />
-                                                    <TableColumn fx:id="co_arrears_amt_col" prefWidth="150.0" text="Arrears Amount" />
-                                                      <TableColumn fx:id="co_select_col" prefWidth="75.0" text="Select" />
-                                                  </columns>
+                <Tab fx:id="mbrcon_tab" text="MEMBER CONTRIBUTION">
+                    <content>
+                        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                            <children>
+                                <VBox layoutX="14.0" layoutY="6.0" prefHeight="525.0" prefWidth="757.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                    <children>
+                                        <HBox>
+                                            <children>
+                                                <TableView fx:id="contr_tbl">
+                                                    <columns>
+                                                        <TableColumn fx:id="con_paydate_col" prefWidth="100.0" text="Payment Date" />
+                                                        <TableColumn fx:id="con_hoi_col" prefWidth="100.0" text="HOI Fee" />
+                                                        <TableColumn fx:id="con_acI_col" prefWidth="100.0" text="ACI Fee" />
+                                                        <TableColumn fx:id="con_savings_col" prefWidth="100.0" text="Savings Fee" />
+                                                        <TableColumn fx:id="con_mbr_col" prefWidth="100.0" text="Membership Fee" />
+                                                        <TableColumn fx:id="con_adm_col" prefWidth="75.0" text="Admission " />
+                                                        <TableColumn fx:id="con_optional_col" prefWidth="100.0" text="Contribution" />
+                                                    </columns>
                                                 </TableView>
-                                                <GridPane>
-                                                  <columnConstraints>
-                                                    <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="30.0" prefWidth="100.0" />
-                                                    <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-                                                  </columnConstraints>
-                                                  <rowConstraints>
-                                                    <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                                                    <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                                                    <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                                                  </rowConstraints>
-                                                   <children>
-                                                      <Label text="Total Arrears">
-                                                         <font>
-                                                            <Font size="14.0" />
-                                                         </font>
-                                                      </Label>
-                                                      <Label fx:id="tot_arrears_sel_txt" text="Rs0.00" GridPane.columnIndex="1">
-                                                         <font>
-                                                            <Font name="System Bold" size="14.0" />
-                                                         </font>
-                                                      </Label>
-                                                      <Button mnemonicParsing="false" onAction="#onSettleArrearsBtnAction" style="-fx-text-fill: #ffff;" text="PROCEED" GridPane.columnIndex="1" GridPane.rowIndex="1">
-                                                         <styleClass>
-                                                            <String fx:value="btn" />
-                                                            <String fx:value="btn-primary" />
-                                                         </styleClass>
-                                                      </Button>
-                                                   </children>
+                                                <GridPane fx:id="subs_manual_grid" HBox.hgrow="ALWAYS">
+                                                    <columnConstraints>
+                                                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                                                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                                                    </columnConstraints>
+                                                    <rowConstraints>
+                                                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                                    </rowConstraints>
+                                                    <children>
+                                                        <Label alignment="CENTER" text="Subscription Manual Adjustment" underline="true" GridPane.columnSpan="2" GridPane.halignment="CENTER" GridPane.hgrow="ALWAYS">
+                                                            <font>
+                                                                <Font name="System Bold" size="14.0" />
+                                                            </font>
+                                                        </Label>
+                                                        <Label text="Payment Date" GridPane.rowIndex="1" />
+                                                        <DatePicker fx:id="m_subs_date" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                                                        <Label text="HOI Fee" GridPane.rowIndex="2" />
+                                                        <Label text="ACI Fee" GridPane.rowIndex="3" />
+                                                        <Label text="Savings Fee" GridPane.rowIndex="4" />
+                                                        <Label text="Membership Fee" GridPane.rowIndex="5" />
+                                                        <Label text="Con Fee" GridPane.rowIndex="6" />
+                                                        <TextField fx:id="m_subs_hoi" onAction="#onConHoiAction" onMouseClicked="#onConHoiClicked" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                                                        <TextField fx:id="m_subs_aci" onAction="#onConAciAction" onMouseClicked="#onConAciClicked" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+                                                        <TextField fx:id="m_subs_sav" onAction="#onConSavAction" onMouseClicked="#onConSavClicked" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+                                                        <TextField fx:id="m_subs_mf" onAction="#onConMbrAction" onMouseClicked="#onConMFClicked" GridPane.columnIndex="1" GridPane.rowIndex="5" />
+                                                        <TextField fx:id="m_subs_op" onAction="#onConOptAction" onMouseClicked="#onConOptClicked" GridPane.columnIndex="1" GridPane.rowIndex="6" />
+                                                        <HBox alignment="TOP_RIGHT" spacing="3.0" GridPane.columnIndex="1" GridPane.rowIndex="8">
+                                                            <children>
+                                                                <Button mnemonicParsing="false" onAction="#onMbrSubManualAction" text="Add Payment">
+                                                                    <styleClass>
+                                                                        <String fx:value="btn" />
+                                                                        <String fx:value="btn-primary" />
+                                                                    </styleClass>
+                                                                </Button>
+                                                                <Button mnemonicParsing="false" onAction="#onMbrSubCancelAction" text="Cancel">
+                                                                    <styleClass>
+                                                                        <String fx:value="btn" />
+                                                                        <String fx:value="btn-danger" />
+                                                                    </styleClass>
+                                                                </Button>
+                                                            </children>
+                                                        </HBox>
+                                                        <Label text="Admission" GridPane.rowIndex="7" />
+                                                        <TextField fx:id="m_subs_adm" onMouseClicked="#onConAdmClicked" GridPane.columnIndex="1" GridPane.rowIndex="7" />
+                                                    </children>
+                                                    <HBox.margin>
+                                                        <Insets />
+                                                    </HBox.margin>
+                                                    <padding>
+                                                        <Insets left="50.0" right="40.0" />
+                                                    </padding>
                                                 </GridPane>
-                                             </children>
-                                          </VBox>
-                                       </children>
-                                    </AnchorPane>
-                                </content>
-                              </TitledPane>
-                              <TitledPane animated="false" text="Hand-Over to Customer" HBox.hgrow="ALWAYS">
-                                <content>
-                                  <AnchorPane>
-                                       <children>
-                                          <GridPane layoutX="-52.0" layoutY="-45.0" vgap="15.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-                                            <columnConstraints>
-                                              <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="30.0" prefWidth="100.0" />
-                                              <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-                                            </columnConstraints>
-                                            <rowConstraints>
-                                              <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                                              <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                                              <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                                                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                                            </rowConstraints>
-                                             <children>
-                                                <Label text="Hand-Over Amount" GridPane.rowIndex="1" />
-                                                <TextField fx:id="hnd_ovr_amt_txt" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-                                                <Button mnemonicParsing="false" onAction="#onHndOverBtnAction" style="-fx-text-fill: #ffff;" text="PROCEED" GridPane.columnIndex="1" GridPane.rowIndex="2">
-                                                   <styleClass>
-                                                      <String fx:value="btn" />
-                                                      <String fx:value="btn-primary" />
-                                                   </styleClass>
-                                                </Button>
-                                             </children>
-                                          </GridPane>
-                                       </children></AnchorPane>
-                                </content>
-                              </TitledPane>
-                           </children>
-                        </HBox>
-                     </children>
-                  </AnchorPane>
-              </content>
-            </Tab>
+                                            </children>
+                                        </HBox>
+                                        <HBox>
+                                            <children>
+                                                <VBox>
+                                                    <children>
+                                                        <HBox>
+                                                            <children>
+                                                                <Label prefHeight="27.0" prefWidth="102.0" text="Total HOI ">
+                                                                    <font>
+                                                                        <Font name="System Bold" size="18.0" />
+                                                                    </font>
+                                                                </Label>
+                                                                <Label fx:id="tot_hoi_label" text="Label">
+                                                                    <font>
+                                                                        <Font name="System Bold" size="18.0" />
+                                                                    </font>
+                                                                </Label>
+                                                                <Label prefHeight="27.0" prefWidth="304.0" text="Total Savings ">
+                                                                    <font>
+                                                                        <Font name="System Bold" size="18.0" />
+                                                                    </font>
+                                                                    <padding>
+                                                                        <Insets left="115.0" />
+                                                                    </padding>
+                                                                </Label>
+                                                                <Label fx:id="tot_sav_label" text="Label">
+                                                                    <font>
+                                                                        <Font name="System Bold" size="18.0" />
+                                                                    </font>
+                                                                </Label>
+                                                            </children>
+                                                        </HBox>
+                                                        <HBox>
+                                                            <children>
+                                                                <Label prefHeight="27.0" prefWidth="102.0" text="Total ACI ">
+                                                                    <font>
+                                                                        <Font name="System Bold" size="18.0" />
+                                                                    </font>
+                                                                </Label>
+                                                                <Label fx:id="tot_aci_label" text="Label">
+                                                                    <font>
+                                                                        <Font name="System Bold" size="18.0" />
+                                                                    </font>
+                                                                </Label>
+                                                                <Label prefHeight="27.0" prefWidth="304.0" text="Total Optional/Con">
+                                                                    <font>
+                                                                        <Font name="System Bold" size="18.0" />
+                                                                    </font>
+                                                                    <padding>
+                                                                        <Insets left="100.0" />
+                                                                    </padding>
+                                                                </Label>
+                                                                <Label fx:id="tot_opt_label" text="Label">
+                                                                    <font>
+                                                                        <Font name="System Bold" size="18.0" />
+                                                                    </font>
+                                                                </Label>
+                                                            </children>
+                                                        </HBox>
+                                                        <HBox>
+                                                            <children>
+                                                                <Label prefHeight="27.0" prefWidth="175.0" text="Balance Continued">
+                                                                    <font>
+                                                                        <Font name="System Bold" size="18.0" />
+                                                                    </font>
+                                                                </Label>
+                                                                <Label fx:id="bal_con_label" prefHeight="27.0" prefWidth="110.0" text="Label">
+                                                                    <font>
+                                                                        <Font name="System Bold" size="18.0" />
+                                                                    </font>
+                                                                </Label>
+                                                            </children>
+                                                        </HBox>
+                                                        <HBox prefHeight="100.0" prefWidth="200.0">
+                                                            <children>
+                                                                <Button mnemonicParsing="false" onAction="#handoverContAction" style="-fx-text-fill: #ffff;" text="HANDOVER CONTRIBUTION">
+                                                                    <styleClass>
+                                                                        <String fx:value="btn" />
+                                                                        <String fx:value="btn-primary" />
+                                                                    </styleClass>
+                                                                </Button>
+                                                            </children>
+                                                            <padding>
+                                                                <Insets top="20.0" />
+                                                            </padding>
+                                                        </HBox>
+                                                    </children>
+                                                </VBox>
+                                                <VBox fx:id="invo_gen_box" alignment="TOP_RIGHT" HBox.hgrow="ALWAYS">
+                                                    <children>
+                                                        <Label fx:id="subs_invo_warning" text="* Make sure to generate the invoice slip for handover to  the member" textFill="#d04141" VBox.vgrow="ALWAYS" />
+                                                        <Button fx:id="subs_invo_btn" mnemonicParsing="false" onAction="#onGenerateSubsInvoAction" style="-fx-text-fill: #ffff;" text="GENERATE INVOICE">
+                                                            <styleClass>
+                                                                <String fx:value="btn" />
+                                                                <String fx:value="btn-warning" />
+                                                            </styleClass>
+                                                            <font>
+                                                                <Font size="14.0" />
+                                                            </font>
+                                                        </Button>
+                                                    </children>
+                                                    <padding>
+                                                        <Insets left="20.0" right="10.0" />
+                                                    </padding>
+                                                </VBox>
+                                            </children>
+                                        </HBox>
+                                    </children>
+                                </VBox>
+                            </children>
+                        </AnchorPane>
+                    </content>
+                </Tab>
+                <Tab fx:id="cash_out_tab" text="DAY-TO-DAY CASH OUT">
+                    <content>
+                        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                            <children>
+                                <HBox alignment="CENTER" layoutX="68.0" layoutY="26.0" spacing="20.0" AnchorPane.leftAnchor="215.0" AnchorPane.rightAnchor="215.0">
+                                    <children>
+                                        <Label text="CUSTOMER CREDIT BALANCE">
+                                            <font>
+                                                <Font name="System Bold" size="18.0" />
+                                            </font>
+                                        </Label>
+                                        <Label fx:id="credit_bal_txt" layoutX="10.0" layoutY="10.0" text="Rs0.00">
+                                            <font>
+                                                <Font name="System Bold" size="18.0" />
+                                            </font>
+                                        </Label>
+                                    </children>
+                                </HBox>
+                                <HBox layoutX="9.0" layoutY="82.0" prefHeight="443.0" prefWidth="717.0" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="72.0">
+                                    <children>
+                                        <TitledPane animated="false" text="Settle Arrears" HBox.hgrow="ALWAYS">
+                                            <content>
+                                                <AnchorPane minHeight="0.0" minWidth="0.0">
+                                                    <children>
+                                                        <VBox layoutX="14.600000381469727" layoutY="14.600000381469727" prefHeight="320.0" prefWidth="401.0">
+                                                            <children>
+                                                                <TableView fx:id="arrears_tbl" prefHeight="200.0" prefWidth="200.0">
+                                                                    <columns>
+                                                                        <TableColumn fx:id="co_loan_id_col" prefWidth="100.0" text="Loan ID" />
+                                                                        <TableColumn fx:id="co_arrears_amt_col" prefWidth="150.0" text="Arrears Amount" />
+                                                                        <TableColumn fx:id="co_select_col" prefWidth="75.0" text="Select" />
+                                                                    </columns>
+                                                                </TableView>
+                                                                <GridPane>
+                                                                    <columnConstraints>
+                                                                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="30.0" prefWidth="100.0" />
+                                                                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                                                                    </columnConstraints>
+                                                                    <rowConstraints>
+                                                                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                                                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                                                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                                                    </rowConstraints>
+                                                                    <children>
+                                                                        <Label text="Total Arrears">
+                                                                            <font>
+                                                                                <Font size="14.0" />
+                                                                            </font>
+                                                                        </Label>
+                                                                        <Label fx:id="tot_arrears_sel_txt" text="Rs0.00" GridPane.columnIndex="1">
+                                                                            <font>
+                                                                                <Font name="System Bold" size="14.0" />
+                                                                            </font>
+                                                                        </Label>
+                                                                        <Button mnemonicParsing="false" onAction="#onSettleArrearsBtnAction" style="-fx-text-fill: #ffff;" text="PROCEED" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                                                                            <styleClass>
+                                                                                <String fx:value="btn" />
+                                                                                <String fx:value="btn-primary" />
+                                                                            </styleClass>
+                                                                        </Button>
+                                                                    </children>
+                                                                </GridPane>
+                                                            </children>
+                                                        </VBox>
+                                                    </children>
+                                                </AnchorPane>
+                                            </content>
+                                        </TitledPane>
+                                        <TitledPane animated="false" text="Hand-Over to Customer" HBox.hgrow="ALWAYS">
+                                            <content>
+                                                <AnchorPane>
+                                                    <children>
+                                                        <GridPane layoutX="-52.0" layoutY="-45.0" vgap="15.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                                            <columnConstraints>
+                                                                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="30.0" prefWidth="100.0" />
+                                                                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                                                            </columnConstraints>
+                                                            <rowConstraints>
+                                                                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                                                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                                                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                                                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                                            </rowConstraints>
+                                                            <children>
+                                                                <Label text="Hand-Over Amount" GridPane.rowIndex="1" />
+                                                                <TextField fx:id="hnd_ovr_amt_txt" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                                                                <Button mnemonicParsing="false" onAction="#onHndOverBtnAction" style="-fx-text-fill: #ffff;" text="PROCEED" GridPane.columnIndex="1" GridPane.rowIndex="2">
+                                                                    <styleClass>
+                                                                        <String fx:value="btn" />
+                                                                        <String fx:value="btn-primary" />
+                                                                    </styleClass>
+                                                                </Button>
+                                                            </children>
+                                                        </GridPane>
+                                                    </children>
+                                                </AnchorPane>
+                                            </content>
+                                        </TitledPane>
+                                    </children>
+                                </HBox>
+                            </children>
+                        </AnchorPane>
+                    </content>
+                </Tab>
             </tabs>
             <VBox.margin>
                 <Insets top="10.0" />

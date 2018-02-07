@@ -89,6 +89,9 @@
         <property name="status" type="boolean">
             <column name="status" not-null="true" />
         </property>
+        <property name="curStatus" type="string">
+            <column name="cur_status" length="10" />
+        </property>
         <property name="overpay" type="java.lang.Double">
             <column name="overpay" precision="22" scale="0" />
         </property>
