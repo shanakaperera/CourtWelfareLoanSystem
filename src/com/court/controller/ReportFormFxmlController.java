@@ -502,7 +502,7 @@ public class ReportFormFxmlController implements Initializable {
                 map.put("nic", filteredM.getNic());
                 map.put("emp_id", filteredM.getEmpId());
                 map.put("job_title", filteredM.getJobTitle());
-                map.put("payment_office", filteredM.getPaymentOfficer());
+                map.put("payment_office", filteredM.getPayOffice().getBranchName());
                 map.put("mbr_status", filteredM.isStatus());
                 map.put("branch", filteredM.getBranch().getBranchName());
                 map.put("member_loans", filteredM.getMemberLoans());
