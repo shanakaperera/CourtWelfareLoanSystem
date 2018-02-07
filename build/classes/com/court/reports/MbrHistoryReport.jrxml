@@ -241,7 +241,7 @@
 				<subreportExpression><![CDATA[$P{SUBREPORT_1}]]></subreportExpression>
 			</subreport>
 			<componentElement>
-				<reportElement key="table 1" style="table 1" x="274" y="0" width="281" height="38" uuid="8e10947c-4881-45a4-88fd-4f79671fec4b"/>
+				<reportElement key="table 1" style="table 1" x="290" y="0" width="265" height="38" uuid="8e10947c-4881-45a4-88fd-4f79671fec4b"/>
 				<jr:table xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd">
 					<datasetRun subDataset="Table Dataset 1" uuid="56b29c61-5be2-4379-a943-c52ba5c50bdc">
 						<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($P{member_subpay})]]></dataSourceExpression>
@@ -257,9 +257,9 @@
 							</staticText>
 						</jr:columnHeader>
 						<jr:detailCell style="table 1_TD" height="20" rowSpan="1">
-							<textField pattern="dd/MM/yy">
+							<textField pattern="MMM-yyy">
 								<reportElement x="0" y="0" width="53" height="20" uuid="1e390122-3f7c-4ac7-a107-7bee77bb0c0e"/>
-								<textElement>
+								<textElement textAlignment="Right" verticalAlignment="Middle">
 									<font size="8"/>
 								</textElement>
 								<textFieldExpression><![CDATA[$F{paymentDate}]]></textFieldExpression>
@@ -279,7 +279,7 @@
 						<jr:detailCell style="table 1_TD" height="20" rowSpan="1">
 							<textField pattern="#,##0.00">
 								<reportElement x="0" y="0" width="30" height="20" uuid="f937400b-c530-44df-a412-5a8e16b2f1c7"/>
-								<textElement>
+								<textElement textAlignment="Right" verticalAlignment="Middle">
 									<font size="8"/>
 								</textElement>
 								<textFieldExpression><![CDATA[$F{hoiFee}]]></textFieldExpression>
@@ -299,7 +299,7 @@
 						<jr:detailCell style="table 1_TD" height="20" rowSpan="1">
 							<textField pattern="#,##0.00">
 								<reportElement x="0" y="0" width="28" height="20" uuid="06b61618-c3c9-4d25-a0f6-78b79d125cca"/>
-								<textElement>
+								<textElement textAlignment="Right" verticalAlignment="Middle">
 									<font size="8"/>
 								</textElement>
 								<textFieldExpression><![CDATA[$F{aciFee}]]></textFieldExpression>
@@ -319,7 +319,7 @@
 						<jr:detailCell style="table 1_TD" height="20" rowSpan="1">
 							<textField pattern="#,##0.00">
 								<reportElement x="0" y="0" width="38" height="20" uuid="667ee07b-657e-4e53-b87e-8d15846fe197"/>
-								<textElement>
+								<textElement textAlignment="Right" verticalAlignment="Middle">
 									<font size="8"/>
 								</textElement>
 								<textFieldExpression><![CDATA[$F{admissionFee}]]></textFieldExpression>
@@ -339,7 +339,7 @@
 						<jr:detailCell style="table 1_TD" height="20" rowSpan="1">
 							<textField pattern="#,##0.00">
 								<reportElement x="0" y="0" width="38" height="20" uuid="480d5f8f-34e6-42b6-beaa-7c37126bc568"/>
-								<textElement>
+								<textElement textAlignment="Right" verticalAlignment="Middle">
 									<font size="8"/>
 								</textElement>
 								<textFieldExpression><![CDATA[$F{savingsFee}]]></textFieldExpression>
@@ -359,7 +359,7 @@
 						<jr:detailCell style="table 1_TD" height="20" rowSpan="1">
 							<textField pattern="#,##0.00">
 								<reportElement x="0" y="0" width="39" height="20" uuid="7b022532-5515-41b4-9767-005b6e93ca91"/>
-								<textElement>
+								<textElement textAlignment="Right" verticalAlignment="Middle">
 									<font size="8"/>
 								</textElement>
 								<textFieldExpression><![CDATA[$F{membershipFee}]]></textFieldExpression>
@@ -379,7 +379,7 @@
 						<jr:detailCell style="table 1_TD" height="20" rowSpan="1">
 							<textField pattern="#,##0.00">
 								<reportElement x="0" y="0" width="42" height="20" uuid="c8d7a690-76e2-4962-9721-c418a79f4394"/>
-								<textElement>
+								<textElement textAlignment="Right" verticalAlignment="Middle">
 									<font size="8"/>
 								</textElement>
 								<textFieldExpression><![CDATA[$F{optional}]]></textFieldExpression>

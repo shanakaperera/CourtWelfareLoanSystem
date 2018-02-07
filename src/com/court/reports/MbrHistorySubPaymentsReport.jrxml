@@ -105,4 +105,15 @@
 			</textField>
 		</band>
 	</detail>
+	<noData>
+		<band height="23">
+			<staticText>
+				<reportElement x="8" y="1" width="407" height="20" uuid="1e236bdc-c794-46f5-9e9b-6f267e6464c2"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[No any loan payments made yet.]]></text>
+			</staticText>
+		</band>
+	</noData>
 </jasperReport>
