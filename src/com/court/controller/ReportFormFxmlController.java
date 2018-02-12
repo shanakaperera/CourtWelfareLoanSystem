@@ -485,6 +485,9 @@ public class ReportFormFxmlController implements Initializable {
                 Member filteredM = (Member) c.add(Restrictions.eq("memberId", mId))
                         .uniqueResult();
 
+                System.out.println("DEEPAL - "+filteredM.getMemberLoans().size());
+                
+                
                 Criteria c1 = session.createCriteria(SubscriptionPay.class, "sp");
                 c1.createAlias("sp.memberSubscriptions", "ms");
                 c1.createAlias("ms.member", "m");

@@ -3588,12 +3588,15 @@ public class MemberfxmlController implements Initializable {
             Member ar_m = (Member) c.uniqueResult();
             ar_m.setOverpay(ar_m.getOverpay() - arrears_tot);
             s.update(ar_m);
-            updateKotaLeftOfLoans(s, mbrLoan_codes);
-            credit_bal_txt.setText(TextFormatHandler.CURRENCY_DECIMAL_FORMAT.format(ar_m.getOverpay()));
+            boolean flag = generateArrearsRecoverReport(mbrLoan_codes, arrears_tot, ar_m.getMemberId(), ar_m.getFullName(), s);
+            if (flag) {
+                updateKotaLeftOfLoans(s, mbrLoan_codes);
+                credit_bal_txt.setText(TextFormatHandler.CURRENCY_DECIMAL_FORMAT.format(ar_m.getOverpay()));
+
+            }
             s.getTransaction().commit();
             s.close();
         }
-
     }
 
     double arrears_tot = 0.0;
@@ -3664,6 +3667,7 @@ public class MemberfxmlController implements Initializable {
         s.update(ar_m);
         credit_bal_txt.setText(TextFormatHandler.CURRENCY_DECIMAL_FORMAT.format(ar_m.getOverpay()));
         s.getTransaction().commit();
+        generateOverpayHandoverReport(ar_m.getMemberId(), ar_m.getFullName(), handover, s);
         s.close();
     }
 
@@ -3675,6 +3679,61 @@ public class MemberfxmlController implements Initializable {
         query.executeUpdate();
 
         return true;
+    }
+
+    private boolean generateArrearsRecoverReport(List<Integer> codes, double arrears, String memberId, String fullName, Session s) {
+        boolean b = false;
+
+        String reportPath = null;
+        try {
+            reportPath = PropHandler.getStringProperty("report_path") + "SettleArrearsWithOverpayReport.jasper";
+            SessionImpl smpl = (SessionImpl) s;
+            Connection con = smpl.connection();
+            Map<String, Object> map = new HashMap<>();
+            map.put("companyName", ReportHandler.COMPANY_NAME);
+            map.put("companyAddress", ReportHandler.ADDRESS);
+            map.put("reportTitle", "Arrears Settlement Report ");
+            map.put("ml_ids", codes);
+            map.put("settleTot", arrears);
+            map.put("mbrCode", memberId);
+            map.put("mbrName", fullName);
+            ReportHandler rh = new ReportHandler(reportPath, map, null, con);
+
+            b = rh.genReport();
+            if (b) {
+                rh.viewReport();
+            }
+
+        } catch (IOException ex) {
+            Logger.getLogger(MemberfxmlController.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return b;
+    }
+
+    private void generateOverpayHandoverReport(String memberId, String fullName, double handover, Session s) {
+
+        String reportPath = null;
+        try {
+            reportPath = PropHandler.getStringProperty("report_path") + "OverpayHandoverReport.jasper";
+            SessionImpl smpl = (SessionImpl) s;
+            Connection con = smpl.connection();
+            Map<String, Object> map = new HashMap<>();
+            map.put("companyName", ReportHandler.COMPANY_NAME);
+            map.put("companyAddress", ReportHandler.ADDRESS);
+            map.put("reportTitle", "Overpay Customer Handover Report ");
+            map.put("handoverTot", handover);
+            map.put("mbrCode", memberId);
+            map.put("mbrName", fullName);
+            ReportHandler rh = new ReportHandler(reportPath, map, null, con);
+
+            boolean b = rh.genReport();
+            if (b) {
+                rh.viewReport();
+            }
+
+        } catch (IOException ex) {
+            Logger.getLogger(MemberfxmlController.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     class ContGive {

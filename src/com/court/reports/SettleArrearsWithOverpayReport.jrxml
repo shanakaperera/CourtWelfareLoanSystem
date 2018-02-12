@@ -1,0 +1,296 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="null" language="groovy" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="76ec3075-8098-4a4c-aced-9a4a29e2d203">
+    <property name="ireport.zoom" value="2.0"/>
+    <property name="ireport.x" value="170"/>
+    <property name="ireport.y" value="0"/>
+    <parameter name="reportTitle" class="java.lang.String"/>
+    <parameter name="companyName" class="java.lang.String"/>
+    <parameter name="companyAddress" class="java.lang.String"/>
+    <parameter name="mbrCode" class="java.lang.String"/>
+    <parameter name="mbrName" class="java.lang.String"/>
+    <parameter name="settleTot" class="java.lang.Double"/>
+    <parameter name="ml_ids" class="java.util.Collection">
+        <defaultValueExpression><![CDATA[]]></defaultValueExpression>
+    </parameter>
+    <queryString>
+		<![CDATA[SELECT
+    ml.member_loan_code,
+    ml.loan_name,
+    ml.granted_date,
+    ml.loan_amount,
+    ml.loan_interest,
+    ml.interest_per,
+    ml.loan_duration,
+    ml.duration_per,
+    ml.kota_left,
+    ml.paid_sofar,
+    ml.last_install
+FROM
+    court_loan.member_loan ml
+WHERE
+    $X{IN,ml.id,ml_ids} ;]]>
+    </queryString>
+    <field name="member_loan_code" class="java.lang.String">
+        <fieldDescription><![CDATA[]]></fieldDescription>
+    </field>
+    <field name="loan_name" class="java.lang.String">
+        <fieldDescription><![CDATA[]]></fieldDescription>
+    </field>
+    <field name="granted_date" class="java.sql.Date">
+        <fieldDescription><![CDATA[]]></fieldDescription>
+    </field>
+    <field name="loan_amount" class="java.lang.Double">
+        <fieldDescription><![CDATA[]]></fieldDescription>
+    </field>
+    <field name="loan_interest" class="java.lang.Double">
+        <fieldDescription><![CDATA[]]></fieldDescription>
+    </field>
+    <field name="interest_per" class="java.lang.String">
+        <fieldDescription><![CDATA[]]></fieldDescription>
+    </field>
+    <field name="loan_duration" class="java.lang.Integer">
+        <fieldDescription><![CDATA[]]></fieldDescription>
+    </field>
+    <field name="duration_per" class="java.lang.String">
+        <fieldDescription><![CDATA[]]></fieldDescription>
+    </field>
+    <field name="kota_left" class="java.lang.Double">
+        <fieldDescription><![CDATA[]]></fieldDescription>
+    </field>
+    <field name="paid_sofar" class="java.lang.Double">
+        <fieldDescription><![CDATA[]]></fieldDescription>
+    </field>
+    <field name="last_install" class="java.lang.Integer">
+        <fieldDescription><![CDATA[]]></fieldDescription>
+    </field>
+    <background>
+        <band splitType="Stretch"/>
+    </background>
+    <title>
+        <band height="76" splitType="Stretch">
+            <textField>
+                <reportElement x="0" y="0" width="555" height="28" uuid="5fa1e9f5-8f70-4b0f-a481-10c7ef9f091c"/>
+                <textElement textAlignment="Center" verticalAlignment="Middle">
+                    <font size="16" isBold="true"/>
+                </textElement>
+                <textFieldExpression><![CDATA[$P{companyName}]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="0" y="29" width="555" height="20" uuid="29534688-2ce0-481b-8a9e-c43659d9744d"/>
+                <textElement textAlignment="Center" verticalAlignment="Middle">
+                    <font size="14" isBold="true"/>
+                </textElement>
+                <textFieldExpression><![CDATA[$P{companyAddress}]]></textFieldExpression>
+            </textField>
+            <rectangle>
+                <reportElement x="390" y="54" width="164" height="20" uuid="97d537d6-b033-4e83-9294-6d080add78f8"/>
+            </rectangle>
+            <textField pattern="MMMMM dd, yyyy">
+                <reportElement x="476" y="55" width="72" height="20" uuid="af2ddb6a-4d5e-41fb-8e01-03d4f96804df"/>
+                <textElement textAlignment="Right" verticalAlignment="Middle">
+                    <font size="8" isBold="false"/>
+                </textElement>
+                <textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
+            </textField>
+            <staticText>
+                <reportElement x="390" y="55" width="86" height="20" uuid="0fb45594-00b5-4a5f-8e0b-1ddecc2fbd56"/>
+                <textElement textAlignment="Right" verticalAlignment="Middle">
+                    <font size="8" isBold="false"/>
+                </textElement>
+                <text><![CDATA[Report Genarated Date]]></text>
+            </staticText>
+        </band>
+    </title>
+    <pageHeader>
+        <band height="71">
+            <textField>
+                <reportElement x="0" y="0" width="555" height="20" uuid="1103a199-189e-4ea3-8e03-dc37ed77222d"/>
+                <textElement>
+                    <font size="12" isBold="true"/>
+                </textElement>
+                <textFieldExpression><![CDATA[$P{reportTitle}]]></textFieldExpression>
+            </textField>
+            <staticText>
+                <reportElement x="0" y="25" width="76" height="20" uuid="78e31fdb-41c3-440b-8514-11c5002ff0c4"/>
+                <textElement>
+                    <font isBold="true"/>
+                </textElement>
+                <text><![CDATA[Member Code]]></text>
+            </staticText>
+            <textField>
+                <reportElement x="76" y="25" width="100" height="20" uuid="ed6c56db-ebb3-4770-bc9f-747dc50ec18c"/>
+                <textFieldExpression><![CDATA[$P{mbrCode}]]></textFieldExpression>
+            </textField>
+            <staticText>
+                <reportElement x="0" y="49" width="76" height="20" uuid="b59b98bc-1817-4afa-94d3-f00da9a028f4"/>
+                <textElement>
+                    <font isBold="true"/>
+                </textElement>
+                <text><![CDATA[Name]]></text>
+            </staticText>
+            <textField>
+                <reportElement x="76" y="49" width="472" height="20" uuid="f2d08cca-697f-41c3-8aad-086d3b96dd81"/>
+                <textFieldExpression><![CDATA[$P{mbrName}]]></textFieldExpression>
+            </textField>
+            <staticText>
+                <reportElement x="377" y="25" width="77" height="20" uuid="68ef4d7b-99e6-4b9e-ae17-1d0e141cc5f4"/>
+                <textElement>
+                    <font isBold="true"/>
+                </textElement>
+                <text><![CDATA[Total Settled]]></text>
+            </staticText>
+            <textField pattern="Rs#,##0.00">
+                <reportElement x="454" y="25" width="100" height="20" uuid="c9c69ef7-858d-4727-a8e1-9c53c5b35dde"/>
+                <textFieldExpression><![CDATA[$P{settleTot}]]></textFieldExpression>
+            </textField>
+        </band>
+    </pageHeader>
+    <columnHeader>
+        <band height="21" splitType="Stretch">
+            <staticText>
+                <reportElement x="0" y="1" width="46" height="20" uuid="84428c09-9d7f-4a9e-be3d-db9b6370fbd8"/>
+                <textElement verticalAlignment="Middle">
+                    <font size="8" isBold="true"/>
+                </textElement>
+                <text><![CDATA[Code]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="46" y="1" width="100" height="20" uuid="f20bdc49-acea-43f9-ba16-63e357e452af"/>
+                <textElement verticalAlignment="Middle">
+                    <font size="8"/>
+                </textElement>
+                <text><![CDATA[Name]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="146" y="1" width="61" height="20" uuid="e24be9eb-d9dd-4c39-a7b1-5506ce2ce5d7"/>
+                <textElement verticalAlignment="Middle">
+                    <font size="8" isBold="true"/>
+                </textElement>
+                <text><![CDATA[GrantedDate]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="207" y="1" width="62" height="20" uuid="a32cb06c-37c8-47a6-8673-b36f636811e7"/>
+                <textElement verticalAlignment="Middle">
+                    <font size="8" isBold="true"/>
+                </textElement>
+                <text><![CDATA[Loan Amt]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="269" y="1" width="66" height="20" uuid="c6fa604c-0c22-4505-9a6d-f9dcadded182"/>
+                <textElement verticalAlignment="Middle">
+                    <font size="8" isBold="true"/>
+                </textElement>
+                <text><![CDATA[Loan Int]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="335" y="1" width="55" height="20" uuid="18497336-ef4d-4e78-91d7-f1c802c98305"/>
+                <textElement verticalAlignment="Middle">
+                    <font size="8" isBold="true"/>
+                </textElement>
+                <text><![CDATA[Loan Duration]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="395" y="1" width="56" height="20" uuid="ede88f9b-80b2-4f04-92e5-3632196c7deb"/>
+                <textElement verticalAlignment="Middle">
+                    <font size="8" isBold="true"/>
+                </textElement>
+                <text><![CDATA[Arrears Amt]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="455" y="1" width="54" height="20" uuid="2bc8fd4e-3f38-4bcf-8a04-36befc419512"/>
+                <textElement verticalAlignment="Middle">
+                    <font size="8" isBold="true"/>
+                </textElement>
+                <text><![CDATA[PaidSoFar]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="509" y="1" width="46" height="20" uuid="45a02512-17b5-4a33-8e32-5f8a58cd94dc"/>
+                <textElement verticalAlignment="Middle">
+                    <font size="8" isBold="true"/>
+                </textElement>
+                <text><![CDATA[Last Inst]]></text>
+            </staticText>
+        </band>
+    </columnHeader>
+    <detail>
+        <band height="20" splitType="Stretch">
+            <textField>
+                <reportElement x="0" y="0" width="46" height="20" uuid="40bc3a69-2a7f-4562-bfdf-bc67aad5211c"/>
+                <textElement>
+                    <font size="8"/>
+                </textElement>
+                <textFieldExpression><![CDATA[$F{member_loan_code}]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="46" y="0" width="100" height="20" uuid="c6394fd8-88ce-4a09-9c0e-984d4b432cea"/>
+                <textElement>
+                    <font size="8"/>
+                </textElement>
+                <textFieldExpression><![CDATA[$F{loan_name}]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="146" y="0" width="61" height="20" uuid="af756028-1894-4437-b886-aa89ac3f5b3c"/>
+                <textElement>
+                    <font size="8"/>
+                </textElement>
+                <textFieldExpression><![CDATA[$F{granted_date}]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="207" y="0" width="62" height="20" uuid="6201cf91-8ae5-432c-924b-6705e5c74239"/>
+                <textElement>
+                    <font size="8"/>
+                </textElement>
+                <textFieldExpression><![CDATA[$F{loan_amount}]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="269" y="0" width="19" height="20" uuid="ba671dcd-928d-4e11-b6fb-ebb2904a9ef2"/>
+                <textElement>
+                    <font size="8"/>
+                </textElement>
+                <textFieldExpression><![CDATA[$F{loan_interest}]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="288" y="0" width="47" height="20" uuid="ade87b26-007f-4d9e-adaa-e7653355cc93"/>
+                <textElement>
+                    <font size="8"/>
+                </textElement>
+                <textFieldExpression><![CDATA[$F{interest_per}]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="339" y="0" width="21" height="20" uuid="be06ab04-0f2d-4e9a-affe-f2548c240fda"/>
+                <textElement>
+                    <font size="8"/>
+                </textElement>
+                <textFieldExpression><![CDATA[$F{loan_duration}]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="360" y="0" width="24" height="20" uuid="39cbb4c6-dd3c-4ff6-9028-73f28ad30471"/>
+                <textElement>
+                    <font size="8"/>
+                </textElement>
+                <textFieldExpression><![CDATA[$F{duration_per}]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="395" y="0" width="56" height="20" uuid="1e81285c-6094-4449-bf08-f67a1a626517"/>
+                <textElement>
+                    <font size="8"/>
+                </textElement>
+                <textFieldExpression><![CDATA[$F{kota_left}]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="455" y="0" width="54" height="20" uuid="f8386959-d2b8-48cb-9c61-3b838e6e2c32"/>
+                <textElement>
+                    <font size="8"/>
+                </textElement>
+                <textFieldExpression><![CDATA[$F{paid_sofar}]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="509" y="0" width="46" height="20" uuid="bba2ec31-1a7c-4834-ab0a-622292f82a9d"/>
+                <textElement>
+                    <font size="8"/>
+                </textElement>
+                <textFieldExpression><![CDATA[$F{last_install}]]></textFieldExpression>
+            </textField>
+        </band>
+    </detail>
+</jasperReport>

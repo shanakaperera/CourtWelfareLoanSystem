@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="OverpayHandoverReport" language="groovy" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="5fec3ba5-56c7-4ce7-a61e-b797889c892b">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="companyName" class="java.lang.String"/>
+	<parameter name="companyAddress" class="java.lang.String"/>
+	<parameter name="reportTitle" class="java.lang.String"/>
+	<parameter name="handoverTot" class="java.lang.Double"/>
+	<parameter name="mbrCode" class="java.lang.String"/>
+	<parameter name="mbrName" class="java.lang.String"/>
+	<queryString language="SQL">
+		<![CDATA[SELECT *  FROM member_loan]]>
+	</queryString>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="76" splitType="Stretch">
+			<textField>
+				<reportElement x="0" y="0" width="555" height="28" uuid="5fa1e9f5-8f70-4b0f-a481-10c7ef9f091c"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="16" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{companyName}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="29" width="555" height="20" uuid="29534688-2ce0-481b-8a9e-c43659d9744d"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="14" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{companyAddress}]]></textFieldExpression>
+			</textField>
+			<rectangle>
+				<reportElement x="390" y="54" width="164" height="20" uuid="97d537d6-b033-4e83-9294-6d080add78f8"/>
+			</rectangle>
+			<textField pattern="MMMMM dd, yyyy">
+				<reportElement x="476" y="55" width="72" height="20" uuid="af2ddb6a-4d5e-41fb-8e01-03d4f96804df"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="8" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="390" y="55" width="86" height="20" uuid="0fb45594-00b5-4a5f-8e0b-1ddecc2fbd56"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="8" isBold="false"/>
+				</textElement>
+				<text><![CDATA[Report Genarated Date]]></text>
+			</staticText>
+		</band>
+	</title>
+	<pageHeader>
+		<band height="71">
+			<textField>
+				<reportElement x="0" y="0" width="555" height="20" uuid="1103a199-189e-4ea3-8e03-dc37ed77222d"/>
+				<textElement>
+					<font size="12" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{reportTitle}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="0" y="25" width="76" height="20" uuid="78e31fdb-41c3-440b-8514-11c5002ff0c4"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Member Code]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="76" y="25" width="100" height="20" uuid="ed6c56db-ebb3-4770-bc9f-747dc50ec18c"/>
+				<textFieldExpression><![CDATA[$P{mbrCode}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="0" y="49" width="76" height="20" uuid="b59b98bc-1817-4afa-94d3-f00da9a028f4"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Name]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="76" y="49" width="472" height="20" uuid="f2d08cca-697f-41c3-8aad-086d3b96dd81"/>
+				<textFieldExpression><![CDATA[$P{mbrName}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="377" y="25" width="77" height="20" uuid="68ef4d7b-99e6-4b9e-ae17-1d0e141cc5f4"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Total HandOver]]></text>
+			</staticText>
+			<textField pattern="Rs#,##0.00">
+				<reportElement x="454" y="25" width="100" height="20" uuid="c9c69ef7-858d-4727-a8e1-9c53c5b35dde"/>
+				<textFieldExpression><![CDATA[$P{handoverTot}]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageHeader>
+	<summary>
+		<band height="42" splitType="Stretch"/>
+	</summary>
+</jasperReport>
