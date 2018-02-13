@@ -73,7 +73,6 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
-import javafx.util.converter.DoubleStringConverter;
 import org.controlsfx.control.textfield.AutoCompletionBinding;
 import org.controlsfx.control.textfield.CustomTextField;
 import org.controlsfx.control.textfield.TextFields;
@@ -488,7 +487,7 @@ public class CollectionSheetFxmlController implements Initializable {
         m_id_col.setCellValueFactory(new PropertyValueFactory<>("memberId"));
         m_name_col.setCellValueFactory(new PropertyValueFactory<>("nameWithIns"));
         overpay_col.setCellValueFactory((TableColumn.CellDataFeatures<Member, Double> param) -> {
-            return new SimpleObjectProperty(param.getValue().getOverpay());
+            return new SimpleObjectProperty(param.getValue().getZeroOverpay());
         });
         total_pay_col.setCellValueFactory(new SubscriptionValueFactory());
         sub_tot_col.setCellValueFactory(new SubTotalValueFactory());
@@ -544,8 +543,9 @@ public class CollectionSheetFxmlController implements Initializable {
 
                 double diff = event.getNewValue() - event.getOldValue();
 
-                event.getTableView().getItems().get(event.getTablePosition().getRow())
-                        .setOverpay(event.getNewValue());
+                event.getTableView().getItems()
+                        .get(event.getTablePosition().getRow())
+                        .setZeroOverpay(event.getNewValue());
 
                 total = total + diff;
                 chk_amt_txt.setText(TextFormatHandler.CURRENCY_DECIMAL_FORMAT.format(total));
@@ -826,7 +826,7 @@ public class CollectionSheetFxmlController implements Initializable {
     private void updateMemberOverPay(Member m, Session session) {
         Member mm = (Member) session.load(Member.class, m.getId());
         //   mm.setOverpay(mm.getOverpay() + m.getOverpay());
-        mm.setOverpay(m.getOverpay());
+        mm.setOverpay(mm.getOverpay() + m.getZeroOverpay());
         session.update(mm);
     }
 }

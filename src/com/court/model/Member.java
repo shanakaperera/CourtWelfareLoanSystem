@@ -41,6 +41,7 @@ public class Member implements java.io.Serializable {
     private String jobStatus;
     private String nic;
     private Double overpay;
+    private Double zeroOverpay;
     private Set<MemberLoan> memberLoans = new HashSet<>();
     private Set<MemChild> memChilds = new HashSet<>();
     private Set<Document> documents = new HashSet<>();
@@ -360,7 +361,7 @@ public class Member implements java.io.Serializable {
     public void setCurStatus(String curStatus) {
         this.curStatus = curStatus;
     }
-    
+
     public void setEmpId(String empId) {
         this.empId = empId;
     }
@@ -371,6 +372,14 @@ public class Member implements java.io.Serializable {
 
     public void setOverpay(Double overpay) {
         this.overpay = overpay;
+    }
+
+    public Double getZeroOverpay() {
+        return zeroOverpay;
+    }
+
+    public void setZeroOverpay(Double zeroOverpay) {
+        this.zeroOverpay = zeroOverpay;
     }
     
     @Override
