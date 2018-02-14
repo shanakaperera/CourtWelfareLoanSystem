@@ -169,6 +169,14 @@ public class OldLoansFxmlController implements Initializable {
                     floan_int_txt.setText(TextFormatHandler.PRECENTAGE_DECIMAL_FORMAT
                             .format(loan.getLoanInterest() / 100));
                 });
+        
+        TextFields.bindAutoCompletion(sloan_search_txt, getLoans())
+                .setOnAutoCompleted(e -> {
+                    Loan loan = e.getCompletion();
+                    cLoan = loan;
+                    sloan_int_txt.setText(TextFormatHandler.PRECENTAGE_DECIMAL_FORMAT
+                            .format(loan.getLoanInterest() / 100));
+                });
 
         FxUtilsHandler.setDatePickerTimeFormat(floan_granted_picker);
 
@@ -316,7 +324,7 @@ public class OldLoansFxmlController implements Initializable {
                 MemberLoan ml2 = new MemberLoan();
                 ml2.setMemberLoanCode(fillMemberLoanCodeTxt());
                 ml2.setMember(searchMbr);
-                ml2.setLoanName(CHILD.split("-")[0].trim());
+                ml2.setLoanName(CHILD.split("-")[1].trim());
                 ml2.setGrantedDate(FxUtilsHandler.getDateFrom(floan_granted_picker.getValue()));
                 ml2.setGuarantors(new Gson().toJson(gurList.stream().map(Member::getMemberId).collect(Collectors.toList()), new TypeToken<List<String>>() {
                 }.getType()));

@@ -617,6 +617,7 @@ public class MemberfxmlController implements Initializable {
             member.setAppintedDate(Date.valueOf(member_apo_chooser.getValue()));
             member.setJoinedDate(FxUtilsHandler.getDateFrom(member_join_chooser.getValue()));
             member.setOverpay(0.0);
+            member.setZeroOverpay(0.0);
             member.setStatus(member.getCurStatus().equalsIgnoreCase("Active"));
             member.setDescription(member_des_txt.getText().isEmpty() ? "No Description" : member_des_txt.getText());
             //  member.setImgPath(imgString == null ? "" : imgString.getImg_path().toString());
