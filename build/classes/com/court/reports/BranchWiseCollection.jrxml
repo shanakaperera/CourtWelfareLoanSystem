@@ -73,7 +73,7 @@ br.status=true
 AND
 m.job_status=$P{job_stat}
 GROUP BY m.member_id
-ORDER BY br.branch_code, FIELD(m.job_title,'JUDGE', 'REGISTAR','IN:OFFICER','MANEGEM', 'ACCOUNT', 'ACCOUNT ASSISTANT','ADD:OFFICER', 'CLERK', 'TRANSLATOR','STENO', 'TYPIST', 'BINDER', 'PISCAL', 'PROCESS', 'MATRON', 'INTERPRETER','FAMILY','DEV OFFICER','REPORTER', 'K.K.S','DRIVER', 'WATCHER','LABOUR') ;]]>
+ORDER BY br.branch_code, FIELD(m.job_title,'JUDGE', 'REGISTAR','IN:OFFICER','MANEGEM', 'ACCOUNT', 'ACCOUNT ASSISTANT','ADD:OFFICER', 'CLERK', 'TRANSLATOR','STENO', 'TYPIST', 'BINDER', 'PISCAL', 'PROCESS', 'MATRON', 'INTERPRETER','FAMILY','DEV OFFICER','REPORTER', 'K.K.S','PROGRAM','DRIVER', 'WATCHER','LABOUR') ;]]>
 	</queryString>
 	<field name="member_id" class="java.lang.String">
 		<fieldDescription><![CDATA[]]></fieldDescription>

@@ -169,7 +169,7 @@ public class OldLoansFxmlController implements Initializable {
                     floan_int_txt.setText(TextFormatHandler.PRECENTAGE_DECIMAL_FORMAT
                             .format(loan.getLoanInterest() / 100));
                 });
-        
+
         TextFields.bindAutoCompletion(sloan_search_txt, getLoans())
                 .setOnAutoCompleted(e -> {
                     Loan loan = e.getCompletion();
@@ -243,6 +243,15 @@ public class OldLoansFxmlController implements Initializable {
             alert_error.setTitle("Error");
             alert_error.setHeaderText("Empty Fields !");
             alert_error.setContentText(PropHandler.getStringProperty("empty_fields"));
+            alert_error.show();
+            return;
+        }
+
+        if (Integer.parseInt(last_paid_ins.getText()) > pLoan.getNoOfRepay()) {
+            Alert alert_error = new Alert(Alert.AlertType.ERROR);
+            alert_error.setTitle("Error");
+            alert_error.setHeaderText("Incorrect paid Installments !");
+            alert_error.setContentText("Selected loan has only " + pLoan.getNoOfRepay() + " maximum payments.");
             alert_error.show();
             return;
         }
@@ -702,7 +711,10 @@ public class OldLoansFxmlController implements Initializable {
             pLoan = null;
             cLoan = null;
             gur_btn.setDisable(true);
+            mbr_search_txt.setEditable(true);
             searchMbr = null;
+            gur_notice_txt.setText("");
+            FxUtilsHandler.clearFields(main_grid);
         }
     }
 
