@@ -1651,7 +1651,6 @@ public class MemberfxmlController implements Initializable {
                             rp.setPayIds(new Gson().toJson(lpIds, type));
                             rp.setPayOffice(parentLoan.getMember().getPayOffice().getId());
                             rp.setWorkOffice(parentLoan.getMember().getBranch().getId());
-                            // rp.setReceiptCode("INV" + FxUtilsHandler.generateRandomNumber(7));
                             s.save(rp);
 
                             updateMemberLoan(parentLoan, insts, s, instDates[insts - 1]);
