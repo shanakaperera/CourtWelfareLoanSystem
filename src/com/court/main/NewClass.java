@@ -5,6 +5,12 @@
  */
 package com.court.main;
 
+import com.court.handler.FxUtilsHandler;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.util.Date;
+
 /**
  *
  * @author Shanaka P
@@ -12,7 +18,9 @@ package com.court.main;
 public class NewClass {
 
     public static void main(String[] args) {
-
+        Date d = new Date(Long.MAX_VALUE);
+        DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+        System.out.println(df.format(d));
     }
 
 }

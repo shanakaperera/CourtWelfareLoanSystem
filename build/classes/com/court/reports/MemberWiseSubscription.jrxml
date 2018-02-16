@@ -7,6 +7,12 @@
 	<parameter name="companyName" class="java.lang.String"/>
 	<parameter name="companyAddress" class="java.lang.String"/>
 	<parameter name="reportTitle" class="java.lang.String"/>
+	<parameter name="from_date" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="to_date" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
 	<queryString>
 		<![CDATA[SELECT
     m.member_id,
@@ -31,7 +37,7 @@ INNER JOIN
 ON
     (
         sb.member_id = m.id)
-WHERE m.member_id=$P{member_code} ;]]>
+WHERE m.member_id=$P{member_code} AND (sbp.payment_date BETWEEN $P{from_date} AND $P{to_date});]]>
 	</queryString>
 	<field name="member_id" class="java.lang.String">
 		<fieldDescription><![CDATA[]]></fieldDescription>
@@ -61,7 +67,7 @@ WHERE m.member_id=$P{member_code} ;]]>
 		<fieldDescription><![CDATA[]]></fieldDescription>
 	</field>
 	<field name="payment_date" class="java.sql.Date">
-		<fieldDescription><![CDATA[]]></fieldDescription>
+		<fieldDescription><![CDATA[date of the subscription (actually the month of subscription )]]></fieldDescription>
 	</field>
 	<variable name="hoi_tot" class="java.lang.Double" calculation="Sum">
 		<variableExpression><![CDATA[$F{hoi_fee}]]></variableExpression>
@@ -116,7 +122,7 @@ WHERE m.member_id=$P{member_code} ;]]>
 	<pageHeader>
 		<band height="61">
 			<textField>
-				<reportElement x="0" y="0" width="555" height="21" uuid="1103a199-189e-4ea3-8e03-dc37ed77222d"/>
+				<reportElement x="0" y="0" width="351" height="21" uuid="1103a199-189e-4ea3-8e03-dc37ed77222d"/>
 				<textElement>
 					<font size="12" isBold="true"/>
 				</textElement>
@@ -191,6 +197,13 @@ WHERE m.member_id=$P{member_code} ;]]>
 					<font size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{job_title}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="351" y="1" width="197" height="20" uuid="72d37208-fa59-499b-8781-6fa0273ef19b"/>
+				<textElement textAlignment="Right">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{from_date}.split("-")[0].contains("1000")?"All Subscriptions":"Results Between "+$P{from_date}+" to "+$P{to_date}]]></textFieldExpression>
 			</textField>
 		</band>
 	</pageHeader>
@@ -346,4 +359,15 @@ WHERE m.member_id=$P{member_code} ;]]>
 			</staticText>
 		</band>
 	</summary>
+	<noData>
+		<band height="24">
+			<staticText>
+				<reportElement x="4" y="2" width="455" height="20" uuid="0a74a7e1-f6be-4956-b23c-4f07529170ce"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[NO ANY DATA FOUND]]></text>
+			</staticText>
+		</band>
+	</noData>
 </jasperReport>

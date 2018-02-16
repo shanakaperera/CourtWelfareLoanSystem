@@ -1550,6 +1550,26 @@ public class MemberfxmlController implements Initializable {
                     Optional<ButtonType> rst = success.showAndWait();
                     return;
                 }
+                if ((row.getItem().isHasChild() || !row.getItem().isIsChild()) && row.getItem().getLastInstall() == 0) {
+                    Alert success = new Alert(AlertType.ERROR);
+                    success.setTitle("Error");
+                    success.setHeaderText("An ambiguous call !");
+                    success.setContentText("Cloasing a loan which has no any previous installments is an ambiguous task. !");
+                    Optional<ButtonType> rst = success.showAndWait();
+                    return;
+                }
+                if (row.getItem().isIsChild()) {
+                    Session s = HibernateUtil.getSessionFactory().openSession();
+                    if (getParentOfChild(row.getItem().getId(), s).getLastInstall() == 0) {
+                        Alert success = new Alert(AlertType.ERROR);
+                        success.setTitle("Error");
+                        success.setHeaderText("An ambiguous call !");
+                        success.setContentText("Closing a child loan which has no any previous payments of its parent loan is an ambiguous task. ! ");
+                        Optional<ButtonType> rst = success.showAndWait();
+                        s.close();
+                        return;
+                    }
+                }
 
                 Session s = HibernateUtil.getSessionFactory().openSession();
                 s.beginTransaction();
@@ -1597,7 +1617,7 @@ public class MemberfxmlController implements Initializable {
                                 lp.setInstallmentDate(instDates[i]);
                                 lp.setPaidAmt(installWithoutPolli);
                                 lp.setListedPay(installWithoutPolli);
-                                lp.setRemark("Installment Pay");
+                                lp.setRemark("Installment Pay - Close Loan");
                                 lp.setPayOffice(parentLoan.getMember().getPayOffice().getId());
                                 lp.setWorkOffice(parentLoan.getMember().getBranch().getId());
                                 if (i == (insts - 1)) {
@@ -1624,7 +1644,7 @@ public class MemberfxmlController implements Initializable {
                                 lp.setPayOffice(parentLoan.getMember().getPayOffice().getId());
                                 lp.setWorkOffice(parentLoan.getMember().getBranch().getId());
                                 lp.setIsLast(true);
-                                lp.setRemark("Arrears Pay");
+                                lp.setRemark("Arrears Pay - Close Loan");
                                 lp.setMemberLoan(parentLoan);
                                 s.save(lp);
                                 lpIds.add(lp.getId());
@@ -1641,18 +1661,17 @@ public class MemberfxmlController implements Initializable {
                             s.update(parentLoan);
                             //==============END PARENT LOAN===============
 
-                            Type type = new TypeToken<List<Integer>>() {
-                            }.getType();
-                            ReceiptPay rp = new ReceiptPay();
-                            rp.setMember(parentLoan.getMember());
-                            rp.setAmount(payment_amt);
-                            rp.setPayDate(new java.util.Date());
-                            rp.setPaymentType("installment");
-                            rp.setPayIds(new Gson().toJson(lpIds, type));
-                            rp.setPayOffice(parentLoan.getMember().getPayOffice().getId());
-                            rp.setWorkOffice(parentLoan.getMember().getBranch().getId());
-                            s.save(rp);
-
+//                            Type type = new TypeToken<List<Integer>>() {
+//                            }.getType();
+//                            ReceiptPay rp = new ReceiptPay();
+//                            rp.setMember(parentLoan.getMember());
+//                            rp.setAmount(payment_amt);
+//                            rp.setPayDate(new java.util.Date());
+//                            rp.setPaymentType("installment");
+//                            rp.setPayIds(new Gson().toJson(lpIds, type));
+//                            rp.setPayOffice(parentLoan.getMember().getPayOffice().getId());
+//                            rp.setWorkOffice(parentLoan.getMember().getBranch().getId());
+//                            s.save(rp);
                             updateMemberLoan(parentLoan, insts, s, instDates[insts - 1]);
                         }
                     }
@@ -1695,7 +1714,7 @@ public class MemberfxmlController implements Initializable {
                             } else {
                                 lp.setIsLast(false);
                             }
-                            lp.setRemark("Installment Pay");
+                            lp.setRemark("Installment Pay - Close Loan");
                             lp.setMemberLoan(childLoan);
                             s.save(lp);
                             lpIds.add(lp.getId());
@@ -1715,7 +1734,7 @@ public class MemberfxmlController implements Initializable {
                             lp.setPayOffice(childLoan.getMember().getPayOffice().getId());
                             lp.setWorkOffice(childLoan.getMember().getBranch().getId());
                             lp.setIsLast(true);
-                            lp.setRemark("Arrears Pay");
+                            lp.setRemark("Arrears Pay - Close Loan");
                             lp.setMemberLoan(childLoan);
                             s.save(lp);
                             lpIds.add(lp.getId());
@@ -1724,19 +1743,6 @@ public class MemberfxmlController implements Initializable {
                             payment_amt += childLoan.getKotaLeft();
                         }
 
-                        Type type = new TypeToken<List<Integer>>() {
-                        }.getType();
-                        ReceiptPay rp = new ReceiptPay();
-                        rp.setMember(childLoan.getMember());
-                        rp.setAmount(payment_amt);
-                        rp.setPayDate(new java.util.Date());
-                        rp.setPaymentType("installment");
-                        rp.setPayIds(new Gson().toJson(lpIds, type));
-                        rp.setPayOffice(childLoan.getMember().getPayOffice().getId());
-                        rp.setWorkOffice(childLoan.getMember().getBranch().getId());
-                        // rp.setReceiptCode("INV" + FxUtilsHandler.generateRandomNumber(7));
-                        s.save(rp);
-
                         childLoan.setIsComplete(true);
                         childLoan.setClosedLoan(true);
                         childLoan.setKotaLeft(0.0);
@@ -1744,6 +1750,52 @@ public class MemberfxmlController implements Initializable {
 
                         updateMemberLoan(childLoan, insts, s, instDates[insts - 1]);
 
+                    } else {
+                        //IF CHILD LOAN LAST PAY IS NULL===========================
+                        int insts = childLoan.getNoOfRepay();
+                        int last_inst_paid = 0;
+                        int no_of_repay = childLoan.getNoOfRepay();
+                        double payment_amt = installWithoutPolli * insts;
+
+                        ClosedLoan ccl = new ClosedLoan();
+                        ccl.setEndedDate(new java.util.Date());
+                        ccl.setClosedStart(++last_inst_paid);
+                        ccl.setMemberLoanId(childLoan.getId());
+                        ccl.setTotinstClosed(insts);
+                        ccl.setActualinstAmt(installWithoutPolli);
+                        ccl.setTotalPayment(insts * installWithoutPolli);
+                        s.save(ccl);
+
+                        java.util.Date[] instDates = setInstallmentDates(insts, childLastLoanPay);
+                        
+                        for (int i = 0; i < insts; i++) {
+                            LoanPayment lp = new LoanPayment();
+                            lp.setInstallmentNo(last_inst_paid);
+                            lp.setInstallmentDue(no_of_repay - last_inst_paid);
+                            lp.setPaymentDate(new java.util.Date());
+                            lp.setInstallmentDate(instDates[i]);
+                            lp.setPaidAmt(installWithoutPolli);
+                            lp.setListedPay(installWithoutPolli);
+                            lp.setPayOffice(childLoan.getMember().getPayOffice().getId());
+                            lp.setWorkOffice(childLoan.getMember().getBranch().getId());
+                            if (i == (insts - 1)) {
+                                lp.setIsLast(true);
+                            } else {
+                                lp.setIsLast(false);
+                            }
+                            lp.setRemark("Installment Pay - Close Loan");
+                            lp.setMemberLoan(childLoan);
+                            s.save(lp);
+                            lpIds.add(lp.getId());
+                            last_inst_paid++;
+                        }
+
+                        childLoan.setIsComplete(true);
+                        childLoan.setClosedLoan(true);
+                        childLoan.setKotaLeft(0.0);
+                        s.update(childLoan);
+
+                        updateMemberLoan(childLoan, insts, s, instDates[insts - 1]);
                     }
                     //IF PARENT LOAN SELECTED===============================================
                 } else {
@@ -1781,7 +1833,7 @@ public class MemberfxmlController implements Initializable {
                             lp.setInstallmentDate(instDates[i]);
                             lp.setPaidAmt(installWithoutPolli);
                             lp.setListedPay(installWithoutPolli);
-                            lp.setRemark("Installment Pay");
+                            lp.setRemark("Installment Pay - Close Loan");
                             lp.setPayOffice(selectedLoan.getMember().getPayOffice().getId());
                             lp.setWorkOffice(selectedLoan.getMember().getBranch().getId());
                             if (i == (insts - 1)) {
@@ -1808,7 +1860,7 @@ public class MemberfxmlController implements Initializable {
                             lp.setPayOffice(selectedLoan.getMember().getPayOffice().getId());
                             lp.setWorkOffice(selectedLoan.getMember().getBranch().getId());
                             lp.setIsLast(true);
-                            lp.setRemark("Arrears Pay");
+                            lp.setRemark("Arrears Pay - Close Loan");
                             lp.setMemberLoan(selectedLoan);
                             s.save(lp);
                             lpIds.add(lp.getId());
@@ -1822,19 +1874,17 @@ public class MemberfxmlController implements Initializable {
                         selectedLoan.setClosedLoan(true);
                         s.update(selectedLoan);
 
-                        Type type = new TypeToken<List<Integer>>() {
-                        }.getType();
-                        ReceiptPay rp = new ReceiptPay();
-                        rp.setMember(selectedLoan.getMember());
-                        rp.setAmount(payment_amt);
-                        rp.setPayDate(new java.util.Date());
-                        rp.setPaymentType("installment");
-                        rp.setPayIds(new Gson().toJson(lpIds, type));
-                        rp.setPayOffice(selectedLoan.getMember().getPayOffice().getId());
-                        rp.setWorkOffice(selectedLoan.getMember().getBranch().getId());
-                        // rp.setReceiptCode("INV" + FxUtilsHandler.generateRandomNumber(7));
-                        s.save(rp);
-
+//                        Type type = new TypeToken<List<Integer>>() {
+//                        }.getType();
+//                        ReceiptPay rp = new ReceiptPay();
+//                        rp.setMember(selectedLoan.getMember());
+//                        rp.setAmount(payment_amt);
+//                        rp.setPayDate(new java.util.Date());
+//                        rp.setPaymentType("installment");
+//                        rp.setPayIds(new Gson().toJson(lpIds, type));
+//                        rp.setPayOffice(selectedLoan.getMember().getPayOffice().getId());
+//                        rp.setWorkOffice(selectedLoan.getMember().getBranch().getId());
+//                        s.save(rp);
                         updateMemberLoan(selectedLoan, insts, s, instDates[insts - 1]);
                     }
 
@@ -1886,7 +1936,7 @@ public class MemberfxmlController implements Initializable {
                             lp.setInstallmentDate(instDates[i]);
                             lp.setPaidAmt(installWithoutPolli_2);
                             lp.setListedPay(installWithoutPolli_2);
-                            lp.setRemark("Installment Pay");
+                            lp.setRemark("Installment Pay - Close Loan");
                             lp.setPayOffice(childLoan.getMember().getPayOffice().getId());
                             lp.setWorkOffice(childLoan.getMember().getBranch().getId());
                             if (i == (insts - 1)) {
@@ -1913,7 +1963,7 @@ public class MemberfxmlController implements Initializable {
                             lp.setPayOffice(childLoan.getMember().getPayOffice().getId());
                             lp.setWorkOffice(childLoan.getMember().getBranch().getId());
                             lp.setIsLast(true);
-                            lp.setRemark("Arrears Pay");
+                            lp.setRemark("Arrears Pay - Close Loan");
                             lp.setMemberLoan(childLoan);
                             s.save(lp);
                             lpIds.add(lp.getId());
@@ -1927,22 +1977,35 @@ public class MemberfxmlController implements Initializable {
                         childLoan.setClosedLoan(true);
                         s.update(childLoan);
 
-                        Type type = new TypeToken<List<Integer>>() {
-                        }.getType();
-                        ReceiptPay rp = new ReceiptPay();
-                        rp.setMember(childLoan.getMember());
-                        rp.setAmount(payment_amt);
-                        rp.setPayDate(new java.util.Date());
-                        rp.setPaymentType("installment");
-                        rp.setPayIds(new Gson().toJson(lpIds, type));
-                        rp.setPayOffice(childLoan.getMember().getPayOffice().getId());
-                        rp.setWorkOffice(childLoan.getMember().getBranch().getId());
-                        // rp.setReceiptCode("INV" + FxUtilsHandler.generateRandomNumber(7));
-                        s.save(rp);
-
+//                        Type type = new TypeToken<List<Integer>>() {
+//                        }.getType();
+//                        ReceiptPay rp = new ReceiptPay();
+//                        rp.setMember(childLoan.getMember());
+//                        rp.setAmount(payment_amt);
+//                        rp.setPayDate(new java.util.Date());
+//                        rp.setPaymentType("installment");
+//                        rp.setPayIds(new Gson().toJson(lpIds, type));
+//                        rp.setPayOffice(childLoan.getMember().getPayOffice().getId());
+//                        rp.setWorkOffice(childLoan.getMember().getBranch().getId());
+//                        s.save(rp);
                         updateMemberLoan(childLoan, insts, s, instDates[insts - 1]);
                     }
                 }
+
+                //=====================CLOSE LOAN RECIEPT PAY=======================
+                Type type = new TypeToken<List<Integer>>() {
+                }.getType();
+                ReceiptPay rp = new ReceiptPay();
+                rp.setMember(row.getItem().getMember());
+                rp.setAmount(getTotalAmtOfLpIds(s, lpIds));
+                rp.setPayDate(new java.util.Date());
+                rp.setPaymentType("installment");
+                rp.setPayIds(new Gson().toJson(lpIds, type));
+                rp.setPayOffice(row.getItem().getMember().getPayOffice().getId());
+                rp.setWorkOffice(row.getItem().getMember().getBranch().getId());
+                s.save(rp);
+
+                //==========================RECEIPT PAY ENDS=======================
                 s.getTransaction().commit();
                 s.close();
 
@@ -2062,7 +2125,7 @@ public class MemberfxmlController implements Initializable {
                         lp.setInstallmentDate(instDates[i]);
                         lp.setPaidAmt(instAmt);
                         lp.setListedPay(instAmt);
-                        lp.setRemark("Installment Pay");
+                        lp.setRemark("Installment Pay - Manually paid");
                         lp.setPayOffice(row.getItem().getMember().getPayOffice().getId());
                         lp.setWorkOffice(row.getItem().getMember().getBranch().getId());
                         if (i == (insts - 1)) {
@@ -2073,10 +2136,10 @@ public class MemberfxmlController implements Initializable {
                         lp.setMemberLoan(row.getItem());
                         s.save(lp);
                         lpIds.add(lp.getId());
-                        last_inst_paid++;
                         if (no_of_repay - last_inst_paid == 0) {
                             endLoan(s, row.getItem());
                         }
+                        last_inst_paid++;
                     }
                     Type type = new TypeToken<List<Integer>>() {
                     }.getType();
@@ -3734,6 +3797,13 @@ public class MemberfxmlController implements Initializable {
         } catch (IOException ex) {
             Logger.getLogger(MemberfxmlController.class.getName()).log(Level.SEVERE, null, ex);
         }
+    }
+
+    private Double getTotalAmtOfLpIds(Session s, List<Integer> lpIds) {
+        System.out.println("LPDS - " + lpIds);
+        Criteria c = s.createCriteria(LoanPayment.class);
+        List<LoanPayment> lpList = c.add(Restrictions.in("id", lpIds)).list();
+        return lpList.stream().mapToDouble(LoanPayment::getPaidAmt).sum();
     }
 
     class ContGive {

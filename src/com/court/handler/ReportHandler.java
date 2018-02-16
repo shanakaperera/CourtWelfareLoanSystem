@@ -42,7 +42,7 @@ public class ReportHandler {
     private final String reportPath;
     private final Map<String, Object> map;
     private final JRBeanCollectionDataSource ds;
-    private final String outputFile = System.getProperty("user.home") + File.separatorChar + "JasperExample.pdf";
+    private String outputFile = System.getProperty("user.home") + File.separatorChar + "JasperExample.pdf";
     private Connection con;
     private ImageView progressIndicator;
 
@@ -171,14 +171,27 @@ public class ReportHandler {
                 alert_inf.show();
                 flag = false;
             } else {
-                OutputStream outputStream = new FileOutputStream(new File(outputFile));
+                OutputStream outputStream = null;
+                try {
+                    outputStream = new FileOutputStream(new File(outputFile));
+                } catch (FileNotFoundException ep) {
+                    try {
+                        //outputFile JasperExample_1.pdf
+                        int index = outputFile.lastIndexOf("\\");
+                        outputFile = outputFile.substring(0, index) + getNextFileName(outputFile);
+                        outputStream = new FileOutputStream(new File(outputFile));
+                    } catch (FileNotFoundException ex) {
+                        ex.printStackTrace();
+                    }
+                }
+
                 JasperExportManager.exportReportToPdfStream(jp, outputStream);
                 System.out.println("Successfully Generated !");
                 System.out.println(outputFile);
                 flag = true;
             }
 
-        } catch (FileNotFoundException | JRException e) {
+        } catch (JRException e) {
             e.printStackTrace();
         }
         return flag;
@@ -198,6 +211,16 @@ public class ReportHandler {
                 alert_error.show();
             }
         }
+    }
+
+    private String getNextFileName(String str) {
+        String fileName = str.substring(str.lastIndexOf("\\") + 1, str.indexOf("."));
+        if (fileName.matches(".*\\d+.*")) {
+            fileName = fileName.replaceAll("\\d+", "") + (Integer.parseInt(fileName.replaceAll("\\D+", "")) + 1);
+        } else {
+            fileName += "_1";
+        }
+        return fileName + ".pdf";
     }
 
 }

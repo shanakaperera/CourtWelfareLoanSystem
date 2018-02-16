@@ -485,9 +485,8 @@ public class ReportFormFxmlController implements Initializable {
                 Member filteredM = (Member) c.add(Restrictions.eq("memberId", mId))
                         .uniqueResult();
 
-                System.out.println("DEEPAL - "+filteredM.getMemberLoans().size());
-                
-                
+                System.out.println("DEEPAL - " + filteredM.getMemberLoans().size());
+
                 Criteria c1 = session.createCriteria(SubscriptionPay.class, "sp");
                 c1.createAlias("sp.memberSubscriptions", "ms");
                 c1.createAlias("ms.member", "m");
@@ -631,7 +630,7 @@ public class ReportFormFxmlController implements Initializable {
 
     @FXML
     private void onMemberSubscriptionAction(ActionEvent event) {
-        Dialog<String> dialog = new Dialog<>();
+        Dialog<SubReport> dialog = new Dialog<>();
         dialog.setTitle("Member Total Subscription");
         dialog.setHeaderText("Select Member");
         ButtonType viewBtn = new ButtonType("View Report", ButtonData.OK_DONE);
@@ -644,17 +643,29 @@ public class ReportFormFxmlController implements Initializable {
         TextField bField = new TextField();
         TextFields.bindAutoCompletion(bField, getMembers(false));
 
-        grid.add(new Label("Member:"), 0, 0);
-        grid.add(bField, 1, 0);
+        DatePicker fDate = new DatePicker();
+        DatePicker tDate = new DatePicker();
+        FxUtilsHandler.setDatePickerTimeFormat(fDate, tDate);
+
+        grid.add(new Label("From:"), 0, 0);
+        grid.add(fDate, 1, 0);
+        grid.add(new Label("To:"), 0, 1);
+        grid.add(tDate, 1, 1);
+        grid.add(new Label("Member:"), 0, 2);
+        grid.add(bField, 1, 2);
         dialog.getDialogPane().setContent(grid);
         dialog.setResultConverter(db -> {
             if (db == viewBtn) {
-                return bField.getText().split("-")[0];
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+                System.out.println(tDate.getValue());
+                String to = tDate.getValue() != null ? sdf.format(FxUtilsHandler.getDateFrom(tDate.getValue())) : "9999-12-12";
+                String from = fDate.getValue() != null ? sdf.format(FxUtilsHandler.getDateFrom(fDate.getValue())) : "1000-01-01";
+                return new SubReport(bField.getText().split("-")[0], to, from);
             }
             return null;
         });
 
-        Optional<String> result = dialog.showAndWait();
+        Optional<SubReport> result = dialog.showAndWait();
         result.ifPresent(mId -> {
             //  String reportPath = "com/court/reports/MemberWiseSubscription.jasper";
 
@@ -672,7 +683,9 @@ public class ReportFormFxmlController implements Initializable {
             map.put("companyName", ReportHandler.COMPANY_NAME);
             map.put("companyAddress", ReportHandler.ADDRESS);
             map.put("reportTitle", "Member Wise Subscription");
-            map.put("member_code", mId);
+            map.put("member_code", mId.getCode());
+            map.put("from_date", mId.getfDate());
+            map.put("to_date", mId.gettDate());
             ReportHandler rh = new ReportHandler(reportPath, map, null, con);
 //            rh.genarateReport();
             boolean blah = rh.genReport();
@@ -872,6 +885,44 @@ public class ReportFormFxmlController implements Initializable {
         c.setProjection(Projections.property("receiptCode"));
         List<String> list = c.list();
         return list;
+
+    }
+
+    class SubReport {
+
+        private String code;
+        private String tDate;
+        private String fDate;
+
+        SubReport(String code, String tDate, String fDate) {
+            this.code = code;
+            this.tDate = tDate;
+            this.fDate = fDate;
+        }
+
+        public String getCode() {
+            return code;
+        }
+
+        public void setCode(String name) {
+            this.code = name;
+        }
+
+        public String gettDate() {
+            return tDate;
+        }
+
+        public void settDate(String tDate) {
+            this.tDate = tDate;
+        }
+
+        public String getfDate() {
+            return fDate;
+        }
+
+        public void setfDate(String fDate) {
+            this.fDate = fDate;
+        }
 
     }
 
