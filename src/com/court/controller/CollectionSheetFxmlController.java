@@ -397,7 +397,30 @@ public class CollectionSheetFxmlController implements Initializable {
                         List<Member> mList = getValue();
 
                         mList.stream().forEach(m -> {
-                            ins_total.addAndGet(m.getMemberLoans().stream().mapToDouble(MemberLoan::getLoanInstallment).sum());
+
+                            List<MemberLoan> instOnly = m.getMemberLoans().stream()
+                                    .sorted(Comparator.comparing(MemberLoan::getChildId).reversed())
+                                    .filter(p -> !p.isIsComplete())
+                                    .filter(FxUtilsHandler.checkIfAlreadyPaid(p -> p.getPaidUntil()))
+                                    .filter(p -> p.isStatus())
+                                    .filter(p -> (p.getLastInstall() < p.getLoanDuration()))
+                                    .filter(FxUtilsHandler.distinctByKey(p -> p.getMemberLoanCode()))
+                                    .collect(Collectors.toList());
+
+                            //===================installments finished, but kotaonly loans================
+                            List<MemberLoan> kotaOnly = m.getMemberLoans().stream()
+                                    .sorted(Comparator.comparing(MemberLoan::getChildId).reversed())
+                                    .filter(p -> !p.isIsComplete())
+                                    .filter(FxUtilsHandler.checkIfAlreadyPaid(p -> p.getPaidUntil()))
+                                    .filter(p -> p.isStatus())
+                                    .filter(p -> (p.getLastInstall() >= p.getLoanDuration()))
+                                    .filter(FxUtilsHandler.distinctByKey(p -> p.getMemberLoanCode()))
+                                    .collect(Collectors.toList());
+
+                            double sum = instOnly.stream().mapToDouble(p -> p.getLoanInstallment()).sum()
+                                    + kotaOnly.stream().mapToDouble(p -> p.getKotaLeft()).sum();
+
+                            ins_total.addAndGet(sum);
 
                             List<MemberSubscriptions> mbrSubs = new ArrayList<>(m.getMemberSubscriptions());
 
