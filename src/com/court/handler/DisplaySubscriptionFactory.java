@@ -51,7 +51,7 @@ public class DisplaySubscriptionFactory implements Callback<TableColumn.CellData
         List<MemberSubscriptions> mbrSubs = new ArrayList<>(ml.getMemberSubscriptions());
 
         double sum;
-        boolean flag = FxUtilsHandler.previousSubscriptions(ml.getId()).isEmpty();
+        boolean flag = FxUtilsHandler.hasPreviousSubscriptions(ml.getId());
         if (flag) {
             sum = mbrSubs.stream().mapToDouble(a -> a.getAmount()).sum();
         } else {

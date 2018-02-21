@@ -25,10 +25,14 @@ public class SubscriptionValueFactory implements Callback<TableColumn.CellDataFe
         Member ml = param.getValue();
         List<MemberSubscriptions> mbrSubs = new ArrayList<>(ml.getMemberSubscriptions());
         double sum;
-        if (FxUtilsHandler.previousSubscriptions(ml.getId()).isEmpty()) {
+         
+        if (FxUtilsHandler.hasPreviousSubscriptions(ml.getId())) {
             sum = mbrSubs.stream().mapToDouble(a -> a.getAmount()).sum();
         } else {
-            sum = mbrSubs.stream().filter(s -> !s.getRepaymentType().equalsIgnoreCase("Once")).mapToDouble(a -> a.getAmount()).sum();
+          // pSubs.stream().filter(predicate)
+            sum = mbrSubs.stream()
+                    .filter(s -> !s.getRepaymentType().equalsIgnoreCase("Once"))
+                    .mapToDouble(a -> a.getAmount()).sum();
         }
 
         return new SimpleObjectProperty<>(TextFormatHandler.CURRENCY_DECIMAL_FORMAT.format(sum));

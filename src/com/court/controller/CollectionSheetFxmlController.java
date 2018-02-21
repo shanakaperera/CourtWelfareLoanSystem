@@ -251,7 +251,7 @@ public class CollectionSheetFxmlController implements Initializable {
                             sp.setOptional(mbrSub.getAmount());
                             break;
                         case "Admission Fee":
-                            boolean empty = FxUtilsHandler.previousSubscriptions(m.getId(), session).isEmpty();
+                            boolean empty = FxUtilsHandler.hasPreviousSubscriptions(m.getId(), session);
                             sp.setAdmissionFee(empty ? mbrSub.getAmount() : 0.0);
                             break;
                     }
@@ -280,7 +280,7 @@ public class CollectionSheetFxmlController implements Initializable {
                         .sorted(Comparator.comparing(MemberLoan::getChildId).reversed())
                         .filter(p -> (!p.isIsComplete() && p.isStatus()))
                         .filter(FxUtilsHandler.distinctByKey(p -> p.getMemberLoanCode()))
-                        //  .filter(FxUtilsHandler.checkIfLastPaidDateWithinCurrentMonth(p -> p.getPaidUntil()))
+                        .filter(FxUtilsHandler.checkIfAlreadyPaid(p -> p.getPaidUntil()))
                         .collect(Collectors.toList());
 
                 mLoanList.forEach(ml -> {
@@ -401,7 +401,7 @@ public class CollectionSheetFxmlController implements Initializable {
 
                             List<MemberSubscriptions> mbrSubs = new ArrayList<>(m.getMemberSubscriptions());
 
-                            boolean flag = FxUtilsHandler.previousSubscriptions(m.getId()).isEmpty();
+                            boolean flag = FxUtilsHandler.hasPreviousSubscriptions(m.getId());
                             if (flag) {
                                 sub_total.addAndGet(mbrSubs.stream().mapToDouble(a -> a.getAmount()).sum());
                             } else {
@@ -489,8 +489,11 @@ public class CollectionSheetFxmlController implements Initializable {
         overpay_col.setCellValueFactory((TableColumn.CellDataFeatures<Member, Double> param) -> {
             return new SimpleObjectProperty(param.getValue().getZeroOverpay());
         });
+        //====================Monthly Subscription===========
         total_pay_col.setCellValueFactory(new SubscriptionValueFactory());
+        //=============Subscription plus installments total=============
         sub_tot_col.setCellValueFactory(new SubTotalValueFactory());
+        //=====================Collection checkbox =================
         colection_stat_col.setCellValueFactory((TableColumn.CellDataFeatures<Member, CheckBox> param) -> {
             Member ml = param.getValue();
             CheckBox checkBox = new CheckBox();
@@ -502,16 +505,19 @@ public class CollectionSheetFxmlController implements Initializable {
             });
             return new SimpleObjectProperty<>(checkBox);
         });
+        //===============Subscription Details=========================
         detail_view_col.setCellValueFactory(new DisplaySubscriptionFactory(collection_tbl, total, chk_amt_txt));
+        //===================Installments Details====================
         rtot_pay_col.setCellValueFactory(new DisplayTotalInstallmentsFactory(collection_tbl, total, chk_amt_txt));
+        //==========================Total Inst Amount====================
         tot_inst_amt_col.setCellValueFactory((TableColumn.CellDataFeatures<Member, String> param) -> {
             Member ml = param.getValue();
             List<MemberLoan> instOnly = ml.getMemberLoans().stream()
                     .sorted(Comparator.comparing(MemberLoan::getChildId).reversed())
                     .filter(p -> !p.isIsComplete())
-                    // .filter(FxUtilsHandler.checkIfLastPaidDateWithinCurrentMonth(p -> p.getPaidUntil()))
+                    .filter(FxUtilsHandler.checkIfAlreadyPaid(p -> p.getPaidUntil()))
                     .filter(p -> p.isStatus())
-                    .filter(p -> (p.getLastInstall() + 1) < p.getLoanDuration())
+                    .filter(p -> (p.getLastInstall() < p.getLoanDuration()))
                     .filter(FxUtilsHandler.distinctByKey(p -> p.getMemberLoanCode()))
                     .collect(Collectors.toList());
 
@@ -519,9 +525,9 @@ public class CollectionSheetFxmlController implements Initializable {
             List<MemberLoan> kotaOnly = ml.getMemberLoans().stream()
                     .sorted(Comparator.comparing(MemberLoan::getChildId).reversed())
                     .filter(p -> !p.isIsComplete())
-                    // .filter(FxUtilsHandler.checkIfLastPaidDateWithinCurrentMonth(p -> p.getPaidUntil()))
+                    .filter(FxUtilsHandler.checkIfAlreadyPaid(p -> p.getPaidUntil()))
                     .filter(p -> p.isStatus())
-                    .filter(p -> (p.getLastInstall() + 1) >= p.getLoanDuration())
+                    .filter(p -> (p.getLastInstall() >= p.getLoanDuration()))
                     .filter(FxUtilsHandler.distinctByKey(p -> p.getMemberLoanCode()))
                     .collect(Collectors.toList());
 
@@ -594,7 +600,7 @@ public class CollectionSheetFxmlController implements Initializable {
 
             List<MemberSubscriptions> mbrSubs = new ArrayList<>(m.getMemberSubscriptions());
 
-            boolean flag = FxUtilsHandler.previousSubscriptions(m.getId()).isEmpty();
+            boolean flag = FxUtilsHandler.hasPreviousSubscriptions(m.getId());
             if (flag) {
                 sub_total.addAndGet(mbrSubs.stream().mapToDouble(a -> a.getAmount()).sum());
             } else {

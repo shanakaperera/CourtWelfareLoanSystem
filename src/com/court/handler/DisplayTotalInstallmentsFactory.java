@@ -29,7 +29,6 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import javafx.util.converter.DoubleStringConverter;
 
 /**
  *
@@ -53,9 +52,9 @@ public class DisplayTotalInstallmentsFactory implements Callback<TableColumn.Cel
         List<MemberLoan> instOnly = ml.getMemberLoans().stream()
                 .sorted(Comparator.comparing(MemberLoan::getChildId).reversed())
                 .filter(p -> !p.isIsComplete())
-                //  .filter(FxUtilsHandler.checkIfLastPaidDateWithinCurrentMonth(p -> p.getPaidUntil()))
+                .filter(FxUtilsHandler.checkIfAlreadyPaid(p -> p.getPaidUntil()))
                 .filter(p -> p.isStatus())
-                .filter(p -> (p.getLastInstall() + 1) < p.getLoanDuration())
+                .filter(p -> (p.getLastInstall() < p.getLoanDuration()))
                 .filter(FxUtilsHandler.distinctByKey(p -> p.getMemberLoanCode()))
                 .collect(Collectors.toList());
 
@@ -63,9 +62,9 @@ public class DisplayTotalInstallmentsFactory implements Callback<TableColumn.Cel
         List<MemberLoan> kotaOnly = ml.getMemberLoans().stream()
                 .sorted(Comparator.comparing(MemberLoan::getChildId).reversed())
                 .filter(p -> !p.isIsComplete())
-                // .filter(FxUtilsHandler.checkIfLastPaidDateWithinCurrentMonth(p -> p.getPaidUntil()))
+                .filter(FxUtilsHandler.checkIfAlreadyPaid(p -> p.getPaidUntil()))
                 .filter(p -> p.isStatus())
-                .filter(p -> (p.getLastInstall() + 1) >= p.getLoanDuration())
+                .filter(p -> (p.getLastInstall() >= p.getLoanDuration()))
                 .filter(FxUtilsHandler.distinctByKey(p -> p.getMemberLoanCode()))
                 .collect(Collectors.toList());
 

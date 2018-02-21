@@ -8,7 +8,7 @@
   </information>
   <resources>
     <j2se version="1.6+" href="http://java.sun.com/products/autodl/j2se"/>
-    <jar href="CourtWelfareLoanSystem.jar" size="944021" download="eager" />
+    <jar href="CourtWelfareLoanSystem.jar" size="944042" download="eager" />
     <jar href="lib\Medusa-7.5.jar" size="1456743" download="eager" />
     <jar href="lib\antlr-2.7.7.jar" size="437548" download="eager" />
     <jar href="lib\apache-commons-lang.jar" size="284220" download="eager" />

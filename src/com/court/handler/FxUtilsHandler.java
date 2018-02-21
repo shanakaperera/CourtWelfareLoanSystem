@@ -40,6 +40,7 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.util.Duration;
 import javafx.util.StringConverter;
+import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.criterion.Restrictions;
 import org.joda.time.DateTime;
@@ -309,30 +310,55 @@ public class FxUtilsHandler {
         return String.valueOf(min_num > gen_num ? min_num + gen_num : gen_num);
     }
 
-    public static List<SubscriptionPay> previousSubscriptions(int memeberId) {
+    public static boolean hasPreviousSubscriptions(int memeberId) {
         Session session = HibernateUtil.getSessionFactory().openSession();
-        List<SubscriptionPay> list = session.createCriteria(SubscriptionPay.class)
-                .createAlias("memberSubscriptions", "ms")
-                .createAlias("ms.member", "m")
-                .add(Restrictions.disjunction()
-                        .add(Restrictions.eq("m.id", memeberId))).list();
+        Query query = session.createSQLQuery("SELECT\n"
+                + "    m.member_id\n"
+                + "FROM\n"
+                + "    court_loan.member m\n"
+                + "INNER JOIN\n"
+                + "    court_loan.member_subscriptions ms\n"
+                + "ON\n"
+                + "    (\n"
+                + "        m.id = ms.member_id)\n"
+                + "INNER JOIN\n"
+                + "    court_loan.subscription_pay sp\n"
+                + "ON\n"
+                + "    (\n"
+                + "        ms.id = sp.member_subscriptions_id)\n"
+                + "WHERE\n"
+                + "    m.id = :mid ;");
+        query.setParameter("mid", memeberId);
+        boolean flag = query.list().isEmpty();
         session.close();
-        System.out.println("MId - " + memeberId + " : Size - " + list.size());
-        return list;
+        return flag;
     }
 
-    public static List<SubscriptionPay> previousSubscriptions(int memeberId, Session session) {
-        List<SubscriptionPay> list = session.createCriteria(SubscriptionPay.class)
-                .createAlias("memberSubscriptions", "ms")
-                .createAlias("ms.member", "m")
-                .add(Restrictions.disjunction()
-                        .add(Restrictions.eq("m.id", memeberId))).list();
-        return list;
+    public static boolean hasPreviousSubscriptions(int memeberId, Session session) {
+        Query query = session.createSQLQuery("SELECT\n"
+                + "    m.member_id\n"
+                + "FROM\n"
+                + "    court_loan.member m\n"
+                + "INNER JOIN\n"
+                + "    court_loan.member_subscriptions ms\n"
+                + "ON\n"
+                + "    (\n"
+                + "        m.id = ms.member_id)\n"
+                + "INNER JOIN\n"
+                + "    court_loan.subscription_pay sp\n"
+                + "ON\n"
+                + "    (\n"
+                + "        ms.id = sp.member_subscriptions_id)\n"
+                + "WHERE\n"
+                + "    m.id = :mid ;");
+        query.setParameter("mid", memeberId);
+        boolean flag = query.list().isEmpty();
+        return flag;
     }
 
-    public static Predicate<MemberLoan> checkIfLastPaidDateWithinCurrentMonth(Function<MemberLoan, Date> check_date) {
+    public static Predicate<MemberLoan> checkIfAlreadyPaid(Function<MemberLoan, Date> check_date) {
         DateTimeZone zone = DateTimeZone.forID("Asia/Colombo");
         DateTime now = DateTime.now(zone);
-        return t -> (new DateTime(check_date.apply(t), zone).getMonthOfYear() <= now.getMonthOfYear()) && (new DateTime(check_date.apply(t), zone).getYear() <= now.getYear());
+        return t -> (check_date.apply(t) != null ? ((new DateTime(check_date.apply(t), zone).getMonthOfYear() < now.getMonthOfYear()) && (new DateTime(check_date.apply(t), zone).getYear() <= now.getYear())) : true);
     }
 }
