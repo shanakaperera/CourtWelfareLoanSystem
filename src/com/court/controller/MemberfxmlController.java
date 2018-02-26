@@ -30,7 +30,9 @@ import com.court.model.MemberLoan;
 import com.court.model.MemberSubscription;
 import com.court.model.MemberSubscriptions;
 import com.court.model.ReceiptPay;
+import com.court.model.StatJob;
 import com.court.model.SubscriptionPay;
+import com.court.model.User;
 import impl.org.controlsfx.autocompletion.AutoCompletionTextFieldBinding;
 import impl.org.controlsfx.autocompletion.SuggestionProvider;
 import java.awt.Desktop;
@@ -453,6 +455,8 @@ public class MemberfxmlController implements Initializable {
     private TextField hnd_ovr_amt_txt;
     @FXML
     private ComboBox<String> member_status_combo;
+    @FXML
+    private Button mbr_stat_history_btn;
 
     /**
      * Initializes the controller class.
@@ -462,6 +466,7 @@ public class MemberfxmlController implements Initializable {
         validationSupport = new ValidationSupport();
         va = new ValidationSupport();
         va_msub = new ValidationSupport();
+        hndler = DashBoardFxmlController.controller.loggedSession();
         // registerInputValidation();
         fillMemberCodeTxt(member_code_txt);
         fillMemberDocCodeTxt(doc_id_txt);
@@ -593,6 +598,7 @@ public class MemberfxmlController implements Initializable {
             int id = getIdByMemberCode(session, member_code_txt.getText().trim());
             if (id != 0) {
                 member = (Member) session.load(Member.class, id);
+                updateMemberStatus(member_status_combo.getSelectionModel().getSelectedItem(), member, hndler.loggedUser(), session);
             } else {
                 member = new Member();
                 member.setMemberId(member_code_txt.getText().trim());
@@ -1767,7 +1773,7 @@ public class MemberfxmlController implements Initializable {
                         s.save(ccl);
 
                         java.util.Date[] instDates = setInstallmentDates(insts, childLastLoanPay);
-                        
+
                         for (int i = 0; i < insts; i++) {
                             LoanPayment lp = new LoanPayment();
                             lp.setInstallmentNo(last_inst_paid);
@@ -3804,6 +3810,73 @@ public class MemberfxmlController implements Initializable {
         Criteria c = s.createCriteria(LoanPayment.class);
         List<LoanPayment> lpList = c.add(Restrictions.in("id", lpIds)).list();
         return lpList.stream().mapToDouble(LoanPayment::getPaidAmt).sum();
+    }
+
+    private void updateMemberStatus(String job_status, Member member, User loggedUser, Session s) {
+        if (!member.getCurStatus().equalsIgnoreCase(job_status)) {
+            StatJob sj = new StatJob();
+            sj.setDateUpdated(new java.util.Date());
+            sj.setJobStatus(job_status);
+            sj.setMember(member);
+            sj.setUser(loggedUser);
+            s.save(sj);
+        }
+    }
+
+    @FXML
+    private void onMbrStatHistoryBtnAction(ActionEvent event) {
+        Session s = HibernateUtil.getSessionFactory().openSession();
+        Criteria c = s.createCriteria(StatJob.class, "sj");
+        c.createAlias("sj.member", "m");
+        c.add(Restrictions.eq("m.memberId", member_code_txt.getText().trim()));
+        List<StatJob> stat_hst = c.list();
+        s.close();
+
+        createJobStatHistoryTable(stat_hst);
+    }
+
+    private void createJobStatHistoryTable(List<StatJob> stat_hst) {
+
+        TableColumn<StatJob, String> mbrStatCol = new TableColumn<>("Mbr Status");
+        TableColumn<StatJob, User> updUsrCol = new TableColumn<>("Updated By");
+        updUsrCol.setPrefWidth(150);
+        TableColumn<StatJob, Date> dateUpCol = new TableColumn<>("Date Updated");
+        dateUpCol.setPrefWidth(100);
+
+        mbrStatCol.setCellValueFactory(new PropertyValueFactory<>("jobStatus"));
+        updUsrCol.setCellValueFactory(new PropertyValueFactory<>("user"));
+        dateUpCol.setCellValueFactory(new PropertyValueFactory<>("dateUpdated"));
+        dateUpCol.setCellFactory(column -> {
+            return new TableCell<StatJob, Date>() {
+                @Override
+                protected void updateItem(Date item, boolean empty) {
+                    super.updateItem(item, empty);
+                    if (!isEmpty()) {
+                        setText(new SimpleDateFormat("dd-MM-yyyy").format(item));
+                    }
+                }
+            };
+        });
+        updUsrCol.setCellFactory(column -> {
+            return new TableCell<StatJob, User>() {
+                @Override
+                protected void updateItem(User item, boolean empty) {
+                    super.updateItem(item, empty);
+                    if (!isEmpty()) {
+                        setText(item.getFullName());
+                    }
+                }
+            };
+        });
+        TableView<StatJob> tv = new TableView<>(FXCollections.observableList(stat_hst));
+        tv.getColumns().setAll(mbrStatCol, updUsrCol, dateUpCol);
+
+        Alert tbl_alert = new Alert(AlertType.INFORMATION);
+        tbl_alert.setTitle("Information");
+        tbl_alert.setHeaderText("User Status Update History");
+        tbl_alert.getDialogPane().setContent(tv);
+
+        tbl_alert.show();
     }
 
     class ContGive {

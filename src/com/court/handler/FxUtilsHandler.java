@@ -7,7 +7,6 @@ package com.court.handler;
 
 import com.court.db.HibernateUtil;
 import com.court.model.MemberLoan;
-import com.court.model.SubscriptionPay;
 import eu.hansolo.tilesfx.Tile;
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
@@ -42,7 +41,6 @@ import javafx.util.Duration;
 import javafx.util.StringConverter;
 import org.hibernate.Query;
 import org.hibernate.Session;
-import org.hibernate.criterion.Restrictions;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 

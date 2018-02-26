@@ -74,5 +74,6 @@ Contributor(s):
     <mapping resource="com/court/model/SubscriptionPay.hbm.xml"/>
     <mapping resource="com/court/model/ReceiptPay.hbm.xml"/>
     <mapping resource="com/court/model/ClosedLoan.hbm.xml"/>
+    <mapping resource="com/court/model/StatJob.hbm.xml"/>
   </session-factory>
 </hibernate-configuration>
