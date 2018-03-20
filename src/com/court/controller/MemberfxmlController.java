@@ -1811,88 +1811,91 @@ public class MemberfxmlController implements Initializable {
                             .stream().filter(p -> p.isIsLast()).findFirst().orElse(null);
 
                     double installWithoutPolli = FxUtilsHandler.roundNumber(selectedLoan.getLoanAmount() / selectedLoan.getNoOfRepay(), 0);
+
+                    int insts_p = 0;
+                    int last_inst_paid_p = 0;
+                    int no_of_repay_p = selectedLoan.getNoOfRepay();
+                    double payment_amt_p = 0.0;
+                    java.util.Date[] instDates_p = null;
+
                     if (selectedLoanPay != null) {
 
-                        int insts = selectedLoanPay.getInstallmentDue();
-                        int last_inst_paid = selectedLoanPay.getInstallmentNo();
-                        int no_of_repay = selectedLoan.getNoOfRepay();
-                        double payment_amt = installWithoutPolli * insts;
+                        insts_p = selectedLoanPay.getInstallmentDue();
+                        last_inst_paid_p = selectedLoanPay.getInstallmentNo();
+                        no_of_repay_p = selectedLoan.getNoOfRepay();
+                        payment_amt_p = installWithoutPolli * insts_p;
+                        instDates_p = setInstallmentDates(insts_p, selectedLoanPay);
 
-                        ClosedLoan ccl = new ClosedLoan();
-                        ccl.setEndedDate(new java.util.Date());
-                        ccl.setClosedStart(++last_inst_paid);
-                        ccl.setMemberLoanId(selectedLoan.getId());
-                        ccl.setTotinstClosed(insts);
-                        ccl.setActualinstAmt(installWithoutPolli);
-                        ccl.setTotalPayment(insts * installWithoutPolli);
-                        s.save(ccl);
-
-                        java.util.Date[] instDates = setInstallmentDates(insts, selectedLoanPay);
                         selectedLoanPay.setIsLast(false);
                         s.update(selectedLoanPay);
 
-                        for (int i = 0; i < insts; i++) {
-                            LoanPayment lp = new LoanPayment();
-                            lp.setInstallmentNo(last_inst_paid);
-                            lp.setInstallmentDue(no_of_repay - last_inst_paid);
-                            lp.setPaymentDate(new java.util.Date());
-                            lp.setInstallmentDate(instDates[i]);
-                            lp.setPaidAmt(installWithoutPolli);
-                            lp.setListedPay(installWithoutPolli);
-                            lp.setRemark("Installment Pay - Close Loan");
-                            lp.setPayOffice(selectedLoan.getMember().getPayOffice().getId());
-                            lp.setWorkOffice(selectedLoan.getMember().getBranch().getId());
-                            if (i == (insts - 1)) {
-                                lp.setIsLast(true);
-                            } else {
-                                lp.setIsLast(false);
-                            }
-                            lp.setMemberLoan(selectedLoan);
-                            s.save(lp);
-                            lpIds.add(lp.getId());
-                            last_inst_paid++;
-                        }
+                    } else {
 
-                        //==================IF HAS KOTA LEFT THEN PAY IT ALSO==========
-                        if (selectedLoan.getKotaLeft() > 0) {
-
-                            LoanPayment lp = new LoanPayment();
-                            lp.setInstallmentNo(last_inst_paid);
-                            lp.setInstallmentDue(0);
-                            lp.setPaymentDate(new java.util.Date());
-                            lp.setInstallmentDate(instDates[instDates.length - 1]);
-                            lp.setPaidAmt(selectedLoan.getKotaLeft());
-                            lp.setListedPay(selectedLoan.getKotaLeft());
-                            lp.setPayOffice(selectedLoan.getMember().getPayOffice().getId());
-                            lp.setWorkOffice(selectedLoan.getMember().getBranch().getId());
-                            lp.setIsLast(true);
-                            lp.setRemark("Arrears Pay - Close Loan");
-                            lp.setMemberLoan(selectedLoan);
-                            s.save(lp);
-                            lpIds.add(lp.getId());
-
-                            //====ADD KOTA AMOUNT ALSO TO TOTAL PAYMENT===========
-                            payment_amt += selectedLoan.getKotaLeft();
-                        }
-
-                        selectedLoan.setIsComplete(true);
-                        selectedLoan.setKotaLeft(0.0);
-                        selectedLoan.setClosedLoan(true);
-                        s.update(selectedLoan);
-
-//                        Type type = new TypeToken<List<Integer>>() {
-//                        }.getType();
-//                        ReceiptPay rp = new ReceiptPay();
-//                        rp.setMember(selectedLoan.getMember());
-//                        rp.setAmount(payment_amt);
-//                        rp.setPayDate(new java.util.Date());
-//                        rp.setPaymentType("installment");
-//                        rp.setPayIds(new Gson().toJson(lpIds, type));
-//                        rp.setPayOffice(selectedLoan.getMember().getPayOffice().getId());
-//                        rp.setWorkOffice(selectedLoan.getMember().getBranch().getId());
-//                        s.save(rp);
-                        updateMemberLoan(selectedLoan, insts, s, instDates[insts - 1]);
+                        insts_p = selectedLoan.getLastInstall() > 0 ? (no_of_repay_p - selectedLoan.getLastInstall()) : no_of_repay_p;
+                        last_inst_paid_p = selectedLoan.getLastInstall();
+                        no_of_repay_p = selectedLoan.getNoOfRepay();
+                        payment_amt_p = installWithoutPolli * insts_p;
+                        instDates_p = setInstallmentDates2(insts_p, selectedLoan.getPaidUntil());
                     }
+
+                    ClosedLoan ccl = new ClosedLoan();
+                    ccl.setEndedDate(new java.util.Date());
+                    ccl.setClosedStart(++last_inst_paid_p);
+                    ccl.setMemberLoanId(selectedLoan.getId());
+                    ccl.setTotinstClosed(insts_p);
+                    ccl.setActualinstAmt(installWithoutPolli);
+                    ccl.setTotalPayment(insts_p * installWithoutPolli);
+                    s.save(ccl);
+
+                    for (int i = 0; i < insts_p; i++) {
+                        LoanPayment lp = new LoanPayment();
+                        lp.setInstallmentNo(last_inst_paid_p);
+                        lp.setInstallmentDue(no_of_repay_p - last_inst_paid_p);
+                        lp.setPaymentDate(new java.util.Date());
+                        lp.setInstallmentDate(instDates_p[i]);
+                        lp.setPaidAmt(installWithoutPolli);
+                        lp.setListedPay(installWithoutPolli);
+                        lp.setRemark("Installment Pay - Close Loan");
+                        lp.setPayOffice(selectedLoan.getMember().getPayOffice().getId());
+                        lp.setWorkOffice(selectedLoan.getMember().getBranch().getId());
+                        if (i == (insts_p - 1)) {
+                            lp.setIsLast(true);
+                        } else {
+                            lp.setIsLast(false);
+                        }
+                        lp.setMemberLoan(selectedLoan);
+                        s.save(lp);
+                        lpIds.add(lp.getId());
+                        last_inst_paid_p++;
+                    }
+
+                    //==================IF HAS KOTA LEFT THEN PAY IT ALSO==========
+                    if (selectedLoan.getKotaLeft() > 0) {
+
+                        LoanPayment lp = new LoanPayment();
+                        lp.setInstallmentNo(last_inst_paid_p);
+                        lp.setInstallmentDue(0);
+                        lp.setPaymentDate(new java.util.Date());
+                        lp.setInstallmentDate(instDates_p[instDates_p.length - 1]);
+                        lp.setPaidAmt(selectedLoan.getKotaLeft());
+                        lp.setListedPay(selectedLoan.getKotaLeft());
+                        lp.setPayOffice(selectedLoan.getMember().getPayOffice().getId());
+                        lp.setWorkOffice(selectedLoan.getMember().getBranch().getId());
+                        lp.setIsLast(true);
+                        lp.setRemark("Arrears Pay - Close Loan");
+                        lp.setMemberLoan(selectedLoan);
+                        s.save(lp);
+                        lpIds.add(lp.getId());
+
+                        //====ADD KOTA AMOUNT ALSO TO TOTAL PAYMENT===========
+                        payment_amt_p += selectedLoan.getKotaLeft();
+                    }
+
+                    selectedLoan.setIsComplete(true);
+                    selectedLoan.setKotaLeft(0.0);
+                    selectedLoan.setClosedLoan(true);
+                    s.update(selectedLoan);
+                    updateMemberLoan(selectedLoan, insts_p, s, instDates_p[insts_p - 1]);
 
                     //GET CHILD LOAN OF SELECTED LOAN (IF HAS ANY)
                     MemberLoan childLoan = getChildOfSelected(selectedLoan.getChildId(), s);
@@ -1908,15 +1911,19 @@ public class MemberfxmlController implements Initializable {
                         int last_inst_paid = 0;
                         int no_of_repay = childLoan.getNoOfRepay();
                         double payment_amt = 0;
+                        java.util.Date[] instDates = null;
 
                         if (childLastLoanPay != null) {
                             insts = childLastLoanPay.getInstallmentDue();
                             last_inst_paid = childLastLoanPay.getInstallmentNo();
                             payment_amt = installWithoutPolli_2 * insts;
+                            instDates = setInstallmentDates(insts, childLastLoanPay);
                         } else {
-                            // last_inst_paid = childLoan.getLastInstall();
-                            insts = childLoan.getNoOfRepay();
+                            last_inst_paid = childLoan.getLastInstall();
+                            insts = childLoan.getLastInstall() > 0 ? (no_of_repay - childLoan.getLastInstall()) : no_of_repay;
                             payment_amt = installWithoutPolli_2 * insts;
+                            instDates = setInstallmentDates2(insts, childLoan.getPaidUntil());
+
                         }
 
                         ClosedLoan pcl = new ClosedLoan();
@@ -1928,7 +1935,6 @@ public class MemberfxmlController implements Initializable {
                         pcl.setTotalPayment(insts * installWithoutPolli_2);
                         s.save(pcl);
 
-                        java.util.Date[] instDates = setInstallmentDates(insts, childLastLoanPay);
                         if (childLastLoanPay != null) {
                             childLastLoanPay.setIsLast(false);
                             s.update(childLastLoanPay);
@@ -3262,6 +3268,17 @@ public class MemberfxmlController implements Initializable {
 
     private java.util.Date[] setInstallmentDates(int insts, LoanPayment lpLast) {
         java.util.Date lstDate = lpLast != null ? lpLast.getInstallmentDate() : new java.util.Date();
+        DateTimeZone zone = DateTimeZone.forID("Asia/Colombo");
+        DateTime ld = new DateTime(new SimpleDateFormat("yyyy-MM-dd").format(lstDate), zone);
+        java.util.Date furueDates[] = new java.util.Date[insts];
+        for (int i = 0; i < insts; i++) {
+            furueDates[i] = ld.plusMonths(i + 1).toDate();
+        }
+        return furueDates;
+    }
+
+    private java.util.Date[] setInstallmentDates2(int insts, java.util.Date lpLast) {
+        java.util.Date lstDate = lpLast != null ? lpLast : new java.util.Date();
         DateTimeZone zone = DateTimeZone.forID("Asia/Colombo");
         DateTime ld = new DateTime(new SimpleDateFormat("yyyy-MM-dd").format(lstDate), zone);
         java.util.Date furueDates[] = new java.util.Date[insts];

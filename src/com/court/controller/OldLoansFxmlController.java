@@ -311,7 +311,7 @@ public class OldLoansFxmlController implements Initializable {
 
         ml.setLastInstall(Integer.parseInt(last_paid_ins.getText()));
         ml.setPaidSofar(
-                installmentAccordingToLoanType * Integer.parseInt(last_paid_ins.getText())
+                (installmentAccordingToLoanType * Integer.parseInt(last_paid_ins.getText())) - TextFormatHandler.getCurrencyFieldValue(pl_bal_contxt)
         );
         ml.setPaidUntil(finalPay.toDate());
         ml.setKotaLeft(TextFormatHandler.getCurrencyFieldValue(pl_bal_contxt));
@@ -363,7 +363,9 @@ public class OldLoansFxmlController implements Initializable {
 
                 //==================================================
                 ml2.setLastInstall(Integer.parseInt(slast_paid_ins.getText()));
-                ml2.setPaidSofar(cInstallmentAccordingToLoanType * Integer.parseInt(slast_paid_ins.getText()));
+                ml2.setPaidSofar(
+                        (cInstallmentAccordingToLoanType * Integer.parseInt(slast_paid_ins.getText())) - TextFormatHandler.getCurrencyFieldValue(cl_bal_contxt)
+                );
                 ml2.setPaidUntil(ml.isIsComplete() ? finalPay2.toDate() : null);
                 ml2.setKotaLeft(TextFormatHandler.getCurrencyFieldValue(cl_bal_contxt));
                 //======================================================
@@ -762,7 +764,7 @@ public class OldLoansFxmlController implements Initializable {
 
         ln_int_col.setCellValueFactory((TableColumn.CellDataFeatures<MemberLoan, String> param) -> {
             return new SimpleObjectProperty<>(TextFormatHandler.PRECENTAGE_DECIMAL_FORMAT
-                    .format(param.getValue().getLoanInterest()) + " " + param.getValue().getInterestPer());
+                    .format(param.getValue().getLoanInterest() / 100) + " " + param.getValue().getInterestPer());
         });
 
         ln_action_col.setCellValueFactory((TableColumn.CellDataFeatures<MemberLoan, HBox> param) -> {
