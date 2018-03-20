@@ -43,6 +43,7 @@ import org.hibernate.Query;
 import org.hibernate.Session;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
+import org.joda.time.YearMonth;
 
 /**
  *
@@ -356,7 +357,17 @@ public class FxUtilsHandler {
 
     public static Predicate<MemberLoan> checkIfAlreadyPaid(Function<MemberLoan, Date> check_date) {
         DateTimeZone zone = DateTimeZone.forID("Asia/Colombo");
-        DateTime now = DateTime.now(zone);
-        return t -> (check_date.apply(t) != null ? ((new DateTime(check_date.apply(t), zone).getMonthOfYear() < now.getMonthOfYear()) && (new DateTime(check_date.apply(t), zone).getYear() <= now.getYear())) : true);
+        YearMonth ym_now = YearMonth.now(zone);
+
+        return t -> {
+            YearMonth lastPaid = YearMonth.fromDateFields(new DateTime(check_date.apply(t), zone).toDate());
+//            if (t.getId() == 206) {
+//                YearMonth lastPaid = YearMonth.fromDateFields(new DateTime(check_date.apply(t), zone).toDate());
+//                System.out.println(ym_now.isAfter(lastPaid) || ym_now.isEqual(lastPaid));
+//                System.exit(0);
+//            }
+            boolean flag = check_date.apply(t) != null ? (ym_now.isAfter(lastPaid) || ym_now.isEqual(lastPaid)) : true;
+            return flag;
+        };
     }
 }
