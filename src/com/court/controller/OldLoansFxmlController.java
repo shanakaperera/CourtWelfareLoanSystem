@@ -130,6 +130,8 @@ public class OldLoansFxmlController implements Initializable {
     private TextField cl_bal_contxt;
     @FXML
     private Label gur_notice_txt;
+    @FXML
+    private CheckBox con_repay;
 
     /**
      * Initializes the controller class.
@@ -303,6 +305,7 @@ public class OldLoansFxmlController implements Initializable {
                 && (TextFormatHandler.getCurrencyFieldValue(cl_bal_contxt) == 0)
         );
         ml.setStatus(true);
+        ml.setContinuousPay(con_repay.isSelected());
         ml.setOldLoan(true);
 
         DateTime finalPay = new DateTime(
@@ -371,6 +374,7 @@ public class OldLoansFxmlController implements Initializable {
                 //======================================================
                 ml2.setIsComplete(false);
                 ml2.setStatus(true);
+                ml2.setContinuousPay(con_repay.isSelected());
                 ml2.setChildId(0);
                 ml2.setIsChild(true);
                 ml2.setOldLoan(true);

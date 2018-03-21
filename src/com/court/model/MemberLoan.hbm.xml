@@ -62,6 +62,9 @@
         <property name="status" type="boolean">
             <column name="status" not-null="true" />
         </property>
+        <property name="continuousPay" type="boolean">
+            <column name="continuous_pay" not-null="true" />
+        </property>
         <property name="hasChild" type="boolean">
             <column name="has_child" not-null="true" />
         </property>

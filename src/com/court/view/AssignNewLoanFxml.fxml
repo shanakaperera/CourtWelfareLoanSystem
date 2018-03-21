@@ -19,7 +19,7 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<VBox alignment="CENTER" VBox.vgrow="ALWAYS" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.court.controller.AssignNewLoanFxmlController">
+<VBox alignment="CENTER" VBox.vgrow="ALWAYS" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.court.controller.AssignNewLoanFxmlController">
     <stylesheets>
         <URL value="@/com/court/asserts/style.css" />
     </stylesheets>
@@ -36,6 +36,7 @@
                 <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                 <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                 <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                 <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                 <RowConstraints minHeight="10.0" prefHeight="150.0" vgrow="SOMETIMES" />
                 <RowConstraints minHeight="10.0" prefHeight="80.0" vgrow="SOMETIMES" />
@@ -100,19 +101,19 @@
                 </ComboBox>
                 <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Repayment" GridPane.rowIndex="3" />
                 <TextField fx:id="repay_txt" editable="false" GridPane.columnIndex="1" GridPane.rowIndex="3" />
-                <HBox alignment="BOTTOM_RIGHT" prefHeight="100.0" prefWidth="200.0" spacing="10.0" GridPane.columnIndex="2" GridPane.columnSpan="2" GridPane.rowIndex="7" />
-                <Label fx:id="error_label" prefHeight="20.0" prefWidth="548.0" GridPane.columnSpan="4" GridPane.rowIndex="7">
+                <HBox alignment="BOTTOM_RIGHT" prefHeight="100.0" prefWidth="200.0" spacing="10.0" GridPane.columnIndex="2" GridPane.columnSpan="2" GridPane.rowIndex="8" />
+                <Label fx:id="error_label" prefHeight="20.0" prefWidth="548.0" GridPane.columnSpan="4" GridPane.rowIndex="8">
                     <font>
                         <Font name="System Bold" size="14.0" />
                     </font>
                 </Label>
-                <Label text="Guarantors" GridPane.rowIndex="6" />
-                <ListView fx:id="guarantor_list" prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.columnSpan="2" GridPane.rowIndex="6">
+                <Label text="Guarantors" GridPane.rowIndex="7" />
+                <ListView fx:id="guarantor_list" prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.columnSpan="2" GridPane.rowIndex="7">
                     <padding>
                         <Insets top="5.0" />
                     </padding>
                 </ListView>
-                <VBox prefHeight="200.0" spacing="5.0" GridPane.columnIndex="3" GridPane.rowIndex="6">
+                <VBox prefHeight="200.0" spacing="5.0" GridPane.columnIndex="3" GridPane.rowIndex="7">
                     <children>
                         <TextField fx:id="search_txt" />
                         <Button mnemonicParsing="false" onAction="#onGuarantorAddAction" style="-fx-text-fill: #ffff; -fx-font-size: 12;" text="Add Guarantor">
@@ -129,7 +130,7 @@
                         </Button>
                     </children>
                 </VBox>
-                <GridPane fx:id="child_loan_grid" hgap="5.0" style="-fx-border-color: #ffff; -fx-border-width: 2px;" GridPane.columnSpan="4" GridPane.rowIndex="5">
+                <GridPane fx:id="child_loan_grid" hgap="5.0" style="-fx-border-color: #ffff; -fx-border-width: 2px;" GridPane.columnSpan="4" GridPane.rowIndex="6">
                     <columnConstraints>
                         <ColumnConstraints hgrow="SOMETIMES" maxWidth="84.0" />
                         <ColumnConstraints hgrow="SOMETIMES" maxWidth="153.0" />
@@ -192,12 +193,18 @@
                         <Insets bottom="10.0" top="10.0" />
                     </GridPane.margin>
                 </GridPane>
-                <CheckBox fx:id="child_loan_checkbox" mnemonicParsing="false" onAction="#hasChildComboAction" prefHeight="25.0" prefWidth="326.0" text="Has second part with different figures" GridPane.columnSpan="3" GridPane.rowIndex="4">
+                <CheckBox fx:id="child_loan_checkbox" mnemonicParsing="false" onAction="#hasChildComboAction" prefHeight="25.0" prefWidth="326.0" text="Has second part with different figures" GridPane.columnSpan="3" GridPane.rowIndex="5">
                     <font>
                         <Font name="System Bold" size="16.0" />
                     </font>
                 </CheckBox>
-            <DatePicker fx:id="l_request_p" promptText="Loan Requested Date" GridPane.columnIndex="3" GridPane.rowIndex="3" />
+            <DatePicker fx:id="l_request_p" prefHeight="25.0" prefWidth="157.0" promptText="Loan Requested Date" GridPane.columnIndex="3" GridPane.rowIndex="3" />
+            <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Continuously Repay" GridPane.columnSpan="2" GridPane.rowIndex="4" />
+            <CheckBox fx:id="con_repay" mnemonicParsing="false" selected="true" GridPane.columnIndex="1" GridPane.rowIndex="4">
+               <GridPane.margin>
+                  <Insets left="40.0" />
+               </GridPane.margin>
+            </CheckBox>
             </children>
         </GridPane>
         <HBox alignment="TOP_RIGHT" spacing="10.0">

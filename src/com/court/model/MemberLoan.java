@@ -29,6 +29,7 @@ public class MemberLoan implements java.io.Serializable {
     private boolean isComplete;
     private Date paidUntil;
     private boolean status;
+    private boolean continuousPay;
     private boolean hasChild;
     private boolean isChild;
     private int childId;
@@ -359,6 +360,14 @@ public class MemberLoan implements java.io.Serializable {
 
     public void setlRequested(Date lRequested) {
         this.lRequested = lRequested;
+    }
+
+    public boolean isContinuousPay() {
+        return continuousPay;
+    }
+
+    public void setContinuousPay(boolean continuousPay) {
+        this.continuousPay = continuousPay;
     }
 
 }

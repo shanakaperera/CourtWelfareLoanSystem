@@ -355,18 +355,19 @@ public class FxUtilsHandler {
         return flag;
     }
 
-    public static Predicate<MemberLoan> checkIfAlreadyPaid(Function<MemberLoan, Date> check_date) {
+    public static Predicate<MemberLoan> checkIfNotYetPaid(Function<MemberLoan, Date> check_date) {
         DateTimeZone zone = DateTimeZone.forID("Asia/Colombo");
         YearMonth ym_now = YearMonth.now(zone);
 
         return t -> {
-            YearMonth lastPaid = YearMonth.fromDateFields(new DateTime(check_date.apply(t), zone).toDate());
+            YearMonth ym_last = YearMonth.fromDateFields(new DateTime(check_date.apply(t), zone).toDate());
 //            if (t.getId() == 206) {
 //                YearMonth lastPaid = YearMonth.fromDateFields(new DateTime(check_date.apply(t), zone).toDate());
 //                System.out.println(ym_now.isAfter(lastPaid) || ym_now.isEqual(lastPaid));
 //                System.exit(0);
 //            }
-            boolean flag = check_date.apply(t) != null ? (ym_now.isAfter(lastPaid) || ym_now.isEqual(lastPaid)) : true;
+            boolean flag = check_date.apply(t) != null ? (t.isContinuousPay() ? true : (ym_now.isAfter(ym_last) || ym_now.isEqual(ym_last))) : true;
+            // boolean flag = check_date.apply(t) != null ? (ym_now.isAfter(ym_last) || ym_now.isEqual(ym_last)) : true;
             return flag;
         };
     }

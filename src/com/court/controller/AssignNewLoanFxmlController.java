@@ -130,6 +130,8 @@ public class AssignNewLoanFxmlController implements Initializable {
     private DatePicker l_request_c;
     @FXML
     private DatePicker l_request_p;
+    @FXML
+    private CheckBox con_repay;
 
     /**
      * Initializes the controller class.
@@ -378,6 +380,7 @@ public class AssignNewLoanFxmlController implements Initializable {
                 int_method_combo.getSelectionModel().getSelectedItem()));
         ml.setIsComplete(false);
         ml.setStatus(true);
+        ml.setContinuousPay(con_repay.isSelected());
 
         if (child_loan_checkbox.isSelected()) {
             if (va.validationResultProperty().get().getErrors().isEmpty() && vs.validationResultProperty().get().getErrors().isEmpty()) {
@@ -406,6 +409,7 @@ public class AssignNewLoanFxmlController implements Initializable {
                         c_int_method_combo.getSelectionModel().getSelectedItem()));
                 ml2.setIsComplete(false);
                 ml2.setStatus(true);
+                ml2.setContinuousPay(con_repay.isSelected());
                 ml2.setChildId(0);
                 ml2.setIsChild(true);
                 session.save(ml2);
