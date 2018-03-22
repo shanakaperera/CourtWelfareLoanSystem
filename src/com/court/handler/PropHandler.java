@@ -16,6 +16,7 @@ public class PropHandler {
 
     private static final String STRING_PROPERTY = "string.properties";
     private static final String REGEX_PROPERTY = "regexz.properties";
+    private static final String CONNECTION_PROPERTY = "connection.properties";
 
     private static final Properties PROP = new Properties();
 
@@ -27,5 +28,10 @@ public class PropHandler {
     public static String getRegexProperty(String property_name) throws IOException {
         PROP.load(ClassLoader.getSystemResourceAsStream(REGEX_PROPERTY));
         return PROP.getProperty(property_name);
+    }
+
+    public static Properties getConnectionProperties() throws IOException {
+        PROP.load(ClassLoader.getSystemResourceAsStream(CONNECTION_PROPERTY));
+        return PROP;
     }
 }

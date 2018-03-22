@@ -5,6 +5,7 @@
  */
 package com.court.db;
 
+import com.court.handler.PropHandler;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.AnnotationConfiguration;
 
@@ -22,7 +23,10 @@ public class HibernateUtil {
         try {
             // Create the SessionFactory from standard (hibernate.cfg.xml) 
             // config file.
-            sessionFactory = new AnnotationConfiguration().configure().buildSessionFactory();
+            sessionFactory = new AnnotationConfiguration()
+                    .mergeProperties(PropHandler.getConnectionProperties())
+                    .configure().buildSessionFactory();
+
         } catch (Throwable ex) {
             // Log the exception. 
             System.err.println("Initial SessionFactory creation failed." + ex);
