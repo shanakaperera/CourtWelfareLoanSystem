@@ -503,9 +503,13 @@ public class CollectionSheetFxmlController implements Initializable {
         return filteredList;
     }
 
+    DisplayTotalInstallmentsFactory dtp = null;
+
     private Node createPage(int pageIndex, List<Member> mList) {
         int fromIndex = pageIndex * rowsPerPage;
         int toIndex = Math.min(fromIndex + rowsPerPage, mList.size());
+
+        dtp = new DisplayTotalInstallmentsFactory(collection_tbl, total, chk_amt_txt);
 
         m_id_col.setCellValueFactory(new PropertyValueFactory<>("memberId"));
         m_name_col.setCellValueFactory(new PropertyValueFactory<>("nameWithIns"));
@@ -531,7 +535,7 @@ public class CollectionSheetFxmlController implements Initializable {
         //===============Subscription Details=========================
         detail_view_col.setCellValueFactory(new DisplaySubscriptionFactory(collection_tbl, total, chk_amt_txt));
         //===================Installments Details====================
-        rtot_pay_col.setCellValueFactory(new DisplayTotalInstallmentsFactory(collection_tbl, total, chk_amt_txt));
+        rtot_pay_col.setCellValueFactory(dtp);
         //==========================Total Inst Amount====================
         tot_inst_amt_col.setCellValueFactory((TableColumn.CellDataFeatures<Member, String> param) -> {
             Member ml = param.getValue();
@@ -608,8 +612,10 @@ public class CollectionSheetFxmlController implements Initializable {
 
             total -= value;
         }
-
+        //collection_tbl.refresh();
+        System.err.println("TOTAL OUT - " + total);
         chk_amt_txt.setText(TextFormatHandler.CURRENCY_DECIMAL_FORMAT.format(total));
+        dtp.setTotal(total);
     }
 
     private void bindSubTotalTo(TextField chk_amt_txt) {

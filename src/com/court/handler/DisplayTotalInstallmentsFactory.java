@@ -150,20 +150,19 @@ public class DisplayTotalInstallmentsFactory implements Callback<TableColumn.Cel
                         .setLoanInstallment(event.getNewValue());
 
                 collection_tbl.refresh();
+                
                 total_n.setText(getTableColumnTotal(event.getTableView(), 4));
+//                System.out.println("TOTAL IN - " + total);
+//                System.exit(0);
                 total = total + diff;
+
+//                System.out.println("TOTAL - "+total);
+//                System.exit(0);
                 chk_amt_txt.setText(TextFormatHandler.CURRENCY_DECIMAL_FORMAT.format(total));
             } else {
                 ln_inst_col.getTableView().refresh();
             }
 
-//            double diff = event.getNewValue() - event.getOldValue();
-//            event.getTableView().getItems().get(event.getTablePosition().getRow())
-//                    .setLoanInstallment(event.getNewValue() != null ? event.getNewValue() : 0.00);
-//            collection_tbl.refresh();
-//            total_n.setText(getTableColumnTotal(event.getTableView(), 4));
-//            total = total + diff;
-//            chk_amt_txt.setText(TextFormatHandler.CURRENCY_DECIMAL_FORMAT.format(total));
         });
 
         ln_int_col.setCellFactory(column -> {
@@ -206,6 +205,11 @@ public class DisplayTotalInstallmentsFactory implements Callback<TableColumn.Cel
             tot += value;
         }
         return TextFormatHandler.CURRENCY_DECIMAL_FORMAT.format(tot);
+    }
+
+
+    public void setTotal(double total) {
+        this.total = total;
     }
 
 }
