@@ -137,7 +137,15 @@ public class CollectionSheetFxmlController implements Initializable {
     @FXML
     private BorderPane table_bpane;
 
-    double total = 0.0;
+    private double total = 0.0;
+
+    public double getTotal() {
+        return total;
+    }
+
+    public void setTotal(double total) {
+        this.total = total;
+    }
     @FXML
     private CustomTextField tbl_filter_txt;
     private Button filterTxtClear;
@@ -193,6 +201,16 @@ public class CollectionSheetFxmlController implements Initializable {
             alert_error.show();
             return;
         }
+
+        if (!tbl_filter_txt.getText().trim().isEmpty()) {
+            Alert alert_error = new Alert(Alert.AlertType.ERROR);
+            alert_error.setTitle("Error");
+            alert_error.setHeaderText("Clear the search field !");
+            alert_error.setContentText(PropHandler.getStringProperty("coltable_search_field_error"));
+            alert_error.show();
+            return;
+        }
+
         if (validationSupport.validationResultProperty().get().getErrors().isEmpty()) {
 
             if (collection_tbl.getItems().isEmpty()) {
@@ -509,7 +527,7 @@ public class CollectionSheetFxmlController implements Initializable {
         int fromIndex = pageIndex * rowsPerPage;
         int toIndex = Math.min(fromIndex + rowsPerPage, mList.size());
 
-        dtp = new DisplayTotalInstallmentsFactory(collection_tbl, total, chk_amt_txt);
+        dtp = new DisplayTotalInstallmentsFactory(collection_tbl, this, chk_amt_txt);
 
         m_id_col.setCellValueFactory(new PropertyValueFactory<>("memberId"));
         m_name_col.setCellValueFactory(new PropertyValueFactory<>("nameWithIns"));
@@ -533,7 +551,7 @@ public class CollectionSheetFxmlController implements Initializable {
             return new SimpleObjectProperty<>(checkBox);
         });
         //===============Subscription Details=========================
-        detail_view_col.setCellValueFactory(new DisplaySubscriptionFactory(collection_tbl, total, chk_amt_txt));
+        detail_view_col.setCellValueFactory(new DisplaySubscriptionFactory(collection_tbl, this, chk_amt_txt));
         //===================Installments Details====================
         rtot_pay_col.setCellValueFactory(dtp);
         //==========================Total Inst Amount====================
@@ -605,6 +623,9 @@ public class CollectionSheetFxmlController implements Initializable {
 
     private void bindSubTotalTo(TextField chk_amt_txt, double value, boolean b) {
 
+        System.out.println("CHK VALUE - " + value);
+
+        System.err.println("TOTAL IN - " + total);
         if (b) {
 
             total += value;

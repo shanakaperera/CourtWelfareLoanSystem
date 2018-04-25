@@ -5,6 +5,7 @@
  */
 package com.court.handler;
 
+import com.court.controller.CollectionSheetFxmlController;
 import com.court.model.Member;
 import com.court.model.MemberSubscriptions;
 import java.util.ArrayList;
@@ -35,12 +36,14 @@ import javafx.util.Callback;
 public class DisplaySubscriptionFactory implements Callback<TableColumn.CellDataFeatures<Member, Button>, ObservableValue<Button>> {
 
     private final TableView<Member> collection_tbl;
+    CollectionSheetFxmlController csController;
     private double total;
     private final TextField chk_amt_txt;
 
-    public DisplaySubscriptionFactory(TableView<Member> collection_tbl, double total, TextField chk_amt_txt) {
+    public DisplaySubscriptionFactory(TableView<Member> collection_tbl, CollectionSheetFxmlController csController, TextField chk_amt_txt) {
         this.collection_tbl = collection_tbl;
-        this.total = total;
+        this.csController = csController;
+        this.total = this.csController.getTotal();
         this.chk_amt_txt = chk_amt_txt;
     }
 
@@ -96,6 +99,7 @@ public class DisplaySubscriptionFactory implements Callback<TableColumn.CellData
                 double diff = newValue - sum;
                 total = total + diff;
                 chk_amt_txt.setText(TextFormatHandler.CURRENCY_DECIMAL_FORMAT.format(total));
+                csController.setTotal(total);
             });
 
         });
