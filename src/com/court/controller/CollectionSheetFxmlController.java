@@ -41,6 +41,7 @@ import java.util.function.Predicate;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
+import javafx.application.Platform;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
@@ -550,6 +551,47 @@ public class CollectionSheetFxmlController implements Initializable {
             });
             return new SimpleObjectProperty<>(checkBox);
         });
+
+        CheckBox checkAll = new CheckBox("Collected");
+        checkAll.setSelected(true);
+
+        checkAll.setOnAction(e -> {
+
+            //System.out.println("ROW COUNT - " + collection_tbl.getItems().size());
+            collection_tbl.refresh();
+            collection_tbl.scrollTo(collection_tbl.getItems().size() - 1);
+
+            if (checkAll.isSelected()) {
+
+                AtomicDouble newTotal = new AtomicDouble(0.0);
+
+                collection_tbl.getItems().forEach(p -> {
+                    CheckBox value = colection_stat_col.getCellData(p);
+                    value.setSelected(true);
+                    Label subTotLabel = sub_tot_col.getCellData(p);
+                    Double currencyFieldValue = TextFormatHandler.getCurrencyFieldValue(subTotLabel.getText());
+                    newTotal.addAndGet(currencyFieldValue);
+
+                });
+
+                total = newTotal.doubleValue();
+                chk_amt_txt.setText(TextFormatHandler.CURRENCY_DECIMAL_FORMAT.format(total));
+
+            } else {
+
+                collection_tbl.getItems().forEach(p -> {
+                    CheckBox value = colection_stat_col.getCellData(p);
+                    value.setSelected(false);
+                });
+
+                total = 0;
+                chk_amt_txt.setText(TextFormatHandler.CURRENCY_DECIMAL_FORMAT.format(total));
+            }
+
+        });
+
+        colection_stat_col.setGraphic(checkAll);
+
         //===============Subscription Details=========================
         detail_view_col.setCellValueFactory(new DisplaySubscriptionFactory(collection_tbl, this, chk_amt_txt));
         //===================Installments Details====================
@@ -590,7 +632,8 @@ public class CollectionSheetFxmlController implements Initializable {
         overpay_col.setCellFactory(TextFieldTableCell.<Member, Double>forTableColumn(new CustomDoubleStringConverter()));
 
         overpay_col.setOnEditCommit((TableColumn.CellEditEvent<Member, Double> event) -> {
-            if (event.getNewValue() != null) {
+            if (event.getNewValue() != null && event.getTableView().getItems()
+                    .get(event.getTablePosition().getRow()).isCollected()) {
 
                 double diff = event.getNewValue() - event.getOldValue();
 
@@ -848,8 +891,8 @@ public class CollectionSheetFxmlController implements Initializable {
         m_id_col.setPrefWidth(65);
         m_name_col = new TableColumn<>("Name");
         m_name_col.setPrefWidth(150);
-        colection_stat_col = new TableColumn<>("Collected");
-        colection_stat_col.setPrefWidth(65);
+        colection_stat_col = new TableColumn<>();
+        colection_stat_col.setPrefWidth(100);
         total_pay_col = new TableColumn<>("Monthly Subscription");
         total_pay_col.setPrefWidth(120);
         detail_view_col = new TableColumn<>("Subscription Details");
