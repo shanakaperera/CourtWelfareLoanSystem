@@ -20,7 +20,7 @@
 <?import javafx.scene.text.Font?>
 <?import org.controlsfx.control.textfield.CustomTextField?>
 
-<VBox alignment="TOP_CENTER" prefHeight="445.0" prefWidth="546.0" spacing="10.0" VBox.vgrow="ALWAYS" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.court.controller.CollectionSheetFxmlController">
+<VBox alignment="TOP_CENTER" prefHeight="445.0" prefWidth="546.0" spacing="10.0" VBox.vgrow="ALWAYS" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.court.controller.CollectionSheetFxmlController">
     <stylesheets>
         <URL value="@/com/court/asserts/style.css" />
     </stylesheets>  
@@ -107,7 +107,7 @@
                            </font></TextField>
                         <HBox alignment="CENTER_LEFT" spacing="3.0" GridPane.columnIndex="5" GridPane.rowIndex="4">
                            <children>
-                                      <Button mnemonicParsing="false" onAction="#onProceedBtnAction" text="Proceed">
+                                      <Button fx:id="proceed_btn" mnemonicParsing="false" onAction="#onProceedBtnAction" text="Proceed">
                                           <styleClass>
                                               <String fx:value="btn" />
                                               <String fx:value="btn-success" />

@@ -139,6 +139,8 @@ public class CollectionSheetFxmlController implements Initializable {
     private BorderPane table_bpane;
 
     private double total = 0.0;
+    @FXML
+    private Button proceed_btn;
 
     public double getTotal() {
         return total;
@@ -176,6 +178,7 @@ public class CollectionSheetFxmlController implements Initializable {
     private void onSearchBtnAction(ActionEvent event) {
         performSearch(search_typ_combo, search_txt);
         bindValidationOnPaneControlFocus(collection_grid);
+        proceed_btn.setDisable(false);
     }
 
     @FXML
@@ -386,6 +389,7 @@ public class CollectionSheetFxmlController implements Initializable {
                 //GENERATE REPORT AFTER PAYMENT======
                 generateCollectionPaymentReport(payCheque.getChequeNo());
                 FxUtilsHandler.clearFields(collection_grid);
+                proceed_btn.setDisable(true);
                 //  collection_tbl.getItems().clear();
             }
         } else {
@@ -782,6 +786,9 @@ public class CollectionSheetFxmlController implements Initializable {
         validationSupport.registerValidator(chk_amt_txt,
                 Validator.createEmptyValidator("This field is not optional !")
         );
+        validationSupport.registerValidator(search_typ_combo,
+                Validator.createEmptyValidator("This field is not optional !"));
+
         validationSupport.registerValidator(user_enter_pay,
                 Validator.combine(
                         Validator.createEmptyValidator("This field is not optional."),
