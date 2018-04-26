@@ -41,7 +41,6 @@ import java.util.function.Predicate;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
-import javafx.application.Platform;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
@@ -61,6 +60,7 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
 import javafx.scene.control.Pagination;
+import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
@@ -546,7 +546,11 @@ public class CollectionSheetFxmlController implements Initializable {
             checkBox.selectedProperty().setValue(ml.isCollected());
             checkBox.selectedProperty().addListener((ov, old_val, new_val) -> {
                 ml.setCollected(new_val);
-                double selectedRowTot = ml.getTotalSubscription() + ml.getTotalPayment();
+                //System.out.println(ml.getFullName() + " - " + ml.getZeroOverpay());
+//                param.getTableView().getColumns().get(1);
+//                Button btn = rtot_pay_col.getCellObservableValue(ml).getValue();
+//                System.out.println("BTN - " + btn.getText());
+                double selectedRowTot = ml.getTotalSubscription() + ml.getTotalPayment() + ml.getZeroOverpay();
                 bindSubTotalTo(chk_amt_txt, selectedRowTot, new_val);
             });
             return new SimpleObjectProperty<>(checkBox);
@@ -559,24 +563,23 @@ public class CollectionSheetFxmlController implements Initializable {
 
             //System.out.println("ROW COUNT - " + collection_tbl.getItems().size());
             collection_tbl.refresh();
-            collection_tbl.scrollTo(collection_tbl.getItems().size() - 1);
 
             if (checkAll.isSelected()) {
 
-                AtomicDouble newTotal = new AtomicDouble(0.0);
-
-                collection_tbl.getItems().forEach(p -> {
-                    CheckBox value = colection_stat_col.getCellData(p);
-                    value.setSelected(true);
-                    Label subTotLabel = sub_tot_col.getCellData(p);
-                    Double currencyFieldValue = TextFormatHandler.getCurrencyFieldValue(subTotLabel.getText());
-                    newTotal.addAndGet(currencyFieldValue);
-
-                });
-
-                total = newTotal.doubleValue();
-                chk_amt_txt.setText(TextFormatHandler.CURRENCY_DECIMAL_FORMAT.format(total));
-
+//                AtomicDouble newTotal = new AtomicDouble(0.0);
+//
+//                collection_tbl.getItems().forEach(p -> {
+//                    CheckBox value = colection_stat_col.getCellData(p);
+//                    value.setSelected(true);
+//                    Label subTotLabel = sub_tot_col.getCellData(p);
+//                    Double currencyFieldValue = TextFormatHandler
+//                            .getCurrencyFieldValue(subTotLabel.getText());
+//                    newTotal.addAndGet(currencyFieldValue);
+//
+//                });
+//
+//                total = newTotal.doubleValue();
+//                chk_amt_txt.setText(TextFormatHandler.CURRENCY_DECIMAL_FORMAT.format(total));
             } else {
 
                 collection_tbl.getItems().forEach(p -> {
@@ -586,8 +589,10 @@ public class CollectionSheetFxmlController implements Initializable {
 
                 total = 0;
                 chk_amt_txt.setText(TextFormatHandler.CURRENCY_DECIMAL_FORMAT.format(total));
+                checkAll.setDisable(true);
             }
 
+            // collection_tbl.refresh();
         });
 
         colection_stat_col.setGraphic(checkAll);
