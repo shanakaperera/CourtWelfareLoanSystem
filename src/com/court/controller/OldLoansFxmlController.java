@@ -316,7 +316,7 @@ public class OldLoansFxmlController implements Initializable {
         ml.setPaidSofar(
                 (installmentAccordingToLoanType * Integer.parseInt(last_paid_ins.getText())) - TextFormatHandler.getCurrencyFieldValue(pl_bal_contxt)
         );
-        ml.setPaidUntil(finalPay.toDate());
+        ml.setPaidUntil(Integer.parseInt(last_paid_ins.getText()) == 0 ? null : finalPay.toDate());
         ml.setKotaLeft(TextFormatHandler.getCurrencyFieldValue(pl_bal_contxt));
 
         if (has_child_check.isSelected()) {
