@@ -43,6 +43,7 @@ import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
@@ -206,7 +207,7 @@ public class CollectionSheetFxmlController implements Initializable {
             return;
         }
 
-        if (!tbl_filter_txt.getText().trim().isEmpty()) {
+        if ((tbl_filter_txt.getText() != null) && !tbl_filter_txt.getText().trim().isEmpty()) {
             Alert alert_error = new Alert(Alert.AlertType.ERROR);
             alert_error.setTitle("Error");
             alert_error.setHeaderText("Clear the search field !");
@@ -252,128 +253,131 @@ public class CollectionSheetFxmlController implements Initializable {
             session.save(payCheque);
 
             collection_tbl.getItems().forEach(m -> {
-                //====================================MEMBERS SUBSCRIPTIONS SAVE=====================================
-                List<MemberSubscriptions> mbrSubs = new ArrayList<>(m.getMemberSubscriptions());
-                SubscriptionPay sp = new SubscriptionPay();
-                for (MemberSubscriptions mbrSub : mbrSubs) {
-                    switch (mbrSub.getMemberSubscription().getFeeName()) {
-                        case "Membership Fee":
-                            sp.setMembershipFee(mbrSub.getAmount());
-                            break;
-                        case "Savings Fee":
-                            sp.setSavingsFee(mbrSub.getAmount());
-                            break;
-                        case "HOI Fee":
-                            sp.setHoiFee(mbrSub.getAmount());
-                            break;
-                        case "ACI Fee":
-                            sp.setAciFee(mbrSub.getAmount());
-                            break;
-                        case "Optional":
-                            sp.setOptional(mbrSub.getAmount());
-                            break;
-                        case "Admission Fee":
-                            boolean empty = FxUtilsHandler.hasPreviousSubscriptions(m.getId(), session);
-                            sp.setAdmissionFee(empty ? mbrSub.getAmount() : 0.0);
-                            break;
-                    }
-                    sp.setPaymentDate(getDayOfMonth(Date.valueOf(chk_of_month_chooser.getValue())));
-                    sp.setChequeNo(chk_no_txt.getText());
-                    sp.setAddedDate(new java.util.Date());
-                    sp.setPayOffice(m.getPayOffice().getId());
-                    sp.setWorkOffice(m.getBranch().getId());
-                    sp.setMemberSubscriptions(mbrSub);
-                }
-                try {
-                    updateMemberOverPay(m, session);
-                    session.save(sp);
-                } catch (Exception e) {
-                    Alert alert_error = new Alert(Alert.AlertType.ERROR);
-                    alert_error.setTitle("Error");
-                    alert_error.setHeaderText("Some member subscription details are not correctly updated !");
-                    alert_error.setContentText("You have some partially updated members in this list. Please complete thier details and try again.");
-                    alert_error.show();
-                    throw e;
-                }
+                if (m.isCollected()) {
 
-                //====================================END MEMBERS SUBSCRIPTIONS SAVE=========================
-                //====================================MEMBERS LOANS SAVE=====================================
-                List<MemberLoan> mLoanList = m.getMemberLoans().stream()
-                        .sorted(Comparator.comparing(MemberLoan::getChildId).reversed())
-                        .filter(p -> (!p.isIsComplete() && p.isStatus()))
-                        .filter(FxUtilsHandler.distinctByKey(p -> p.getMemberLoanCode()))
-                        .filter(FxUtilsHandler.checkIfNotYetPaid(p -> p.getPaidUntil()))
-                        .collect(Collectors.toList());
-
-                mLoanList.forEach(ml -> {
-                    LoanPayment getLastPay = ml.getLoanPayments()
-                            .stream().filter(p -> p.isIsLast()).findAny().orElse(null);
-
-                    //==================IF LOAN INSTALLMENT IS 0.00 OR LESS THEN AVOID MEMBER LOAN FROM PAYING=======
-                    if (ml.getLoanInstallment() <= 0.0) {
-                        return;
-                    }
-                    //==================IF LOAN INSTALLMENT IS 0.00 OR LESS THEN AVOID MEMBER LOAN FROM PAYING=======
-
-                    if (getLastPay != null) {
-                        updatePreviousInstallmentsOfMemberLoan(session, getLastPay);
-                        LoanPayment lp = new LoanPayment();
-                        lp.setChequeNo(chk_no_txt.getText());
-                        lp.setMemberLoan(ml);
-                        lp.setPaymentDate(new java.util.Date());
-                        lp.setIsLast(true);
-                        lp.setInstallmentDue((ml.getNoOfRepay() - (getLastPay.getInstallmentNo() + 1)) >= 0 ? (ml.getNoOfRepay() - (getLastPay.getInstallmentNo() + 1)) : 0);
-                        lp.setInstallmentNo(getLastPay.getInstallmentNo() + 1);
-                        lp.setInstallmentDate(getInstallmentDate(getLastPay.getInstallmentDate()));
-                        lp.setPaidAmt(ml.getLoanInstallment());
-                        lp.setListedPay(getListedPayFrom(ml, session, lp.getInstallmentDue() == 0));
-                        lp.setPayOffice(m.getPayOffice().getId());
-                        lp.setWorkOffice(m.getBranch().getId());
-                        lp.setRemark(lp.getInstallmentDue() == 0 ? "Arrears Pay" : "Installment Pay");
-                        session.save(lp);
-
-                        //========================Kota left checks if amount paying less than the installment, then assign to kotaya===============================
-                        double kota_left = (lp.getListedPay() > lp.getPaidAmt()) ? (lp.getListedPay() - lp.getPaidAmt()) : 0.0;
-                        double kotaTotNow = updateMemberLoan(ml, kota_left, session, (lp.getInstallmentDue() == 0 && (lp.getPaidAmt() == lp.getListedPay())), getInstallmentDate(getLastPay.getInstallmentDate()));
-
-                        //end loan if installments completed and no kota left......
-                        if (lp.getInstallmentDue() == 0 && kotaTotNow == 0) {
-                            endLoan(session, ml);
+                    //====================================MEMBERS SUBSCRIPTIONS SAVE=====================================
+                    List<MemberSubscriptions> mbrSubs = new ArrayList<>(m.getMemberSubscriptions());
+                    SubscriptionPay sp = new SubscriptionPay();
+                    for (MemberSubscriptions mbrSub : mbrSubs) {
+                        switch (mbrSub.getMemberSubscription().getFeeName()) {
+                            case "Membership Fee":
+                                sp.setMembershipFee(mbrSub.getAmount());
+                                break;
+                            case "Savings Fee":
+                                sp.setSavingsFee(mbrSub.getAmount());
+                                break;
+                            case "HOI Fee":
+                                sp.setHoiFee(mbrSub.getAmount());
+                                break;
+                            case "ACI Fee":
+                                sp.setAciFee(mbrSub.getAmount());
+                                break;
+                            case "Optional":
+                                sp.setOptional(mbrSub.getAmount());
+                                break;
+                            case "Admission Fee":
+                                boolean empty = FxUtilsHandler.hasPreviousSubscriptions(m.getId(), session);
+                                sp.setAdmissionFee(empty ? mbrSub.getAmount() : 0.0);
+                                break;
                         }
-                    } else {
+                        sp.setPaymentDate(getDayOfMonth(Date.valueOf(chk_of_month_chooser.getValue())));
+                        sp.setChequeNo(chk_no_txt.getText());
+                        sp.setAddedDate(new java.util.Date());
+                        sp.setPayOffice(m.getPayOffice().getId());
+                        sp.setWorkOffice(m.getBranch().getId());
+                        sp.setMemberSubscriptions(mbrSub);
+                    }
+                    try {
+                        updateMemberOverPay(m, session);
+                        session.save(sp);
+                    } catch (Exception e) {
+                        Alert alert_error = new Alert(Alert.AlertType.ERROR);
+                        alert_error.setTitle("Error");
+                        alert_error.setHeaderText("Some member subscription details are not correctly updated !");
+                        alert_error.setContentText("You have some partially updated members in this list. Please complete thier details and try again.");
+                        alert_error.show();
+                        throw e;
+                    }
 
-                        LoanPayment lp = new LoanPayment();
-                        lp.setChequeNo(chk_no_txt.getText());
-                        lp.setMemberLoan(ml);
-                        lp.setPaymentDate(new java.util.Date());
-                        lp.setIsLast(true);
-                        lp.setPaidAmt(ml.getLoanInstallment());
-                        lp.setListedPay(getListedPayFrom(ml, session, false));
-                        lp.setInstallmentDate(getDayOfMonth(Date.valueOf(chk_of_month_chooser.getValue())));
+                    //====================================END MEMBERS SUBSCRIPTIONS SAVE=========================
+                    //====================================MEMBERS LOANS SAVE=====================================
+                    List<MemberLoan> mLoanList = m.getMemberLoans().stream()
+                            .sorted(Comparator.comparing(MemberLoan::getChildId).reversed())
+                            .filter(p -> (!p.isIsComplete() && p.isStatus()))
+                            .filter(FxUtilsHandler.distinctByKey(p -> p.getMemberLoanCode()))
+                            .filter(FxUtilsHandler.checkIfNotYetPaid(p -> p.getPaidUntil()))
+                            .collect(Collectors.toList());
 
-                        //=================IF MEMBER LOAN IS OLD LOAN THEN====================
-                        if (ml.isOldLoan()) {
+                    mLoanList.forEach(ml -> {
+                        LoanPayment getLastPay = ml.getLoanPayments()
+                                .stream().filter(p -> p.isIsLast()).findAny().orElse(null);
 
-                            lp.setInstallmentDue(ml.getNoOfRepay() - ml.getLastInstall());
-                            lp.setInstallmentNo(ml.getLastInstall() + 1);
-                            //updateOldLoan(ml, session, ml.getLoanInstallment());
+                        //==================IF LOAN INSTALLMENT IS 0.00 OR LESS THEN AVOID MEMBER LOAN FROM PAYING=======
+                        if (ml.getLoanInstallment() <= 0.0) {
+                            return;
+                        }
+                        //==================IF LOAN INSTALLMENT IS 0.00 OR LESS THEN AVOID MEMBER LOAN FROM PAYING=======
+
+                        if (getLastPay != null) {
+                            updatePreviousInstallmentsOfMemberLoan(session, getLastPay);
+                            LoanPayment lp = new LoanPayment();
+                            lp.setChequeNo(chk_no_txt.getText());
+                            lp.setMemberLoan(ml);
+                            lp.setPaymentDate(new java.util.Date());
+                            lp.setIsLast(true);
+                            lp.setInstallmentDue((ml.getNoOfRepay() - (getLastPay.getInstallmentNo() + 1)) >= 0 ? (ml.getNoOfRepay() - (getLastPay.getInstallmentNo() + 1)) : 0);
+                            lp.setInstallmentNo(getLastPay.getInstallmentNo() + 1);
+                            lp.setInstallmentDate(getInstallmentDate(getLastPay.getInstallmentDate()));
+                            lp.setPaidAmt(ml.getLoanInstallment());
+                            lp.setListedPay(getListedPayFrom(ml, session, lp.getInstallmentDue() == 0));
+                            lp.setPayOffice(m.getPayOffice().getId());
+                            lp.setWorkOffice(m.getBranch().getId());
+                            lp.setRemark(lp.getInstallmentDue() == 0 ? "Arrears Pay" : "Installment Pay");
+                            session.save(lp);
+
+                            //========================Kota left checks if amount paying less than the installment, then assign to kotaya===============================
+                            double kota_left = (lp.getListedPay() > lp.getPaidAmt()) ? (lp.getListedPay() - lp.getPaidAmt()) : 0.0;
+                            double kotaTotNow = updateMemberLoan(ml, kota_left, session, (lp.getInstallmentDue() == 0 && (lp.getPaidAmt() == lp.getListedPay())), getInstallmentDate(getLastPay.getInstallmentDate()));
+
+                            //end loan if installments completed and no kota left......
+                            if (lp.getInstallmentDue() == 0 && kotaTotNow == 0) {
+                                endLoan(session, ml);
+                            }
                         } else {
 
-                            lp.setInstallmentDue(ml.getNoOfRepay() - 1);
-                            lp.setInstallmentNo(1);
+                            LoanPayment lp = new LoanPayment();
+                            lp.setChequeNo(chk_no_txt.getText());
+                            lp.setMemberLoan(ml);
+                            lp.setPaymentDate(new java.util.Date());
+                            lp.setIsLast(true);
+                            lp.setPaidAmt(ml.getLoanInstallment());
+                            lp.setListedPay(getListedPayFrom(ml, session, false));
+                            lp.setInstallmentDate(getDayOfMonth(Date.valueOf(chk_of_month_chooser.getValue())));
+
+                            //=================IF MEMBER LOAN IS OLD LOAN THEN====================
+                            if (ml.isOldLoan()) {
+
+                                lp.setInstallmentDue(ml.getNoOfRepay() - ml.getLastInstall());
+                                lp.setInstallmentNo(ml.getLastInstall() + 1);
+                                //updateOldLoan(ml, session, ml.getLoanInstallment());
+                            } else {
+
+                                lp.setInstallmentDue(ml.getNoOfRepay() - 1);
+                                lp.setInstallmentNo(1);
+                            }
+
+                            lp.setPayOffice(m.getPayOffice().getId());
+                            lp.setWorkOffice(m.getBranch().getId());
+                            lp.setRemark("Installment Pay");
+                            session.save(lp);
+
+                            //========================Kota left checks if amount paying less than the installment, then assign to kotaya===============================
+                            double kota_left = (lp.getListedPay() > lp.getPaidAmt()) ? (lp.getListedPay() - lp.getPaidAmt()) : 0.0;
+                            updateMemberLoan(ml, kota_left, session, false, getDayOfMonth(Date.valueOf(chk_of_month_chooser.getValue())));
                         }
+                    });
 
-                        lp.setPayOffice(m.getPayOffice().getId());
-                        lp.setWorkOffice(m.getBranch().getId());
-                        lp.setRemark("Installment Pay");
-                        session.save(lp);
-
-                        //========================Kota left checks if amount paying less than the installment, then assign to kotaya===============================
-                        double kota_left = (lp.getListedPay() > lp.getPaidAmt()) ? (lp.getListedPay() - lp.getPaidAmt()) : 0.0;
-                        updateMemberLoan(ml, kota_left, session, false, getDayOfMonth(Date.valueOf(chk_of_month_chooser.getValue())));
-                    }
-                });
-
+                }
                 //=======================END MEMBERS LOANS SAVE==============================================
             });
 
@@ -551,12 +555,12 @@ public class CollectionSheetFxmlController implements Initializable {
             checkBox.selectedProperty().setValue(ml.isCollected());
             checkBox.selectedProperty().addListener((ov, old_val, new_val) -> {
                 ml.setCollected(new_val);
-                //System.out.println(ml.getFullName() + " - " + ml.getZeroOverpay());
 //                param.getTableView().getColumns().get(1);
 //                Button btn = rtot_pay_col.getCellObservableValue(ml).getValue();
 //                System.out.println("BTN - " + btn.getText());
                 double selectedRowTot = ml.getTotalSubscription() + ml.getTotalPayment() + ml.getZeroOverpay();
                 bindSubTotalTo(chk_amt_txt, selectedRowTot, new_val);
+                changeViewInfoButtonStatus(new_val, param.getValue());
             });
             return new SimpleObjectProperty<>(checkBox);
         });
@@ -693,6 +697,10 @@ public class CollectionSheetFxmlController implements Initializable {
         System.err.println("TOTAL OUT - " + total);
         chk_amt_txt.setText(TextFormatHandler.CURRENCY_DECIMAL_FORMAT.format(total));
         dtp.setTotal(total);
+    }
+
+    private void changeViewInfoButtonStatus(boolean b, Member mRow) {
+        // View info disable code here-------
     }
 
     private void bindSubTotalTo(TextField chk_amt_txt) {
