@@ -390,7 +390,8 @@ public class CollectionSheetFxmlController implements Initializable {
                 generateCollectionPaymentReport(payCheque.getChequeNo());
                 FxUtilsHandler.clearFields(collection_grid);
                 proceed_btn.setDisable(true);
-                //  collection_tbl.getItems().clear();
+                collection_tbl.setItems(null);
+                collection_tbl.layout();
             }
         } else {
             Alert alert_error = new Alert(Alert.AlertType.ERROR);
@@ -586,14 +587,17 @@ public class CollectionSheetFxmlController implements Initializable {
 //                chk_amt_txt.setText(TextFormatHandler.CURRENCY_DECIMAL_FORMAT.format(total));
             } else {
 
-                collection_tbl.getItems().forEach(p -> {
-                    CheckBox value = colection_stat_col.getCellData(p);
-                    value.setSelected(false);
-                });
+                if (collection_tbl.getItems() != null) {
 
-                total = 0;
-                chk_amt_txt.setText(TextFormatHandler.CURRENCY_DECIMAL_FORMAT.format(total));
-                checkAll.setDisable(true);
+                    collection_tbl.getItems().forEach(p -> {
+                        CheckBox value = colection_stat_col.getCellData(p);
+                        value.setSelected(false);
+                    });
+
+                    total = 0;
+                    chk_amt_txt.setText(TextFormatHandler.CURRENCY_DECIMAL_FORMAT.format(total));
+                    checkAll.setDisable(true);
+                }
             }
 
             // collection_tbl.refresh();
