@@ -3,6 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
+//Current Edit -- changeViewInfoButtonStatus
 package com.court.controller;
 
 import com.court.db.HibernateUtil;
@@ -43,12 +44,12 @@ import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
+import javafx.event.EventDispatchChain;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Pos;
@@ -555,9 +556,6 @@ public class CollectionSheetFxmlController implements Initializable {
             checkBox.selectedProperty().setValue(ml.isCollected());
             checkBox.selectedProperty().addListener((ov, old_val, new_val) -> {
                 ml.setCollected(new_val);
-//                param.getTableView().getColumns().get(1);
-//                Button btn = rtot_pay_col.getCellObservableValue(ml).getValue();
-//                System.out.println("BTN - " + btn.getText());
                 double selectedRowTot = ml.getTotalSubscription() + ml.getTotalPayment() + ml.getZeroOverpay();
                 bindSubTotalTo(chk_amt_txt, selectedRowTot, new_val);
                 changeViewInfoButtonStatus(new_val, param.getValue());
@@ -701,6 +699,9 @@ public class CollectionSheetFxmlController implements Initializable {
 
     private void changeViewInfoButtonStatus(boolean b, Member mRow) {
         // View info disable code here-------
+        System.out.println("Boolean - " + b);
+        //Button button = rtot_pay_col.get
+        //button.setDisable(!b);
     }
 
     private void bindSubTotalTo(TextField chk_amt_txt) {
@@ -792,11 +793,17 @@ public class CollectionSheetFxmlController implements Initializable {
         Predicate<String> predicate = (t) -> {
             return !getCList().contains(t);
         };
+        Predicate<String> p_cheque_amt = (t) -> {
+            return TextFormatHandler.getCurrencyFieldValue(t) > 0;
+        };
         Predicate<String> p_cheque_tally = (t) -> {
             return Objects.equals(TextFormatHandler.getCurrencyFieldValue(t), TextFormatHandler.getCurrencyFieldValue(chk_amt_txt));
         };
         validationSupport.registerValidator(chk_amt_txt,
                 Validator.createEmptyValidator("This field is not optional !")
+        );
+        validationSupport.registerValidator(chk_amt_txt,
+                Validator.createPredicateValidator(p_cheque_amt, "Cheque amount cannot be zero.")
         );
         validationSupport.registerValidator(search_typ_combo,
                 Validator.createEmptyValidator("This field is not optional !"));
