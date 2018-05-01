@@ -64,43 +64,46 @@ public class DisplaySubscriptionFactory implements Callback<TableColumn.CellData
         param.getValue().setTotalSubscription(sum);
         Button button = new Button("View Info");
         button.setOnAction((evt) -> {
-            ButtonType updateBtnType = new ButtonType("Update", ButtonBar.ButtonData.OK_DONE);
-            Dialog<List<MemberSubscriptions>> alert_details = new Dialog();
-            alert_details.setTitle("Subscription Information");
-            alert_details.setHeaderText("Member Subscription information for each installment");
-            alert_details.getDialogPane().getButtonTypes().addAll(updateBtnType, ButtonType.CANCEL);
-            Node grid = createContentGrid(mbrSubs, sum, flag);
-            alert_details.getDialogPane().setContent(grid);
-            alert_details.setResultConverter(dialogBtn -> {
-                if (dialogBtn == updateBtnType) {
-                    return new ArrayList<>(mbrSubs);
-                }
-                return null;
 
-            });
-            Optional<List<MemberSubscriptions>> result = alert_details.showAndWait();
-            result.ifPresent(subs -> {
-                if (grid instanceof GridPane) {
-                    List<TextField> children = ((GridPane) grid).getChildren()
-                            .stream().filter(p -> p instanceof TextField)
-                            .map(p -> (TextField) p).collect(Collectors.toList());
-                    for (int i = 0; i < subs.size(); i++) {
-                        Node c = children.get(i);
-                        if (c instanceof TextField) {
-                            if (((TextField) c).getText() != null) {
-                                subs.get(i).setAmount(TextFormatHandler.getCurrencyFieldValue(((TextField) c)));
+            if (ml.isCollected()) {
+                ButtonType updateBtnType = new ButtonType("Update", ButtonBar.ButtonData.OK_DONE);
+                Dialog<List<MemberSubscriptions>> alert_details = new Dialog();
+                alert_details.setTitle("Subscription Information");
+                alert_details.setHeaderText("Member Subscription information for each installment");
+                alert_details.getDialogPane().getButtonTypes().addAll(updateBtnType, ButtonType.CANCEL);
+                Node grid = createContentGrid(mbrSubs, sum, flag);
+                alert_details.getDialogPane().setContent(grid);
+                alert_details.setResultConverter(dialogBtn -> {
+                    if (dialogBtn == updateBtnType) {
+                        return new ArrayList<>(mbrSubs);
+                    }
+                    return null;
+
+                });
+                Optional<List<MemberSubscriptions>> result = alert_details.showAndWait();
+                result.ifPresent(subs -> {
+                    if (grid instanceof GridPane) {
+                        List<TextField> children = ((GridPane) grid).getChildren()
+                                .stream().filter(p -> p instanceof TextField)
+                                .map(p -> (TextField) p).collect(Collectors.toList());
+                        for (int i = 0; i < subs.size(); i++) {
+                            Node c = children.get(i);
+                            if (c instanceof TextField) {
+                                if (((TextField) c).getText() != null) {
+                                    subs.get(i).setAmount(TextFormatHandler.getCurrencyFieldValue(((TextField) c)));
+                                }
                             }
                         }
                     }
-                }
-                double newValue = subs.stream().mapToDouble(a -> a.getAmount()).sum();
-                param.getValue().setTotalSubscription(newValue);
-                collection_tbl.refresh();
-                double diff = newValue - sum;
-                total = total + diff;
-                chk_amt_txt.setText(TextFormatHandler.CURRENCY_DECIMAL_FORMAT.format(total));
-                csController.setTotal(total);
-            });
+                    double newValue = subs.stream().mapToDouble(a -> a.getAmount()).sum();
+                    param.getValue().setTotalSubscription(newValue);
+                    collection_tbl.refresh();
+                    double diff = newValue - sum;
+                    total = total + diff;
+                    chk_amt_txt.setText(TextFormatHandler.CURRENCY_DECIMAL_FORMAT.format(total));
+                    csController.setTotal(total);
+                });
+            }
 
         });
 

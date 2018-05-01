@@ -82,11 +82,15 @@ public class DisplayTotalInstallmentsFactory implements Callback<TableColumn.Cel
         param.getValue().setTotalPayment(sum);
         Button button = new Button("View Info");
         button.setOnAction((evt) -> {
-            Alert alert_details = new Alert(Alert.AlertType.INFORMATION);
-            alert_details.setTitle("Loan Information");
-            alert_details.setHeaderText("Member installment information for each loan");
-            alert_details.getDialogPane().setContent(createContentGrid(instOnly, sum));
-            alert_details.show();
+
+            if (ml.isCollected()) {
+                
+                Alert alert_details = new Alert(Alert.AlertType.INFORMATION);
+                alert_details.setTitle("Loan Information");
+                alert_details.setHeaderText("Member installment information for each loan");
+                alert_details.getDialogPane().setContent(createContentGrid(instOnly, sum));
+                alert_details.show();
+            }
         });
         return new SimpleObjectProperty<>(button);
     }
