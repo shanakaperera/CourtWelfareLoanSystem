@@ -2200,10 +2200,13 @@ public class MemberfxmlController implements Initializable {
         ins_remark_col.setCellValueFactory(new PropertyValueFactory<>("remark"));
         p_due_col.setCellValueFactory((TableColumn.CellDataFeatures<LoanPayment, String> param) -> {
             LoanPayment lp = param.getValue();
+            //oldloanPay will not be zero for old loans. because there is a perior payment 
+            //which has been made for that kinda loans
+            //amount will be zero for normal loans(not old)
             int lp_installment = lp.getInstallmentNo();
             double sum = lp.getMemberLoan().getLoanPayments().stream()
                     .filter(p -> p.getInstallmentNo() <= lp_installment)
-                    .mapToDouble(LoanPayment::getPaidAmt)
+                    .mapToDouble(p -> (p.getPaidAmt() + p.getOldloanPay()))
                     .sum();
             return new SimpleObjectProperty<>(TextFormatHandler.CURRENCY_DECIMAL_FORMAT.format(sum));
         });

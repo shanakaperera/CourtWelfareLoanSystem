@@ -49,7 +49,6 @@ import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
-import javafx.event.EventDispatchChain;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Pos;
@@ -62,7 +61,6 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
 import javafx.scene.control.Pagination;
-import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
@@ -338,7 +336,7 @@ public class CollectionSheetFxmlController implements Initializable {
 
                             //========================Kota left checks if amount paying less than the installment, then assign to kotaya===============================
                             double kota_left = (lp.getListedPay() > lp.getPaidAmt()) ? (lp.getListedPay() - lp.getPaidAmt()) : 0.0;
-                            double kotaTotNow = updateMemberLoan(ml, kota_left, session, (lp.getInstallmentDue() == 0 && (lp.getPaidAmt() == lp.getListedPay())), getInstallmentDate(getLastPay.getInstallmentDate()));
+                            double kotaTotNow = updateMemberLoan(ml, lp.getPaidAmt(), kota_left, session, (lp.getInstallmentDue() == 0 && (lp.getPaidAmt() == lp.getListedPay())), getInstallmentDate(getLastPay.getInstallmentDate()));
 
                             //end loan if installments completed and no kota left......
                             if (lp.getInstallmentDue() == 0 && kotaTotNow == 0) {
@@ -359,6 +357,7 @@ public class CollectionSheetFxmlController implements Initializable {
                             if (ml.isOldLoan()) {
 
                                 lp.setInstallmentDue(ml.getNoOfRepay() - ml.getLastInstall());
+                                lp.setOldloanPay(ml.getPaidSofar());
                                 lp.setInstallmentNo(ml.getLastInstall() + 1);
                                 //updateOldLoan(ml, session, ml.getLoanInstallment());
                             } else {
@@ -374,7 +373,7 @@ public class CollectionSheetFxmlController implements Initializable {
 
                             //========================Kota left checks if amount paying less than the installment, then assign to kotaya===============================
                             double kota_left = (lp.getListedPay() > lp.getPaidAmt()) ? (lp.getListedPay() - lp.getPaidAmt()) : 0.0;
-                            updateMemberLoan(ml, kota_left, session, false, getDayOfMonth(Date.valueOf(chk_of_month_chooser.getValue())));
+                            updateMemberLoan(ml, lp.getPaidAmt(), kota_left, session, false, getDayOfMonth(Date.valueOf(chk_of_month_chooser.getValue())));
                         }
                     });
 
@@ -854,11 +853,21 @@ public class CollectionSheetFxmlController implements Initializable {
         return collect;
     }
 
-    private double updateMemberLoan(MemberLoan ml, double kota_left, Session session, boolean isKotaPay, java.util.Date payUntil) {
-        boolean kotaKotaPay = (kota_left == 0) && isKotaPay;
+    private double updateMemberLoan(MemberLoan ml, double paidAmt, double again_kota_left, Session session, boolean isKotaPay, java.util.Date payUntil) {
+        boolean kotaKotaPay = (again_kota_left == 0) && isKotaPay;
         MemberLoan mll = (MemberLoan) session.load(MemberLoan.class, ml.getId());
         mll.setPaidUntil(payUntil);
-        mll.setKotaLeft(kotaKotaPay ? 0.0 : (mll.getKotaLeft() + kota_left));
+
+        /**
+         * paidSoFar calculation removed because paidSoFar column is only for
+         * old loans if there are already paid amount(installment amt * previous
+         * paid installment count)
+         *
+         */
+        // updating paidSoFar column
+        //mll.setPaidSofar(mll.getPaidSofar() + paidAmt);
+        // end updating paidSoFar column
+        mll.setKotaLeft(kotaKotaPay ? 0.0 : (mll.getKotaLeft() + again_kota_left));
         mll.setLastInstall(mll.getLastInstall() + 1);
         session.update(mll);
 //Return Current kota amount=====================
