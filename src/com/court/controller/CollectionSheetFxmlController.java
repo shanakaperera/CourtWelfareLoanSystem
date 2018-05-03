@@ -357,7 +357,6 @@ public class CollectionSheetFxmlController implements Initializable {
                             if (ml.isOldLoan()) {
 
                                 lp.setInstallmentDue(ml.getNoOfRepay() - ml.getLastInstall());
-                                lp.setOldloanPay(ml.getPaidSofar());
                                 lp.setInstallmentNo(ml.getLastInstall() + 1);
                                 //updateOldLoan(ml, session, ml.getLoanInstallment());
                             } else {

@@ -21,7 +21,6 @@ public class LoanPayment implements java.io.Serializable {
     private Integer payOffice;
     private Integer workOffice;
     private Double debtorDefault;
-    private Double oldloanPay;
     private String remark;
 
     private String groupPro;
@@ -171,13 +170,4 @@ public class LoanPayment implements java.io.Serializable {
     public void setRemark(String remark) {
         this.remark = remark;
     }
-
-    public Double getOldloanPay() {
-        return oldloanPay;
-    }
-
-    public void setOldloanPay(Double oldloanPay) {
-        this.oldloanPay = oldloanPay;
-    }
-
 }
