@@ -43,10 +43,7 @@
         </property>
         <property name="debtorDefault" type="java.lang.Double">
             <column name="debtor_default" precision="22" scale="0" />
-        </property>
-        <property name="oldloanPay" type="java.lang.Double">
-            <column name="oldloan_pay" precision="22" scale="0" />
-        </property>
+        </property>        
         <property name="remark" type="string">
             <column name="remark" length="200" />
         </property>

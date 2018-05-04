@@ -11,6 +11,7 @@ import com.court.handler.FileHandler;
 import com.court.model.Company;
 import it.sauronsoftware.junique.AlreadyLockedException;
 import it.sauronsoftware.junique.JUnique;
+import it.sauronsoftware.junique.MessageHandler;
 import java.io.IOException;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -73,15 +74,15 @@ public class MainClass extends Application {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        String id = MainClass.class.getName();
-        boolean start;
+        String id = "courtLoanAppId";
+        boolean alreadyRunning;
         try {
-            JUnique.acquireLock(id, null);
-            start = true;
+            JUnique.acquireLock(id);
+            alreadyRunning = false;
         } catch (AlreadyLockedException e) {
-            start = false;
+            alreadyRunning = true;
         }
-        if (start) {
+        if (!alreadyRunning) {
             launch(args);
         }
     }
