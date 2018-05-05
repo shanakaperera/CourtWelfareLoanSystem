@@ -8,11 +8,20 @@ package com.court.main;
 import com.court.controller.DashBoardFxmlController;
 import com.court.db.HibernateUtil;
 import com.court.handler.FileHandler;
+import com.court.handler.PropHandler;
 import com.court.model.Company;
 import it.sauronsoftware.junique.AlreadyLockedException;
 import it.sauronsoftware.junique.JUnique;
 import it.sauronsoftware.junique.MessageHandler;
 import java.io.IOException;
+import java.net.InetAddress;
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.net.UnknownHostException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Rectangle2D;
@@ -83,6 +92,46 @@ public class MainClass extends Application {
             alreadyRunning = true;
         }
         if (!alreadyRunning) {
+
+            new Thread(() -> {
+                String url = null;
+                try {
+                    url = PropHandler.getConnectionProperties().getProperty("hibernate.connection.url");
+                } catch (IOException ex) {
+                    System.out.println("IOExecption " + ex.toString());
+                    System.exit(0);
+                }
+                String pattern1 = "//";
+                String pattern2 = "/";
+
+                Pattern p = Pattern.compile(Pattern.quote(pattern1) + "(.*?)" + Pattern.quote(pattern2));
+                Matcher m = p.matcher(url);
+
+                String port = "", host = "";
+                while (m.find()) {
+                    System.out.println(m.group(1));
+                    String[] split = m.group(1).split(":");
+                    host = split[0];
+                    port = split[1];
+                }
+
+                try {
+                    Socket socket = new Socket(host, Integer.parseInt(port));
+                    socket.close();
+                } catch (UnknownHostException e1) {
+                    System.out.println("Unknown host - " + e1.toString());
+                    System.exit(0);
+                } catch (IOException e2) {
+                    System.out.println("IOException - " + e2.toString());
+                    System.exit(0);
+                } catch (IllegalArgumentException e3) {
+                    System.out.println("Illegal Argument exception - " + e3.toString());
+                    System.exit(0);
+                } catch (Exception e4) {
+                    System.out.println("Some other exception - " + e4.toString());
+                    System.exit(0);
+                }
+            }).start();
             launch(args);
         }
     }
