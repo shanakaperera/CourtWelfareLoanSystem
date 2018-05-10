@@ -817,7 +817,7 @@ public class OldLoansFxmlController implements Initializable {
         grid.add(new Label("Paid So far :"), 0, 5);
         grid.add(new Label(TextFormatHandler.CURRENCY_DECIMAL_FORMAT.format(ml.getPaidSofar())), 1, 5);
         grid.add(new Label("Last Payment Date :"), 0, 6);
-        grid.add(new Label(new SimpleDateFormat("dd-MM-yyyy").format(ml.getPaidUntil())), 1, 6);
+        grid.add(new Label(ml.getPaidUntil() != null ? new SimpleDateFormat("dd-MM-yyyy").format(ml.getPaidUntil()) : "No payment has made yet !"), 1, 6);
         grid.add(new Label("Balance Continued :"), 0, 7);
         grid.add(new Label(TextFormatHandler.CURRENCY_DECIMAL_FORMAT.format(ml.getKotaLeft())), 1, 7);
         elDialog.getDialogPane().setContent(grid);
