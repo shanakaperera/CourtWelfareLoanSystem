@@ -209,6 +209,10 @@ public class OldLoansFxmlController implements Initializable {
         gur_notice_txt.setText("");
         last_paid_ins.setText("0");
         slast_paid_ins.setText("0");
+        con_repay.setSelected(true);
+
+        old_loan_tbl.setItems(null);
+        old_loan_tbl.layout();
     }
 
     @FXML
@@ -421,6 +425,15 @@ public class OldLoansFxmlController implements Initializable {
         gur_btn.setDisable(true);
         searchMbr = null;
         FxUtilsHandler.clearFields(main_grid);
+        mbr_search_txt.setEditable(true);
+        gur_notice_txt.setText("");
+        last_paid_ins.setText("0");
+        slast_paid_ins.setText("0");
+        con_repay.setSelected(true);
+
+        old_loan_tbl.setItems(null);
+        old_loan_tbl.layout();
+
     }
 
     @FXML
@@ -712,15 +725,21 @@ public class OldLoansFxmlController implements Initializable {
 //            List<MemberLoan> list = c.list();
 //            s.close();
 //            initOldLoanTable(list);
-            //====================================================================
+            //====================================================================  
             gurList = null;
             pLoan = null;
             cLoan = null;
             gur_btn.setDisable(true);
-            mbr_search_txt.setEditable(true);
             searchMbr = null;
-            gur_notice_txt.setText("");
             FxUtilsHandler.clearFields(main_grid);
+            mbr_search_txt.setEditable(true);
+            gur_notice_txt.setText("");
+            last_paid_ins.setText("0");
+            slast_paid_ins.setText("0");
+            con_repay.setSelected(true);
+
+            old_loan_tbl.setItems(null);
+            old_loan_tbl.layout();
         }
     }
 
