@@ -531,12 +531,14 @@ public class CollectionSheetFxmlController implements Initializable {
     }
 
     DisplayTotalInstallmentsFactory dtp = null;
+    DisplaySubscriptionFactory stp = null;
 
     private Node createPage(int pageIndex, List<Member> mList) {
         int fromIndex = pageIndex * rowsPerPage;
         int toIndex = Math.min(fromIndex + rowsPerPage, mList.size());
 
         dtp = new DisplayTotalInstallmentsFactory(collection_tbl, this, chk_amt_txt);
+        stp = new DisplaySubscriptionFactory(collection_tbl, this, chk_amt_txt);
 
         m_id_col.setCellValueFactory(new PropertyValueFactory<>("memberId"));
         m_name_col.setCellValueFactory(new PropertyValueFactory<>("nameWithIns"));
@@ -606,7 +608,7 @@ public class CollectionSheetFxmlController implements Initializable {
         colection_stat_col.setGraphic(checkAll);
 
         //===============Subscription Details=========================
-        detail_view_col.setCellValueFactory(new DisplaySubscriptionFactory(collection_tbl, this, chk_amt_txt));
+        detail_view_col.setCellValueFactory(stp);
         //===================Installments Details====================
         rtot_pay_col.setCellValueFactory(dtp);
         //==========================Total Inst Amount====================
@@ -693,6 +695,7 @@ public class CollectionSheetFxmlController implements Initializable {
         System.err.println("TOTAL OUT - " + total);
         chk_amt_txt.setText(TextFormatHandler.CURRENCY_DECIMAL_FORMAT.format(total));
         dtp.setTotal(total);
+        stp.setTotal(total);
     }
 
     private void changeViewInfoButtonStatus(boolean b, Member mRow) {

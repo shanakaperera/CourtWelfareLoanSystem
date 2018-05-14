@@ -149,4 +149,8 @@ public class DisplaySubscriptionFactory implements Callback<TableColumn.CellData
     private boolean getparamValue(boolean flag, MemberSubscriptions get) {
         return !(get.getRepaymentType().equalsIgnoreCase("Once") && !flag);
     }
+    
+    public void setTotal(double total) {
+        this.total = total;
+    }
 }

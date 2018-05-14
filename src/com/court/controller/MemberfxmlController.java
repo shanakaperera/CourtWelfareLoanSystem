@@ -593,47 +593,56 @@ public class MemberfxmlController implements Initializable {
 
         if (validationSupport.validationResultProperty().get().getErrors().isEmpty()) {
             Session session = HibernateUtil.getSessionFactory().openSession();
-            session.beginTransaction();
-            Member member;
-            int id = getIdByMemberCode(session, member_code_txt.getText().trim());
-            if (id != 0) {
-                member = (Member) session.load(Member.class, id);
-                updateMemberStatus(member_status_combo.getSelectionModel().getSelectedItem(), member, hndler.loggedUser(), session);
-            } else {
-                member = new Member();
-                member.setMemberId(member_code_txt.getText().trim());
-                member.setNic(nic_no.getText());
-            }
+            try {
+                session.beginTransaction();
+                Member member;
+                int id = getIdByMemberCode(session, member_code_txt.getText().trim());
+                if (id != 0) {
+                    member = (Member) session.load(Member.class, id);
+                    updateMemberStatus(member_status_combo.getSelectionModel().getSelectedItem(), member, hndler.loggedUser(), session);
+                } else {
+                    member = new Member();
+                    member.setMemberId(member_code_txt.getText().trim());
+                    member.setNic(nic_no.getText());
+                }
 
-            member.setEmpId(emp_id_txt.getText());
-            member.setJobStatus(job_status_combo.getSelectionModel().getSelectedItem());
-            //member.setPaymentOfficer(payment_officer_txt.getText());
-            member.setFullName(member_full_name_txt.getText());
-            member.setNameWithIns(member_namins_txt.getText());
-            member.setAddress(member_adrs_txt.getText());
-            member.setJobTitle(member_job_txt.getText());
-            member.setBranch(getBranchByName(session, member_brch_txt.getText().trim()));
-            member.setTel1(member_tel1_txt.getText());
-            member.setTel2(member_tel2_txt.getText());
-            member.setEmail(member_email_txt.getText());
-            member.setSex(member_sex_combo.getSelectionModel().getSelectedItem());
-            member.setCurStatus(member_status_combo.getSelectionModel().getSelectedItem());
-            member.setMaritalStatus(member_maritial_combo.getSelectionModel().getSelectedItem());
-            member.setDob(FxUtilsHandler.getDateFrom(member_bday_chooser.getValue()));
-            member.setAppintedDate(Date.valueOf(member_apo_chooser.getValue()));
-            member.setJoinedDate(FxUtilsHandler.getDateFrom(member_join_chooser.getValue()));
-            member.setOverpay(0.0);
-            member.setZeroOverpay(0.0);
-            member.setStatus(member.getCurStatus().equalsIgnoreCase("Active"));
-            member.setDescription(member_des_txt.getText().isEmpty() ? "No Description" : member_des_txt.getText());
-            //  member.setImgPath(imgString == null ? "" : imgString.getImg_path().toString());
-            //   member.setStatus(true);
-            if (payBranch != null) {
-                member.setPayOffice(payBranch);
+                member.setEmpId(emp_id_txt.getText());
+                member.setJobStatus(job_status_combo.getSelectionModel().getSelectedItem());
+                //member.setPaymentOfficer(payment_officer_txt.getText());
+                member.setFullName(member_full_name_txt.getText());
+                member.setNameWithIns(member_namins_txt.getText());
+                member.setAddress(member_adrs_txt.getText());
+                member.setJobTitle(member_job_txt.getText());
+                member.setBranch(getBranchByName(session, member_brch_txt.getText().trim()));
+                member.setTel1(member_tel1_txt.getText());
+                member.setTel2(member_tel2_txt.getText());
+                member.setEmail(member_email_txt.getText());
+                member.setSex(member_sex_combo.getSelectionModel().getSelectedItem());
+                member.setCurStatus(member_status_combo.getSelectionModel().getSelectedItem());
+                member.setMaritalStatus(member_maritial_combo.getSelectionModel().getSelectedItem());
+                member.setDob(FxUtilsHandler.getDateFrom(member_bday_chooser.getValue()));
+                member.setAppintedDate(Date.valueOf(member_apo_chooser.getValue()));
+                member.setJoinedDate(FxUtilsHandler.getDateFrom(member_join_chooser.getValue()));
+                member.setOverpay(0.0);
+                member.setZeroOverpay(0.0);
+                member.setStatus(member.getCurStatus().equalsIgnoreCase("Active"));
+                member.setDescription(member_des_txt.getText().isEmpty() ? "No Description" : member_des_txt.getText());
+                //  member.setImgPath(imgString == null ? "" : imgString.getImg_path().toString());
+                //   member.setStatus(true);
+                if (payBranch != null) {
+                    member.setPayOffice(payBranch);
+                }
+                session.saveOrUpdate(member);
+                session.getTransaction().commit();
+            } catch (Exception e) {
+                if (session.getTransaction() != null) {
+                    session.getTransaction().rollback();
+                }
+            } finally {
+                if (session != null) {
+                    session.close();
+                }
             }
-            session.saveOrUpdate(member);
-            session.getTransaction().commit();
-            session.close();
 
             Alert alert_info = new Alert(Alert.AlertType.INFORMATION);
             alert_info.setTitle("Information");
@@ -804,121 +813,126 @@ public class MemberfxmlController implements Initializable {
 
         }
         Session session = HibernateUtil.getSessionFactory().openSession();
-        Criteria c = session.createCriteria(Member.class);
-        if (!mCode.trim().isEmpty()) {
-            c.add(Restrictions.eq("memberId", mCode));
+        try {
+            Criteria c = session.createCriteria(Member.class);
+            if (!mCode.trim().isEmpty()) {
+                c.add(Restrictions.eq("memberId", mCode));
+            }
+            if (!mName.trim().isEmpty()) {
+                c.add(Restrictions.eq("fullName", mName));
+            }
+
+            Member filteredMember = (Member) c.uniqueResult();
+            if (filteredMember != null) {
+                imgString = new ImageWithString();
+
+                member_code_txt.setText(filteredMember.getMemberId());
+                member_full_name_txt.setText(filteredMember.getFullName());
+                member_namins_txt.setText(filteredMember.getNameWithIns());
+                nic_no.setText(filteredMember.getNic());
+                emp_id_txt.setText(filteredMember.getEmpId());
+                payment_officer_txt.setText(filteredMember.getPayOffice().getBranchName());
+                job_status_combo.getSelectionModel().select(filteredMember.getJobStatus());
+                member_adrs_txt.setText(filteredMember.getAddress());
+                member_job_txt.setText(filteredMember.getJobTitle());
+                member_brch_txt.setText(filteredMember.getBranch().getBranchName());
+                member_tel1_txt.setText(filteredMember.getTel1());
+                member_tel2_txt.setText(filteredMember.getTel2());
+                member_email_txt.setText(filteredMember.getEmail());
+                member_sex_combo.getSelectionModel().select(filteredMember.getSex());
+                member_status_combo.getSelectionModel().select(filteredMember.getCurStatus());
+                member_maritial_combo.getSelectionModel().select(filteredMember.getMaritalStatus());
+                member_bday_chooser.setValue(FxUtilsHandler.getLocalDateFrom(filteredMember.getDob()));
+                member_join_chooser.setValue(FxUtilsHandler.getLocalDateFrom(filteredMember.getJoinedDate()));
+                member_apo_chooser.setValue(FxUtilsHandler.getLocalDateFrom(filteredMember.getAppintedDate()));
+                member_des_txt.setText(filteredMember.getDescription());
+                credit_bal_txt.setText(TextFormatHandler.CURRENCY_DECIMAL_FORMAT.format(filteredMember.getOverpay()));
+                if (filteredMember.getImgPath() != null && !filteredMember.getImgPath().trim().isEmpty()) {
+                    imgString.setImg_path(new File(filteredMember.getImgPath()).toPath());
+                    member_img.setImage(new Image(new File(filteredMember.getImgPath()).toURI().toURL().toString()));
+                }
+                mother_txt.setText(filteredMember.getMother());
+                father_txt.setText(filteredMember.getFather());
+
+                if (filteredMember.getSpouse() != null) {
+                    Spouse spouse = new Gson().fromJson(filteredMember.getSpouse(), Spouse.class);
+                    if (spouse != null) {
+                        spouse_name_txt.setText(spouse.getSpouse());
+                        s_hoi_check.setSelected(spouse.isHoi());
+                        s_aci_check.setSelected(spouse.isAci());
+                    }
+                }
+                if (filteredMember.getMemBenifits() != null) {
+                    Benifits mb = new Gson().fromJson(filteredMember.getMemBenifits(), Benifits.class);
+                    if (mb != null) {
+                        mb_ben_name.setText(mb.getName());
+                        mem_ben_rel.setText(mb.getRelation());
+                    }
+                }
+
+                if (filteredMember.getAccBenifits() != null) {
+                    Benifits ab = new Gson().fromJson(filteredMember.getAccBenifits(), Benifits.class);
+                    if (ab != null) {
+                        ac_ben_name.setText(ab.getName());
+                        ac_ben_rel.setText(ab.getRelation());
+                    }
+                }
+
+                deactive_label.setText(filteredMember.isStatus() ? "" : "Member Deactivated .");
+
+                if (!filteredMember.isStatus() && !filteredMember.getCurStatus().equalsIgnoreCase("Active")) {
+                    deactive_label.setText("Member " + filteredMember.getCurStatus() + " .");
+                }
+
+                Set<MemberSubscriptions> ms = filteredMember.getMemberSubscriptions();
+
+                for (MemberSubscriptions m : ms) {
+
+                    switch (m.getMemberSubscription().getFeeName()) {
+                        case "Membership Fee":
+                            mem_fee_txt.setText(TextFormatHandler.CURRENCY_DECIMAL_FORMAT.format(m.getAmount()));
+                            mem_fee_repay_combo.getSelectionModel().select(m.getRepaymentType());
+                            break;
+                        case "Savings Fee":
+                            sav_fee_txt.setText(TextFormatHandler.CURRENCY_DECIMAL_FORMAT.format(m.getAmount()));
+                            sav_fee_repay_combo.getSelectionModel().select(m.getRepaymentType());
+                            break;
+                        case "HOI Fee":
+                            hoi_fee_txt.setText(TextFormatHandler.CURRENCY_DECIMAL_FORMAT.format(m.getAmount()));
+                            hoi_fee_repay_combo.getSelectionModel().select(m.getRepaymentType());
+                            break;
+                        case "ACI Fee":
+                            aci_fee_txt.setText(TextFormatHandler.CURRENCY_DECIMAL_FORMAT.format(m.getAmount()));
+                            aci_fee_repay_combo.getSelectionModel().select(m.getRepaymentType());
+
+                            break;
+                        case "Optional":
+                            optional_txt.setText(TextFormatHandler.CURRENCY_DECIMAL_FORMAT.format(m.getAmount()));
+                            opt_fee_repay_combo.getSelectionModel().select(m.getRepaymentType());
+                            break;
+                        case "Admission Fee":
+                            adm_fee_txt.setText(TextFormatHandler.CURRENCY_DECIMAL_FORMAT.format(m.getAmount()));
+                            adm_fee_repay_combo.getSelectionModel().select(m.getRepaymentType());
+                            break;
+                    }
+                }
+
+                FxUtilsHandler.activeDeactiveChildrenControls(filteredMember.isStatus(),
+                        main_grid_pane, date_hbox, tel_hbox);
+                FxUtilsHandler.activeBtnAppearanceChange(member_deactive_btn, filteredMember.isStatus(), true);
+                disableTabs(false);
+            } else {
+                Alert alert_inf = new Alert(Alert.AlertType.INFORMATION);
+                alert_inf.setTitle("Information");
+                alert_inf.setHeaderText("No data found!");
+                alert_inf.setContentText("The member you have requested is not found in our database.");
+                alert_inf.show();
+            }
+        } finally {
+            if (session != null) {
+                session.close();
+            }
         }
-        if (!mName.trim().isEmpty()) {
-            c.add(Restrictions.eq("fullName", mName));
-        }
-
-        Member filteredMember = (Member) c.uniqueResult();
-        if (filteredMember != null) {
-            imgString = new ImageWithString();
-
-            member_code_txt.setText(filteredMember.getMemberId());
-            member_full_name_txt.setText(filteredMember.getFullName());
-            member_namins_txt.setText(filteredMember.getNameWithIns());
-            nic_no.setText(filteredMember.getNic());
-            emp_id_txt.setText(filteredMember.getEmpId());
-            payment_officer_txt.setText(filteredMember.getPayOffice().getBranchName());
-            job_status_combo.getSelectionModel().select(filteredMember.getJobStatus());
-            member_adrs_txt.setText(filteredMember.getAddress());
-            member_job_txt.setText(filteredMember.getJobTitle());
-            member_brch_txt.setText(filteredMember.getBranch().getBranchName());
-            member_tel1_txt.setText(filteredMember.getTel1());
-            member_tel2_txt.setText(filteredMember.getTel2());
-            member_email_txt.setText(filteredMember.getEmail());
-            member_sex_combo.getSelectionModel().select(filteredMember.getSex());
-            member_status_combo.getSelectionModel().select(filteredMember.getCurStatus());
-            member_maritial_combo.getSelectionModel().select(filteredMember.getMaritalStatus());
-            member_bday_chooser.setValue(FxUtilsHandler.getLocalDateFrom(filteredMember.getDob()));
-            member_join_chooser.setValue(FxUtilsHandler.getLocalDateFrom(filteredMember.getJoinedDate()));
-            member_apo_chooser.setValue(FxUtilsHandler.getLocalDateFrom(filteredMember.getAppintedDate()));
-            member_des_txt.setText(filteredMember.getDescription());
-            credit_bal_txt.setText(TextFormatHandler.CURRENCY_DECIMAL_FORMAT.format(filteredMember.getOverpay()));
-            if (filteredMember.getImgPath() != null && !filteredMember.getImgPath().trim().isEmpty()) {
-                imgString.setImg_path(new File(filteredMember.getImgPath()).toPath());
-                member_img.setImage(new Image(new File(filteredMember.getImgPath()).toURI().toURL().toString()));
-            }
-            mother_txt.setText(filteredMember.getMother());
-            father_txt.setText(filteredMember.getFather());
-
-            if (filteredMember.getSpouse() != null) {
-                Spouse spouse = new Gson().fromJson(filteredMember.getSpouse(), Spouse.class);
-                if (spouse != null) {
-                    spouse_name_txt.setText(spouse.getSpouse());
-                    s_hoi_check.setSelected(spouse.isHoi());
-                    s_aci_check.setSelected(spouse.isAci());
-                }
-            }
-            if (filteredMember.getMemBenifits() != null) {
-                Benifits mb = new Gson().fromJson(filteredMember.getMemBenifits(), Benifits.class);
-                if (mb != null) {
-                    mb_ben_name.setText(mb.getName());
-                    mem_ben_rel.setText(mb.getRelation());
-                }
-            }
-
-            if (filteredMember.getAccBenifits() != null) {
-                Benifits ab = new Gson().fromJson(filteredMember.getAccBenifits(), Benifits.class);
-                if (ab != null) {
-                    ac_ben_name.setText(ab.getName());
-                    ac_ben_rel.setText(ab.getRelation());
-                }
-            }
-
-            deactive_label.setText(filteredMember.isStatus() ? "" : "Member Deactivated .");
-
-            if (!filteredMember.isStatus() && !filteredMember.getCurStatus().equalsIgnoreCase("Active")) {
-                deactive_label.setText("Member " + filteredMember.getCurStatus() + " .");
-            }
-
-            Set<MemberSubscriptions> ms = filteredMember.getMemberSubscriptions();
-
-            for (MemberSubscriptions m : ms) {
-
-                switch (m.getMemberSubscription().getFeeName()) {
-                    case "Membership Fee":
-                        mem_fee_txt.setText(TextFormatHandler.CURRENCY_DECIMAL_FORMAT.format(m.getAmount()));
-                        mem_fee_repay_combo.getSelectionModel().select(m.getRepaymentType());
-                        break;
-                    case "Savings Fee":
-                        sav_fee_txt.setText(TextFormatHandler.CURRENCY_DECIMAL_FORMAT.format(m.getAmount()));
-                        sav_fee_repay_combo.getSelectionModel().select(m.getRepaymentType());
-                        break;
-                    case "HOI Fee":
-                        hoi_fee_txt.setText(TextFormatHandler.CURRENCY_DECIMAL_FORMAT.format(m.getAmount()));
-                        hoi_fee_repay_combo.getSelectionModel().select(m.getRepaymentType());
-                        break;
-                    case "ACI Fee":
-                        aci_fee_txt.setText(TextFormatHandler.CURRENCY_DECIMAL_FORMAT.format(m.getAmount()));
-                        aci_fee_repay_combo.getSelectionModel().select(m.getRepaymentType());
-
-                        break;
-                    case "Optional":
-                        optional_txt.setText(TextFormatHandler.CURRENCY_DECIMAL_FORMAT.format(m.getAmount()));
-                        opt_fee_repay_combo.getSelectionModel().select(m.getRepaymentType());
-                        break;
-                    case "Admission Fee":
-                        adm_fee_txt.setText(TextFormatHandler.CURRENCY_DECIMAL_FORMAT.format(m.getAmount()));
-                        adm_fee_repay_combo.getSelectionModel().select(m.getRepaymentType());
-                        break;
-                }
-            }
-
-            FxUtilsHandler.activeDeactiveChildrenControls(filteredMember.isStatus(),
-                    main_grid_pane, date_hbox, tel_hbox);
-            FxUtilsHandler.activeBtnAppearanceChange(member_deactive_btn, filteredMember.isStatus(), true);
-            disableTabs(false);
-        } else {
-            Alert alert_inf = new Alert(Alert.AlertType.INFORMATION);
-            alert_inf.setTitle("Information");
-            alert_inf.setHeaderText("No data found!");
-            alert_inf.setContentText("The member you have requested is not found in our database.");
-            alert_inf.show();
-        }
-        session.close();
     }
 
     private int getIdByMemberCode(Session session, String memberCode) {
@@ -930,28 +944,38 @@ public class MemberfxmlController implements Initializable {
 
     private ObservableList<Member> getAllMembers() {
         Session session = HibernateUtil.getSessionFactory().openSession();
-        Criteria c = session.createCriteria(Member.class);
-        c.setProjection(Projections.projectionList()
-                .add(Projections.property("memberId"), "memberId")
-                .add(Projections.property("fullName"), "fullName")
-                .add(Projections.property("jobTitle"), "jobTitle")
-        );
-        c.setResultTransformer(Transformers.aliasToBean(Member.class));
-        List<Member> mList = c.list();
-        ObservableList<Member> members = FXCollections.observableArrayList(mList);
-        session.close();
-        return members;
+        try {
+            Criteria c = session.createCriteria(Member.class);
+            c.setProjection(Projections.projectionList()
+                    .add(Projections.property("memberId"), "memberId")
+                    .add(Projections.property("fullName"), "fullName")
+                    .add(Projections.property("jobTitle"), "jobTitle")
+            );
+            c.setResultTransformer(Transformers.aliasToBean(Member.class));
+            List<Member> mList = c.list();
+            ObservableList<Member> members = FXCollections.observableArrayList(mList);
+            return members;
+        } finally {
+            if (session != null) {
+                session.close();
+            }
+        }
     }
 
     private ObservableList<String> getAllBranches() {
         Session session = HibernateUtil.getSessionFactory().openSession();
-        Criteria c = session.createCriteria(Branch.class);
-        c.add(Restrictions.eq("status", true));
-        c.setProjection(Projections.property("branchName"));
-        List<String> bList = c.list();
-        ObservableList<String> branches = FXCollections.observableArrayList(bList);
-        session.close();
-        return branches;
+        try {
+            Criteria c = session.createCriteria(Branch.class);
+            c.add(Restrictions.eq("status", true));
+            c.setProjection(Projections.property("branchName"));
+            List<String> bList = c.list();
+            ObservableList<String> branches = FXCollections.observableArrayList(bList);
+            return branches;
+        } finally {
+            if (session != null) {
+                session.close();
+            }
+        }
     }
 
     private Branch getBranchByName(Session session, String branchName) {
@@ -963,11 +987,16 @@ public class MemberfxmlController implements Initializable {
 
     private Member getMemberByCode(String mCode) {
         Session ses = HibernateUtil.getSessionFactory().openSession();
-        Criteria c = ses.createCriteria(Member.class);
-        c.add(Restrictions.eq("memberId", mCode));
-        Member filteredM = (Member) c.uniqueResult();
-        ses.close();
-        return filteredM;
+        try {
+            Criteria c = ses.createCriteria(Member.class);
+            c.add(Restrictions.eq("memberId", mCode));
+            Member filteredM = (Member) c.uniqueResult();
+            return filteredM;
+        } finally {
+            if (ses != null) {
+                ses.close();
+            }
+        }
     }
 
     private Member getMemberByCode(String mCode, Session s) {
@@ -979,66 +1008,70 @@ public class MemberfxmlController implements Initializable {
 
     private void getMemberLoanByCode(String mlCode, int childId) {
         Session session = HibernateUtil.getSessionFactory().openSession();
-        Criteria c = session.createCriteria(MemberLoan.class);
-        c.add(Restrictions.eq("memberLoanCode", mlCode));
-        c.add(Restrictions.eq("childId", childId));
-        c.setMaxResults(1);
-        MemberLoan ml = (MemberLoan) c.uniqueResult();
-        if (ml != null) {
-            double prins_plus_ins = ml.getLoanInstallment() * ml.getNoOfRepay();
-            gurantors_lstview.getItems().clear();
-            loan_id_txt.setText(ml.getMemberLoanCode());
-            g_date_txt.setText(new SimpleDateFormat("yyyy-MM-dd").format(ml.getGrantedDate()));
-            r_date_txt.setText(ml.getlRequested() != null ? new SimpleDateFormat("yyyy-MM-dd").format(ml.getlRequested()) : "");
-            l_type_txt.setText(ml.getInterestMethod());
-            l_amount_txt.setText(TextFormatHandler.CURRENCY_DECIMAL_FORMAT.format(ml.getLoanAmount()));
-            l_int_txt.setText(TextFormatHandler.PRECENTAGE_DECIMAL_FORMAT.format(ml.getLoanInterest() / 100) + " " + ml.getInterestPer());
-            l_du_txt.setText(ml.getLoanDuration() + " " + ml.getDurationPer());
-            int_pls_prin_txt.setText(TextFormatHandler.CURRENCY_DECIMAL_FORMAT.format(prins_plus_ins));
-            bal_cont_txt.setText(TextFormatHandler.CURRENCY_DECIMAL_FORMAT.format(ml.getKotaLeft()));
-            loan_nm_txt.setText(ml.getLoanName());
-            List<Member> signedGuarantors = getSignedGuarantors(ml.getGuarantors(), session);
-            if (signedGuarantors != null) {
-                gurantors_lstview.getItems().addAll(signedGuarantors);
+        try {
+            Criteria c = session.createCriteria(MemberLoan.class);
+            c.add(Restrictions.eq("memberLoanCode", mlCode));
+            c.add(Restrictions.eq("childId", childId));
+            c.setMaxResults(1);
+            MemberLoan ml = (MemberLoan) c.uniqueResult();
+            if (ml != null) {
+                double prins_plus_ins = ml.getLoanInstallment() * ml.getNoOfRepay();
+                gurantors_lstview.getItems().clear();
+                loan_id_txt.setText(ml.getMemberLoanCode());
+                g_date_txt.setText(new SimpleDateFormat("yyyy-MM-dd").format(ml.getGrantedDate()));
+                r_date_txt.setText(ml.getlRequested() != null ? new SimpleDateFormat("yyyy-MM-dd").format(ml.getlRequested()) : "");
+                l_type_txt.setText(ml.getInterestMethod());
+                l_amount_txt.setText(TextFormatHandler.CURRENCY_DECIMAL_FORMAT.format(ml.getLoanAmount()));
+                l_int_txt.setText(TextFormatHandler.PRECENTAGE_DECIMAL_FORMAT.format(ml.getLoanInterest() / 100) + " " + ml.getInterestPer());
+                l_du_txt.setText(ml.getLoanDuration() + " " + ml.getDurationPer());
+                int_pls_prin_txt.setText(TextFormatHandler.CURRENCY_DECIMAL_FORMAT.format(prins_plus_ins));
+                bal_cont_txt.setText(TextFormatHandler.CURRENCY_DECIMAL_FORMAT.format(ml.getKotaLeft()));
+                loan_nm_txt.setText(ml.getLoanName());
+                List<Member> signedGuarantors = getSignedGuarantors(ml.getGuarantors(), session);
+                if (signedGuarantors != null) {
+                    gurantors_lstview.getItems().addAll(signedGuarantors);
+                }
+
+                double ins_only = prins_plus_ins - ml.getLoanAmount();
+                l_repay_txt.setText(TextFormatHandler.CURRENCY_DECIMAL_FORMAT
+                        .format(ml.getLoanInstallment()) + "( " + TextFormatHandler.CURRENCY_DECIMAL_FORMAT.format((ml.getLoanInstallment() - FxUtilsHandler.roundNumber((ins_only / ml.getLoanDuration()), 0))) + " + " + TextFormatHandler.CURRENCY_DECIMAL_FORMAT.format(FxUtilsHandler.roundNumber((ins_only / ml.getLoanDuration()), 0)) + " )");
+
+                Criteria cl = session.createCriteria(LoanPayment.class);
+                cl.createAlias("memberLoan", "ml");
+                // cl.add(Restrictions.eq("ml.memberLoanCode", ml.getMemberLoanCode()));
+                cl.add(Restrictions.eq("ml.id", ml.getId()));
+                List<LoanPayment> filteredList = cl.list();
+
+                if (!filteredList.isEmpty()) {
+                    List<LoanPayment> collect = filteredList.stream()
+                            .filter(FxUtilsHandler.distinctByKey(p -> p.getInstallmentNo()))
+                            .collect(Collectors.toList());
+
+                    double tot_pay_lo = (ml.getLoanInstallment() * ml.getNoOfRepay());
+
+                    Double paymentDue = tot_pay_lo - collect.stream()
+                            .mapToDouble(LoanPayment::getPaidAmt).sum();
+
+                    // System.out.println("ESTIMATE - " + paymentDue);
+                    double loanComplete = ml.isClosedLoan() ? 1.0 : (paymentDue / tot_pay_lo) * 100;
+                    ReadOnlyDoubleWrapper workDone = new ReadOnlyDoubleWrapper();
+                    ProgressIndicatorBar bar = new ProgressIndicatorBar(workDone, loanComplete);
+                    bar.createProgressIndicatorBar(progress_box, workDone);
+
+                    initLoanPayTable(FXCollections.observableArrayList(collect));
+                } else {
+
+                    initLoanPayTable(FXCollections.observableArrayList());
+                    ReadOnlyDoubleWrapper workDone = new ReadOnlyDoubleWrapper();
+                    ProgressIndicatorBar bar = new ProgressIndicatorBar(workDone, 0);
+                    bar.createProgressIndicatorBar(progress_box, workDone);
+                }
             }
 
-            double ins_only = prins_plus_ins - ml.getLoanAmount();
-            l_repay_txt.setText(TextFormatHandler.CURRENCY_DECIMAL_FORMAT
-                    .format(ml.getLoanInstallment()) + "( " + TextFormatHandler.CURRENCY_DECIMAL_FORMAT.format((ml.getLoanInstallment() - FxUtilsHandler.roundNumber((ins_only / ml.getLoanDuration()), 0))) + " + " + TextFormatHandler.CURRENCY_DECIMAL_FORMAT.format(FxUtilsHandler.roundNumber((ins_only / ml.getLoanDuration()), 0)) + " )");
-
-            Criteria cl = session.createCriteria(LoanPayment.class);
-            cl.createAlias("memberLoan", "ml");
-            // cl.add(Restrictions.eq("ml.memberLoanCode", ml.getMemberLoanCode()));
-            cl.add(Restrictions.eq("ml.id", ml.getId()));
-            List<LoanPayment> filteredList = cl.list();
-
-            if (!filteredList.isEmpty()) {
-                List<LoanPayment> collect = filteredList.stream()
-                        .filter(FxUtilsHandler.distinctByKey(p -> p.getInstallmentNo()))
-                        .collect(Collectors.toList());
-
-                double tot_pay_lo = (ml.getLoanInstallment() * ml.getNoOfRepay());
-
-                Double paymentDue = tot_pay_lo - collect.stream()
-                        .mapToDouble(LoanPayment::getPaidAmt).sum();
-
-                // System.out.println("ESTIMATE - " + paymentDue);
-                double loanComplete = ml.isClosedLoan() ? 1.0 : (paymentDue / tot_pay_lo) * 100;
-                ReadOnlyDoubleWrapper workDone = new ReadOnlyDoubleWrapper();
-                ProgressIndicatorBar bar = new ProgressIndicatorBar(workDone, loanComplete);
-                bar.createProgressIndicatorBar(progress_box, workDone);
-
-                initLoanPayTable(FXCollections.observableArrayList(collect));
-            } else {
-
-                initLoanPayTable(FXCollections.observableArrayList());
-                ReadOnlyDoubleWrapper workDone = new ReadOnlyDoubleWrapper();
-                ProgressIndicatorBar bar = new ProgressIndicatorBar(workDone, 0);
-                bar.createProgressIndicatorBar(progress_box, workDone);
+        } finally {
+            if (session != null) {
+                session.close();
             }
-
-            session.close();
-
         }
     }
 
@@ -2203,7 +2236,7 @@ public class MemberfxmlController implements Initializable {
             //oldloanPay represent the amount has been paid before out of the current
             // system, this only available for old loans
             double oldloanPay = lp.getMemberLoan().getPaidSofar();
-            
+
             int lp_installment = lp.getInstallmentNo();
             double sum = lp.getMemberLoan().getLoanPayments().stream()
                     .filter(p -> p.getInstallmentNo() <= lp_installment)
