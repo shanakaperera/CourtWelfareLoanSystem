@@ -8,11 +8,11 @@
   </information>
   <resources>
     <j2se version="1.6+" href="http://java.sun.com/products/autodl/j2se"/>
-    <jar href="CourtWelfareLoanSystem.jar" size="954443" download="eager" />
+    <jar href="CourtWelfareLoanSystem.jar" size="954513" download="eager" />
+    <jar href="lib\HikariCP-2.7.8.jar" size="141293" download="eager" />
     <jar href="lib\Medusa-7.5.jar" size="1456743" download="eager" />
     <jar href="lib\antlr-2.7.7.jar" size="437548" download="eager" />
     <jar href="lib\apache-commons-lang.jar" size="284220" download="eager" />
-    <jar href="lib\c3p0-0.9.2.1.jar" size="422423" download="eager" />
     <jar href="lib\commons-beanutils-1.9.0.jar" size="230951" download="eager" />
     <jar href="lib\commons-collections-3.2.1.jar" size="575389" download="eager" />
     <jar href="lib\commons-digester-2.1.jar" size="196768" download="eager" />
@@ -23,11 +23,11 @@
     <jar href="lib\groovy-all-2.0.1.jar" size="6191960" download="eager" />
     <jar href="lib\gson-2.8.0.jar" size="231952" download="eager" />
     <jar href="lib\guava-18.0.jar" size="2256213" download="eager" />
-    <jar href="lib\hibernate-c3p0-4.3.1.Final.jar" size="39138" download="eager" />
     <jar href="lib\hibernate-commons-annotations-4.0.4.Final.jar" size="75740" download="eager" />
     <jar href="lib\hibernate-core-4.3.1.Final.jar" size="5188532" download="eager" />
     <jar href="lib\hibernate-ehcache-4.3.1.Final.jar" size="134457" download="eager" />
     <jar href="lib\hibernate-entitymanager-4.3.1.Final.jar" size="643750" download="eager" />
+    <jar href="lib\hibernate-hikaricp-5.2.12.Final.jar" size="6639" download="eager" />
     <jar href="lib\hibernate-jpa-2.1-api-1.0.0.Final.jar" size="115983" download="eager" />
     <jar href="lib\itext-pdfa-5.5.0.jar" size="54330" download="eager" />
     <jar href="lib\itextpdf-5.5.0.jar" size="2114682" download="eager" />
@@ -42,7 +42,6 @@
     <jar href="lib\joda-time-2.9.9.jar" size="634048" download="eager" />
     <jar href="lib\jpedal_gpl.jar" size="2527561" download="eager" />
     <jar href="lib\junique-1.0.4.jar" size="10262" download="eager" />
-    <jar href="lib\mchange-commons-java-0.2.3.4.jar" size="584783" download="eager" />
     <jar href="lib\mysql-connector-java-5.1.23-bin.jar" size="834126" download="eager" />
     <jar href="lib\regulators-1.6.2.jar" size="235937" download="eager" />
     <jar href="lib\slf4j-api-1.6.1.jar" size="25734" download="eager" />
