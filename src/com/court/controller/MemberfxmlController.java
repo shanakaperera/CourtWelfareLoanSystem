@@ -2586,40 +2586,48 @@ public class MemberfxmlController implements Initializable {
             ab.setRelation(ac_ben_rel.getText());
 
             Session session = HibernateUtil.getSessionFactory().openSession();
-            Criteria c = session.createCriteria(Member.class);
-            Member member = (Member) c.add(Restrictions.eq("memberId", member_code_txt.getText())).uniqueResult();
-            member.setFather(father_txt.getText());
-            member.setMother(mother_txt.getText());
-            member.setSpouse(s.getSpouse() == null || s.getSpouse().isEmpty() ? "" : new Gson().toJson(s));
-            member.setMemBenifits(mb.getName() == null || mb.getName().isEmpty() ? "" : new Gson().toJson(mb));
-            member.setAccBenifits(ab.getName() == null || mb.getName().isEmpty() ? "" : new Gson().toJson(ab));
-            session.beginTransaction();
-            session.update(member);
+            try {
+                Criteria c = session.createCriteria(Member.class);
+                Member member = (Member) c.add(Restrictions.eq("memberId", member_code_txt.getText())).uniqueResult();
+                member.setFather(father_txt.getText());
+                member.setMother(mother_txt.getText());
+                member.setSpouse(s.getSpouse() == null || s.getSpouse().isEmpty() ? "" : new Gson().toJson(s));
+                member.setMemBenifits(mb.getName() == null || mb.getName().isEmpty() ? "" : new Gson().toJson(mb));
+                member.setAccBenifits(ab.getName() == null || mb.getName().isEmpty() ? "" : new Gson().toJson(ab));
+                session.beginTransaction();
+                session.update(member);
 
-            Set<MemberSubscriptions> mss = member.getMemberSubscriptions();
-            List<MemberSubscription> msList = session.createCriteria(MemberSubscription.class)
-                    .list();
-            if (mss.isEmpty()) {
+                Set<MemberSubscriptions> mss = member.getMemberSubscriptions();
+                List<MemberSubscription> msList = session.createCriteria(MemberSubscription.class)
+                        .list();
+                if (mss.isEmpty()) {
 
-                for (MemberSubscription ms : msList) {
-                    MemberSubscriptions mm = new MemberSubscriptions();
-                    hibernateSaveMemberSubscriptions(ms, mm, session, member);
-                }
-            } else {
-                for (MemberSubscription ms : msList) {
-                    int id = getSubscriptionsByMemberAndSubscription(session, ms.getFeeName(), member.getId());
-                    MemberSubscriptions msm;
-                    if (id != 0) {
-                        msm = (MemberSubscriptions) session.load(MemberSubscriptions.class, id);
-                    } else {
-                        msm = new MemberSubscriptions();
+                    for (MemberSubscription ms : msList) {
+                        MemberSubscriptions mm = new MemberSubscriptions();
+                        hibernateSaveMemberSubscriptions(ms, mm, session, member);
                     }
-                    hibernateSaveMemberSubscriptions(ms, msm, session, member);
+                } else {
+                    for (MemberSubscription ms : msList) {
+                        int id = getSubscriptionsByMemberAndSubscription(session, ms.getFeeName(), member.getId());
+                        MemberSubscriptions msm;
+                        if (id != 0) {
+                            msm = (MemberSubscriptions) session.load(MemberSubscriptions.class, id);
+                        } else {
+                            msm = new MemberSubscriptions();
+                        }
+                        hibernateSaveMemberSubscriptions(ms, msm, session, member);
+                    }
+                }
+                session.getTransaction().commit();
+            } catch (Exception e) {
+                if (session.getTransaction() != null) {
+                    session.getTransaction().rollback();
+                }
+            } finally {
+                if (session != null) {
+                    session.close();
                 }
             }
-
-            session.getTransaction().commit();
-            session.close();
 
             Alert alert_success = new Alert(Alert.AlertType.INFORMATION);
             alert_success.setTitle("Information");

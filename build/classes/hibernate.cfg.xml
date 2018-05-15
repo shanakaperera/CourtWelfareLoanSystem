@@ -48,6 +48,10 @@ Contributor(s):
         <property name="hibernate.hikari.minimumIdle">10</property>
         <property name="hibernate.hikari.maximumPoolSize">20</property>
         <property name="hibernate.hikari.idleTimeout">200000</property>
+        <property name="hibernate.hikari.dataSource.cachePrepStmts">true</property>
+        <property name="hibernate.hikari.dataSource.prepStmtCacheSize">250</property>
+        <property name="hibernate.hikari.dataSource.prepStmtCacheSqlLimit">2048</property>
+        <property name="hibernate.hikari.dataSource.useServerPrepStmts">true</property>
         <property name="hibernate.enable_lazy_load_no_trans">true</property>
         <mapping resource="com/court/model/UsrRolePrivilage.hbm.xml"/>
         <mapping resource="com/court/model/DocSequnce.hbm.xml"/>
