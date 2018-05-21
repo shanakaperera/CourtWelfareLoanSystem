@@ -372,7 +372,7 @@ public class ReportFormFxmlController implements Initializable {
     @FXML
     private void onBranchCollectionDueAction(ActionEvent event) throws JRException {
 
-        Dialog<Pair<String, String>> dialog = new Dialog<>();
+        Dialog<BrColDue> dialog = new Dialog<>();
         dialog.setTitle("Branch wise Collection Due");
         dialog.setHeaderText("Select Payment Office");
         ButtonType viewBtn = new ButtonType("View Report", ButtonData.OK_DONE);
@@ -384,26 +384,30 @@ public class ReportFormFxmlController implements Initializable {
 
         TextField bField = new TextField();
         ComboBox<String> cbox = new ComboBox<>(FXCollections.observableArrayList("Permanent", "Casual"));
+        ComboBox<String> jcbox = new ComboBox<>(FXCollections.observableArrayList("With Judges", "Without Judges", "Only Judges"));
         cbox.getSelectionModel().selectFirst();
+        jcbox.getSelectionModel().select(1);
         TextFields.bindAutoCompletion(bField, getPaymentOffice());
 
         grid.add(new Label("Branch:"), 0, 0);
         grid.add(bField, 1, 0);
         grid.add(new Label("Job Status:"), 0, 1);
         grid.add(cbox, 1, 1);
+        grid.add(new Label("Report:"), 0, 2);
+        grid.add(jcbox, 1, 2);
         dialog.getDialogPane().setContent(grid);
         dialog.setResultConverter(db -> {
             if (db == viewBtn) {
                 if (bField.getText().isEmpty()) {
                     return null;
                 } else {
-                    return new Pair<>(getPayOfficeIdFromCode(bField.getText().split("-")[0]), cbox.getSelectionModel().getSelectedItem());
+                    return new BrColDue(getPayOfficeIdFromCode(bField.getText().split("-")[0]), cbox.getSelectionModel().getSelectedItem(), jcbox.getSelectionModel().getSelectedIndex());
                 }
             }
             return null;
         });
 
-        Optional<Pair<String, String>> result = dialog.showAndWait();
+        Optional<BrColDue> result = dialog.showAndWait();
         result.ifPresent(b -> {
             //String reportPath = "com/court/reports/BranchWiseCollection.jasper";
 
@@ -421,9 +425,10 @@ public class ReportFormFxmlController implements Initializable {
             map.put("companyName", ReportHandler.COMPANY_NAME);
             map.put("companyAddress", ReportHandler.ADDRESS);
             map.put("reportTitle", "Branch Wise Collection");
-            map.put("p_brcode", Integer.parseInt(b.getKey()));
-            map.put("job_stat", b.getValue());
-            System.out.println("JOB - " + b.getValue());
+            map.put("p_brcode", Integer.parseInt(b.getBranch()));
+            map.put("job_stat", b.getJobStat());
+            map.put("judges", b.getJudges());
+            System.out.println("JOB - " + b.getJobStat());
             ReportHandler rh = new ReportHandler(reportPath, map, null, con);
 //            rh.genarateReport();
             boolean blah = rh.genReport();
@@ -960,6 +965,32 @@ public class ReportFormFxmlController implements Initializable {
 
         public void setTd(LocalDate td) {
             this.td = td;
+        }
+
+    }
+
+    class BrColDue {
+
+        private String branch;
+        private String jobStat;
+        private int judges;
+
+        public BrColDue(String branch, String jobStat, int judges) {
+            this.branch = branch;
+            this.jobStat = jobStat;
+            this.judges = judges;
+        }
+
+        public String getBranch() {
+            return branch;
+        }
+
+        public String getJobStat() {
+            return jobStat;
+        }
+
+        public int getJudges() {
+            return judges;
         }
 
     }

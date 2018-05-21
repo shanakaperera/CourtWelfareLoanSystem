@@ -11,6 +11,7 @@
 		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
 	</parameter>
 	<parameter name="job_stat" class="java.lang.String"/>
+	<parameter name="judges" class="java.lang.Integer"/>
 	<queryString>
 		<![CDATA[SELECT
     m.member_id,
@@ -72,6 +73,12 @@ AND
 br.status=true
 AND
 m.job_status=$P{job_stat}
+AND 
+CASE 
+    WHEN $P{judges}=1 THEN m.job_title!='JUDGE' 
+    WHEN $P{judges}=2 THEN m.job_title='JUDGE'
+    ELSE 1=1
+END
 GROUP BY m.member_id
 ORDER BY br.branch_code, FIELD(m.job_title,'JUDGE', 'REGISTAR','IN:OFFICER','MANEGEM', 'ACCOUNT', 'ACCOUNT ASSISTANT','ADD:OFFICER', 'CLERK', 'TRANSLATOR','STENO', 'TYPIST', 'BINDER', 'PISCAL', 'PROCESS', 'MATRON', 'INTERPRETER','FAMILY','DEV OFFICER','REPORTER', 'K.K.S','PROGRAM','DRIVER', 'WATCHER','LABOUR') ;]]>
 	</queryString>
