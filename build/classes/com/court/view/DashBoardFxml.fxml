@@ -8,12 +8,14 @@
 <?import javafx.scene.control.MenuButton?>
 <?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.control.SplitPane?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="480.0" prefWidth="640.0" stylesheets="@main.css" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.court.controller.DashBoardFxmlController">
+<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="480.0" prefWidth="640.0" stylesheets="@main.css" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.court.controller.DashBoardFxmlController">
     <stylesheets>
         <URL value="@/com/court/asserts/style.css" />
     </stylesheets>
@@ -51,18 +53,18 @@
                                         <String fx:value="btn-primary" />
                                     </styleClass>
                                 </Button>
-                                <Button fx:id="collect_sheet_btn" layoutX="10.0" layoutY="136.0" mnemonicParsing="false" onAction="#collectSheetBtnAction" prefHeight="37.0" prefWidth="171.0" style="-fx-text-fill: #ffff; -fx-font-size: 16;" text="Collection Sheet">
+                                <Button fx:id="collect_sheet_btn" layoutX="10.0" layoutY="136.0" mnemonicParsing="false" onAction="#collectSheetBtnAction" onMousePressed="#onCollectionSheetMousePressed" prefHeight="37.0" prefWidth="171.0" style="-fx-text-fill: #ffff; -fx-font-size: 16;" text="Collection Sheet">
                                     <styleClass>
                                         <String fx:value="btn" />
                                         <String fx:value="btn-primary" />
                                     </styleClass>
                                 </Button>
-                                <Button fx:id="member_btn" layoutX="10.0" layoutY="10.0" mnemonicParsing="false" onAction="#memberBtnAction" prefHeight="37.0" prefWidth="171.0" style="-fx-text-fill: #ffff; -fx-font-size: 16;" text="Members">
+                                <Button fx:id="member_btn" layoutX="10.0" layoutY="10.0" mnemonicParsing="false" onAction="#memberBtnAction" onMousePressed="#onMemberMousePressed" prefHeight="37.0" prefWidth="171.0" style="-fx-text-fill: #ffff; -fx-font-size: 16;" text="Members">
                                     <styleClass>
                                         <String fx:value="btn" />
                                         <String fx:value="btn-primary" />
                                     </styleClass>
-                                </Button>
+                                </Button>  
                                 <MenuButton alignment="CENTER" mnemonicParsing="false" popupSide="RIGHT" prefHeight="37.0" prefWidth="171.0" style="-fx-text-fill: #ffff; -fx-font-size: 16;" text="Loans">
                                     <items>
                                         <MenuItem fx:id="loanmng_menu_item" mnemonicParsing="false" onAction="#loanmngBtnAction" text="Loan Management" />
@@ -73,13 +75,13 @@
                                         <String fx:value="btn-primary" />
                                     </styleClass>
                                 </MenuButton>
-                                <Button fx:id="guarant_btn" layoutX="10.0" layoutY="262.0" mnemonicParsing="false" onAction="#guarntBtnAction" prefHeight="37.0" prefWidth="171.0" style="-fx-text-fill: #ffff; -fx-font-size: 16;" text="Guarantors">
+                                <Button fx:id="guarant_btn" layoutX="10.0" layoutY="262.0" mnemonicParsing="false" onAction="#guarntBtnAction" onMousePressed="#onGurantorsMousePressed" prefHeight="37.0" prefWidth="171.0" style="-fx-text-fill: #ffff; -fx-font-size: 16;" text="Guarantors">
                                     <styleClass>
                                         <String fx:value="btn" />
                                         <String fx:value="btn-primary" />
                                     </styleClass>
                                 </Button>
-                                <Button fx:id="branch_btn" layoutX="10.0" layoutY="94.0" mnemonicParsing="false" onAction="#branchBtnAction" prefHeight="37.0" prefWidth="171.0" style="-fx-text-fill: #ffff; -fx-font-size: 16;" text="Office">
+                                <Button fx:id="branch_btn" layoutX="10.0" layoutY="94.0" mnemonicParsing="false" onAction="#branchBtnAction" onMousePressed="#onOfficeMousePressed" prefHeight="37.0" prefWidth="171.0" style="-fx-text-fill: #ffff; -fx-font-size: 16;" text="Office">
                                     <styleClass>
                                         <String fx:value="btn" />
                                         <String fx:value="btn-primary" />
@@ -91,7 +93,7 @@
                                         <String fx:value="btn-primary" />
                                     </styleClass>
                                 </Button>
-                                <Button fx:id="report_btn" layoutX="10.0" layoutY="220.0" mnemonicParsing="false" onAction="#reportBtnAction" prefHeight="37.0" prefWidth="171.0" style="-fx-text-fill: #ffff; -fx-font-size: 16;" text="Reports">
+                                <Button fx:id="report_btn" layoutX="10.0" layoutY="220.0" mnemonicParsing="false" onAction="#reportBtnAction" onMousePressed="#onReportsMousePressed" prefHeight="37.0" prefWidth="171.0" style="-fx-text-fill: #ffff; -fx-font-size: 16;" text="Reports">
                                     <styleClass>
                                         <String fx:value="btn" />
                                         <String fx:value="btn-primary" />
@@ -125,7 +127,20 @@
                 </AnchorPane>
                 <AnchorPane minWidth="200.0">
                     <children>
-                        <VBox fx:id="dataPane" layoutX="10.0" layoutY="50.0" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0" />
+                  <TabPane fx:id="mainTabPane" layoutX="10.0" layoutY="10.0" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0">
+                     <tabs>
+                        <Tab closable="false" text="Window 1">
+                           <content>
+                                    <VBox fx:id="dataPane" />
+                           </content>
+                        </Tab>
+                        <Tab closable="false" text="Window 2">
+                           <content>
+                              <VBox fx:id="dataPane2" />
+                           </content>
+                        </Tab>
+                     </tabs>
+                  </TabPane>
                     </children>
                 </AnchorPane>
             </items>

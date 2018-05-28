@@ -26,11 +26,15 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
+import javafx.scene.control.SingleSelectionModel;
 import javafx.scene.control.SplitPane;
+import javafx.scene.control.Tab;
+import javafx.scene.control.TabPane;
 import javafx.scene.effect.Effect;
 import javafx.scene.effect.GaussianBlur;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
@@ -88,6 +92,11 @@ public class DashBoardFxmlController implements Initializable {
     private Button guarant_btn;
     @FXML
     private Button old_loan_btn;
+    @FXML
+    private VBox dataPane2;
+    @FXML
+    private TabPane mainTabPane;
+    private SingleSelectionModel<Tab> tabSelection;
 
     public LoggedSessionHandler loggedSession() {
         return sHandler;
@@ -98,6 +107,7 @@ public class DashBoardFxmlController implements Initializable {
      */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
+        tabSelection = mainTabPane.getSelectionModel();
         progressIndicator = new ImageView();
         progressIndicator.setImage(new Image(FileHandler.LOADING_DEFAULT_GIF));
         btnMenuBar.setGraphic(new GlyphIcons().setFontAwesomeIconGlyph('\uf007', Color.WHITESMOKE, 20.0));
@@ -180,77 +190,114 @@ public class DashBoardFxmlController implements Initializable {
         fillpaneThread.start();
     }
 
+    public void loadDataPane2(String url) throws IOException {
+        VBox v = new VBox(progressIndicator);
+        v.setAlignment(Pos.CENTER);
+        dataPane2.getChildren().setAll(v);
+        Task<VBox> vboxTask = new Task<VBox>() {
+            {
+                setOnSucceeded(e -> {
+                    dataPane2.getChildren().setAll(getValue());
+                });
+                setOnFailed(workerStateEvent -> getException().printStackTrace());
+            }
+
+            @Override
+            protected VBox call() throws Exception {
+                return FXMLLoader.load(getClass().getResource(url));
+            }
+        };
+        Thread fillpaneThread = new Thread(vboxTask, "vbox-task-2");
+        fillpaneThread.setDaemon(true);
+        fillpaneThread.start();
+    }
+
     @FXML
     private void dashboardBtnAction(ActionEvent event) throws IOException {
         loadDataPane("/com/court/view/HomeFXML.fxml");
+        tabSelection.selectFirst();
     }
 
     @FXML
     private void collectSheetBtnAction(ActionEvent event) throws IOException {
         loadDataPane("/com/court/view/CollectionSheetFxml.fxml");
+        tabSelection.selectFirst();
     }
 
     @FXML
     private void memberBtnAction(ActionEvent event) throws IOException {
         loadDataPane("/com/court/view/Memberfxml.fxml");
+        tabSelection.selectFirst();
     }
 
     @FXML
     private void branchBtnAction(ActionEvent event) throws IOException {
         loadDataPane("/com/court/view/BranchFxml.fxml");
+        tabSelection.selectFirst();
     }
 
     @FXML
     private void paymentBtnAction(ActionEvent event) throws IOException {
         loadDataPane("/com/court/view/PaymentsFxml.fxml");
+        tabSelection.selectFirst();
     }
 
     @FXML
     private void reportBtnAction(ActionEvent event) throws IOException {
         loadDataPane("/com/court/view/ReportFormFxml.fxml");
+        tabSelection.selectFirst();
     }
 
     @FXML
     private void usrmngBtnAction(ActionEvent event) throws IOException {
         loadDataPane("/com/court/view/UserManageFxml.fxml");
+        tabSelection.selectFirst();
     }
 
     @FXML
     private void logoutBtnAction(ActionEvent event) throws IOException {
         btnMenuBar.setText("Logged User");
+        tabSelection.selectFirst();
+        dataPane2.getChildren().clear();
         performLoginAction(MainClass.primaryStage);
     }
 
     @FXML
     private void loanmngBtnAction(ActionEvent event) throws IOException {
         loadDataPane("/com/court/view/LoanFxml.fxml");
+        tabSelection.selectFirst();
     }
 
     @FXML
     private void loancalBtnAction(ActionEvent event) throws IOException {
         loadDataPane("/com/court/view/LoanCalculatorFxml.fxml");
+        tabSelection.selectFirst();
     }
 
     @FXML
     private void onLoggedUsrBtnAction(ActionEvent event) throws IOException {
         if (loggedSession() != null) {
             loadDataPane("/com/court/view/ProfileFxml.fxml");
+            tabSelection.selectFirst();
         }
     }
 
     @FXML
     private void genBtnAction(ActionEvent event) throws IOException {
         loadDataPane("/com/court/view/GeneralSettingsFxml.fxml");
+        tabSelection.selectFirst();
     }
 
     @FXML
     private void guarntBtnAction(ActionEvent event) throws IOException {
         loadDataPane("/com/court/view/GuarantorsFxml.fxml");
+        tabSelection.selectFirst();
     }
 
     @FXML
     private void oldLoanBtnAction(ActionEvent event) throws IOException {
         loadDataPane("/com/court/view/OldLoansFxml.fxml");
+        tabSelection.selectFirst();
     }
 
     public Label getDashboard_header() {
@@ -302,6 +349,51 @@ public class DashBoardFxmlController implements Initializable {
             }
         }
         return flag;
+    }
+
+    @FXML
+    private void onCollectionSheetMousePressed(MouseEvent event) throws IOException {
+        if (event.isSecondaryButtonDown()) {
+
+            loadDataPane2("/com/court/view/CollectionSheetFxml.fxml");
+            tabSelection.selectLast();
+        }
+    }
+
+    @FXML
+    private void onMemberMousePressed(MouseEvent event) throws IOException {
+        if (event.isSecondaryButtonDown()) {
+
+            loadDataPane2("/com/court/view/Memberfxml.fxml");
+            tabSelection.selectLast();
+        }
+    }
+
+    @FXML
+    private void onGurantorsMousePressed(MouseEvent event) throws IOException {
+        if (event.isSecondaryButtonDown()) {
+
+            loadDataPane2("/com/court/view/GuarantorsFxml.fxml");
+            tabSelection.selectLast();
+        }
+    }
+
+    @FXML
+    private void onOfficeMousePressed(MouseEvent event) throws IOException {
+        if (event.isSecondaryButtonDown()) {
+
+            loadDataPane2("/com/court/view/BranchFxml.fxml");
+            tabSelection.selectLast();
+        }
+    }
+
+    @FXML
+    private void onReportsMousePressed(MouseEvent event) throws IOException {
+        if (event.isSecondaryButtonDown()) {
+
+            loadDataPane2("/com/court/view/ReportFormFxml.fxml");
+            tabSelection.selectLast();
+        }
     }
 
 }
