@@ -101,7 +101,8 @@ public class DisplaySubscriptionFactory implements Callback<TableColumn.CellData
                     double diff = newValue - sum;
                     System.out.print("T - " + total + " :- ");
                     System.out.print("D - " + diff + " :- ");
-                    total = total + diff + param.getValue().getZeroOverpay();
+                    System.out.print("O - " + param.getValue().getOldOverPay() + " :- ");
+                    total = total + diff + param.getValue().getZeroOverpay() - param.getValue().getOldOverPay();
                     System.out.println("Z - " + param.getValue().getZeroOverpay());
                     chk_amt_txt.setText(TextFormatHandler.CURRENCY_DECIMAL_FORMAT.format(total));
                     csController.setTotal(total);

@@ -174,11 +174,11 @@ public class CollectionSheetFxmlController implements Initializable {
         tbl_filter_txt.setRight(filterTxtClear);
 
         chk_amt_txt.textProperty().addListener((observable, oldValue, newValue) -> {
-           // user_enter_pay.setText(TextFormatHandler.CURRENCY_DECIMAL_FORMAT.format(1));
-           validationSupport.setErrorDecorationEnabled(true);
+            // user_enter_pay.setText(TextFormatHandler.CURRENCY_DECIMAL_FORMAT.format(1));
+            validationSupport.setErrorDecorationEnabled(true);
             //System.out.println("textfield changed from " + oldValue + " to " + newValue);
         });
-      //  validationSupport.errorDecorationEnabledProperty().bind(chk_amt_txt);
+        //  validationSupport.errorDecorationEnabledProperty().bind(chk_amt_txt);
     }
 
     @FXML
@@ -660,7 +660,11 @@ public class CollectionSheetFxmlController implements Initializable {
                     .get(event.getTablePosition().getRow()).isCollected()) {
 
                 double diff = event.getNewValue() - event.getOldValue();
-
+                
+                event.getTableView().getItems()
+                        .get(event.getTablePosition().getRow())
+                        .setOldOverPay(event.getOldValue());
+                
                 event.getTableView().getItems()
                         .get(event.getTablePosition().getRow())
                         .setZeroOverpay(event.getNewValue());

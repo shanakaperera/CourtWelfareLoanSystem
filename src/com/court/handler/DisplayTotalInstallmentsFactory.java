@@ -88,7 +88,7 @@ public class DisplayTotalInstallmentsFactory implements Callback<TableColumn.Cel
                 Alert alert_details = new Alert(Alert.AlertType.INFORMATION);
                 alert_details.setTitle("Loan Information");
                 alert_details.setHeaderText("Member installment information for " + param.getValue().getMemberId());
-                alert_details.getDialogPane().setContent(createContentGrid(instOnly, sum));
+                alert_details.getDialogPane().setContent(createContentGrid(instOnly, sum, param.getValue()));
                 alert_details.show();
             }
         });
@@ -96,7 +96,7 @@ public class DisplayTotalInstallmentsFactory implements Callback<TableColumn.Cel
     }
     private Label total_n;
 
-    private Node createContentGrid(List<MemberLoan> list, double sum) {
+    private Node createContentGrid(List<MemberLoan> list, double sum, Member m) {
         VBox pane = new VBox();
         HBox totBox = new HBox();
         totBox.setAlignment(Pos.CENTER_RIGHT);
@@ -107,14 +107,14 @@ public class DisplayTotalInstallmentsFactory implements Callback<TableColumn.Cel
         total_n.setStyle("-fx-font-size:22px;-fx-font-weight:bold;");
         totBox.getChildren().addAll(total_t, total_n);
         totBox.setSpacing(10.0);
-        TableView<MemberLoan> table = createTable();
+        TableView<MemberLoan> table = createTable(m);
         table.setItems(FXCollections.observableList(list));
         pane.getChildren().addAll(table, totBox);
         pane.setPrefSize(700, 300);
         return pane;
     }
 
-    private TableView<MemberLoan> createTable() {
+    private TableView<MemberLoan> createTable(Member m) {
 
         TableView<MemberLoan> member_ln_tbl = new TableView<>();
         TableColumn<MemberLoan, String> loan_id_col = new TableColumn<>("Loan ID");
@@ -162,7 +162,7 @@ public class DisplayTotalInstallmentsFactory implements Callback<TableColumn.Cel
                 total_n.setText(getTableColumnTotal(event.getTableView(), 4));
 //                System.out.println("TOTAL IN - " + total);
 //                System.exit(0);
-                total = total + diff;
+                total = total + diff + m.getZeroOverpay() - m.getOldOverPay();
 
 //                System.out.println("TOTAL - "+total);
 //                System.exit(0);
