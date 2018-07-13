@@ -172,13 +172,21 @@ public class CollectionSheetFxmlController implements Initializable {
             fList.setPredicate(null);
         });
         tbl_filter_txt.setRight(filterTxtClear);
+
+        chk_amt_txt.textProperty().addListener((observable, oldValue, newValue) -> {
+           // user_enter_pay.setText(TextFormatHandler.CURRENCY_DECIMAL_FORMAT.format(1));
+           validationSupport.setErrorDecorationEnabled(true);
+            //System.out.println("textfield changed from " + oldValue + " to " + newValue);
+        });
+      //  validationSupport.errorDecorationEnabledProperty().bind(chk_amt_txt);
     }
 
     @FXML
     private void onSearchBtnAction(ActionEvent event) {
         performSearch(search_typ_combo, search_txt);
-        bindValidationOnPaneControlFocus(collection_grid);
+        registerInputValidation();
         proceed_btn.setDisable(false);
+        tbl_filter_txt.setText("");
     }
 
     @FXML
@@ -197,6 +205,7 @@ public class CollectionSheetFxmlController implements Initializable {
 
     @FXML
     private void onProceedBtnAction(ActionEvent event) throws IOException {
+        registerInputValidation();
         if (isValidationEmpty()) {
             Alert alert_error = new Alert(Alert.AlertType.ERROR);
             alert_error.setTitle("Error");
@@ -227,7 +236,7 @@ public class CollectionSheetFxmlController implements Initializable {
             }
             double tot_pay = TextFormatHandler.getCurrencyFieldValue(chk_amt_txt);
 
-            if (FxUtilsHandler.roundNumber(tot_pay, 0) != TextFormatHandler.getCurrencyFieldValue(chk_amt_txt)) {
+            if (FxUtilsHandler.roundNumber(tot_pay, 0) != TextFormatHandler.getCurrencyFieldValue(user_enter_pay)) {
                 Alert alert_error = new Alert(Alert.AlertType.ERROR);
                 alert_error.setTitle("Error");
                 alert_error.setHeaderText("Different cheque amount entered !");
@@ -798,7 +807,8 @@ public class CollectionSheetFxmlController implements Initializable {
             return TextFormatHandler.getCurrencyFieldValue(t) > 0;
         };
         Predicate<String> p_cheque_tally = (t) -> {
-            return Objects.equals(TextFormatHandler.getCurrencyFieldValue(t), TextFormatHandler.getCurrencyFieldValue(chk_amt_txt));
+            return Objects.equals(TextFormatHandler.getCurrencyFieldValue(t),
+                    TextFormatHandler.getCurrencyFieldValue(chk_amt_txt));
         };
         validationSupport.registerValidator(chk_amt_txt,
                 Validator.createEmptyValidator("This field is not optional !")

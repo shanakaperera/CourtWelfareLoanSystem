@@ -69,7 +69,7 @@ public class DisplaySubscriptionFactory implements Callback<TableColumn.CellData
                 ButtonType updateBtnType = new ButtonType("Update", ButtonBar.ButtonData.OK_DONE);
                 Dialog<List<MemberSubscriptions>> alert_details = new Dialog();
                 alert_details.setTitle("Subscription Information");
-                alert_details.setHeaderText("Member Subscription information for each installment");
+                alert_details.setHeaderText("Member Subscription information for " + param.getValue().getMemberId());
                 alert_details.getDialogPane().getButtonTypes().addAll(updateBtnType, ButtonType.CANCEL);
                 Node grid = createContentGrid(mbrSubs, sum, flag);
                 alert_details.getDialogPane().setContent(grid);
@@ -99,7 +99,10 @@ public class DisplaySubscriptionFactory implements Callback<TableColumn.CellData
                     param.getValue().setTotalSubscription(newValue);
                     collection_tbl.refresh();
                     double diff = newValue - sum;
-                    total = total + diff;
+                    System.out.print("T - " + total + " :- ");
+                    System.out.print("D - " + diff + " :- ");
+                    total = total + diff + param.getValue().getZeroOverpay();
+                    System.out.println("Z - " + param.getValue().getZeroOverpay());
                     chk_amt_txt.setText(TextFormatHandler.CURRENCY_DECIMAL_FORMAT.format(total));
                     csController.setTotal(total);
                 });
@@ -149,7 +152,7 @@ public class DisplaySubscriptionFactory implements Callback<TableColumn.CellData
     private boolean getparamValue(boolean flag, MemberSubscriptions get) {
         return !(get.getRepaymentType().equalsIgnoreCase("Once") && !flag);
     }
-    
+
     public void setTotal(double total) {
         this.total = total;
     }

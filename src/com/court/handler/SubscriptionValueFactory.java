@@ -31,7 +31,6 @@ public class SubscriptionValueFactory implements Callback<TableColumn.CellDataFe
 //            System.out.println("SUM - " + sum);
 //            System.exit(0);
 //        }
-
         if (FxUtilsHandler.hasPreviousSubscriptions(ml.getId())) {
             sum = mbrSubs.stream().mapToDouble(a -> a.getAmount()).sum();
         } else {

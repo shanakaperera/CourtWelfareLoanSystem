@@ -84,10 +84,10 @@ public class DisplayTotalInstallmentsFactory implements Callback<TableColumn.Cel
         button.setOnAction((evt) -> {
 
             if (ml.isCollected()) {
-                
+
                 Alert alert_details = new Alert(Alert.AlertType.INFORMATION);
                 alert_details.setTitle("Loan Information");
-                alert_details.setHeaderText("Member installment information for each loan");
+                alert_details.setHeaderText("Member installment information for " + param.getValue().getMemberId());
                 alert_details.getDialogPane().setContent(createContentGrid(instOnly, sum));
                 alert_details.show();
             }
