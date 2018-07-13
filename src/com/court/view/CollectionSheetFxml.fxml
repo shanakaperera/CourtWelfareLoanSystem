@@ -137,7 +137,7 @@
                 </TitledPane>
             <BorderPane fx:id="table_bpane" VBox.vgrow="ALWAYS">
                <center>
-                  <Pagination fx:id="pagination" pageCount="0" />
+                  <Pagination fx:id="pagination" pageCount="0" style="-fx-border-color: #0000;" />
                </center>
             </BorderPane>
             </children>

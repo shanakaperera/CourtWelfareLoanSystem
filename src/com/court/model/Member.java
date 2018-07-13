@@ -42,8 +42,8 @@ public class Member implements java.io.Serializable {
     private String nic;
     private Double overpay;
     private Double zeroOverpay;
-    private boolean overPayDone;
-    private Double oldOverPay;
+    private boolean overPayDone = false;
+    private double oldOverPay;
     private Set<MemberLoan> memberLoans = new HashSet<>();
     private Set<MemChild> memChilds = new HashSet<>();
     private Set<Document> documents = new HashSet<>();
@@ -392,13 +392,15 @@ public class Member implements java.io.Serializable {
         this.overPayDone = overPayDone;
     }
 
-    public Double getOldOverPay() {
+    public double getOldOverPay() {
         return oldOverPay;
     }
 
-    public void setOldOverPay(Double oldOverPay) {
+    public void setOldOverPay(double oldOverPay) {
         this.oldOverPay = oldOverPay;
     }
+
+
 
     @Override
     public String toString() {

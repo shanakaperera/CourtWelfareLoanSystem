@@ -14,12 +14,14 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ObservableValue;
+import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonBar;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Dialog;
+import javafx.scene.control.DialogEvent;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
@@ -27,6 +29,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.text.Font;
+import javafx.stage.StageStyle;
 import javafx.util.Callback;
 
 /**
@@ -68,6 +71,8 @@ public class DisplaySubscriptionFactory implements Callback<TableColumn.CellData
             if (ml.isCollected()) {
                 ButtonType updateBtnType = new ButtonType("Update", ButtonBar.ButtonData.OK_DONE);
                 Dialog<List<MemberSubscriptions>> alert_details = new Dialog();
+                alert_details.initStyle(StageStyle.UNDECORATED);
+                alert_details.getDialogPane().setStyle("-fx-border-color: black");
                 alert_details.setTitle("Subscription Information");
                 alert_details.setHeaderText("Member Subscription information for " + param.getValue().getMemberId());
                 alert_details.getDialogPane().getButtonTypes().addAll(updateBtnType, ButtonType.CANCEL);
@@ -75,6 +80,7 @@ public class DisplaySubscriptionFactory implements Callback<TableColumn.CellData
                 alert_details.getDialogPane().setContent(grid);
                 alert_details.setResultConverter(dialogBtn -> {
                     if (dialogBtn == updateBtnType) {
+                       // param.getValue().setOverPayDone(false);
                         return new ArrayList<>(mbrSubs);
                     }
                     return null;
@@ -102,7 +108,14 @@ public class DisplaySubscriptionFactory implements Callback<TableColumn.CellData
                     System.out.print("T - " + total + " :- ");
                     System.out.print("D - " + diff + " :- ");
                     System.out.print("O - " + param.getValue().getOldOverPay() + " :- ");
-                    total = total + diff + param.getValue().getZeroOverpay() - param.getValue().getOldOverPay();
+
+                    //  total = total + diff + param.getValue().getZeroOverpay() - param.getValue().getOldOverPay();
+                    if (param.getValue().isOverPayDone()) {
+                        total = total + diff + param.getValue().getZeroOverpay();
+                    } else {
+                        total = total + diff + param.getValue().getZeroOverpay() - param.getValue().getOldOverPay();
+                        param.getValue().setOverPayDone(true);
+                    }
                     System.out.println("Z - " + param.getValue().getZeroOverpay());
                     chk_amt_txt.setText(TextFormatHandler.CURRENCY_DECIMAL_FORMAT.format(total));
                     csController.setTotal(total);

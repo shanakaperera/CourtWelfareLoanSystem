@@ -22,6 +22,7 @@ import javafx.scene.control.TableColumn;
 import javafx.util.Callback;
 import javafx.scene.Node;
 import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableView;
@@ -30,6 +31,7 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.stage.StageStyle;
 
 /**
  *
@@ -87,8 +89,17 @@ public class DisplayTotalInstallmentsFactory implements Callback<TableColumn.Cel
 
                 Alert alert_details = new Alert(Alert.AlertType.INFORMATION);
                 alert_details.setTitle("Loan Information");
+                alert_details.initStyle(StageStyle.UNDECORATED);
+                alert_details.getDialogPane().setStyle("-fx-border-color: black");
                 alert_details.setHeaderText("Member installment information for " + param.getValue().getMemberId());
                 alert_details.getDialogPane().setContent(createContentGrid(instOnly, sum, param.getValue()));
+                alert_details.setResultConverter(dialogBtn -> {
+                    if (dialogBtn == ButtonType.OK) {
+                        param.getValue().setOverPayDone(true);
+                    }
+                    return null;
+
+                });
                 alert_details.show();
             }
         });
@@ -163,6 +174,9 @@ public class DisplayTotalInstallmentsFactory implements Callback<TableColumn.Cel
 //                System.out.println("TOTAL IN - " + total);
 //                System.exit(0);
                 total = total + diff + m.getZeroOverpay() - m.getOldOverPay();
+//                if (!m.isOverPayDone()) {
+//                    total = total - m.getOldOverPay();
+//                }
 
 //                System.out.println("TOTAL - "+total);
 //                System.exit(0);
