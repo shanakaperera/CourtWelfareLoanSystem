@@ -654,6 +654,12 @@ public class CollectionSheetFxmlController implements Initializable {
                     .get(event.getTablePosition().getRow()).isCollected()) {
 
                 double diff = event.getNewValue() - event.getOldValue();
+
+                event.getTableView().getItems()
+                        .get(event.getTablePosition().getRow())
+                        .setZeroOverpay(event.getNewValue());
+
+
                 total = total + diff;
                 chk_amt_txt.setText(TextFormatHandler.CURRENCY_DECIMAL_FORMAT.format(total));
             } else {
