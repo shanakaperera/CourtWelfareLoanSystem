@@ -95,7 +95,7 @@ public class DisplayTotalInstallmentsFactory implements Callback<TableColumn.Cel
                 alert_details.getDialogPane().setContent(createContentGrid(instOnly, sum, param.getValue()));
                 alert_details.setResultConverter(dialogBtn -> {
                     if (dialogBtn == ButtonType.OK) {
-                        param.getValue().setOverPayDone(true);
+                        //  param.getValue().setOverPayDone(true);
                     }
                     return null;
 
@@ -168,15 +168,17 @@ public class DisplayTotalInstallmentsFactory implements Callback<TableColumn.Cel
                 event.getTableView().getItems().get(event.getTablePosition().getRow())
                         .setLoanInstallment(event.getNewValue());
 
-                collection_tbl.refresh();
-
+                //  collection_tbl.refresh();
                 total_n.setText(getTableColumnTotal(event.getTableView(), 4));
-//                System.out.println("TOTAL IN - " + total);
+                System.out.println("TOTAL IN - " + total);
 //                System.exit(0);
-                total = total + diff + m.getZeroOverpay() - m.getOldOverPay();
-//                if (!m.isOverPayDone()) {
-//                    total = total - m.getOldOverPay();
-//                }
+                // total = total + diff + m.getZeroOverpay() - m.getOldOverPay();
+                if (m.isOverPayDone()) {
+                    total = total + diff + m.getZeroOverpay() - m.getOldOverPay();
+                    m.setOverPayDone(false);
+                } else {
+                    total = total + diff + m.getZeroOverpay();
+                }
 
 //                System.out.println("TOTAL - "+total);
 //                System.exit(0);

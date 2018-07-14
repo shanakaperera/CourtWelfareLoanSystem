@@ -14,14 +14,12 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ObservableValue;
-import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonBar;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Dialog;
-import javafx.scene.control.DialogEvent;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
@@ -80,7 +78,7 @@ public class DisplaySubscriptionFactory implements Callback<TableColumn.CellData
                 alert_details.getDialogPane().setContent(grid);
                 alert_details.setResultConverter(dialogBtn -> {
                     if (dialogBtn == updateBtnType) {
-                       // param.getValue().setOverPayDone(false);
+                        // param.getValue().setOverPayDone(false);
                         return new ArrayList<>(mbrSubs);
                     }
                     return null;
@@ -111,12 +109,13 @@ public class DisplaySubscriptionFactory implements Callback<TableColumn.CellData
 
                     //  total = total + diff + param.getValue().getZeroOverpay() - param.getValue().getOldOverPay();
                     if (param.getValue().isOverPayDone()) {
-                        total = total + diff + param.getValue().getZeroOverpay();
-                    } else {
                         total = total + diff + param.getValue().getZeroOverpay() - param.getValue().getOldOverPay();
-                        param.getValue().setOverPayDone(true);
+                        param.getValue().setOverPayDone(false);
+                    } else {
+                        total = total + diff + param.getValue().getZeroOverpay();
                     }
                     System.out.println("Z - " + param.getValue().getZeroOverpay());
+                    System.out.println("Boolean  - " + param.getValue().isOverPayDone());
                     chk_amt_txt.setText(TextFormatHandler.CURRENCY_DECIMAL_FORMAT.format(total));
                     csController.setTotal(total);
                 });

@@ -42,7 +42,7 @@ public class Member implements java.io.Serializable {
     private String nic;
     private Double overpay;
     private Double zeroOverpay;
-    private boolean overPayDone = false;
+    private boolean overPayDone;
     private double oldOverPay;
     private Set<MemberLoan> memberLoans = new HashSet<>();
     private Set<MemChild> memChilds = new HashSet<>();

@@ -176,7 +176,9 @@ public class CollectionSheetFxmlController implements Initializable {
         chk_amt_txt.textProperty().addListener((observable, oldValue, newValue) -> {
             // user_enter_pay.setText(TextFormatHandler.CURRENCY_DECIMAL_FORMAT.format(1));
             validationSupport.setErrorDecorationEnabled(true);
-            //System.out.println("textfield changed from " + oldValue + " to " + newValue);
+            total = TextFormatHandler.getCurrencyFieldValue(newValue);
+            System.out.println("textfield changed from " + oldValue + " to " + newValue);
+            System.out.println("And new total v is - " + total);
         });
         //  validationSupport.errorDecorationEnabledProperty().bind(chk_amt_txt);
     }
@@ -660,14 +662,18 @@ public class CollectionSheetFxmlController implements Initializable {
                     .get(event.getTablePosition().getRow()).isCollected()) {
 
                 double diff = event.getNewValue() - event.getOldValue();
-                
+
                 event.getTableView().getItems()
                         .get(event.getTablePosition().getRow())
                         .setOldOverPay(event.getOldValue());
-                
+
                 event.getTableView().getItems()
                         .get(event.getTablePosition().getRow())
                         .setZeroOverpay(event.getNewValue());
+
+                event.getTableView().getItems()
+                        .get(event.getTablePosition().getRow())
+                        .setOverPayDone(true);
 
                 total = total + diff;
                 chk_amt_txt.setText(TextFormatHandler.CURRENCY_DECIMAL_FORMAT.format(total));
