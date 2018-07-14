@@ -142,13 +142,6 @@ public class CollectionSheetFxmlController implements Initializable {
     @FXML
     private Button proceed_btn;
 
-    public double getTotal() {
-        return total;
-    }
-
-    public void setTotal(double total) {
-        this.total = total;
-    }
     @FXML
     private CustomTextField tbl_filter_txt;
     private Button filterTxtClear;
@@ -174,7 +167,6 @@ public class CollectionSheetFxmlController implements Initializable {
         tbl_filter_txt.setRight(filterTxtClear);
 
         chk_amt_txt.textProperty().addListener((observable, oldValue, newValue) -> {
-            // user_enter_pay.setText(TextFormatHandler.CURRENCY_DECIMAL_FORMAT.format(1));
             validationSupport.setErrorDecorationEnabled(true);
             total = TextFormatHandler.getCurrencyFieldValue(newValue);
             System.out.println("textfield changed from " + oldValue + " to " + newValue);
@@ -548,8 +540,8 @@ public class CollectionSheetFxmlController implements Initializable {
         int fromIndex = pageIndex * rowsPerPage;
         int toIndex = Math.min(fromIndex + rowsPerPage, mList.size());
 
-        dtp = new DisplayTotalInstallmentsFactory(collection_tbl, this, chk_amt_txt);
-        stp = new DisplaySubscriptionFactory(collection_tbl, this, chk_amt_txt);
+        dtp = new DisplayTotalInstallmentsFactory(collection_tbl, chk_amt_txt);
+        stp = new DisplaySubscriptionFactory(collection_tbl, chk_amt_txt);
 
         m_id_col.setCellValueFactory(new PropertyValueFactory<>("memberId"));
         m_name_col.setCellValueFactory(new PropertyValueFactory<>("nameWithIns"));
@@ -662,19 +654,6 @@ public class CollectionSheetFxmlController implements Initializable {
                     .get(event.getTablePosition().getRow()).isCollected()) {
 
                 double diff = event.getNewValue() - event.getOldValue();
-
-                event.getTableView().getItems()
-                        .get(event.getTablePosition().getRow())
-                        .setOldOverPay(event.getOldValue());
-
-                event.getTableView().getItems()
-                        .get(event.getTablePosition().getRow())
-                        .setZeroOverpay(event.getNewValue());
-
-                event.getTableView().getItems()
-                        .get(event.getTablePosition().getRow())
-                        .setOverPayDone(true);
-
                 total = total + diff;
                 chk_amt_txt.setText(TextFormatHandler.CURRENCY_DECIMAL_FORMAT.format(total));
             } else {

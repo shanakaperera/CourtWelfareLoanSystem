@@ -37,14 +37,11 @@ import javafx.util.Callback;
 public class DisplaySubscriptionFactory implements Callback<TableColumn.CellDataFeatures<Member, Button>, ObservableValue<Button>> {
 
     private final TableView<Member> collection_tbl;
-    CollectionSheetFxmlController csController;
     private double total;
     private final TextField chk_amt_txt;
 
-    public DisplaySubscriptionFactory(TableView<Member> collection_tbl, CollectionSheetFxmlController csController, TextField chk_amt_txt) {
+    public DisplaySubscriptionFactory(TableView<Member> collection_tbl, TextField chk_amt_txt) {
         this.collection_tbl = collection_tbl;
-        this.csController = csController;
-        this.total = this.csController.getTotal();
         this.chk_amt_txt = chk_amt_txt;
     }
 
@@ -102,22 +99,12 @@ public class DisplaySubscriptionFactory implements Callback<TableColumn.CellData
                     double newValue = subs.stream().mapToDouble(a -> a.getAmount()).sum();
                     param.getValue().setTotalSubscription(newValue);
                     collection_tbl.refresh();
+                    total = TextFormatHandler.getCurrencyFieldValue(chk_amt_txt);
+                    
                     double diff = newValue - sum;
-                    System.out.print("T - " + total + " :- ");
-                    System.out.print("D - " + diff + " :- ");
-                    System.out.print("O - " + param.getValue().getOldOverPay() + " :- ");
 
-                    //  total = total + diff + param.getValue().getZeroOverpay() - param.getValue().getOldOverPay();
-                    if (param.getValue().isOverPayDone()) {
-                        total = total + diff + param.getValue().getZeroOverpay() - param.getValue().getOldOverPay();
-                        param.getValue().setOverPayDone(false);
-                    } else {
-                        total = total + diff + param.getValue().getZeroOverpay();
-                    }
-                    System.out.println("Z - " + param.getValue().getZeroOverpay());
-                    System.out.println("Boolean  - " + param.getValue().isOverPayDone());
+                    total = total + diff;
                     chk_amt_txt.setText(TextFormatHandler.CURRENCY_DECIMAL_FORMAT.format(total));
-                    csController.setTotal(total);
                 });
             }
 

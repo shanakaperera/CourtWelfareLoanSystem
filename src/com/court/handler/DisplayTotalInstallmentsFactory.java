@@ -5,7 +5,6 @@
  */
 package com.court.handler;
 
-import com.court.controller.CollectionSheetFxmlController;
 import com.court.model.LoanPayment;
 import com.court.model.Member;
 import com.court.model.MemberLoan;
@@ -41,13 +40,10 @@ public class DisplayTotalInstallmentsFactory implements Callback<TableColumn.Cel
 
     private final TableView<Member> collection_tbl;
     private double total;
-    private final CollectionSheetFxmlController csController;
     private final TextField chk_amt_txt;
 
-    public DisplayTotalInstallmentsFactory(TableView<Member> collection_tbl, CollectionSheetFxmlController csController, TextField chk_amt_txt) {
+    public DisplayTotalInstallmentsFactory(TableView<Member> collection_tbl, TextField chk_amt_txt) {
         this.collection_tbl = collection_tbl;
-        this.csController = csController;
-        this.total = this.csController.getTotal();
         this.chk_amt_txt = chk_amt_txt;
     }
 
@@ -163,27 +159,14 @@ public class DisplayTotalInstallmentsFactory implements Callback<TableColumn.Cel
             if (event.getNewValue() != null) {
 
                 double diff = event.getNewValue() - event.getOldValue();
-                System.out.println("PAARA - " + diff);
 
                 event.getTableView().getItems().get(event.getTablePosition().getRow())
                         .setLoanInstallment(event.getNewValue());
-
-                //  collection_tbl.refresh();
+                collection_tbl.refresh();
                 total_n.setText(getTableColumnTotal(event.getTableView(), 4));
-                System.out.println("TOTAL IN - " + total);
-//                System.exit(0);
-                // total = total + diff + m.getZeroOverpay() - m.getOldOverPay();
-                if (m.isOverPayDone()) {
-                    total = total + diff + m.getZeroOverpay() - m.getOldOverPay();
-                    m.setOverPayDone(false);
-                } else {
-                    total = total + diff + m.getZeroOverpay();
-                }
-
-//                System.out.println("TOTAL - "+total);
-//                System.exit(0);
+                total = TextFormatHandler.getCurrencyFieldValue(chk_amt_txt);
+                total = total + diff;
                 chk_amt_txt.setText(TextFormatHandler.CURRENCY_DECIMAL_FORMAT.format(total));
-                csController.setTotal(total);
             } else {
                 ln_inst_col.getTableView().refresh();
             }
