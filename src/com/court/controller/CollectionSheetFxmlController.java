@@ -169,10 +169,9 @@ public class CollectionSheetFxmlController implements Initializable {
         chk_amt_txt.textProperty().addListener((observable, oldValue, newValue) -> {
             validationSupport.setErrorDecorationEnabled(true);
             total = TextFormatHandler.getCurrencyFieldValue(newValue);
-            System.out.println("textfield changed from " + oldValue + " to " + newValue);
-            System.out.println("And new total v is - " + total);
+            //System.out.println("textfield changed from " + oldValue + " to " + newValue);
+            //System.out.println("And new total v is - " + total);
         });
-        //  validationSupport.errorDecorationEnabledProperty().bind(chk_amt_txt);
     }
 
     @FXML
@@ -659,7 +658,6 @@ public class CollectionSheetFxmlController implements Initializable {
                         .get(event.getTablePosition().getRow())
                         .setZeroOverpay(event.getNewValue());
 
-
                 total = total + diff;
                 chk_amt_txt.setText(TextFormatHandler.CURRENCY_DECIMAL_FORMAT.format(total));
             } else {
@@ -814,11 +812,11 @@ public class CollectionSheetFxmlController implements Initializable {
         validationSupport.registerValidator(search_typ_combo,
                 Validator.createEmptyValidator("This field is not optional !"));
 
-        validationSupport.registerValidator(user_enter_pay,
-                Validator.combine(
-                        Validator.createEmptyValidator("This field is not optional."),
-                        Validator.createPredicateValidator(p_cheque_tally, "Cheque amount and total payment should tally to proceed.")
-                ));
+//        validationSupport.registerValidator(user_enter_pay,
+//                Validator.combine(
+//                        Validator.createEmptyValidator("This field is not optional."),
+//                        Validator.createPredicateValidator(p_cheque_tally, "Cheque amount and total payment should tally to proceed.")
+//                ));
         validationSupport.registerValidator(chk_no_txt,
                 Validator.combine(Validator.createEmptyValidator("This field is not optional !"),
                         Validator.createRegexValidator("Only alphanumeric and hyphen(-) allowed !",
