@@ -179,6 +179,7 @@ public class CollectionSheetFxmlController implements Initializable {
         performSearch(search_typ_combo, search_txt);
         registerInputValidation();
         proceed_btn.setDisable(false);
+        user_enter_pay.setText(TextFormatHandler.CURRENCY_DECIMAL_FORMAT.format(0));
         tbl_filter_txt.setText("");
     }
 
@@ -187,7 +188,8 @@ public class CollectionSheetFxmlController implements Initializable {
         FxUtilsHandler.clearFields(collection_grid);
         search_typ_combo.getSelectionModel().select(0);
         chk_amt_txt.setText(TextFormatHandler.CURRENCY_DECIMAL_FORMAT.format(0));
-        // collection_tbl.getItems().clear();
+        collection_tbl.setItems(null);
+        collection_tbl.layout();
     }
 
     @FXML
